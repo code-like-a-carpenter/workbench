@@ -1,0 +1,16 @@
+{
+  "name": "@code-like-a-carpenter/workbench",
+  "version": "0.0.0-development",
+  "description": "Monorepo of common libraries, CLIs, and codegen tools",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "engines": {
+    "node": "18.x",
+    "npm": "8.x"
+  },
+  "keywords": [],
+  "author": "Ian Remmel <1182361+ianwremmel@users.noreply.github.com>",
+  "license": "MIT",
+  "private": true
+}
