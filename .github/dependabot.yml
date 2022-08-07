@@ -1,0 +1,24 @@
+version: 2
+updates:
+  - package-ecosystem: 'npm'
+    commit-message:
+      prefix: 'chore'
+      include: 'scope'
+    directory: '/'
+    ignore:
+      # Ignore Node major version updates until we're ready to actually update
+      # Node.
+      - dependency-name: '@types/node'
+        update-types: ['version-update:semver-major']
+    schedule:
+      interval: 'daily'
+    versioning-strategy: 'increase'
+
+  - package-ecosystem: 'github-actions'
+    commit-message:
+      prefix: 'chore'
+      include: 'scope'
+    directory: '/'
+    schedule:
+      # Check for updates to GitHub Actions every weekday
+      interval: 'daily'
