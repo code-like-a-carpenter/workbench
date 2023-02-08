@@ -18,7 +18,12 @@
     "target": "es2022", // Node 18.0.0 and later
     "types": [
       "node"
-    ]
+    ],
+    "paths": {
+      "@code-like-a-carpenter/*": [
+        "./packages/@code-like-a-carpenter/*"
+      ]
+    }
   },
   "include": [
     "*.ts",

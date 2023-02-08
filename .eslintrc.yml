@@ -36,13 +36,24 @@ plugins:
 settings:
   react:
     version: 'detect'
-  import/internal-regex: '^@beacon/'
+  import/internal-regex: '^@code-like-a-carpenter/'
 
 rules:
+  '@typescript-eslint/consistent-type-imports': 'error'
+  '@typescript-eslint/no-unused-vars':
+    - 'error'
+    - args: 'after-used'
+      ignoreRestSiblings: true
   import/no-extraneous-dependencies:
     - error
     - devDependencies:
         - '!src/**/*'
         - '!packages/**/*'
+  no-restricted-imports:
+    - error
+    - patterns:
+        # Avoid importing directly from files in packages and instead allow only
+        # importing from the main entry point.
+        - 'src'
   workspaces/no-relative-imports: 'error'
   require-jsdoc: off
