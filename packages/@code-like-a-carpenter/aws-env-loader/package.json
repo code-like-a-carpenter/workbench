@@ -1,0 +1,7 @@
+{
+  "name": "@code-like-a-carpenter/aws-env-loader",
+  "main": "src/index.ts",
+  "dependencies": {
+    "@code-like-a-carpenter/env": "*"
+  }
+}
