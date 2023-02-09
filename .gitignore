@@ -5,3 +5,8 @@ reports
 
 # Ignore editor config directories
 .idea
+
+nx-cloud.env
+
+# Build output
+dist
