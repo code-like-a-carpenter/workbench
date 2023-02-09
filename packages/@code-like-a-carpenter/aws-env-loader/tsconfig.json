@@ -4,9 +4,7 @@
     "rootDir": "./src"
   },
   "extends": "../../../tsconfig.references.json",
-  "include": [
-    "src"
-  ],
+  "include": ["src"],
   "references": [
     {
       "path": "../env"
