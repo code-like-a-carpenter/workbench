@@ -1,0 +1,10 @@
+{
+  "name": "@code-like-a-carpenter/nx-auto",
+  "main": "./src/index.js",
+  "dependencies": {
+    "glob": "^8.1.0"
+  },
+  "devDependencies": {
+    "@types/glob": "^8.0.1"
+  }
+}
