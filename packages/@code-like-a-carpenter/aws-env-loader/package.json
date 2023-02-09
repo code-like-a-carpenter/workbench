@@ -1,8 +1,10 @@
 {
   "name": "@code-like-a-carpenter/aws-env-loader",
-  "main": "dist/index.js",
+  "main": "dist/cjs/index.js",
+  "types": "dist/types",
   "scripts": {
-    "build": "esbuild $(find ./src -name *.ts -o -name *.tsx) --outdir=dist --platform=node --sourcemap=external"
+    "build": "esbuild $(find ./src -name *.ts -o -name *.tsx) --format=cjs --outdir=dist/cjs --platform=node --sourcemap=external",
+    "build-types": "tsc"
   },
   "dependencies": {
     "@code-like-a-carpenter/env": "*"

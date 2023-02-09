@@ -4,13 +4,16 @@
   "targetDefaults": {
     "build": {
       "dependsOn": ["^build"]
+    },
+    "build-types": {
+      "dependsOn": ["build", "^build-types"]
     }
   },
   "tasksRunnerOptions": {
     "default": {
       "runner": "@nrwl/nx-cloud",
       "options": {
-        "cacheableOperations": ["build"]
+        "cacheableOperations": ["build", "build-types"]
       }
     }
   },
