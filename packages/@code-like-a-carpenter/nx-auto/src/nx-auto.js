@@ -43,7 +43,7 @@ exports.registerProjectTargets = function registerProjectTargets(
     'build:types': {
       executor: 'nx:run-commands',
       options: {
-        command: `tsc --project ${projectRoot}/tsconfig.json`,
+        command: `tsc --build --project ${projectRoot}/tsconfig.json`,
       },
       outputs: ['{projectRoot}/dist/types'],
     },

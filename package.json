@@ -8,7 +8,7 @@
     "lint:changelog": "commitlint --from origin/main --to HEAD",
     "lint:es": "npm run --silent eslint -- .",
     "prelint:types": "mkdir --parents reports/style",
-    "lint:types": "bash -c \"tsc $TSC_OPTIONS\"",
+    "lint:types": "bash -c \"tsc --build $TSC_OPTIONS\"",
     "test": "echo \"Error: no test specified\" && exit 1",
     "prepare": "husky install"
   },
