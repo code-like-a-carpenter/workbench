@@ -1,4 +1,7 @@
 {
   "name": "@code-like-a-carpenter/env",
-  "main": "src/index.ts"
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "esbuild $(find ./src -name *.ts -o -name *.tsx) --outdir=dist --platform=node --sourcemap=external"
+  }
 }
