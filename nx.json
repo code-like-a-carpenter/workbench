@@ -18,9 +18,6 @@
     "build": {
       "inputs": ["default", "^dist"],
       "dependsOn": ["^build"]
-    },
-    "build:types": {
-      "dependsOn": ["^build:types"]
     }
   },
   "tasksRunnerOptions": {
@@ -31,6 +28,8 @@
           "build",
           "build:cjs",
           "build:esm",
+          "build:package-deps",
+          "build:project-refs",
           "build:types"
         ]
       }
