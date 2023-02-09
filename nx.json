@@ -18,6 +18,9 @@
     "build": {
       "inputs": ["default", "^dist"],
       "dependsOn": ["^build"]
+    },
+    "build:types": {
+      "dependsOn": ["^build:types"]
     }
   },
   "tasksRunnerOptions": {
