@@ -28,7 +28,7 @@
           "build",
           "build:cjs",
           "build:esm",
-          "build:package-deps",
+          "build:package",
           "build:project-refs",
           "build:types"
         ]

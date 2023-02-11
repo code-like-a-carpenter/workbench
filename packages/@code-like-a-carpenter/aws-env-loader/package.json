@@ -1,5 +1,6 @@
 {
   "name": "@code-like-a-carpenter/aws-env-loader",
+  "description": "Configures the AWS SDK to load a profile from the environment. Mostly for local tests and scripts.",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
   "types": "dist/types",
@@ -12,5 +13,14 @@
   },
   "dependencies": {
     "@code-like-a-carpenter/env": "*"
-  }
+  },
+  "author": "Ian Remmel <1182361+ianwremmel@users.noreply.github.com> (https://www.ianwremmel.com)",
+  "license": "MIT",
+  "bugs": "https://www.github.com/code-like-a-carpenter/workbench/issues",
+  "engines": {
+    "node": "18.x",
+    "npm": "8.x"
+  },
+  "homepage": "https://www.github.com/code-like-a-carpenter/workbench/tree/main/packages/@code-like-a-carpenter/aws-env-loader",
+  "repository": "https://www.github.com/code-like-a-carpenter/workbench"
 }

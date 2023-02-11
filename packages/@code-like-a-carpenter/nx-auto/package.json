@@ -8,6 +8,8 @@
     "yargs": "^17.6.2"
   },
   "devDependencies": {
+    "@schemastore/package": "^0.0.6",
+    "@schemastore/tsconfig": "^0.0.9",
     "@types/depcheck": "^0.9.1",
     "@types/glob": "^8.0.1",
     "@types/prettier": "^2.7.2",

@@ -21,7 +21,7 @@ exports.registerProjectTargets = function registerProjectTargets(
 
   const entryPoints = glob.sync(`${srcDir}/**/*.ts?(x)`).join(' ');
 
-  const packageName = projectFilePath.split('/').slice(-2).join('/');
+  const packageName = projectRoot.split('/').slice(-2).join('/');
 
   return {
     build: {
@@ -42,18 +42,22 @@ exports.registerProjectTargets = function registerProjectTargets(
       },
       outputs: ['{projectRoot}/dist/esm'],
     },
-    'build:package-deps': {
+    'build:package': {
       executor: 'nx:run-commands',
-      inputs: ['{projectRoot}/src/**/*'],
+      inputs: [
+        '{projectRoot}/src/**/*',
+        '{workspaceRoot}/package.json',
+        'sharedGlobals',
+      ],
       options: {
-        command: `node ./packages/@code-like-a-carpenter/nx-auto/ package-deps --package-name ${packageName}`,
+        command: `node ./packages/@code-like-a-carpenter/nx-auto/ package --package-name ${packageName}`,
       },
       outputs: ['{projectRoot}/package.json'],
     },
     'build:project-refs': {
-      dependsOn: ['build:package-deps', '^build:project-refs'],
+      dependsOn: ['build:package', '^build:project-refs'],
       executor: 'nx:run-commands',
-      inputs: ['{projectRoot}/package.json'],
+      inputs: ['{projectRoot}/package.json', 'sharedGlobals'],
       options: {
         command: `node ./packages/@code-like-a-carpenter/nx-auto/ project-refs --package-name ${packageName}`,
       },
@@ -63,7 +67,7 @@ exports.registerProjectTargets = function registerProjectTargets(
       dependsOn: ['build:project-refs', '^build:types'],
       executor: 'nx:run-commands',
       options: {
-        command: `tsc --build --project ${projectRoot}/tsconfig.json`,
+        command: `tsc --project ${projectRoot}/tsconfig.json`,
       },
       outputs: ['{projectRoot}/dist/types'],
     },

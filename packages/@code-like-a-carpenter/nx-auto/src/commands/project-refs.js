@@ -1,10 +1,15 @@
 'use strict';
 
+const assert = require('assert');
 const fs = require('fs');
 const path = require('path');
 
 const glob = require('glob');
-const prettier = require('prettier');
+
+const {readPackageJson} = require('../lib/helpers');
+const {readTsConfigJson} = require('../lib/helpers');
+const {pathToPackageFile, pathToPackage} = require('../lib/helpers');
+const {writePrettierFile} = require('../lib/helpers');
 
 /** @type import('yargs').CommandModule */
 const command = {
@@ -19,15 +24,22 @@ const command = {
   },
   command: 'project-refs',
   async handler({packageName}) {
-    const packagePath = path.resolve(process.cwd(), 'packages', packageName);
-    const pkgJsonPath = path.join(packagePath, 'package.json');
-    const tsconfigPath = path.join(packagePath, 'tsconfig.json');
+    assert(
+      !packageName.endsWith('package.json'),
+      `packageName must not end with package.json, got ${packageName}`
+    );
+    assert(
+      /@.+\/.+/.test(packageName),
+      `packageName must be in the format @scope/name, got ${packageName}`
+    );
 
-    const pkg = JSON.parse(await fs.promises.readFile(pkgJsonPath, 'utf-8'));
+    const packagePath = pathToPackage(packageName);
+    const tsconfigPath = pathToPackageFile(packageName, 'tsconfig.json');
 
-    const tsconfig = await loadTsConfig(tsconfigPath);
+    const pkg = await readPackageJson(packageName);
+    const tsconfig = await loadTsConfig(packageName);
 
-    tsconfig.references = Object.keys(pkg.dependencies)
+    tsconfig.references = Object.keys(pkg.dependencies ?? {})
       .filter((d) => d.startsWith('@code-like-a-carpenter'))
       .map((d) => {
         const dependencyPackagePath = path.resolve(
@@ -61,11 +73,12 @@ const command = {
 module.exports = command;
 
 /**
- * @param {string} tsconfigPath
+ * @param {string} packageName
+ * @returns {Promise<import("@schemastore/tsconfig").JSONSchemaForTheTypeScriptCompilerSConfigurationFile>}
  */
-async function loadTsConfig(tsconfigPath) {
+async function loadTsConfig(packageName) {
   try {
-    return JSON.parse(await fs.promises.readFile(tsconfigPath, 'utf-8'));
+    return await readTsConfigJson(packageName);
   } catch (e) {
     return {
       compilerOptions: {
@@ -80,20 +93,8 @@ async function loadTsConfig(tsconfigPath) {
 
 /**
  * @param {string} tsconfigPath
+ * @returns {Promise<import("@schemastore/tsconfig").JSONSchemaForTheTypeScriptCompilerSConfigurationFile>}
  */
 async function loadRootTsConfig(tsconfigPath) {
   return JSON.parse(await fs.promises.readFile(tsconfigPath, 'utf-8'));
-}
-
-/**
- * @param {string} filename
- * @param {string} content
- */
-async function writePrettierFile(filename, content) {
-  const config = await prettier.resolveConfig(filename);
-  const formatted = prettier.format(content, {
-    ...config,
-    filepath: filename,
-  });
-  await fs.promises.writeFile(filename, formatted);
 }
