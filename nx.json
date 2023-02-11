@@ -30,6 +30,7 @@
           "build:esm",
           "build:package",
           "build:project-refs",
+          "build:readme",
           "build:types"
         ]
       }

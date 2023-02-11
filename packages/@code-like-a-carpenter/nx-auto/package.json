@@ -5,6 +5,10 @@
     "depcheck": "^1.4.3",
     "glob": "^8.1.0",
     "prettier": "^2.8.4",
+    "remark": "^14.0.2",
+    "remark-stringify": "^10.0.2",
+    "remark-toc": "^8.0.1",
+    "unist-builder": "^3.0.1",
     "yargs": "^17.6.2"
   },
   "devDependencies": {

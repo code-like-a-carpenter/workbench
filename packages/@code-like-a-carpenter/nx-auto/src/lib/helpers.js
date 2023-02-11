@@ -1,5 +1,6 @@
 'use strict';
 
+const assert = require('assert');
 const fs = require('fs');
 const path = require('path');
 
@@ -77,3 +78,31 @@ async function writePrettierFile(filename, content) {
   await fs.promises.writeFile(filename, formatted);
 }
 exports.writePrettierFile = writePrettierFile;
+
+/**
+ * @typedef StructuredPerson
+ * @property {string} name
+ * @property {string?} email
+ * @property {string?} url
+ */
+/**
+ * @param {import("@schemastore/package").Person} person
+ * @returns {StructuredPerson}
+ */
+function extractPersonInfo(person) {
+  if (typeof person === 'string') {
+    const result = person.match(/^(.+?)(?: <(.+)>)?(?: \((.+)\))?$/);
+    assert(result, `Unable to parse person string: ${person}`);
+    const [, name, email, url] = result;
+    return {email, name, url};
+  }
+
+  assert(person.name, 'Person must have a name');
+
+  return {
+    email: person.email,
+    name: person.name,
+    url: person.url,
+  };
+}
+exports.extractPersonInfo = extractPersonInfo;

@@ -25,7 +25,13 @@ exports.registerProjectTargets = function registerProjectTargets(
 
   return {
     build: {
-      dependsOn: ['build:cjs', 'build:esm', 'build:types', '^build'],
+      dependsOn: [
+        'build:cjs',
+        'build:esm',
+        'build:readme',
+        'build:types',
+        '^build',
+      ],
       executor: 'nx:noop',
     },
     'build:cjs': {
@@ -62,6 +68,20 @@ exports.registerProjectTargets = function registerProjectTargets(
         command: `node ./packages/@code-like-a-carpenter/nx-auto/ project-refs --package-name ${packageName}`,
       },
       outputs: ['{projectRoot}/tsconfig.json', '{workspaceRoot}/tsconfig.json'],
+    },
+    'build:readme': {
+      dependsOn: ['build:package'],
+      executor: 'nx:run-commands',
+      inputs: [
+        '{projectRoot}/README.md',
+        '{projectRoot}/package.json',
+        '{workspaceRoot}/package.json',
+        'sharedGlobals',
+      ],
+      options: {
+        command: `node ./packages/@code-like-a-carpenter/nx-auto/ readme --package-name ${packageName}`,
+      },
+      outputs: ['{projectRoot}/README.md'],
     },
     'build:types': {
       dependsOn: ['build:project-refs', '^build:types'],
