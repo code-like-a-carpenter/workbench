@@ -19,7 +19,19 @@
 
 ## Install
 
+This is a monorepo and cannot be installed in the traditional sense. Instead,
+each package is published to npm and can be installed individually. For example,
+to install
+[`@code-like-a-carpenter/env`](./packages/@code-like-a-carpenter/env), use the
+following:
+
+```sh
+npm install @code-like-a-carpenter/env
+```
+
 ## Usage
+
+Please see each package's README for specific usage instructions.
 
 ## Maintainer
 
@@ -27,7 +39,10 @@
 
 ## Contribute
 
-PRs Welcome
+PRs welcome, but for anything beyond the most trivial of changes, please open a
+GitHub issue before doing a whole bunch of work. I'm happy to discuss the
+additions, but this is a personal project and I don't want you wasting your time
+if what you're proposing isn't a good fit.
 
 ## License
 
