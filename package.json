@@ -2,6 +2,12 @@
   "name": "@code-like-a-carpenter/workbench",
   "version": "0.0.0-development",
   "description": "Monorepo of common libraries, CLIs, and codegen tools",
+  "keywords": [],
+  "homepage": "https://www.github.com/code-like-a-carpenter/workbench",
+  "bugs": "https://www.github.com/code-like-a-carpenter/workbench/issues",
+  "license": "MIT",
+  "author": "Ian Remmel <1182361+ianwremmel@users.noreply.github.com> (https://www.ianwremmel.com)",
+  "repository": "https://www.github.com/code-like-a-carpenter/workbench",
   "scripts": {
     "eslint": "eslint ${ESLINT_FORMAT_OPTIONS:-} --ignore-path .gitignore ",
     "lint": "npm-run-all --continue-on-error --parallel lint:*",
@@ -12,13 +18,6 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "prepare": "husky install"
   },
-  "engines": {
-    "node": "18.x",
-    "npm": "8.x"
-  },
-  "keywords": [],
-  "author": "Ian Remmel <1182361+ianwremmel@users.noreply.github.com>",
-  "license": "MIT",
   "devDependencies": {
     "@commitlint/cli": "^17.4.2",
     "@commitlint/config-conventional": "^17.4.2",
@@ -47,15 +46,19 @@
     "prettier": "^2.8.4",
     "typescript": "^4.9.5"
   },
+  "engines": {
+    "node": "18.x",
+    "npm": "8.x"
+  },
+  "private": true,
+  "workspaces": [
+    "packages/*/*"
+  ],
   "lint-staged": {
     "*.js": "npm run eslint -- ",
     "*.jsx": "npm run eslint -- ",
     "*.ts": "npm run eslint -- ",
     "*.tsx": "npm run eslint -- ",
     "bin/**": "npm run eslint -- "
-  },
-  "workspaces": [
-    "packages/*/*"
-  ],
-  "private": true
+  }
 }
