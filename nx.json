@@ -1,0 +1,40 @@
+{
+  "$schema": "./node_modules/nx/schemas/nx-schema.json",
+  "extends": "nx/presets/npm.json",
+  "namedInputs": {
+    "dist": ["{projectRoot}/dist/**/*"],
+    "default": [
+      "{projectRoot}/**/*",
+      "sharedGlobals",
+      "!{projectRoot}/dist/**/*"
+    ],
+    "sharedGlobals": [
+      "{workspaceRoot}/tsconfig.*",
+      "{workspaceRoot}/packages/@code-like-a-carpenter/nx-auto/**/*"
+    ]
+  },
+  "plugins": ["@code-like-a-carpenter/nx-auto"],
+  "targetDefaults": {
+    "build": {
+      "inputs": ["default", "^dist"],
+      "dependsOn": ["^build"]
+    }
+  },
+  "tasksRunnerOptions": {
+    "default": {
+      "runner": "@nrwl/nx-cloud",
+      "options": {
+        "cacheableOperations": [
+          "build",
+          "build:cjs",
+          "build:esm",
+          "build:package",
+          "build:project-refs",
+          "build:readme",
+          "build:types"
+        ]
+      }
+    }
+  },
+  "npmScope": "code-like-a-carpenter"
+}

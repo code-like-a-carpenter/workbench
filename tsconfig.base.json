@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "checkJs": true,
+    "declaration": true,
+    "esModuleInterop": true,
+    "jsx": "react",
+    "lib": ["dom", "es2022"],
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "strict": true,
+    "target": "es2022",
+    "types": ["node"],
+    "paths": {
+      "@code-like-a-carpenter/*": ["./packages/@code-like-a-carpenter/*"]
+    }
+  }
+}

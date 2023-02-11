@@ -1,25 +1,8 @@
 {
   "compilerOptions": {
-    "allowJs": true,
-    "checkJs": true,
-    "declaration": true,
-    "noEmit": true,
-    "esModuleInterop": true,
-    "jsx": "react",
-    "lib": [
-      "dom",
-      "es2022"
-    ],
-    "module": "commonjs",
-    "moduleResolution": "node",
-    "outDir": "dist/types",
-    "resolveJsonModule": true,
-    "strict": true,
-    "target": "es2022", // Node 18.0.0 and later
-    "types": [
-      "node"
-    ]
+    "noEmit": true
   },
+  "extends": "./tsconfig.base.json",
   "include": [
     "*.ts",
     "*.tsx",
@@ -28,6 +11,14 @@
     "packages/*/*/src/**/*.js",
     "packages/*/*/src/**/*.jsx",
     "packages/*/*/src/**/*.ts",
-    "packages/*/*/src/**/*.tsx",
+    "packages/*/*/src/**/*.tsx"
+  ],
+  "references": [
+    {
+      "path": "packages/@code-like-a-carpenter/aws-env-loader"
+    },
+    {
+      "path": "packages/@code-like-a-carpenter/env"
+    }
   ]
 }

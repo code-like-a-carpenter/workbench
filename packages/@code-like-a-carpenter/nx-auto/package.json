@@ -1,0 +1,22 @@
+{
+  "name": "@code-like-a-carpenter/nx-auto",
+  "main": "./src/index.js",
+  "dependencies": {
+    "depcheck": "^1.4.3",
+    "glob": "^8.1.0",
+    "prettier": "^2.8.4",
+    "remark": "^14.0.2",
+    "remark-stringify": "^10.0.2",
+    "remark-toc": "^8.0.1",
+    "unist-builder": "^3.0.1",
+    "yargs": "^17.6.2"
+  },
+  "devDependencies": {
+    "@schemastore/package": "^0.0.6",
+    "@schemastore/tsconfig": "^0.0.9",
+    "@types/depcheck": "^0.9.1",
+    "@types/glob": "^8.0.1",
+    "@types/prettier": "^2.7.2",
+    "@types/yargs": "^17.0.22"
+  }
+}
