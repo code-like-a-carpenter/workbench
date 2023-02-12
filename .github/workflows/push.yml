@@ -97,12 +97,13 @@ jobs:
       # 100% cache hits; The nx cache seems to be much easier to use than the
       # GitHub artifact action.
       - run: npx nx run-many --target=build --parallel=4
-      - name: git config
-        run: |
-          git config user.name "${GITHUB_ACTOR}"
-          git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
       - run: |
           npx multi-semantic-release --deps.release=inherit --ignore-private-packages
         env:
+          GIT_AUTHOR_EMAIL: ${{ github.actor }}@users.noreply.github.com
+          GIT_COMMITTER_EMAIL:
+            ${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com
+          GIT_AUTHOR_NAME: ${{ github.actor }}
+          GIT_COMMITTER_NAME: ${{ github.actor }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
