@@ -91,5 +91,28 @@ exports.registerProjectTargets = function registerProjectTargets(
       },
       outputs: ['{projectRoot}/dist/types'],
     },
+    'semantic-release': {
+      dependsOn: ['build', '^semantic-release'],
+      executor: '@jscutlery/semver:version',
+      inputs: ['default', 'dist'],
+      options: {
+        branches: ['main'],
+        push: false,
+        trackDeps: true,
+      },
+      postTargets: [
+        `${packageName}:semrel-github`,
+        `${packageName}:semrel-publish`,
+      ],
+    },
+    'semrel-github': {
+      executor: '@jscutlery/semver:github',
+      options: {
+        generateNotes: true,
+      },
+    },
+    'semrel-publish': {
+      executor: 'ngx-deploy-npm:deploy',
+    },
   };
 };

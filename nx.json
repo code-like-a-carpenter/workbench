@@ -16,8 +16,12 @@
   "plugins": ["@code-like-a-carpenter/nx-auto"],
   "targetDefaults": {
     "build": {
-      "inputs": ["default", "^dist"],
-      "dependsOn": ["^build"]
+      "dependsOn": ["^build"],
+      "inputs": ["default", "^dist"]
+    },
+    "semantic-release": {
+      "dependsOn": ["build", ",^semantic-release"],
+      "inputs": ["default", "dist"]
     }
   },
   "tasksRunnerOptions": {
