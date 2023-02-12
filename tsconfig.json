@@ -15,6 +15,9 @@
   ],
   "references": [
     {
+      "path": "packages/@code-like-a-carpenter/assert"
+    },
+    {
       "path": "packages/@code-like-a-carpenter/aws-env-loader"
     },
     {
