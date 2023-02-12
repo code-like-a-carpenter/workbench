@@ -98,7 +98,10 @@ jobs:
       # GitHub artifact action.
       - run: npx nx run-many --target=build --parallel=4
       - run: |
-          npx multi-semantic-release --deps.release=inherit --ignore-private-packages
+          npx multi-semantic-release \
+            --deps.release=inherit \
+            --ignore-private-packages \
+            --dry-run
         env:
           GIT_AUTHOR_EMAIL: ${{ github.actor }}@users.noreply.github.com
           GIT_COMMITTER_EMAIL:
