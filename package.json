@@ -7,7 +7,7 @@
   "bugs": "https://www.github.com/code-like-a-carpenter/workbench/issues",
   "license": "MIT",
   "author": "Ian Remmel <1182361+ianwremmel@users.noreply.github.com> (https://www.ianwremmel.com)",
-  "repository": "https://www.github.com/code-like-a-carpenter/workbench",
+  "repository": "git@github.com:code-like-a-carpenter/workbench.git",
   "scripts": {
     "eslint": "eslint ${ESLINT_FORMAT_OPTIONS:-} --ignore-path .gitignore ",
     "lint": "npm-run-all --continue-on-error --parallel lint:*",
