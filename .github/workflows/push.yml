@@ -82,6 +82,7 @@ jobs:
       - build
       - diff
       - lint
+      - test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3.3.0
@@ -110,3 +111,28 @@ jobs:
           GIT_COMMITTER_NAME: ${{ github.actor }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  test:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3.3.0
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: 'npm'
+      - uses: nrwl/nx-set-shas@v3
+      - run: npm ci
+      # by making this job depend on the build job, the following line should be
+      # 100% cache hits; The nx cache seems to be much easier to use than the
+      # GitHub artifact action.
+      - run: npx nx run-many --target=build --parallel=4
+      - run: npm test
+      - uses: check-run-reporter/action@v2.11.1
+        if: ${{ always() }}
+        with:
+          token: ${{ secrets.CHECK_RUN_REPORTER_TOKEN }}
+          label: Unit Tests
+          report: 'reports/junit/**/*.xml'
