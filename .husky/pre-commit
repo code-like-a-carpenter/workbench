@@ -17,16 +17,11 @@ if ! git diff --staged --exit-code README.md; then
   git add README.md
 fi
 
-# Don't run in CI since it sem-rel may make non-conformant commits (that never
-# get pushed)
-if [ -z ${CI+x} ]; then
-  # Autofix files that nx can autofix
-  if ! npx nx format:check; then
-    echo 'nx format:check has detected files that will fail CI checks'
-    echo 'Please run `npx nx format:write` to fix them'
-    echo 'Ideally, this pre-commit hook could determine which files they are, but '
-    echo 'nx format only indicates there are failing files, not which ones.'
+if ! npx nx format:check; then
+  echo 'nx format:check has detected files that will fail CI checks'
+  echo 'Please run `npx nx format:write` to fix them'
+  echo 'Ideally, this pre-commit hook do that fix for you, but there is no way'
+  echo 'to know which files were effected and pass them to `git add`'
 
-    exit 1
-  fi
+  exit 1
 fi
