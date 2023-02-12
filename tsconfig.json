@@ -15,9 +15,6 @@
   ],
   "references": [
     {
-      "path": "packages/@code-like-a-carpenter/aws-env-loader"
-    },
-    {
       "path": "packages/@code-like-a-carpenter/env"
     }
   ]
