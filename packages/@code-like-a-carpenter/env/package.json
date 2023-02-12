@@ -19,5 +19,8 @@
     "npm": "8.x"
   },
   "homepage": "https://www.github.com/code-like-a-carpenter/workbench/tree/main/packages/@code-like-a-carpenter/env",
-  "repository": "git@github.com:code-like-a-carpenter/workbench.git"
+  "repository": "git@github.com:code-like-a-carpenter/workbench.git",
+  "publishConfig": {
+    "access": "public"
+  }
 }

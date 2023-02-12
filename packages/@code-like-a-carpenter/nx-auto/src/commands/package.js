@@ -80,6 +80,13 @@ async function config(packageName) {
   pkg.repository = rootPackageJson.repository;
   pkg.types = 'dist/types';
 
+  if (pkg.publishConfig?.access !== false) {
+    pkg.publishConfig = {
+      ...pkg.publishConfig,
+      access: 'public',
+    };
+  }
+
   await writePackageJson(packageName, pkg);
 }
 
