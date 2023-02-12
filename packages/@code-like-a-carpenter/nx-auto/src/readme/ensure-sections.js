@@ -235,7 +235,7 @@ async function addContributing(section, pkg) {
     1,
     section.length - 1,
     u('paragraph', [
-      u('text', {value: 'Please see contributing guidelines at '}),
+      u('text', {value: 'Please see contributing guidelines at the '}),
       u('link', {url}, [u('text', 'project homepage')]),
       u('text', {value: '.'}),
     ])

@@ -27,7 +27,7 @@ npm i @code-like-a-carpenter/aws-env-loader
 
 ## Contributing
 
-Please see contributing guidelines at
+Please see contributing guidelines at the
 [project homepage](https://www.github.com/code-like-a-carpenter/workbench/tree/main/packages/@code-like-a-carpenter/aws-env-loader).
 
 ## License
