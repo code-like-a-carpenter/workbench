@@ -7,7 +7,7 @@ env:
   NX_RUN_GROUP: ${{ github.run_id }}-${{ github.run_attempt }}
 
 jobs:
-  diff:
+  build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3.3.0
@@ -19,10 +19,29 @@ jobs:
           cache: 'npm'
       - uses: nrwl/nx-set-shas@v3
       - run: npm ci
-      - run: npx nx run-many --target=build:types --all --parallel=4
+      - run: npx nx run-many --target=build --all --parallel=4
+
+  diff:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3.3.0
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: 'npm'
+      - uses: nrwl/nx-set-shas@v3
+      - run: npm ci
+      # by making this job depend on the build job, the following line should be
+      # 100% cache hits; The nx cache seems to be much easier to use than the
+      # GitHub artifact action.
+      - run: npx nx run-many --target=build --all --parallel=4
       - run: ./scripts/diff-lint
 
   lint:
+    needs: build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3.3.0
@@ -34,9 +53,12 @@ jobs:
           cache: 'npm'
       - uses: nrwl/nx-set-shas@v3
       - run: npm ci
+      # by making this job depend on the build job, the following line should be
+      # 100% cache hits; The nx cache seems to be much easier to use than the
+      # GitHub artifact action.
+      - run: npx nx run-many --target=build --all --parallel=4
       - run: npx nx workspace-lint
       - run: npx nx format:check
-      - run: npx nx run-many --target=build:types --all --parallel=4
       - run: npm run lint
         env:
           ESLINT_FORMAT_OPTIONS: |
@@ -54,17 +76,3 @@ jobs:
           token: ${{ secrets.CHECK_RUN_REPORTER_TOKEN }}
           label: TSC
           report: 'reports/style/tsc.log'
-
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3.3.0
-        with:
-          fetch-depth: 0
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 18
-          cache: 'npm'
-      - uses: nrwl/nx-set-shas@v3
-      - run: npm ci
-      - run: npx nx run-many --target=build --all --parallel=4
