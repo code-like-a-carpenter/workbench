@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 . "$(dirname -- "$0")/_/husky.sh"
 
 # Lint staged files
@@ -17,12 +17,16 @@ if ! git diff --staged --exit-code README.md; then
   git add README.md
 fi
 
-# Autofix files that nx can autofix
-if ! npx nx format:check; then
-  echo 'nx format:check has detected files that will fail CI checks'
-  echo 'Please run `npx nx format:write` to fix them'
-  echo 'Ideally, this pre-commit hook could determine which files they are, but '
-  echo 'nx format only indicates there are failing files, not which ones.'
+# Don't run in CI since it sem-rel may make non-conformant commits (that never
+# get pushed)
+if [ -z ${CI+x} ]; then
+  # Autofix files that nx can autofix
+  if ! npx nx format:check; then
+    echo 'nx format:check has detected files that will fail CI checks'
+    echo 'Please run `npx nx format:write` to fix them'
+    echo 'Ideally, this pre-commit hook could determine which files they are, but '
+    echo 'nx format only indicates there are failing files, not which ones.'
 
-  exit 1
+    exit 1
+  fi
 fi
