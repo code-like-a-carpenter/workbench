@@ -21,6 +21,9 @@
       "path": "packages/@code-like-a-carpenter/aws-env-loader"
     },
     {
+      "path": "packages/@code-like-a-carpenter/dotenv"
+    },
+    {
       "path": "packages/@code-like-a-carpenter/env"
     }
   ]
