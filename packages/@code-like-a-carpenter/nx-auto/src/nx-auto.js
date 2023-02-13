@@ -19,7 +19,10 @@ exports.registerProjectTargets = function registerProjectTargets(
   const srcDir = path.join('.', projectRoot, 'src');
   const distDir = path.join('.', projectRoot, 'dist');
 
-  const entryPoints = glob.sync(`${srcDir}/**/*.ts?(x)`).join(' ');
+  const entryPoints = glob
+    .sync(`${srcDir}/**/*.ts?(x)`)
+    .filter((filePath) => !filePath.includes('.test.'))
+    .join(' ');
 
   const packageName = projectRoot.split('/').slice(-2).join('/');
 
