@@ -20,7 +20,7 @@
   },
   "devDependencies": {
     "@commitlint/cli": "^17.4.2",
-    "@commitlint/config-conventional": "^17.4.2",
+    "@commitlint/config-conventional": "^17.4.3",
     "@ianwremmel/eslint-plugin-ianwremmel": "^6.2.0",
     "@nrwl/nx-cloud": "^15.0.3",
     "@types/jest": "^29.4.0",
