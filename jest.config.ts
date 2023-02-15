@@ -17,17 +17,10 @@ declare global {
   }
 }
 
-const commonProjectConfig: Config.ProjectConfig = {
+const commonProjectConfig: Partial<Config.ProjectConfig> = {
   clearMocks: true,
   testEnvironment: 'node',
   testPathIgnorePatterns: ['/dist/', '/node_modules/'],
-  transform: {
-    // jest uses babel-jest by default, but only if it can find a babel config
-    // file. I'd like to avoid relying on babel for as long as possible, so I'm
-    // using esbuild-jest here instead, which requires zero config.
-    // @ts-expect-error
-    '^.+\\.tsx?$': 'esbuild-jest',
-  },
 };
 
 const CI = !!process.env.CI;
@@ -38,13 +31,13 @@ assert(
   'This Jest config is intended only for Monorepos and cannot work without a `workspaces` field in package.json'
 );
 
-/** @type {import('@jest/types').Config.GlobalConfig} */
-module.exports = {
+const config: Config.GlobalConfig = {
   bail: 0,
   collectCoverage: CI,
   coverageDirectory: 'reports/coverage',
 
   projects: [
+    // @ts-expect-error - types seem wrong
     {
       ...commonProjectConfig,
       displayName: 'Unit Tests',
@@ -55,6 +48,7 @@ module.exports = {
         ]),
     },
   ],
+  // @ts-expect-error - types seem wrong
   reporters: [
     !CI && 'default',
     CI && ['github-actions', {silent: false}],
@@ -75,3 +69,5 @@ module.exports = {
   ].filter(Boolean),
   testLocationInResults: true,
 };
+
+export default config;

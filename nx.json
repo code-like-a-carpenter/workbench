@@ -9,7 +9,7 @@
       "!{projectRoot}/dist/**/*"
     ],
     "sharedGlobals": [
-      "{workspaceRoot}/tsconfig.*",
+      "{workspaceRoot}/tsconfig.*.json",
       "{workspaceRoot}/packages/@code-like-a-carpenter/nx-auto/**/*"
     ]
   },
