@@ -28,6 +28,9 @@
     },
     {
       "path": "packages/@code-like-a-carpenter/logger"
+    },
+    {
+      "path": "packages/@code-like-a-carpenter/wait-for"
     }
   ]
 }
