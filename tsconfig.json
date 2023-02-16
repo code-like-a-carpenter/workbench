@@ -27,7 +27,16 @@
       "path": "packages/@code-like-a-carpenter/env"
     },
     {
+      "path": "packages/@code-like-a-carpenter/interact"
+    },
+    {
       "path": "packages/@code-like-a-carpenter/logger"
+    },
+    {
+      "path": "packages/@code-like-a-carpenter/parallel"
+    },
+    {
+      "path": "packages/@code-like-a-carpenter/telemetry"
     },
     {
       "path": "packages/@code-like-a-carpenter/wait-for"
