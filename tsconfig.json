@@ -33,6 +33,9 @@
       "path": "packages/@code-like-a-carpenter/logger"
     },
     {
+      "path": "packages/@code-like-a-carpenter/parallel"
+    },
+    {
       "path": "packages/@code-like-a-carpenter/telemetry"
     },
     {
