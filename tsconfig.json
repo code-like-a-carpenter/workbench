@@ -30,6 +30,9 @@
       "path": "packages/@code-like-a-carpenter/logger"
     },
     {
+      "path": "packages/@code-like-a-carpenter/telemetry"
+    },
+    {
       "path": "packages/@code-like-a-carpenter/wait-for"
     }
   ]

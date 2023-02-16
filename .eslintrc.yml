@@ -19,6 +19,10 @@ overrides:
       - '**/*.tsx'
     parserOptions:
       sourceType: module
+    rules:
+      # These rules do the wrong thing when they encounter type imports
+      no-duplicate-imports: off
+      import/no-duplicates: error
 
   - files:
       - '**/*.spec.*'
