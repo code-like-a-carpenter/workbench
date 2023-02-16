@@ -27,6 +27,9 @@
       "path": "packages/@code-like-a-carpenter/env"
     },
     {
+      "path": "packages/@code-like-a-carpenter/interact"
+    },
+    {
       "path": "packages/@code-like-a-carpenter/logger"
     },
     {
