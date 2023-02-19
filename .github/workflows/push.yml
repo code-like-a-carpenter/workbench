@@ -99,6 +99,7 @@ jobs:
       # GitHub artifact action.
       - run: npx nx run-many --target=build --parallel=4
       - run: |
+          npm config set workspaces-update false
           npx multi-semantic-release \
             --deps.release=inherit \
             --ignore-private-packages
