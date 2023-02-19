@@ -18,7 +18,7 @@ interface DynamoDBStreamHandlerResult {
   batchItemFailures: {itemIdentifier: string}[];
 }
 
-export async function withTelemetry<
+export function withTelemetry<
   E extends
     | APIGatewayProxyEvent
     | APIGatewayTokenAuthorizerEvent
