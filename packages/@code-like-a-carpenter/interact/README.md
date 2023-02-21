@@ -98,7 +98,7 @@ await interact(log, 'hello world', {});
 ## Contributing
 
 Please see contributing guidelines at the
-[project homepage](https://www.github.com/code-like-a-carpenter/workbench/tree/main/packages/@code-like-a-carpenter/interact).
+[project homepage](https://www.github.com/code-like-a-carpenter/workbench/).
 
 ## License
 

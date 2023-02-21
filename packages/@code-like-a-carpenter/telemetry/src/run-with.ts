@@ -2,8 +2,10 @@ import assert, {AssertionError} from 'assert';
 
 import type {Context, Span, SpanOptions} from '@opentelemetry/api';
 import {SpanKind, SpanStatusCode, trace} from '@opentelemetry/api';
+import {snakeCase} from 'snake-case';
 
 import {env} from '@code-like-a-carpenter/env';
+import {Exception} from '@code-like-a-carpenter/exception';
 
 type SpanHandler<T> = (span: Span) => T;
 
@@ -11,15 +13,41 @@ export function getCurrentSpan() {
   return trace.getActiveSpan();
 }
 
-export function captureException(e: unknown) {
+/**
+ * @param e - the exception to capture
+ * @param escaped - Indicates if the error was unhandled. In general, this will
+ * be true until the exception reaches a catch block and is not rethrown.
+ */
+export function captureException(e: unknown, escaped = true): Error {
+  const error = reformError(e);
   const span = getCurrentSpan();
   if (span) {
-    const error = reformError(e);
-
     span.setStatus({code: SpanStatusCode.ERROR, message: error.message});
     span.recordException(error);
-    // Note: it's not possible to know if the exception escaped in this function.
+    span.setAttribute('exception.escaped', escaped);
+
+    if (error instanceof Exception) {
+      Object.entries(error).forEach(([key, value]) => {
+        span.setAttribute(
+          `com.code-like-a-carpenter.exception.${snakeCase(key)}`,
+          JSON.stringify(value)
+        );
+      });
+    }
+
+    if (error instanceof Error && error.cause instanceof Error) {
+      span.setAttributes({
+        'com.code-like-a-carpenter.exception.cause.message':
+          error.cause.message,
+        'com.code-like-a-carpenter.exception.cause.name': error.cause.name,
+        'com.code-like-a-carpenter.exception.cause.stacktrace':
+          error.cause.stack,
+        'com.code-like-a-carpenter.exception.cause.type':
+          error.cause.constructor.name,
+      });
+    }
   }
+  return error;
 }
 
 export function getTracer(
@@ -34,12 +62,7 @@ export function runWithSpan<T>(span: Span, fn: SpanHandler<T>): T {
   const onFinally = () => span.end();
 
   const onCatch = (e: unknown) => {
-    const error = reformError(e);
-
-    span.setStatus({code: SpanStatusCode.ERROR, message: error.message});
-    span.recordException(error);
-    span.setAttribute('exception.escaped', true);
-    throw error;
+    throw captureException(e);
   };
 
   let result;
@@ -146,8 +169,8 @@ function reformError(e: unknown): Error {
   }
 
   if (typeof e === 'string') {
-    return new Error(e);
+    return new Exception(e, {cause: e});
   }
 
-  return new Error(`Unknown error ${JSON.stringify(e)}`, {cause: e});
+  return new Exception(`Unknown error`, {cause: e});
 }

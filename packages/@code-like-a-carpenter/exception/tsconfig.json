@@ -5,12 +5,5 @@
   },
   "extends": "../../../tsconfig.references.json",
   "include": ["src"],
-  "references": [
-    {
-      "path": "../env"
-    },
-    {
-      "path": "../exception"
-    }
-  ]
+  "references": []
 }
