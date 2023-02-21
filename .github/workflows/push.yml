@@ -19,7 +19,7 @@ jobs:
           cache: 'npm'
       - uses: nrwl/nx-set-shas@v3
       - run: npm ci
-      - run: npx nx run-many --target=build --all --parallel=4
+      - run: npx nx run-many --target=build --parallel=4
 
   diff:
     needs: build
@@ -37,7 +37,7 @@ jobs:
       # by making this job depend on the build job, the following line should be
       # 100% cache hits; The nx cache seems to be much easier to use than the
       # GitHub artifact action.
-      - run: npx nx run-many --target=build --all --parallel=4
+      - run: npx nx run-many --target=build --parallel=4
       - run: ./scripts/diff-lint
 
   lint:
@@ -56,7 +56,7 @@ jobs:
       # by making this job depend on the build job, the following line should be
       # 100% cache hits; The nx cache seems to be much easier to use than the
       # GitHub artifact action.
-      - run: npx nx run-many --target=build --all --parallel=4
+      - run: npx nx run-many --target=build --parallel=4
       - run: npx nx workspace-lint
       - run: npx nx format:check
       - run: npm run lint
