@@ -101,7 +101,7 @@ const logger = new ConsoleLogger({dev: false});
 ## Contributing
 
 Please see contributing guidelines at the
-[project homepage](https://www.github.com/code-like-a-carpenter/workbench/tree/main/packages/@code-like-a-carpenter/logger).
+[project homepage](https://www.github.com/code-like-a-carpenter/workbench/).
 
 ## License
 

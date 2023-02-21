@@ -27,7 +27,7 @@ npm i @code-like-a-carpenter/env
 ## Contributing
 
 Please see contributing guidelines at the
-[project homepage](https://www.github.com/code-like-a-carpenter/workbench/tree/main/packages/@code-like-a-carpenter/env).
+[project homepage](https://www.github.com/code-like-a-carpenter/workbench/).
 
 ## License
 

@@ -1,6 +1,7 @@
 'use strict';
 
 const assert = require('assert');
+const path = require('path');
 
 const {extractPersonInfo} = require('../lib/helpers');
 
@@ -224,19 +225,24 @@ async function addMaintainer(section, pkg) {
 async function addContributing(section, pkg) {
   const {u} = await import('unist-builder');
 
-  const url = pkg.homepage;
-  assert(url, 'package.json must have a homepage');
   assert(
-    typeof url === 'string',
-    `package.json homepage must be a string, received ${JSON.stringify(url)}`
+    pkg.homepage,
+    `${pkg.name} package.json should have a homepage by now.`
   );
+  assert(
+    typeof pkg.homepage === 'string',
+    `${pkg.name} package.json homepage must be a string`
+  );
+  const url = new URL(pkg.homepage);
+  url.pathname = path.join(url.pathname, '../../../../../');
+  assert(url, 'package.json must have a homepage');
 
   section.splice(
     1,
     section.length - 1,
     u('paragraph', [
       u('text', {value: 'Please see contributing guidelines at the '}),
-      u('link', {url}, [u('text', 'project homepage')]),
+      u('link', {url: url.toString()}, [u('text', 'project homepage')]),
       u('text', {value: '.'}),
     ])
   );
