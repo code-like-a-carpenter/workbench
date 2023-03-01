@@ -14,6 +14,10 @@ exports.registerProjectTargets = function registerProjectTargets(
     return {};
   }
 
+  if (projectFilePath.includes('examples')) {
+    return configureExample(projectFilePath);
+  }
+
   const projectRoot = path.dirname(projectFilePath);
 
   const srcDir = path.join('.', projectRoot, 'src');
@@ -96,3 +100,29 @@ exports.registerProjectTargets = function registerProjectTargets(
     },
   };
 };
+
+/** @param {string} projectFilePath */
+function configureExample(projectFilePath) {
+  const projectRoot = path.dirname(projectFilePath);
+
+  const packageName = projectRoot.split('/').slice(-1).join('/');
+
+  return {
+    build: {
+      dependsOn: ['build:package', '^build'],
+      executor: 'nx:noop',
+    },
+    'build:package': {
+      executor: 'nx:run-commands',
+      inputs: [
+        '{projectRoot}/src/**/*',
+        '{workspaceRoot}/package.json',
+        'sharedGlobals',
+      ],
+      options: {
+        command: `node ./packages/@code-like-a-carpenter/nx-auto/ package --package-name ${packageName} --type="example"`,
+      },
+      outputs: ['{projectRoot}/package.json'],
+    },
+  };
+}

@@ -37,7 +37,10 @@ exports.readTsConfigJson = readTsConfigJson;
  * @param {string} packageName
  */
 function pathToPackage(packageName) {
-  return path.resolve(process.cwd(), 'packages', packageName);
+  if (packageName.startsWith('@')) {
+    return path.resolve(process.cwd(), 'packages', packageName);
+  }
+  return path.resolve(process.cwd(), 'examples', packageName);
 }
 exports.pathToPackage = pathToPackage;
 

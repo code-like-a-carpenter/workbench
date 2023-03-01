@@ -43,6 +43,18 @@ const config: Config.GlobalConfig = {
       displayName: 'Unit Tests',
       testMatch: workspaces
         .flatMap((ws) => glob.sync(ws))
+        .filter((packagePath) => !packagePath.includes('example'))
+        .flatMap((packagePath) => [
+          `<rootDir>/${packagePath}/**/?(*.)+(test).[tj]s?(x)`,
+        ]),
+    },
+    // @ts-expect-error - types seem wrong
+    {
+      ...commonProjectConfig,
+      displayName: 'Examples',
+      testMatch: workspaces
+        .flatMap((ws) => glob.sync(ws))
+        .filter((packagePath) => packagePath.includes('example'))
         .flatMap((packagePath) => [
           `<rootDir>/${packagePath}/**/?(*.)+(test).[tj]s?(x)`,
         ]),

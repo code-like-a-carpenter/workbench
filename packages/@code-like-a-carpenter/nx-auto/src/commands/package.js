@@ -20,25 +20,43 @@ const command = {
         required: true,
         type: 'string',
       },
+      type: {
+        choices: ['package', 'example'],
+        default: 'package',
+        required: false,
+      },
     });
   },
   command: 'package',
-  async handler({packageName}) {
+  async handler({packageName, type}) {
     assert(
       !packageName.endsWith('package.json'),
       `packageName must not end with package.json, got ${packageName}`
     );
-    assert(
-      /@.+\/.+/.test(packageName),
-      `packageName must be in the format @scope/name, got ${packageName}`
-    );
 
     await deps(packageName);
-    await config(packageName);
+    if (type === 'example') {
+      await configExample(packageName);
+    } else {
+      await config(packageName);
+    }
   },
 };
 
 module.exports = command;
+
+/**
+ * @param {string} packageName
+ */
+async function configExample(packageName) {
+  const pkg = await readPackageJson(packageName);
+  const rootPackageJson = await loadRootPackageJson();
+
+  pkg.engines = rootPackageJson.engines;
+  pkg.private = true;
+
+  await writePackageJson(packageName, pkg);
+}
 
 /**
  * @param {string} packageName
