@@ -35,7 +35,7 @@ export function captureException(e: unknown, escaped = true): Error {
       });
     }
 
-    if (error instanceof Error && error.cause instanceof Error) {
+    if (error.cause instanceof Error) {
       span.setAttributes({
         'com.code-like-a-carpenter.exception.cause.message':
           error.cause.message,
@@ -141,15 +141,17 @@ export function runWithNewSpan<T>(
 export function runWithNewLinkedSpan<T>(
   name: string,
   attrs: SpanOptions,
-  context: Context,
+  context: Context | Context[],
   fn: SpanHandler<T>
 ): T {
-  const spanContext = trace.getSpanContext(context);
-
   const links = attrs.links ?? [];
-  if (spanContext) {
-    links.push({context: spanContext});
-  }
+  (Array.isArray(context) ? context : [context]).forEach((ctx) => {
+    const spanContext = trace.getSpanContext(ctx);
+
+    if (spanContext) {
+      links.push({context: spanContext});
+    }
+  });
 
   return runWithNewSpan(
     name,
