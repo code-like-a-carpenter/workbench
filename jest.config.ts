@@ -52,6 +52,7 @@ const config: Config.GlobalConfig = {
     {
       ...commonProjectConfig,
       displayName: 'Examples',
+      testEnvironment: './jest.d/environments/example.ts',
       testMatch: workspaces
         .flatMap((ws) => glob.sync(ws))
         .filter((packagePath) => packagePath.includes('example'))

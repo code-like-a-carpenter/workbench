@@ -1,0 +1,244 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+build () {
+  local example="$1"
+  local buildDir="$(path_to_build_dir "$example")"
+  local templateFile="$(path_to_template_file "$example")"
+
+  log "Building $example in $buildDir"
+
+  sam build \
+    --build-dir "$buildDir" \
+    --beta-features \
+    --template-file "$templateFile"
+}
+
+deploy () {
+  local provider="$1"
+  shift
+
+  if [ "$provider" == "localstack" ]; then
+    log "Initializing LocalStack"
+    initialize_localstack
+  fi
+
+  if [ "$#" == "0" ]; then
+    log "No examples specified, deploying all to $provider"
+    deploy_all "$provider"
+  else
+    deploy_one "$provider" "$@"
+  fi
+}
+
+deploy_one () {
+  local provider="$1"
+  local example="$2"
+
+  log "Deploying $example to $provider"
+
+  build "$example"
+
+  local stackname
+  stackname="$(get_stack_name "$example")"
+  stagename="development"
+
+  local cmd
+  case "$provider" in
+    aws)
+      cmd="sam"
+      ;;
+    localstack)
+      cmd="samlocal"
+      # There seems to be a bug with localstack and conditionals. false
+      # conditions break the deploy without explanation, so in localstack where
+      # costs don't matter, we'll deploy in production mode.
+      stagename="production"
+      ;;
+    *)
+      log "Unknown provider $provider"
+      return 1
+      ;;
+  esac
+
+  local parameter_overrides=''
+  parameter_overrides+="ParameterKey=StageName,ParameterValue=$stagename"
+  parameter_overrides+=" ParameterKey=RepoUrl,ParameterValue=$(git remote get-url origin)"
+  parameter_overrides+=" ParameterKey=SHA,ParameterValue=${GITHUB_SHA:-$(git rev-parse head)}"
+
+  # doesn't need a template because it will use the one in .aws-sam that was
+  # just created by sam build
+  "$cmd" deploy \
+    --capabilities CAPABILITY_IAM CAPABILITY_AUTO_EXPAND \
+    --no-fail-on-empty-changeset \
+    --parameter-overrides "$parameter_overrides" \
+    --region "${AWS_REGION:-us-east-1}" \
+    --resolve-s3 \
+    --stack-name "$stackname" \
+    --template-file "$(path_to_build_dir "$example")/template.yaml"
+}
+
+deploy_all () {
+  local provider="$1"
+  shift
+
+  for file in $(find examples -mindepth 1 -maxdepth 1 -type d); do
+    local example
+    example="$(basename "$file")"
+    deploy_one "$provider" "$example"
+  done
+}
+
+destroy () {
+  local provider="$1"
+  shift
+  if [ "$#" == "0" ]; then
+    log "No examples specified, destroying all at $provider"
+    destroy_all "$provider"
+  else
+    destroy_one "$provider" "$@"
+  fi
+}
+
+destroy_all () {
+  local provider="$1"
+  shift
+
+  for file in $(find examples -mindepth 1 -maxdepth 1 -type d); do
+    local example
+    example="$(basename "$file")"
+    destroy_one "$provider" "$example"
+  done
+}
+
+destroy_one () {
+  local provider="$1"
+  local example="$2"
+
+  log "Destroying $example at $provider"
+
+  local stackname
+  stackname="$(get_stack_name "$example")"
+
+  local cmd
+  case "$provider" in
+    aws)
+      cmd="sam"
+      ;;
+    localstack)
+      cmd="samlocal"
+      ;;
+    *)
+      log "Unknown provider $provider"
+      return 1
+      ;;
+  esac
+
+  # doesn't need a template because it will use the one in .aws-sam that was
+  # just created by sam build
+  "$cmd" delete \
+    --no-prompts \
+    --region "${AWS_REGION:-us-east-1}" \
+    --stack-name "$stackname"
+}
+
+get_stack_name () {
+  local example="$1"
+
+  local stackname
+  stackname=$(echo "$example" | awk -F/ '{print $NF}' | sed -r 's/(^|[-_ ]+)([0-9a-z])/\U\2/g')
+  echo "$stackname"
+  return 0
+}
+
+initialize_localstack () {
+  log "Ensuing LocalStack is dependencies are installed"
+  pip3 install --upgrade pyopenssl
+  pip3 install localstack awscli-local[ver1] aws-sam-cli-local
+  # Localstack 1.4 seems to have a bug with CloudFormation Swagger so until 1.5
+  # gets tagged, I'm just going to have to hope that latest remains stable.
+  docker pull localstack/localstack:latest
+
+  log "Starting LocalStack"
+  # --wait doesn't appear to be available with the docker-compose version on
+  # GitHub Actions runners...
+  docker-compose up --detach
+
+  log "Waiting for LocalStack startup..."
+  # ...so we'll simulate it with wait-on
+  npx wait-on http://127.0.0.1:4566
+  log "Startup complete"
+
+  return 0
+}
+
+log () {
+  echo "$@" 1>&2
+
+  return 0
+}
+
+path_to_build_dir () {
+  local example="$1"
+  echo "$(path_to_example "$example")/.aws-sam/build"
+  return 0
+}
+
+path_to_example () {
+  local example="$1"
+  local dir="examples/$example"
+
+  if [ ! -d "$dir" ]; then
+    log "Example $example does not exist at $dir"
+    return 1
+  fi
+
+  echo "$dir"
+  return 0
+}
+
+path_to_template_file () {
+  local example="$1"
+  echo "$(path_to_example "$example")/template.yml"
+  return 0
+}
+
+main () {
+  local action="$1"
+  shift
+
+  case "$action" in
+    build)
+      build "$@"
+      return 0
+      ;;
+    deploy)
+      ;;
+    destroy)
+      ;;
+    *)
+      log "Unknown action $action"
+      return 1
+      ;;
+  esac
+
+  local provider="$1"
+
+  case "$provider" in
+    aws)
+      "$action" "$@"
+      return 0
+      ;;
+    localstack)
+      "$action" "$@"
+      return 0
+      ;;
+    *)
+      log "Unknown provider $provider"
+      return 1
+      ;;
+  esac
+}
+
+main "$@"

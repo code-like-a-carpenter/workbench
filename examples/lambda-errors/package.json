@@ -1,9 +1,0 @@
-{
-  "name": "lambda-errors",
-  "main": "src/index.mjs",
-  "engines": {
-    "node": "18.x",
-    "npm": "9.x"
-  },
-  "private": true
-}

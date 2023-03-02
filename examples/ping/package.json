@@ -1,0 +1,12 @@
+{
+  "name": "ping",
+  "main": "src/index.ts",
+  "engines": {
+    "node": "18.x",
+    "npm": "9.x"
+  },
+  "private": true,
+  "dependencies": {
+    "@code-like-a-carpenter/env": "*"
+  }
+}

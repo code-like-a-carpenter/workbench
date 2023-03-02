@@ -1,0 +1,32 @@
+openapi: 3.0.3
+info:
+  title: Ping
+  version: 1.0.0
+
+paths:
+  /api/v1/ping:
+    get:
+      description: Simple endpoint prove everything is wired together
+      operationId: ping
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PingResponse'
+      x-amazon-apigateway-integration:
+        type: aws_proxy
+        httpMethod: POST
+        uri:
+          Fn::Sub: 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${FnPing.Arn}/invocations'
+
+components:
+  schemas:
+    PingResponse:
+      type: object
+      properties:
+        status:
+          type: string
+      required:
+        - status

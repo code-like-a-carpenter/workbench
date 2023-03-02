@@ -5,6 +5,7 @@ env:
   NX_BRANCH: ${{ github.ref_name }}
   NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
   NX_RUN_GROUP: ${{ github.run_id }}-${{ github.run_attempt }}
+  SAM_CLI_TELEMETRY: 0
 
 jobs:
   build:
