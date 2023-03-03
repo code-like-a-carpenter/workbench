@@ -15,7 +15,8 @@
     "packages/*/*/src/**/*.js",
     "packages/*/*/src/**/*.jsx",
     "packages/*/*/src/**/*.ts",
-    "packages/*/*/src/**/*.tsx"
+    "packages/*/*/src/**/*.tsx",
+    "types/**/*.d.ts"
   ],
   "references": [
     {
@@ -23,6 +24,9 @@
     },
     {
       "path": "packages/@code-like-a-carpenter/aws-env-loader"
+    },
+    {
+      "path": "packages/@code-like-a-carpenter/contract-tests"
     },
     {
       "path": "packages/@code-like-a-carpenter/dotenv"

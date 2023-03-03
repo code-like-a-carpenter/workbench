@@ -7,6 +7,7 @@
   },
   "private": true,
   "dependencies": {
+    "@code-like-a-carpenter/contract-tests": "*",
     "@code-like-a-carpenter/env": "*"
   }
 }

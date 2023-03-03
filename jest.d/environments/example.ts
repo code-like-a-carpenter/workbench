@@ -69,7 +69,7 @@ export default class ExampleEnvironment extends Environment {
       process.env.AWS_ACCESS_KEY_ID = 'test';
       process.env.AWS_SECRET_ACCESS_KEY = 'test';
       // use IP, not localhost, because Node 18+ tries IPv6 first, but doesn't
-      // fallback to IPv4 if it fails to resolve localhost.
+      // fall back to IPv4 if it fails to resolve localhost.
       process.env.AWS_ENDPOINT = 'http://127.0.0.1:4566';
       process.env.AWS_REGION = 'us-east-1';
     } else if (process.env.TEST_ENV === 'aws') {
@@ -90,7 +90,11 @@ export default class ExampleEnvironment extends Environment {
   }
 
   private async ensureLocalStack() {
-    execSync('docker-compose up --detach --wait', {
+    execSync('docker-compose up --detach', {
+      stdio: 'inherit',
+    });
+
+    execSync('npx wait-on http://127.0.0.1:4566', {
       stdio: 'inherit',
     });
   }
@@ -165,6 +169,9 @@ export default class ExampleEnvironment extends Environment {
   }
 
   private async checkForStack(): Promise<boolean> {
+    console.info(
+      'Checking if stack is deployed. If stack is deployed but out of date, set DEPLOY=true to redeploy.'
+    );
     const client = process.env.AWS_ENDPOINT
       ? new CloudFormationClient({
           endpoint: process.env.AWS_ENDPOINT,
@@ -182,11 +189,22 @@ export default class ExampleEnvironment extends Environment {
         (s) => s.StackName === this.stackName
       );
 
-      return !!stack;
+      const stackExists = !!stack;
+
+      if (stackExists) {
+        console.info(`Stack ${this.stackName} exists`);
+      } else {
+        console.info(`Stack ${this.stackName} does not exist`);
+      }
+
+      return stackExists;
     } catch (err) {
       if (err instanceof Error && err.name === 'ValidationError') {
+        console.info(`Stack ${this.stackName} does not exist`);
         return false;
       }
+      console.error('Failed to deploy stack');
+      console.error(err);
       throw err;
     }
   }

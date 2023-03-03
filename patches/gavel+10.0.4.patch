@@ -1,0 +1,13 @@
+diff --git a/node_modules/gavel/package.json b/node_modules/gavel/package.json
+index 2da5007..10c5a9f 100644
+--- a/node_modules/gavel/package.json
++++ b/node_modules/gavel/package.json
+@@ -2,7 +2,7 @@
+   "name": "gavel",
+   "version": "10.0.4",
+   "description": "Validator of HTTP transactions (JavaScript implementation)",
+-  "main": "build/index.js",
++  "main": "lib/index.js",
+   "typings": "typings.d.ts",
+   "engines": {
+     "node": ">= 10.18"
