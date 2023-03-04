@@ -48,6 +48,10 @@ export async function handler(...args) {
 
 ### withTelemetry
 
+> Note that `withTelemetry` is on its way to deprecation and so you should
+> prefer one of `instrument*Handler` functions if there's one that fits your use
+> case.
+
 `withTelemetry` is an all-purpose wrapper around a standard Lambda handler which
 adds the appropriate OTel attributes based on the type of event being handled.
 

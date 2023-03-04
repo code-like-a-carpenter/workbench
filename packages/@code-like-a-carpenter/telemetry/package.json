@@ -26,7 +26,8 @@
     "@code-like-a-carpenter/exception": "*",
     "@opentelemetry/api": "1.4.0",
     "aws-lambda": "^1.0.7",
-    "snake-case": "^3.0.4"
+    "snake-case": "^3.0.4",
+    "src": "^1.1.2"
   },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.110"

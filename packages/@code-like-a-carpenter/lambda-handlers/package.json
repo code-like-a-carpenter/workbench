@@ -5,6 +5,7 @@
     "@code-like-a-carpenter/assert": "*",
     "@code-like-a-carpenter/errors": "*",
     "@code-like-a-carpenter/logger": "*",
+    "@code-like-a-carpenter/telemetry": "*",
     "aws-lambda": "^1.0.7",
     "openapi-typescript": "^6.1.1"
   },

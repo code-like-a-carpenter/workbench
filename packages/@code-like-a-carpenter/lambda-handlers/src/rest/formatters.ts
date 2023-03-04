@@ -5,7 +5,8 @@ import type {
 } from 'aws-lambda';
 
 import {assert} from '@code-like-a-carpenter/assert';
-import {HttpException} from '@code-like-a-carpenter/errors';
+import {ClientError, HttpException} from '@code-like-a-carpenter/errors';
+import {captureException} from '@code-like-a-carpenter/telemetry';
 
 import type {
   RestCallbackEvent,
@@ -127,6 +128,10 @@ export function formatErrorResult<O extends SimplifiedOperationObject>(
   event: RestCallbackEvent<O>,
   context: LambdaContext
 ): APIGatewayProxyResult {
+  if (!(err instanceof ClientError)) {
+    captureException(err, false);
+  }
+
   if (err instanceof HttpException) {
     return {
       // TODO body: JSON.stringify(err.render(event, context)),

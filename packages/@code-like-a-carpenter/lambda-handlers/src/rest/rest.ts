@@ -1,6 +1,7 @@
 import type {APIGatewayProxyHandler} from 'aws-lambda';
 
 import {logger as rootLogger} from '@code-like-a-carpenter/logger';
+import {instrumentRestHandler} from '@code-like-a-carpenter/telemetry';
 
 import {
   formatErrorResult,
@@ -15,7 +16,7 @@ import type {RestCallback, SimplifiedOperationObject} from './types';
 export function handleRestEvent<O extends SimplifiedOperationObject>(
   callback: RestCallback<O>
 ): APIGatewayProxyHandler {
-  return async (event, context) => {
+  return instrumentRestHandler(async (event, context) => {
     const restEvent = formatEvent(event);
 
     const logger = rootLogger.child({});
@@ -26,5 +27,5 @@ export function handleRestEvent<O extends SimplifiedOperationObject>(
     } catch (err) {
       return formatErrorResult(err, restEvent, context);
     }
-  };
+  });
 }
