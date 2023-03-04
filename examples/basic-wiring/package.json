@@ -1,5 +1,5 @@
 {
-  "name": "ping",
+  "name": "basic-wiring",
   "main": "src/index.ts",
   "engines": {
     "node": "18.x",

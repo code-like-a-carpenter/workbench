@@ -6,6 +6,6 @@ import {env} from '@code-like-a-carpenter/env';
 describe('ping', () => {
   buildContractTests({
     baseUrl: env('API_URL'),
-    blueprintPath: path.resolve(__dirname, '../apiary.apib'),
+    blueprintPath: path.resolve(__dirname, 'apiary.apib'),
   });
 });
