@@ -92,8 +92,6 @@ async function config(packageName) {
   // @ts-expect-error - the typedef seems to be incorrect here.
   pkg.homepage = homepage.toString();
   pkg.license = pkg.license ?? rootPackageJson.license;
-  pkg.main = 'dist/cjs/index.js';
-  pkg.module = 'dist/esm/index.js';
   pkg.name = packageName;
   pkg.repository = rootPackageJson.repository;
   pkg.types = 'dist/types';
@@ -104,6 +102,12 @@ async function config(packageName) {
       access: 'public',
     };
   }
+
+  // These are mostly for legacy fallbacks and, if `exports` is configured
+  // correctly, should not be needed on modern platforms. When `main` is
+  // present, esbuild seems to prefer it in some unpredictable cases.
+  delete pkg.main;
+  delete pkg.module;
 
   await writePackageJson(packageName, pkg);
 }

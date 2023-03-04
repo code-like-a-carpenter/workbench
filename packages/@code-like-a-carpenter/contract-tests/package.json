@@ -1,6 +1,5 @@
 {
   "name": "@code-like-a-carpenter/contract-tests",
-  "main": "dist/cjs/index.js",
   "description": "Jest-compatible alternative to Dredd.",
   "dependencies": {
     "@code-like-a-carpenter/assert": "*",
@@ -23,7 +22,6 @@
   },
   "homepage": "https://www.github.com/code-like-a-carpenter/workbench/tree/main/packages/@code-like-a-carpenter/contract-tests",
   "license": "MIT",
-  "module": "dist/esm/index.js",
   "repository": "git@github.com:code-like-a-carpenter/workbench.git",
   "types": "dist/types",
   "publishConfig": {

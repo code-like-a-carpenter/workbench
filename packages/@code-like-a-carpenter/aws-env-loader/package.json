@@ -1,8 +1,6 @@
 {
   "name": "@code-like-a-carpenter/aws-env-loader",
   "description": "Configures the AWS SDK to load a profile from the environment. Mostly for local tests and scripts.",
-  "main": "dist/cjs/index.js",
-  "module": "dist/esm/index.js",
   "types": "dist/types",
   "exports": {
     ".": {
