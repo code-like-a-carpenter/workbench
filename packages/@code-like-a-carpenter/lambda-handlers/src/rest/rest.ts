@@ -7,13 +7,13 @@ import {
   formatEvent,
   formatSuccessResult,
 } from './formatters';
-import type {RestCallback} from './types';
+import type {RestCallback, SimplifiedOperationObject} from './types';
 
 /**
  * Creates a handler for an API Gateway REST API (aka, an API Gateway V1 API).
  */
-export function handleRestEvent(
-  callback: RestCallback
+export function handleRestEvent<O extends SimplifiedOperationObject>(
+  callback: RestCallback<O>
 ): APIGatewayProxyHandler {
   return async (event, context) => {
     const restEvent = formatEvent(event);

@@ -1,5 +1,8 @@
 import {handleRestEvent} from '@code-like-a-carpenter/lambda-handlers';
 
-export const ping = handleRestEvent(async () => {
-  return {body: {status: 'ok'}, statusCode: 200};
-});
+import type {operations} from './__generated__/api';
+
+export const ping = handleRestEvent<operations['ping']>(async () => ({
+  body: {status: 'ok'},
+  statusCode: 200,
+}));

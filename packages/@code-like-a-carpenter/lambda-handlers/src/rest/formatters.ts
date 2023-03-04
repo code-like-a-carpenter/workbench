@@ -7,7 +7,13 @@ import type {
 import {assert} from '@code-like-a-carpenter/assert';
 import {HttpException} from '@code-like-a-carpenter/errors';
 
-import type {RestCallbackEvent, RestCallbackResult} from './types';
+import type {
+  RestCallbackEvent,
+  RestCallbackResult,
+  RestRequestPathParameters,
+  RestResponseBody,
+  SimplifiedOperationObject,
+} from './types';
 
 function safeJsonParse(obj: string) {
   try {
@@ -29,7 +35,9 @@ function safeUrlEncodedParse(body: string) {
   return params;
 }
 
-export function formatEvent(event: APIGatewayProxyEvent): RestCallbackEvent {
+export function formatEvent<O extends SimplifiedOperationObject>(
+  event: APIGatewayProxyEvent
+): RestCallbackEvent<O> {
   const {
     body,
     pathParameters,
@@ -98,23 +106,25 @@ export function formatEvent(event: APIGatewayProxyEvent): RestCallbackEvent {
         : safeJsonParse(body),
     headers: h,
     originalEvent: event,
-    pathParameters: pathParameters ?? {},
+    pathParameters: pathParameters as RestRequestPathParameters<O>,
     queryStringParameters: searchParams,
   };
 }
 
-export function formatSuccessResult(
-  result: RestCallbackResult
-): APIGatewayProxyResult {
+export function formatSuccessResult<
+  O extends SimplifiedOperationObject,
+  S extends number & keyof O['responses'],
+  R extends RestResponseBody<O, S>
+>(result: RestCallbackResult<O, S, R>): APIGatewayProxyResult {
   return {
     ...result,
     body: 'body' in result ? JSON.stringify(result.body, null, 2) : '',
   };
 }
 
-export function formatErrorResult(
+export function formatErrorResult<O extends SimplifiedOperationObject>(
   err: unknown,
-  event: RestCallbackEvent,
+  event: RestCallbackEvent<O>,
   context: LambdaContext
 ): APIGatewayProxyResult {
   if (err instanceof HttpException) {

@@ -109,8 +109,16 @@ function configureExample(projectFilePath) {
 
   return {
     build: {
-      dependsOn: ['build:package', '^build'],
+      dependsOn: ['build:openapi', 'build:package', '^build'],
       executor: 'nx:noop',
+    },
+    'build:openapi': {
+      executor: 'nx:run-commands',
+      inputs: ['{projectRoot}/api.yml'],
+      options: {
+        command: `npx --no-install openapi-typescript ${projectRoot}/api.yml --prettier-config ./.prettierrc --output ${projectRoot}/src/__generated__/api.ts && npm run eslint -- ${projectRoot}/src/__generated__/api.ts --fix`,
+      },
+      outputs: [`{projectRoot}/src/__generated__/api.ts`],
     },
     'build:package': {
       executor: 'nx:run-commands',
