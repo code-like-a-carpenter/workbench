@@ -165,6 +165,7 @@ export default class ExampleEnvironment extends Environment {
       const [stageName] = url.pathname.split('/').filter(Boolean);
 
       this.global.process.env.API_URL = `http://127.0.0.1:4566/restapis/${apiId}/${stageName}/_user_request_/`;
+      console.log({API_URL: this.global.process.env.API_URL});
     }
   }
 

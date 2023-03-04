@@ -44,6 +44,9 @@
       "path": "packages/@code-like-a-carpenter/interact"
     },
     {
+      "path": "packages/@code-like-a-carpenter/lambda-handlers"
+    },
+    {
       "path": "packages/@code-like-a-carpenter/logger"
     },
     {
