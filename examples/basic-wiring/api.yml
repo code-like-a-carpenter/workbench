@@ -21,8 +21,37 @@ paths:
         uri:
           Fn::Sub: 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${FnPing.Arn}/invocations'
 
+  /api/v1/errors/{statusCode}:
+    get:
+      description:
+        Endpoint that throws client-specified errors for debugging
+        cloudformation
+      operationId: errors
+      parameters:
+        - in: path
+          name: statusCode
+          schema:
+            type: string
+          required: false
+          description: Http Status Code to return
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorsResponse'
+      x-amazon-apigateway-integration:
+        type: aws_proxy
+        httpMethod: POST
+        uri:
+          Fn::Sub: 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${FnErrors.Arn}/invocations'
+
 components:
   schemas:
+    ErrorsResponse:
+      type: object
+      additionalProperties: true
     PingResponse:
       type: object
       properties:

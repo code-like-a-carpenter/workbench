@@ -134,8 +134,16 @@ export function formatErrorResult<O extends SimplifiedOperationObject>(
 
   if (err instanceof HttpException) {
     return {
-      // TODO body: JSON.stringify(err.render(event, context)),
-      body: JSON.stringify(err),
+      body: JSON.stringify({
+        message: err.message ?? err.name,
+        name: err.name,
+        requestIds: {
+          awsRequestId: context.awsRequestId,
+          requestId: event.requestContext.requestId,
+          xAmznTraceId: event.headers.get('X-Amzn-Trace-Id'),
+        },
+        stack: err.stack,
+      }),
       statusCode: err.code,
     };
   }

@@ -8,12 +8,19 @@ export interface paths {
     /** @description Simple endpoint prove everything is wired together */
     get: operations['ping'];
   };
+  '/api/v1/errors/{statusCode}': {
+    /** @description Endpoint that throws client-specified errors for debugging cloudformation */
+    get: operations['errors'];
+  };
 }
 
 export type webhooks = Record<string, never>;
 
 export interface components {
   schemas: {
+    ErrorsResponse: {
+      [key: string]: unknown | undefined;
+    };
     PingResponse: {
       status: string;
     };
@@ -35,6 +42,23 @@ export interface operations {
       200: {
         content: {
           'application/json': components['schemas']['PingResponse'];
+        };
+      };
+    };
+  };
+  errors: {
+    /** @description Endpoint that throws client-specified errors for debugging cloudformation */
+    parameters: {
+      /** @description Http Status Code to return */
+      path: {
+        statusCode: string;
+      };
+    };
+    responses: {
+      /** @description ok */
+      200: {
+        content: {
+          'application/json': components['schemas']['ErrorsResponse'];
         };
       };
     };
