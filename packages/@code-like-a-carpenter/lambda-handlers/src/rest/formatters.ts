@@ -5,6 +5,7 @@ import type {
 } from 'aws-lambda';
 
 import {assert} from '@code-like-a-carpenter/assert';
+import {env} from '@code-like-a-carpenter/env';
 import {ClientError, HttpException} from '@code-like-a-carpenter/errors';
 import {captureException} from '@code-like-a-carpenter/telemetry';
 
@@ -158,7 +159,7 @@ export function formatErrorResult<O extends SimplifiedOperationObject>(
           requestId: event.requestContext.requestId,
           xAmznTraceId: event.headers.get('X-Amzn-Trace-Id'),
         },
-        stack: err.stack,
+        stack: env('STAGE_NAME') === 'production' ? undefined : err.stack,
       }),
       statusCode: 500,
     };
