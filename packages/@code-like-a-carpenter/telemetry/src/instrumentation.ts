@@ -1,5 +1,6 @@
 import type {Attributes} from '@opentelemetry/api';
-import {SpanKind} from '@opentelemetry/api';
+import {SpanKind, trace} from '@opentelemetry/api';
+import {BasicTracerProvider} from '@opentelemetry/sdk-trace-base';
 import {AWSLambda} from '@sentry/serverless';
 import type {APIGatewayProxyEvent, APIGatewayProxyResult} from 'aws-lambda';
 import type {Context} from 'aws-lambda/handler';
@@ -60,16 +61,23 @@ export function instrumentRestHandler(
       'http.target': event.path,
     };
 
-    return await runWithNewSpan(
-      event.resource,
-      {attributes, kind: SpanKind.SERVER},
-      async (span) => {
-        const result = await sentryWrappedHandler(event, context);
-        if ('statusCode' in result) {
-          span.setAttribute('http.status_code', result.statusCode);
+    try {
+      return await runWithNewSpan(
+        event.resource,
+        {attributes, kind: SpanKind.SERVER},
+        async (span) => {
+          const result = await sentryWrappedHandler(event, context);
+          if ('statusCode' in result) {
+            span.setAttribute('http.status_code', result.statusCode);
+          }
+          return result;
         }
-        return result;
+      );
+    } finally {
+      const provider = trace.getTracerProvider();
+      if (provider instanceof BasicTracerProvider) {
+        await provider.forceFlush();
       }
-    );
+    }
   };
 }
