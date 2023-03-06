@@ -1,53 +1,16 @@
-import assert, {AssertionError} from 'assert';
+import assert from 'assert';
 
 import type {Context, Span, SpanOptions} from '@opentelemetry/api';
-import {SpanKind, SpanStatusCode, trace} from '@opentelemetry/api';
-import {snakeCase} from 'snake-case';
+import {SpanKind, trace} from '@opentelemetry/api';
 
 import {env} from '@code-like-a-carpenter/env';
-import {Exception} from '@code-like-a-carpenter/exception';
+
+import {captureException} from './exceptions';
 
 type SpanHandler<T> = (span: Span) => T;
 
 export function getCurrentSpan() {
   return trace.getActiveSpan();
-}
-
-/**
- * @param e - the exception to capture
- * @param escaped - Indicates if the error was unhandled. In general, this will
- * be true until the exception reaches a catch block and is not rethrown.
- */
-export function captureException(e: unknown, escaped = true): Error {
-  const error = reformError(e);
-  const span = getCurrentSpan();
-  if (span) {
-    span.setStatus({code: SpanStatusCode.ERROR, message: error.message});
-    span.recordException(error);
-    span.setAttribute('exception.escaped', escaped);
-
-    if (error instanceof Exception) {
-      Object.entries(error).forEach(([key, value]) => {
-        span.setAttribute(
-          `com.code-like-a-carpenter.exception.${snakeCase(key)}`,
-          JSON.stringify(value)
-        );
-      });
-    }
-
-    if (error.cause instanceof Error) {
-      span.setAttributes({
-        'com.code-like-a-carpenter.exception.cause.message':
-          error.cause.message,
-        'com.code-like-a-carpenter.exception.cause.name': error.cause.name,
-        'com.code-like-a-carpenter.exception.cause.stacktrace':
-          error.cause.stack,
-        'com.code-like-a-carpenter.exception.cause.type':
-          error.cause.constructor.name,
-      });
-    }
-  }
-  return error;
 }
 
 export function getTracer(
@@ -162,17 +125,4 @@ export function runWithNewLinkedSpan<T>(
     },
     fn
   );
-}
-
-/** Converts a non-error Error to an Error */
-function reformError(e: unknown): Error {
-  if (e instanceof Error || e instanceof AssertionError) {
-    return e;
-  }
-
-  if (typeof e === 'string') {
-    return new Exception(e, {cause: e});
-  }
-
-  return new Exception(`Unknown error`, {cause: e});
 }

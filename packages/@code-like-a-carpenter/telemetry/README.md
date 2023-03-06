@@ -8,6 +8,8 @@
 
 -   [Install](#install)
 -   [Usage](#usage)
+-   [captureException](#captureexception)
+    -   [Sentry](#sentry)
     -   [runWith\*](#runwith)
     -   [withTelemetry](#withtelemetry)
 -   [Maintainer](#maintainer)
@@ -21,6 +23,26 @@ npm i @code-like-a-carpenter/telemetry
 ```
 
 ## Usage
+
+## captureException
+
+Helper function that attaches a thrown exception to the current span and adds
+other interesting span details. It takes two arguments, the exception and
+whether or not it escaped its current span. If you rethrow, `escaped` should be
+true, if you handle it, `escaped` should be false. If it's worth capturing an
+exception when escaped is false, then it's probably worth alerting on.
+
+If you're using `@code-like-a-carpenter/lambda-handlers`, you probably don't
+need to think about `captureException`.
+
+### Sentry
+
+This package automatically initializes [Sentry](https://sentry.io) and wires it
+into `captureException`. This really isn't ideal as so far there's not obvious
+way to opt-out of this behavior if you're not using Sentry.
+
+At time of writing, Sentry's behavior induces `aws-sdk` v2 to be bundled, so
+you'll want to exclude it using your bundler config.
 
 ### runWith\*
 

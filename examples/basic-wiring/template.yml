@@ -98,6 +98,7 @@ Resources:
           - 'index'
         External:
           - '@aws-sdk/*'
+          - 'aws-sdk'
         Minify: false
         Sourcemap: true
         Target: 'es2020'
@@ -142,6 +143,7 @@ Resources:
           - 'index'
         External:
           - '@aws-sdk/*'
+          - 'aws-sdk'
         Minify: false
         Sourcemap: true
         Target: 'es2020'

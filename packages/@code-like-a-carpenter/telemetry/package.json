@@ -22,12 +22,14 @@
     "access": "public"
   },
   "dependencies": {
+    "@aws-sdk/smithy-client": "^3.279.0",
     "@code-like-a-carpenter/env": "*",
+    "@code-like-a-carpenter/errors": "*",
     "@code-like-a-carpenter/exception": "*",
     "@opentelemetry/api": "1.4.0",
+    "@sentry/serverless": "^7.40.0",
     "aws-lambda": "^1.0.7",
-    "snake-case": "^3.0.4",
-    "src": "^1.1.2"
+    "snake-case": "^3.0.4"
   },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.110"
