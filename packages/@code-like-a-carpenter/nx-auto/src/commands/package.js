@@ -135,6 +135,7 @@ async function deps(packageName) {
       ...Object.values(depcheck.detector),
       depcheck.detector.typescriptImportType,
     ],
+    ignoreDirs: ['.aws-sam', 'dist'],
   });
 
   if (results.dependencies.length > 0) {
