@@ -13,6 +13,17 @@ build () {
     --build-dir "$buildDir" \
     --beta-features \
     --template-file "$templateFile"
+
+  for dir in $(path_to_build_dir "$example")/*/; do
+    local example_dir="$(path_to_example "$example")"
+    if [ -f  "$example_dir/collector.yml" ]; then
+      cp "$example_dir/collector.yml" "$dir/collector.yml"
+    fi
+
+    if [ -f "$example_dir/otel-handler" ]; then
+      cp "$example_dir/otel-handler" "$dir/otel-handler"
+    fi
+  done
 }
 
 deploy () {

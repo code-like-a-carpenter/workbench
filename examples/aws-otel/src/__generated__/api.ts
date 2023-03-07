@@ -36,7 +36,7 @@ export interface operations {
     parameters: {
       /** @description Indicates in which span to throw an exception, if any. */
       query: {
-        throwType?: 'immediate' | 'fast' | 'slow';
+        throwType?: 'immediate' | 'fast' | 'slow' | 'none';
       };
     };
     responses: {

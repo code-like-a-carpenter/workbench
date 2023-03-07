@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+export OTEL_RESOURCE_ATTRIBUTES="${OTEL_RESOURCE_ATTRIBUTES:-}"
+
+if [[ $OTEL_RESOURCE_ATTRIBUTES != *"deployment.environment"* ]]; then
+  OTEL_RESOURCE_ATTRIBUTES="deployment.environment=${STAGE_NAME},$OTEL_RESOURCE_ATTRIBUTES"
+fi
+
+if [[ $OTEL_RESOURCE_ATTRIBUTES != *"faas.instance"* ]]; then
+  OTEL_RESOURCE_ATTRIBUTES="faas.instance=${AWS_LAMBDA_LOG_STREAM_NAME},$OTEL_RESOURCE_ATTRIBUTES"
+fi
+
+if [[ $OTEL_RESOURCE_ATTRIBUTES != *"faas.max_memory"* ]]; then
+  OTEL_RESOURCE_ATTRIBUTES="faas.max_memory=${AWS_LAMBDA_FUNCTION_MEMORY_SIZE},$OTEL_RESOURCE_ATTRIBUTES"
+fi
+
+if [[ $OTEL_RESOURCE_ATTRIBUTES != *"git.commit_sha"* ]]; then
+  OTEL_RESOURCE_ATTRIBUTES="git.commit_sha=${SHA},$OTEL_RESOURCE_ATTRIBUTES"
+fi
+
+if [[ $OTEL_RESOURCE_ATTRIBUTES != *"git.repository"* ]]; then
+  OTEL_RESOURCE_ATTRIBUTES="git.repository=${REPOSITORY_URL},$OTEL_RESOURCE_ATTRIBUTES"
+fi
+
+if [[ $OTEL_RESOURCE_ATTRIBUTES != *"service.name"* ]]; then
+  # The following two lines remove both the stack name and the random string. It
+  # may make sense to only remove the random string. For example, if two
+  # different stacks have a FnPing and happen to be sent to the same, say,
+  # Honeycomb workspace, they'll end up commingling their traces.
+  SERVICE_NAME=${AWS_LAMBDA_FUNCTION_NAME%-*}
+  SERVICE_NAME=${SERVICE_NAME/#*-}
+
+  OTEL_RESOURCE_ATTRIBUTES="service.name=${SERVICE_NAME},$OTEL_RESOURCE_ATTRIBUTES"
+fi
+
+if [[ $OTEL_RESOURCE_ATTRIBUTES != *"service.version"* ]]; then
+  OTEL_RESOURCE_ATTRIBUTES="service.version=${SHA},$OTEL_RESOURCE_ATTRIBUTES"
+fi
+
+# Call the ADOT otel handler, which will then call the OpenTelemetry handler
+source '/opt/otel-handler'
