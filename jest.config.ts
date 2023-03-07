@@ -56,6 +56,10 @@ const config: Config.GlobalConfig = {
       testMatch: workspaces
         .flatMap((ws) => glob.sync(ws))
         .filter((packagePath) => packagePath.includes('example'))
+        .filter(
+          (packagePath) =>
+            process.env.TEST_ENV === 'aws' || !packagePath.includes('aws-otel')
+        )
         .flatMap((packagePath) => [
           `<rootDir>/${packagePath}/**/?(*.)+(test).[tj]s?(x)`,
         ]),

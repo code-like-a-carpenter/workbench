@@ -1,0 +1,76 @@
+FORMAT: 1A
+HOST: https://ping.example.com
+
+# AWS Otel API
+
+Thanks to limitations in the free version of Localstack, this API can only be
+deployed to AWS. It's primarily here for generating traces using Open Telemetry
+to prove that everything works as intended. This API is not tested in CI.
+
+## Ping [/api/v1/ping{?throwType}]
+
+### Prove deployments work [GET]
+
++ Parameters
+
+    + throwType (enum) - Throw an error
+        + none (string) - Needed to include none because Contract Tests refuse to generate when throwType is missing
+        + immediate (string)
+        + fast (string)
+        + slow (string)
+
++ Request (application/json)
+
+    + Parameters
+
+        + throwType: `none`
+
++ Response 200 (application/json)
+
+    + Body
+
+            {
+                "status": "ok"
+            }
+
++ Request (application/json)
+
+    + Parameters
+
+        + throwType: `fast`
+
++ Response 500 (application/json)
+
+    + Body
+
+            {
+                "message": "Something bad happened in the fast span"
+            }
+
++ Request (application/json)
+
+    + Parameters
+
+        + throwType: `immediate`
+
++ Response 500 (application/json)
+
+    + Body
+
+            {
+                "message": "Something bad happened immediately"
+            }
+
++ Request (application/json)
+
+    + Parameters
+
+        + throwType: `slow`
+
++ Response 500 (application/json)
+
+    + Body
+
+            {
+                "message": "Something bad happened in the slow span"
+            }
