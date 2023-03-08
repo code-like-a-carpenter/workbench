@@ -8,10 +8,15 @@
     "*.tsx",
     "*.js",
     "*.jsx",
+    "examples/*/src/**/*.js",
+    "examples/*/src/**/*.jsx",
+    "examples/*/src/**/*.ts",
+    "examples/*/src/**/*.tsx",
     "packages/*/*/src/**/*.js",
     "packages/*/*/src/**/*.jsx",
     "packages/*/*/src/**/*.ts",
-    "packages/*/*/src/**/*.tsx"
+    "packages/*/*/src/**/*.tsx",
+    "types/**/*.d.ts"
   ],
   "references": [
     {
@@ -21,16 +26,25 @@
       "path": "packages/@code-like-a-carpenter/aws-env-loader"
     },
     {
+      "path": "packages/@code-like-a-carpenter/contract-tests"
+    },
+    {
       "path": "packages/@code-like-a-carpenter/dotenv"
     },
     {
       "path": "packages/@code-like-a-carpenter/env"
     },
     {
+      "path": "packages/@code-like-a-carpenter/errors"
+    },
+    {
       "path": "packages/@code-like-a-carpenter/exception"
     },
     {
       "path": "packages/@code-like-a-carpenter/interact"
+    },
+    {
+      "path": "packages/@code-like-a-carpenter/lambda-handlers"
     },
     {
       "path": "packages/@code-like-a-carpenter/logger"

@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "outDir": "./dist/types",
+    "rootDir": "./src"
+  },
+  "extends": "../../../tsconfig.references.json",
+  "include": ["src"],
+  "references": [
+    {
+      "path": "../assert"
+    },
+    {
+      "path": "../env"
+    },
+    {
+      "path": "../errors"
+    },
+    {
+      "path": "../logger"
+    },
+    {
+      "path": "../telemetry"
+    }
+  ]
+}

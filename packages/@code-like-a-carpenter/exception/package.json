@@ -1,8 +1,6 @@
 {
   "name": "@code-like-a-carpenter/exception",
   "description": "Base exception class for other packages with built-in OpenTelemetry support.",
-  "main": "dist/cjs/index.js",
-  "module": "dist/esm/index.js",
   "types": "dist/types",
   "exports": {
     ".": {

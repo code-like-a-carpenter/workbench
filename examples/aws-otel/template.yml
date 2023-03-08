@@ -1,0 +1,146 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: 'AWS::Serverless-2016-10-31'
+
+Conditions:
+  IsDev: !Equals
+    - !Ref StageName
+    - development
+
+Globals:
+  Function:
+    Environment:
+      Variables:
+        # Launch using _our_ startup script, which will then use the script
+        # provided by the ADOT layer. We need to do this so we can set a bunch
+        # config (in particular, tweaking the service.name so that it is _not_
+        # unique across deployments). We could do this with JavaScript, but it
+        # has to go into a file that's required prior to the main bundle, which
+        # adds increased bundling complexity and a surprisingly large increase
+        # payload size.
+        AWS_LAMBDA_EXEC_WRAPPER: '/var/task/otel-handler'
+        NODE_ENV: !If
+          - IsDev
+          - 'development'
+          - 'production'
+        OPENTELEMETRY_COLLECTOR_CONFIG_FILE: '/var/task/collector.yml'
+        REPOSITORY_URL: !Ref RepoUrl
+        SHA: !Ref SHA
+        STAGE_NAME: !Ref StageName
+    Handler: index.handler
+    Layers:
+      - Fn::Sub: 'arn:aws:lambda:${AWS::Region}:901920570463:layer:aws-otel-nodejs-amd64-ver-1-8-0:2'
+    MemorySize: 256
+    Runtime: nodejs18.x
+    Tracing: Active
+    Timeout: 30
+
+Outputs:
+  ApiUrl:
+    Value: !Sub 'https://${Api}.execute-api.${AWS::Region}.amazonaws.com/${StageName}/'
+
+Parameters:
+  LogRetention:
+    Type: Number
+    Default: '3'
+    Description: Duration in days to retain logs
+
+  RepoUrl:
+    Type: String
+
+  StageName:
+    Type: String
+    Description: Name of API stage.
+
+  SHA:
+    Type: String
+
+Resources:
+  Api:
+    Type: AWS::Serverless::Api
+    Properties:
+      # Note: need to use DefinitionBody with Fn::Transform rather than
+      # DefinitionUri so that we can use CloudFormation variables in api.yml
+      DefinitionBody:
+        Fn::Transform:
+          Name: AWS::Include
+          Parameters:
+            Location: api.yml
+      StageName: !Ref StageName
+      TracingEnabled: true
+      AccessLogSetting:
+        DestinationArn: !GetAtt AccessLogGroup.Arn
+        Format: '{"requestId":"$context.requestId","ip":"$context.identity.sourceIp","caller":"$context.identity.caller","user":"$context.identity.user","requestTime":$context.requestTimeEpoch,"httpMethod":"$context.httpMethod","resourcePath":"$context.resourcePath","status":$context.status,"protocol":"$context.protocol","responseLength":$context.responseLength,"path":"$context.path","integrationRequestId":"$context.integration.requestId","functionResponseStatus":"$context.integration.status","integrationLatency":"$context.integration.latency","integrationServiceStatus":"$context.integration.integrationStatus","userAgent":"$context.identity.userAgent"}'
+      MethodSettings:
+        - HttpMethod: '*'
+          LoggingLevel: !If
+            - IsDev
+            - 'INFO'
+            - 'OFF'
+          MetricsEnabled: true
+          ResourcePath: '/*'
+
+  APIExecutionLogs:
+    Properties:
+      LogGroupName:
+        Fn::Sub: 'API-Gateway-Execution-Logs_${Api}'
+      RetentionInDays:
+        Ref: 'LogRetention'
+    Type: 'AWS::Logs::LogGroup'
+
+  AccessLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      RetentionInDays: !Ref LogRetention
+
+  LogBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      AccessControl: Private
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+
+  FnPing:
+    Metadata:
+      BuildMethod: 'esbuild'
+      BuildProperties:
+        EntryPoints:
+          - 'index'
+        External:
+          - '@aws-sdk/*'
+          # Pretty much every OpenTelemetry package (except
+          # @opentelemetry/semantic-conventions) is provided by the ADOT layer,
+          # so there's no need to bundle them.
+          - '@opentelemetry/api'
+          - '@opentelemetry/exporter-trace-otlp-proto'
+          - '@opentelemetry/resources'
+          - '@opentelemetry/sdk-trace-base'
+          - '@opentelemetry/sdk-trace-node'
+          - '@opentelemetry/semantic-conventions'
+          - 'aws-sdk'
+        Minify: false
+        Sourcemap: true
+        Target: 'es2020'
+    Properties:
+      CodeUri: 'src'
+      Handler: 'index.handler'
+      Policies:
+        - 'AWSLambdaBasicExecutionRole'
+        - 'AWSLambda_ReadOnlyAccess'
+        - 'AWSXrayWriteOnlyAccess'
+        - 'CloudWatchLambdaInsightsExecutionRolePolicy'
+        - CloudWatchPutMetricPolicy: {}
+      Timeout: 30
+    Type: 'AWS::Serverless::Function'
+
+  FnPingResources:
+    Type: AWS::Serverless::Application
+    Properties:
+      Location: function.yml
+      Parameters:
+        Api: !Ref Api
+        FunctionName: !Ref FnPing
+        LogRetention: !Ref LogRetention
+        Method: GET
+        Path: /api/v1/ping

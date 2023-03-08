@@ -1,0 +1,120 @@
+openapi: 3.0.3
+info:
+  title: Basic Wiring
+  version: 1.0.0
+
+paths:
+  /api/v1/ping:
+    get:
+      description: Simple endpoint prove everything is wired together
+      operationId: ping
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PingResponse'
+      x-amazon-apigateway-integration:
+        type: aws_proxy
+        httpMethod: POST
+        uri:
+          Fn::Sub: 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${FnPing.Arn}/invocations'
+
+  /api/v1/errors/{statusCode}:
+    get:
+      description:
+        Endpoint that throws client-specified errors for debugging
+        cloudformation
+      operationId: errors
+      parameters:
+        - in: path
+          name: statusCode
+          schema:
+            type: string
+          required: false
+          description: Http Status Code to return
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorsResponse'
+      x-amazon-apigateway-integration:
+        type: aws_proxy
+        httpMethod: POST
+        uri:
+          Fn::Sub: 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${FnErrors.Arn}/invocations'
+
+x-amazon-apigateway-gateway-responses:
+  BAD_REQUEST_BODY:
+    statusCode: 400
+    responseTemplates:
+      application/json: |
+        {
+          "message": $context.error.messageString,
+          "responseType": "$context.error.responseType",
+          "validationString": "$context.error.validationErrorString",
+          "requestIds": {
+            "requestId": "$context.requestId"
+          }
+        }
+
+  DEFAULT_5XX:
+    responseTemplates:
+      application/json: |
+        {
+          "message": $context.error.messageString,
+          "responseType": "$context.error.responseType",
+          "requestIds": {
+            "requestId": "$context.requestId"
+          }
+        }
+
+  API_CONFIGURATION_ERROR:
+    responseTemplates:
+      application/json: |
+        {
+          "hint": "This is often caused by something throwing prior to the function starting or a missing API Gateway -> Lambda Permission. Check the logs for the function.",
+          "message": $context.error.messageString,
+          "responseType": "$context.error.responseType",
+          "requestIds": {
+            "requestId": "$context.requestId"
+          }
+        }
+
+  INTEGRATION_FAILURE:
+    responseTemplates:
+      application/json: |
+        {
+          "hint": "This is often caused by something throwing prior to the function starting or a missing API Gateway -> Lambda Permission. Check the logs for the function.",
+          "message": $context.error.messageString,
+          "responseType": "$context.error.responseType",
+          "requestIds": {
+            "requestId": "$context.requestId"
+          }
+        }
+
+# Enable the request validator for all paths.
+x-amazon-apigateway-request-validator: all
+
+# Define a request validator that validates both the request body and request
+# parameters.
+x-amazon-apigateway-request-validators:
+  all:
+    validateRequestBody: true
+    validateRequestParameters: true
+
+components:
+  schemas:
+    ErrorsResponse:
+      type: object
+      additionalProperties: true
+    PingResponse:
+      type: object
+      properties:
+        status:
+          type: string
+      required:
+        - status

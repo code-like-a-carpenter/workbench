@@ -11,6 +11,7 @@
 
 -   [Install](#install)
 -   [Usage](#usage)
+-   [Examples](#examples)
 -   [Maintainer](#maintainer)
 -   [Contribute](#contribute)
 -   [License](#license)
@@ -32,6 +33,17 @@ npm install @code-like-a-carpenter/env
 ## Usage
 
 Please see each package's README for specific usage instructions.
+
+## Examples
+
+Examples can be found in the [`examples`](./examples) directory. Due to
+limitations in the free version of [localstack](https://localstack.cloud/),
+these examples do several things that aren't necessarily recommended in a normal
+deployment:
+
+-   They do not include the
+    [ADOT Open Telemetry layer](https://aws-otel.github.io/docs/getting-started/lambda).
+-   There are no contract tests for API Gateway request validations.
 
 ## Maintainer
 

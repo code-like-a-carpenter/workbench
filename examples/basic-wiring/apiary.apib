@@ -1,0 +1,829 @@
+FORMAT: 1A
+HOST: https://ping.example.com
+
+# Basic Wiring API
+
+Simple API for demonstrating API Gateway, Lambda, Localstack, and contract tests.
+
+## Ping [/api/v1/ping]
+
+### Prove deployments work [GET]
+
++ Request (application/json)
+
++ Response 200 (application/json)
+
+    + Body
+
+            {
+                "status": "ok"
+            }
+
+## Errors [/api/v1/errors/{statusCode}]
+
++ Attributes (Error)
+
+### Return an error [GET]
+
++ Parameters
+
+    + statusCode: `418` (number, optional) - HTTP status code to return
+
++ Request (application/json)
+
+    + Parameters
+
+        + statusCode: `400`
+
++ Response 400 (application/json)
+
+    + Body
+
+            {
+                "name": "BadRequest",
+                "message": "Bad request",
+                "requestIds": {
+                    "awsRequestId": "5eb20169-0adf-43c6-b354-8a69cc9d8d5e",
+                    "requestId": "23d02112-830c-4265-b47c-e0de60e15478",
+                    "xAmznTraceId": "SOME ID"
+                }
+            }
+
++ Request (application/json)
+
+    + Parameters
+
+        + statusCode: `401`
+
++ Response 401 (application/json)
+
+    + Body
+
+            {
+                "name": "Unauthorized",
+                "message": "Unauthorized",
+                "requestIds": {
+                    "awsRequestId": "5eb20169-0adf-43c6-b354-8a69cc9d8d5e",
+                    "requestId": "23d02112-830c-4265-b47c-e0de60e15478",
+                    "xAmznTraceId": "SOME ID"
+                }
+            }
+
++ Request (application/json)
+
+    + Parameters
+
+        + statusCode: `402`
+
++ Response 402 (application/json)
+
+    + Body
+
+            {
+                "name": "PaymentRequired",
+                "message": "Payment required",
+                "requestIds": {
+                    "awsRequestId": "5eb20169-0adf-43c6-b354-8a69cc9d8d5e",
+                    "requestId": "23d02112-830c-4265-b47c-e0de60e15478",
+                    "xAmznTraceId": "SOME ID"
+                }
+            }
+
+
+
++ Request (application/json)
+
+    + Parameters
+
+        + statusCode: `403`
+
++ Response 403 (application/json)
+
+    + Body
+
+            {
+                "name": "Forbidden",
+                "message": "Forbidden",
+                "requestIds": {
+                    "awsRequestId": "5eb20169-0adf-43c6-b354-8a69cc9d8d5e",
+                    "requestId": "23d02112-830c-4265-b47c-e0de60e15478",
+                    "xAmznTraceId": "SOME ID"
+                }
+            }
+
++ Request (application/json)
+
+    + Parameters
+
+        + statusCode: `404`
+
++ Response 404 (application/json)
+
+    + Body
+
+            {
+                "name": "NotFound",
+                "message": "Not found",
+                "requestIds": {
+                    "awsRequestId": "5eb20169-0adf-43c6-b354-8a69cc9d8d5e",
+                    "requestId": "23d02112-830c-4265-b47c-e0de60e15478",
+                    "xAmznTraceId": "SOME ID"
+                }
+            }
+
++ Request (application/json)
+
+    + Parameters
+
+        + statusCode: `405`
+
++ Response 405 (application/json)
+
+    + Body
+
+            {
+                "name": "MethodNotAllowed",
+                "message": "Method not allowed",
+                "requestIds": {
+                    "awsRequestId": "5eb20169-0adf-43c6-b354-8a69cc9d8d5e",
+                    "requestId": "23d02112-830c-4265-b47c-e0de60e15478",
+                    "xAmznTraceId": "SOME ID"
+                }
+            }
+
++ Request (application/json)
+
+    + Parameters
+
+        + statusCode: `406`
+
++ Response 406 (application/json)
+
+    + Body
+
+            {
+                "name": "NotAcceptable",
+                "message": "Not acceptable",
+                "requestIds": {
+                    "awsRequestId": "5eb20169-0adf-43c6-b354-8a69cc9d8d5e",
+                    "requestId": "23d02112-830c-4265-b47c-e0de60e15478",
+                    "xAmznTraceId": "SOME ID"
+                }
+            }
+
+<!-- Skipping 407 because node's built-in fetch client treats it as a network error and throws instead of returning a response. -->
+
++ Request (application/json)
+
+    + Parameters
+
+        + statusCode: `408`
+
++ Response 408 (application/json)
+
+    + Body
+
+            {
+                "name": "RequestTimeout",
+                "message": "Request timeout",
+                "requestIds": {
+                    "awsRequestId": "5eb20169-0adf-43c6-b354-8a69cc9d8d5e",
+                    "requestId": "23d02112-830c-4265-b47c-e0de60e15478",
+                    "xAmznTraceId": "SOME ID"
+                }
+            }
+
++ Request (application/json)
+
+    + Parameters
+
+        + statusCode: `409`
+
++ Response 409 (application/json)
+
+    + Body
+
+            {
+                "name": "Conflict",
+                "message": "Conflict",
+                "requestIds": {
+                    "awsRequestId": "5eb20169-0adf-43c6-b354-8a69cc9d8d5e",
+                    "requestId": "23d02112-830c-4265-b47c-e0de60e15478",
+                    "xAmznTraceId": "SOME ID"
+                }
+            }
+
++ Request (application/json)
+
+    + Parameters
+
+        + statusCode: `410`
+
++ Response 410 (application/json)
+
+    + Body
+
+            {
+                "name": "Gone",
+                "message": "Gone",
+                "requestIds": {
+                    "awsRequestId": "5eb20169-0adf-43c6-b354-8a69cc9d8d5e",
+                    "requestId": "23d02112-830c-4265-b47c-e0de60e15478",
+                    "xAmznTraceId": "SOME ID"
+                }
+            }
+
++ Request (application/json)
+
+    + Parameters
+
+        + statusCode: `411`
+
++ Response 411 (application/json)
+
+    + Body
+
+            {
+                "name": "LengthRequired",
+                "message": "Length required",
+                "requestIds": {
+                    "awsRequestId": "5eb20169-0adf-43c6-b354-8a69cc9d8d5e",
+                    "requestId": "23d02112-830c-4265-b47c-e0de60e15478",
+                    "xAmznTraceId": "SOME ID"
+                }
+            }
+
++ Request (application/json)
+
+    + Parameters
+
+        + statusCode: `412`
+
++ Response 412 (application/json)
+
+    + Body
+
+            {
+                "name": "PreconditionFailed",
+                "message": "Precondition failed",
+                "requestIds": {
+                    "awsRequestId": "5eb20169-0adf-43c6-b354-8a69cc9d8d5e",
+                    "requestId": "23d02112-830c-4265-b47c-e0de60e15478",
+                    "xAmznTraceId": "SOME ID"
+                }
+            }
+
++ Request (application/json)
+
+    + Parameters
+
+        + statusCode: `413`
+
++ Response 413 (application/json)
+
+    + Body
+
+            {
+                "name": "PayloadTooLarge",
+                "message": "Payload too large",
+                "requestIds": {
+                    "awsRequestId": "5eb20169-0adf-43c6-b354-8a69cc9d8d5e",
+                    "requestId": "23d02112-830c-4265-b47c-e0de60e15478",
+                    "xAmznTraceId": "SOME ID"
+                }
+            }
+
++ Request (application/json)
+
+    + Parameters
+
+        + statusCode: `414`
+
++ Response 414 (application/json)
+
+    + Body
+
+            {
+                "name": "URITooLong",
+                "message": "URI too long",
+                "requestIds": {
+                    "awsRequestId": "5eb20169-0adf-43c6-b354-8a69cc9d8d5e",
+                    "requestId": "23d02112-830c-4265-b47c-e0de60e15478",
+                    "xAmznTraceId": "SOME ID"
+                }
+            }
+
++ Request (application/json)
+
+    + Parameters
+
+        + statusCode: `415`
+
++ Response 415 (application/json)
+
+    + Body
+
+            {
+                "name": "UnsupportedMediaType",
+                "message": "Unsupported media type",
+                "requestIds": {
+                    "awsRequestId": "5eb20169-0adf-43c6-b354-8a69cc9d8d5e",
+                    "requestId": "23d02112-830c-4265-b47c-e0de60e15478",
+                    "xAmznTraceId": "SOME ID"
+                }
+            }
+
++ Request (application/json)
+
+    + Parameters
+
+        + statusCode: `416`
+
++ Response 416 (application/json)
+
+    + Body
+
+            {
+                "name": "RangeNotSatisfiable",
+                "message": "Range not satisfiable",
+                "requestIds": {
+                    "awsRequestId": "5eb20169-0adf-43c6-b354-8a69cc9d8d5e",
+                    "requestId": "23d02112-830c-4265-b47c-e0de60e15478",
+                    "xAmznTraceId": "SOME ID"
+                }
+            }
+
++ Request (application/json)
+
+    + Parameters
+
+        + statusCode: `417`
+
++ Response 417 (application/json)
+
+    + Body
+
+            {
+                "name": "ExpectationFailed",
+                "message": "Expectation failed",
+                "requestIds": {
+                    "awsRequestId": "5eb20169-0adf-43c6-b354-8a69cc9d8d5e",
+                    "requestId": "23d02112-830c-4265-b47c-e0de60e15478",
+                    "xAmznTraceId": "SOME ID"
+                }
+            }
+
++ Request (application/json)
+
+    + Parameters
+
+        + statusCode: `418`
+
++ Response 418 (application/json)
+
+    + Body
+
+            {
+                "name": "ImATeapot",
+                "message": "I'm a teapot",
+                "requestIds": {
+                    "awsRequestId": "5eb20169-0adf-43c6-b354-8a69cc9d8d5e",
+                    "requestId": "23d02112-830c-4265-b47c-e0de60e15478",
+                    "xAmznTraceId": "SOME ID"
+                }
+            }
+
++ Request (application/json)
+
+    + Parameters
+
+        + statusCode: `421`
+
++ Response 421 (application/json)
+
+    + Body
+
+            {
+                "name": "MisdirectedRequest",
+                "message": "Misdirected request",
+                "requestIds": {
+                    "awsRequestId": "5eb20169-0adf-43c6-b354-8a69cc9d8d5e",
+                    "requestId": "23d02112-830c-4265-b47c-e0de60e15478",
+                    "xAmznTraceId": "SOME ID"
+                }
+            }
+
++ Request (application/json)
+
+    + Parameters
+
+        + statusCode: `422`
+
++ Response 422 (application/json)
+
+    + Body
+
+            {
+                "name": "UnprocessableEntity",
+                "message": "Unprocessable entity",
+                "requestIds": {
+                    "awsRequestId": "5eb20169-0adf-43c6-b354-8a69cc9d8d5e",
+                    "requestId": "23d02112-830c-4265-b47c-e0de60e15478",
+                    "xAmznTraceId": "SOME ID"
+                }
+            }
+
++ Request (application/json)
+
+    + Parameters
+
+        + statusCode: `423`
+
++ Response 423 (application/json)
+
+    + Body
+
+            {
+                "name": "Locked",
+                "message": "Locked",
+                "requestIds": {
+                    "awsRequestId": "5eb20169-0adf-43c6-b354-8a69cc9d8d5e",
+                    "requestId": "23d02112-830c-4265-b47c-e0de60e15478",
+                    "xAmznTraceId": "SOME ID"
+                }
+            }
+
++ Request (application/json)
+
+    + Parameters
+
+        + statusCode: `424`
+
++ Response 424 (application/json)
+
+    + Body
+
+            {
+                "name": "FailedDependency",
+                "message": "Failed dependency",
+                "requestIds": {
+                    "awsRequestId": "5eb20169-0adf-43c6-b354-8a69cc9d8d5e",
+                    "requestId": "23d02112-830c-4265-b47c-e0de60e15478",
+                    "xAmznTraceId": "SOME ID"
+                }
+            }
+
++ Request (application/json)
+
+    + Parameters
+
+        + statusCode: `425`
+
++ Response 425 (application/json)
+
+    + Body
+
+            {
+                "name": "UnorderedCollection",
+                "message": "Unordered collection",
+                "requestIds": {
+                    "awsRequestId": "5eb20169-0adf-43c6-b354-8a69cc9d8d5e",
+                    "requestId": "23d02112-830c-4265-b47c-e0de60e15478",
+                    "xAmznTraceId": "SOME ID"
+                }
+            }
+
++ Request (application/json)
+
+    + Parameters
+
+        + statusCode: `426`
+
++ Response 426 (application/json)
+
+    + Body
+
+            {
+                "name": "UpgradeRequired",
+                "message": "Upgrade required",
+                "requestIds": {
+                    "awsRequestId": "5eb20169-0adf-43c6-b354-8a69cc9d8d5e",
+                    "requestId": "23d02112-830c-4265-b47c-e0de60e15478",
+                    "xAmznTraceId": "SOME ID"
+                }
+            }
+
++ Request (application/json)
+
+    + Parameters
+
+        + statusCode: `428`
+
++ Response 428 (application/json)
+
+    + Body
+
+            {
+                "name": "PreconditionRequired",
+                "message": "Precondition required",
+                "requestIds": {
+                    "awsRequestId": "5eb20169-0adf-43c6-b354-8a69cc9d8d5e",
+                    "requestId": "23d02112-830c-4265-b47c-e0de60e15478",
+                    "xAmznTraceId": "SOME ID"
+                }
+            }
+
++ Request (application/json)
+
+    + Parameters
+
+        + statusCode: `429`
+
++ Response 429 (application/json)
+
+    + Body
+
+            {
+                "name": "TooManyRequests",
+                "message": "Too many requests",
+                "requestIds": {
+                    "awsRequestId": "5eb20169-0adf-43c6-b354-8a69cc9d8d5e",
+                    "requestId": "23d02112-830c-4265-b47c-e0de60e15478",
+                    "xAmznTraceId": "SOME ID"
+                }
+            }
+
++ Request (application/json)
+
+    + Parameters
+
+        + statusCode: `431`
+
++ Response 431 (application/json)
+
+    + Body
+
+            {
+                "name": "RequestHeaderFieldsTooLarge",
+                "message": "Request header fields too large",
+                "requestIds": {
+                    "awsRequestId": "5eb20169-0adf-43c6-b354-8a69cc9d8d5e",
+                    "requestId": "23d02112-830c-4265-b47c-e0de60e15478",
+                    "xAmznTraceId": "SOME ID"
+                }
+            }
+
++ Request (application/json)
+
+    + Parameters
+
+        + statusCode: `451`
+
++ Response 451 (application/json)
+
+    + Body
+
+            {
+                "name": "UnavailableForLegalReasons",
+                "message": "Unavailable for legal reasons",
+                "requestIds": {
+                    "awsRequestId": "5eb20169-0adf-43c6-b354-8a69cc9d8d5e",
+                    "requestId": "23d02112-830c-4265-b47c-e0de60e15478",
+                    "xAmznTraceId": "SOME ID"
+                }
+            }
+
++ Request (application/json)
+
+    + Parameters
+
+        + statusCode: `500`
+
++ Response 500 (application/json)
+
+    + Body
+
+            {
+                "name": "InternalServerError",
+                "message": "Internal server error",
+                "requestIds": {
+                    "awsRequestId": "5eb20169-0adf-43c6-b354-8a69cc9d8d5e",
+                    "requestId": "23d02112-830c-4265-b47c-e0de60e15478",
+                    "xAmznTraceId": "SOME ID"
+                }
+            }
+
++ Request (application/json)
+
+    + Parameters
+
+        + statusCode: `501`
+
++ Response 501 (application/json)
+
+    + Body
+
+            {
+                "name": "NotImplemented",
+                "message": "Not implemented",
+                "requestIds": {
+                    "awsRequestId": "5eb20169-0adf-43c6-b354-8a69cc9d8d5e",
+                    "requestId": "23d02112-830c-4265-b47c-e0de60e15478",
+                    "xAmznTraceId": "SOME ID"
+                }
+            }
+
++ Request (application/json)
+
+    + Parameters
+
+        + statusCode: `502`
+
++ Response 502 (application/json)
+
+    + Body
+
+            {
+                "name": "BadGateway",
+                "message": "Bad gateway",
+                "requestIds": {
+                    "awsRequestId": "5eb20169-0adf-43c6-b354-8a69cc9d8d5e",
+                    "requestId": "23d02112-830c-4265-b47c-e0de60e15478",
+                    "xAmznTraceId": "SOME ID"
+                }
+            }
+
++ Request (application/json)
+
+    + Parameters
+
+        + statusCode: `503`
+
++ Response 503 (application/json)
+
+    + Body
+
+            {
+                "name": "ServiceUnavailable",
+                "message": "Service unavailable",
+                "requestIds": {
+                    "awsRequestId": "5eb20169-0adf-43c6-b354-8a69cc9d8d5e",
+                    "requestId": "23d02112-830c-4265-b47c-e0de60e15478",
+                    "xAmznTraceId": "SOME ID"
+                }
+            }
+
++ Request (application/json)
+
+    + Parameters
+
+        + statusCode: `504`
+
++ Response 504 (application/json)
+
+    + Body
+
+            {
+                "name": "GatewayTimeout",
+                "message": "Gateway timeout",
+                "requestIds": {
+                    "awsRequestId": "5eb20169-0adf-43c6-b354-8a69cc9d8d5e",
+                    "requestId": "23d02112-830c-4265-b47c-e0de60e15478",
+                    "xAmznTraceId": "SOME ID"
+                }
+            }
+
++ Request (application/json)
+
+    + Parameters
+
+        + statusCode: `505`
+
++ Response 505 (application/json)
+
+    + Body
+
+            {
+                "name": "HTTPVersionNotSupported",
+                "message": "HTTP version not supported",
+                "requestIds": {
+                    "awsRequestId": "5eb20169-0adf-43c6-b354-8a69cc9d8d5e",
+                    "requestId": "23d02112-830c-4265-b47c-e0de60e15478",
+                    "xAmznTraceId": "SOME ID"
+                }
+            }
+
++ Request (application/json)
+
+    + Parameters
+
+        + statusCode: `506`
+
++ Response 506 (application/json)
+
+    + Body
+
+            {
+                "name": "VariantAlsoNegotiates",
+                "message": "Variant also negotiates",
+                "requestIds": {
+                    "awsRequestId": "5eb20169-0adf-43c6-b354-8a69cc9d8d5e",
+                    "requestId": "23d02112-830c-4265-b47c-e0de60e15478",
+                    "xAmznTraceId": "SOME ID"
+                }
+            }
+
++ Request (application/json)
+
+    + Parameters
+
+        + statusCode: `507`
+
++ Response 507 (application/json)
+
+    + Body
+
+            {
+                "name": "InsufficientStorage",
+                "message": "Insufficient storage",
+                "requestIds": {
+                    "awsRequestId": "5eb20169-0adf-43c6-b354-8a69cc9d8d5e",
+                    "requestId": "23d02112-830c-4265-b47c-e0de60e15478",
+                    "xAmznTraceId": "SOME ID"
+                }
+            }
+
++ Request (application/json)
+
+    + Parameters
+
+        + statusCode: `508`
+
++ Response 508 (application/json)
+
+    + Body
+
+            {
+                "name": "LoopDetected",
+                "message": "Loop detected",
+                "requestIds": {
+                    "awsRequestId": "5eb20169-0adf-43c6-b354-8a69cc9d8d5e",
+                    "requestId": "23d02112-830c-4265-b47c-e0de60e15478",
+                    "xAmznTraceId": "SOME ID"
+                }
+            }
+
++ Request (application/json)
+
+    + Parameters
+
+        + statusCode: `510`
+
++ Response 510 (application/json)
+
+    + Body
+
+            {
+                "name": "NotExtended",
+                "message": "Not extended",
+                "requestIds": {
+                    "awsRequestId": "5eb20169-0adf-43c6-b354-8a69cc9d8d5e",
+                    "requestId": "23d02112-830c-4265-b47c-e0de60e15478",
+                    "xAmznTraceId": "SOME ID"
+                }
+            }
+
++ Request (application/json)
+
+    + Parameters
+
+        + statusCode: `511`
+
++ Response 511 (application/json)
+
+    + Body
+
+            {
+                "name": "NetworkAuthenticationRequired",
+                "message": "Network authentication required",
+                "requestIds": {
+                    "awsRequestId": "5eb20169-0adf-43c6-b354-8a69cc9d8d5e",
+                    "requestId": "23d02112-830c-4265-b47c-e0de60e15478",
+                    "xAmznTraceId": "SOME ID"
+                }
+            }
+
+# Data Structures
+
+## Error (object)
+
++ name: `ImATeapot` (string, required) - Error name
++ message: `I'm a teapot` (string, required) - Error message
++ requestId (RequestIds)
++ stack (string, required) - Stacktrace
+
+## RequestIds (object)
+
++ awsRequestId: `5eb20169-0adf-43c6-b354-8a69cc9d8d5e` (string, required) - Lambda Request ID - This is the id of the request from API Gateway to the Lambda
++ requestId: `23d02112-830c-4265-b47c-e0de60e15478` (string, required) - API Gateway Request ID - This is the id that will show up in end-client headers
++ xAmznTraceId: `SOME ID` (string, required) - API Gateway Request ID - Unclear what this is. Maybe for supplying to AWS support?

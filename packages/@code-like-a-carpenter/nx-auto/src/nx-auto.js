@@ -14,6 +14,10 @@ exports.registerProjectTargets = function registerProjectTargets(
     return {};
   }
 
+  if (projectFilePath.includes('examples')) {
+    return configureExample(projectFilePath);
+  }
+
   const projectRoot = path.dirname(projectFilePath);
 
   const srcDir = path.join('.', projectRoot, 'src');
@@ -96,3 +100,37 @@ exports.registerProjectTargets = function registerProjectTargets(
     },
   };
 };
+
+/** @param {string} projectFilePath */
+function configureExample(projectFilePath) {
+  const projectRoot = path.dirname(projectFilePath);
+
+  const packageName = projectRoot.split('/').slice(-1).join('/');
+
+  return {
+    build: {
+      dependsOn: ['build:openapi', 'build:package', '^build'],
+      executor: 'nx:noop',
+    },
+    'build:openapi': {
+      executor: 'nx:run-commands',
+      inputs: ['{projectRoot}/api.yml'],
+      options: {
+        command: `npx --no-install openapi-typescript ${projectRoot}/api.yml --prettier-config ./.prettierrc --output ${projectRoot}/src/__generated__/api.ts && npm run eslint -- ${projectRoot}/src/__generated__/api.ts --fix`,
+      },
+      outputs: [`{projectRoot}/src/__generated__/api.ts`],
+    },
+    'build:package': {
+      executor: 'nx:run-commands',
+      inputs: [
+        '{projectRoot}/src/**/*',
+        '{workspaceRoot}/package.json',
+        'sharedGlobals',
+      ],
+      options: {
+        command: `node ./packages/@code-like-a-carpenter/nx-auto/ package --package-name ${packageName} --type="example"`,
+      },
+      outputs: ['{projectRoot}/package.json'],
+    },
+  };
+}

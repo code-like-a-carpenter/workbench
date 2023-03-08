@@ -10,3 +10,7 @@ nx-cloud.env
 
 # Build output
 dist
+.aws-sam
+
+# Docker stuff
+volume

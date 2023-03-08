@@ -43,6 +43,23 @@ const config: Config.GlobalConfig = {
       displayName: 'Unit Tests',
       testMatch: workspaces
         .flatMap((ws) => glob.sync(ws))
+        .filter((packagePath) => !packagePath.includes('example'))
+        .flatMap((packagePath) => [
+          `<rootDir>/${packagePath}/**/?(*.)+(test).[tj]s?(x)`,
+        ]),
+    },
+    // @ts-expect-error - types seem wrong
+    {
+      ...commonProjectConfig,
+      displayName: 'Examples',
+      testEnvironment: './jest.d/environments/example.ts',
+      testMatch: workspaces
+        .flatMap((ws) => glob.sync(ws))
+        .filter((packagePath) => packagePath.includes('example'))
+        .filter(
+          (packagePath) =>
+            process.env.TEST_ENV === 'aws' || !packagePath.includes('aws-otel')
+        )
         .flatMap((packagePath) => [
           `<rootDir>/${packagePath}/**/?(*.)+(test).[tj]s?(x)`,
         ]),
