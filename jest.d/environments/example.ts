@@ -59,7 +59,11 @@ export default class ExampleEnvironment extends Environment {
 
   async teardown() {
     await super.teardown();
-    await this.destroyCloudFormationStack();
+    // Localstack doesn't seem to teardown properly in CI, so we'll just let
+    // it disappear when the job exits.
+    if (!process.env.CI || env('TEST_ENV', 'localstack') !== 'localstack') {
+      await this.destroyCloudFormationStack();
+    }
   }
 
   private configureEnvironment() {
