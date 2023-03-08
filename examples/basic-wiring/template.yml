@@ -71,7 +71,7 @@ Resources:
   APIExecutionLogs:
     Properties:
       LogGroupName:
-        Fn::Sub: 'API-Gateway-Execution-Logs_${Api}/${StageName}'
+        Fn::Sub: 'API-Gateway-Execution-Logs_${Api}'
       RetentionInDays:
         Ref: 'LogRetention'
     Type: 'AWS::Logs::LogGroup'
