@@ -1,0 +1,4 @@
+# This file exists to make sure npm publish doesn't use .gitignore. .gitignore
+# excludes dist, which is critical for publishin.
+
+node_modules
