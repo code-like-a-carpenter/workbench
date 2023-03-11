@@ -43,6 +43,7 @@ exports.registerProjectTargets = function registerProjectTargets(
     },
     'build:cjs': {
       executor: 'nx:run-commands',
+      inputs: ['{projectRoot}/src/**/*', 'sharedGlobals'],
       options: {
         command: `esbuild ${entryPoints} --format=cjs --outdir=${distDir}/cjs --platform=node --sourcemap=external`,
       },
@@ -50,6 +51,7 @@ exports.registerProjectTargets = function registerProjectTargets(
     },
     'build:esm': {
       executor: 'nx:run-commands',
+      inputs: ['{projectRoot}/src/**/*', 'sharedGlobals'],
       options: {
         command: `esbuild ${entryPoints} --format=esm --outdir=${distDir}/esm --platform=node --sourcemap=external`,
       },
@@ -93,6 +95,7 @@ exports.registerProjectTargets = function registerProjectTargets(
     'build:types': {
       dependsOn: ['build:project-refs', '^build:types'],
       executor: 'nx:run-commands',
+      inputs: ['{projectRoot}/src/**/*', 'sharedGlobals'],
       options: {
         command: `tsc --project ${projectRoot}/tsconfig.json`,
       },

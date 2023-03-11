@@ -1,20 +1,11 @@
-import type {
-  APIGatewayProxyEvent,
-  APIGatewayProxyResult,
-  Context as LambdaContext,
-} from 'aws-lambda';
+import type {APIGatewayProxyEvent, APIGatewayProxyResult} from 'aws-lambda';
 import type {
   OperationObject,
   ReferenceObject,
   ResponseObject,
 } from 'openapi-typescript';
 
-import type {Logger} from '@code-like-a-carpenter/logger';
-
-export interface Context {
-  context: LambdaContext;
-  logger: Logger;
-}
+import type {Context} from '../types';
 
 export interface ContentTypeJson {
   content: {'application/json': unknown};
