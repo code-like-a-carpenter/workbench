@@ -5,16 +5,12 @@ import {AWSLambda} from '@sentry/serverless';
 import type {APIGatewayProxyEvent, APIGatewayProxyResult} from 'aws-lambda';
 import type {Context} from 'aws-lambda/handler';
 
-import {runWithNewSpan} from './run-with';
-import {initSentry} from './sentry';
-
-initSentry();
+import {runWithNewSpan} from '../run-with';
 
 export type NoVoidHandler<TEvent, TResult> = (
   event: TEvent,
   context: Context
 ) => Promise<TResult>;
-
 /**
  * Like APIGatewayProxyHandler, but requires the promise form and disallows the
  * nodeback form.
