@@ -3,14 +3,11 @@ import {SpanKind, trace} from '@opentelemetry/api';
 import {BasicTracerProvider} from '@opentelemetry/sdk-trace-base';
 import {AWSLambda} from '@sentry/serverless';
 import type {APIGatewayProxyEvent, APIGatewayProxyResult} from 'aws-lambda';
-import type {Context} from 'aws-lambda/handler';
 
 import {runWithNewSpan} from '../run-with';
 
-export type NoVoidHandler<TEvent, TResult> = (
-  event: TEvent,
-  context: Context
-) => Promise<TResult>;
+import type {NoVoidHandler} from './types';
+
 /**
  * Like APIGatewayProxyHandler, but requires the promise form and disallows the
  * nodeback form.
