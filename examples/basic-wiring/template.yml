@@ -117,7 +117,7 @@ Resources:
   FnPingResources:
     Type: AWS::Serverless::Application
     Properties:
-      Location: function.yml
+      Location: ../_common/rest.yml
       Parameters:
         Api: !Ref Api
         FunctionName: !Ref FnPing
@@ -152,7 +152,7 @@ Resources:
   FnErrorsResources:
     Type: AWS::Serverless::Application
     Properties:
-      Location: function.yml
+      Location: ../_common/rest.yml
       Parameters:
         Api: !Ref Api
         FunctionName: !Ref FnErrors
