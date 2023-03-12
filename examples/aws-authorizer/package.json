@@ -1,0 +1,15 @@
+{
+  "name": "aws-authorizer",
+  "main": "src/index.ts",
+  "engines": {
+    "node": "18.x",
+    "npm": "9.x"
+  },
+  "private": true,
+  "dependencies": {
+    "@code-like-a-carpenter/contract-tests": "*",
+    "@code-like-a-carpenter/env": "*",
+    "@code-like-a-carpenter/errors": "*",
+    "@code-like-a-carpenter/lambda-handlers": "*"
+  }
+}

@@ -1,0 +1,62 @@
+Parameters:
+  Api:
+    Type: String
+
+  FunctionName:
+    Type: String
+    Description: Name of Lambda function.
+
+  LogRetention:
+    Type: Number
+    Description: Number of days to retain logs.
+
+Resources:
+  Permission:
+    Properties:
+      Action: 'lambda:InvokeFunction'
+      FunctionName: !Ref FunctionName
+      Principal: 'apigateway.amazonaws.com'
+      # FIXME ideally, this would not end in /*, but I've so far been unable to
+      # find a way to determine the remainder of the ARN programmatically.
+      SourceArn: !Sub 'arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${Api}/authorizers/*'
+    Type: 'AWS::Lambda::Permission'
+
+  LogGroup:
+    Properties:
+      LogGroupName:
+        Fn::Sub: '/aws/lambda/${FunctionName}'
+      RetentionInDays: !Ref 'LogRetention'
+    Type: 'AWS::Logs::LogGroup'
+
+  InitDurationLogMetricFilter:
+    Properties:
+      FilterPattern: '[type=REPORT, ...]'
+      LogGroupName: !Ref LogGroup
+      MetricTransformations:
+        - MetricName: !Sub 'InitDuration-${FunctionName}'
+          MetricNamespace: 'Custom/Lambda'
+          MetricValue: '$22'
+          Unit: 'Milliseconds'
+    Type: 'AWS::Logs::MetricFilter'
+
+  MemorySizeLogMetricFilter:
+    Properties:
+      FilterPattern: '[type=REPORT, ...]'
+      LogGroupName: !Ref 'LogGroup'
+      MetricTransformations:
+        - MetricName: !Sub 'MemorySize-${FunctionName}'
+          MetricNamespace: 'Custom/Lambda'
+          MetricValue: '$13'
+          Unit: 'Megabytes'
+    Type: 'AWS::Logs::MetricFilter'
+
+  MemoryUsedLogMetricFilter:
+    Properties:
+      FilterPattern: '[type=REPORT, ...]'
+      LogGroupName: !Ref 'LogGroup'
+      MetricTransformations:
+        - MetricName: !Sub 'MemoryUsed-${FunctionName}'
+          MetricNamespace: 'Custom/Lambda'
+          MetricValue: '$18'
+          Unit: 'Megabytes'
+    Type: 'AWS::Logs::MetricFilter'
