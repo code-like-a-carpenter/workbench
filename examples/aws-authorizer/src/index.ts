@@ -8,10 +8,7 @@
 // intractable.
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const {authorize} = require('./authorizer');
+exports.authorizer = require('./authorizer').authorize;
+
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const {ping} = require('./ping');
-
-exports.authorizer = authorize;
-
-exports.handler = ping;
+exports.handler = require('./ping').ping;
