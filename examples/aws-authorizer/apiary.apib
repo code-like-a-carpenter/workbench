@@ -10,6 +10,12 @@ and how to pass context to the Lambda function.
 Thanks to limitations in the free version of Localstack, this API can only be
 deployed to AWS. This API is not tested in CI.
 
+You'll note that some of the bearer tokens don't actually agree with their
+responses. Unfortunately, there's no way to customize the response status code.
+Unless caching is critical, if you need to customize the response status code,
+you'll want to do the authorization directly in your Lambda instead of using an
+authorizer.
+
 ## Ping [/api/v1/ping]
 
 The first two examples demonstrate the happy path with Bearer and Basic authentication. In most cases, you'll want to use Basic because it's easier to use in scripts, however, Bearer is demonstrated here so we can use it as a hack to throw particular responses. After the two successful examples, there are a number of examples demonstrating different errors types and messages.
@@ -73,7 +79,7 @@ The first two examples demonstrate the happy path with Bearer and Basic authenti
 
             Authorization: Bearer 401
 
-+ Response 401 (application/json)
++ Response 403 (application/json)
 
     + Body
 
@@ -87,7 +93,7 @@ The first two examples demonstrate the happy path with Bearer and Basic authenti
 
             Authorization: Bearer 402
 
-+ Response 402 (application/json)
++ Response 403 (application/json)
 
     + Body
 
@@ -115,7 +121,7 @@ The first two examples demonstrate the happy path with Bearer and Basic authenti
 
             Authorization: Bearer 404
 
-+ Response 404 (application/json)
++ Response 403 (application/json)
 
     + Body
 

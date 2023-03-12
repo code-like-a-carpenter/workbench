@@ -24,6 +24,20 @@ paths:
           Fn::Sub: 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${FnPing.Arn}/invocations'
 
 x-amazon-apigateway-gateway-responses:
+  ACCESS_DENIED:
+    responseTemplates:
+      application/json: |
+        {
+          "type": "ACCESS_DENIED",
+          "message": "$context.authorizer.message",
+          "name": "$context.authorizer.name",
+          "responseType": "$context.error.responseType",
+          "requestIds": {
+            "requestId": "$context.requestId"
+          },
+          "status": "$context.authorizer.status"
+        }
+
   BAD_REQUEST_BODY:
     statusCode: 400
     responseTemplates:
