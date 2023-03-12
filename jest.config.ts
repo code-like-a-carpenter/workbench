@@ -58,7 +58,7 @@ const config: Config.GlobalConfig = {
         .filter((packagePath) => packagePath.includes('example'))
         .filter(
           (packagePath) =>
-            process.env.TEST_ENV === 'aws' || !packagePath.includes('aws-otel')
+            process.env.TEST_ENV === 'aws' || !packagePath.includes('aws-')
         )
         .flatMap((packagePath) => [
           `<rootDir>/${packagePath}/**/?(*.)+(test).[tj]s?(x)`,
