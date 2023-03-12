@@ -1,8 +1,9 @@
 import type {APIGatewayAuthorizerResultContext} from 'aws-lambda/common/api-gateway';
 import type {APIGatewayTokenAuthorizerWithContextHandler} from 'aws-lambda/trigger/api-gateway-authorizer';
 
-import {Forbidden, HttpException} from '@code-like-a-carpenter/errors';
+import {HttpException} from '@code-like-a-carpenter/errors';
 import {logger as rootLogger} from '@code-like-a-carpenter/logger';
+import {instrumentRestTokenAuthorizer} from '@code-like-a-carpenter/telemetry';
 
 import type {RestTokenAuthorizerCallback} from './types';
 
@@ -11,9 +12,11 @@ export function handleRestTokenAuthorizerEvent<
 >(
   callback: RestTokenAuthorizerCallback<TAuthorizerContext>
 ): APIGatewayTokenAuthorizerWithContextHandler<
-  TAuthorizerContext | {message: string}
+  TAuthorizerContext | {message: string; name: string; status: number}
 > {
-  return async (event, context) => {
+  return instrumentRestTokenAuthorizer<
+    TAuthorizerContext | {message: string; name: string; status: number}
+  >(async (event, context) => {
     const logger = rootLogger.child({});
     try {
       const {context: ctx, principalId} = await callback(event, {
@@ -32,7 +35,7 @@ export function handleRestTokenAuthorizerEvent<
 
       throw err;
     }
-  };
+  });
 }
 
 /* Helper function to generate an IAM policy */
