@@ -23,6 +23,10 @@ Globals:
           - 'development'
           - 'production'
         OPENTELEMETRY_COLLECTOR_CONFIG_FILE: '/var/task/collector.yml'
+        # `OPENTELEMETRY_EXTENSION_LOG_LEVEL` is an undocumented feature for
+        # controlling the log output of the OpenTelemetry collector. This
+        # disables all the noise it produces.
+        OPENTELEMETRY_EXTENSION_LOG_LEVEL: 'ERROR'
         REPOSITORY_URL: !Ref RepoUrl
         SHA: !Ref SHA
         STAGE_NAME: !Ref StageName
@@ -137,7 +141,7 @@ Resources:
   FnPingResources:
     Type: AWS::Serverless::Application
     Properties:
-      Location: function.yml
+      Location: ../_common/rest.yml
       Parameters:
         Api: !Ref Api
         FunctionName: !Ref FnPing

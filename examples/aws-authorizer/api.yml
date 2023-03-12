@@ -1,6 +1,6 @@
 openapi: 3.0.3
 info:
-  title: Basic Wiring
+  title: AWS Authorizer Example
   version: 1.0.0
 
 paths:
@@ -15,39 +15,29 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PingResponse'
+      security:
+        - tokenAuthorizer: []
       x-amazon-apigateway-integration:
         type: aws_proxy
         httpMethod: POST
         uri:
           Fn::Sub: 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${FnPing.Arn}/invocations'
 
-  /api/v1/errors/{statusCode}:
-    get:
-      description:
-        Endpoint that throws client-specified errors for debugging
-        cloudformation
-      operationId: errors
-      parameters:
-        - in: path
-          name: statusCode
-          schema:
-            type: string
-          required: false
-          description: Http Status Code to return
-      responses:
-        '200':
-          description: ok
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorsResponse'
-      x-amazon-apigateway-integration:
-        type: aws_proxy
-        httpMethod: POST
-        uri:
-          Fn::Sub: 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${FnErrors.Arn}/invocations'
-
 x-amazon-apigateway-gateway-responses:
+  ACCESS_DENIED:
+    responseTemplates:
+      application/json: |
+        {
+          "type": "ACCESS_DENIED",
+          "message": "$context.authorizer.message",
+          "name": "$context.authorizer.name",
+          "responseType": "$context.error.responseType",
+          "requestIds": {
+            "requestId": "$context.requestId"
+          },
+          "status": "$context.authorizer.status"
+        }
+
   BAD_REQUEST_BODY:
     statusCode: 400
     responseTemplates:
@@ -105,6 +95,20 @@ x-amazon-apigateway-request-validators:
   all:
     validateRequestBody: true
     validateRequestParameters: true
+
+securityDefinitions:
+  tokenAuthorizer:
+    type: apiKey
+    name: Authorization
+    in: header
+    x-amazon-apigateway-authtype: 'Token Authorizer'
+    x-amazon-apigateway-authorizer:
+      type: 'token'
+      # Not necessarily recommended in general, but the next line disables
+      # caching so that tests don't interfere with eachother
+      authorizerResultTtlInSeconds: 0
+      authorizerUri:
+        Fn::Sub: 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${FnTokenAuthorizer.Arn}/invocations'
 
 components:
   schemas:

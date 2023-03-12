@@ -10,19 +10,15 @@ Parameters:
     Type: Number
     Description: Number of days to retain logs.
 
-  Method:
-    Type: String
-
-  Path:
-    Type: String
-
 Resources:
   Permission:
     Properties:
       Action: 'lambda:InvokeFunction'
       FunctionName: !Ref FunctionName
       Principal: 'apigateway.amazonaws.com'
-      SourceArn: !Sub 'arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${Api}/*/${Method}${Path}'
+      # FIXME ideally, this would not end in /*, but I've so far been unable to
+      # find a way to determine the remainder of the ARN programmatically.
+      SourceArn: !Sub 'arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${Api}/authorizers/*'
     Type: 'AWS::Lambda::Permission'
 
   LogGroup:

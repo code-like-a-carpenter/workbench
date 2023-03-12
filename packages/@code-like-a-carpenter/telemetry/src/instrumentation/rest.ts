@@ -27,34 +27,34 @@ export type NoVoidAPIGatewayProxyHandler = NoVoidHandler<
 export function instrumentRestHandler(
   handler: NoVoidAPIGatewayProxyHandler
 ): NoVoidAPIGatewayProxyHandler {
+  // @ts-expect-error: Sentry uses the generalized AWS Handler type, which
+  // allows for nodeback-style handlers.
+  const sentryWrappedHandler: NoVoidAPIGatewayProxyHandler =
+    AWSLambda.wrapHandler(handler);
+
   let cold = true;
   return async (event, context) => {
-    const wasCold = cold;
-    cold = false;
-
-    // @ts-expect-error: Sentry uses the generalized AWS Handler type, which
-    // allows for nodeback-style handlers.
-    const sentryWrappedHandler: NoVoidAPIGatewayProxyHandler =
-      AWSLambda.wrapHandler(handler);
-
-    const attributes: Attributes = {
-      'aws.lambda.invoked_arn': context.invokedFunctionArn,
-      'cloud.account.id': context.invokedFunctionArn.split(':')[5],
-      'faas.coldstart': wasCold,
-      'faas.execution': context.awsRequestId,
-      'faas.id': `${context.invokedFunctionArn
-        .split(':')
-        .slice(0, 7)
-        .join(':')}:${context.functionVersion}`,
-      'faas.trigger': 'http',
-      'http.host': event.requestContext.domainName,
-      'http.method': event.httpMethod,
-      'http.route': event.resource,
-      'http.schema': 'https',
-      'http.target': event.path,
-    };
-
     try {
+      const wasCold = cold;
+      cold = false;
+
+      const attributes: Attributes = {
+        'aws.lambda.invoked_arn': context.invokedFunctionArn,
+        'cloud.account.id': context.invokedFunctionArn.split(':')[5],
+        'faas.coldstart': wasCold,
+        'faas.execution': context.awsRequestId,
+        'faas.id': `${context.invokedFunctionArn
+          .split(':')
+          .slice(0, 7)
+          .join(':')}:${context.functionVersion}`,
+        'faas.trigger': 'http',
+        'http.host': event.requestContext.domainName,
+        'http.method': event.httpMethod,
+        'http.route': event.resource,
+        'http.schema': 'https',
+        'http.target': event.path,
+      };
+
       return await runWithNewSpan(
         event.resource,
         {attributes, kind: SpanKind.SERVER},

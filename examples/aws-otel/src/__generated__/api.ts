@@ -5,7 +5,7 @@
 
 export interface paths {
   '/api/v1/ping': {
-    /** @description Simple endpoint prove everything is wired together */
+    /** @description Simple endpoint to prove everything is wired together */
     get: operations['ping'];
   };
 }
@@ -32,7 +32,7 @@ export type external = Record<string, never>;
 
 export interface operations {
   ping: {
-    /** @description Simple endpoint prove everything is wired together */
+    /** @description Simple endpoint to prove everything is wired together */
     parameters: {
       /** @description Indicates in which span to throw an exception, if any. */
       query: {

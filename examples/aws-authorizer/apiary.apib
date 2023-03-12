@@ -1,0 +1,130 @@
+FORMAT: 1A
+HOST: https://ping.example.com
+
+# AWS Authorizer API
+
+This API demonstrates how to write a Token Authorizer for AWS API Gateway. It
+demonstrates how to control the response status code, response status message,
+and how to pass context to the Lambda function.
+
+Thanks to limitations in the free version of Localstack, this API can only be
+deployed to AWS. This API is not tested in CI.
+
+You'll note that some of the bearer tokens don't actually agree with their
+responses. Unfortunately, there's no way to customize the response status code.
+Unless caching is critical, if you need to customize the response status code,
+you'll want to do the authorization directly in your Lambda instead of using an
+authorizer.
+
+## Ping [/api/v1/ping]
+
+The first two examples demonstrate the happy path with Bearer and Basic authentication. In most cases, you'll want to use Basic because it's easier to use in scripts, however, Bearer is demonstrated here so we can use it as a hack to throw particular responses. After the two successful examples, there are a number of examples demonstrating different errors types and messages.
+
+### Authorize Requests [GET]
+
+    + Headers
+
+            Authorization (required, string) - An authorization header containing some kind of schema and token
+
++ Request Bearer Auth Success (application/json)
+
+    + Headers
+
+            Authorization: Bearer bearer-token
+
++ Response 200 (application/json)
+
+    + Body
+
+            {
+                "context": {
+                    "scheme": "bearer",
+                    "token": "bearer-token"
+                },
+                "status": "ok"
+            }
+
++ Request Basic Auth Success (application/json)
+
+    + Headers
+
+            Authorization: Basic dXNlcjpwYXNzd29yZA==
+
++ Response 200 (application/json)
+
+    + Body
+
+            {
+                "context": {
+                    "scheme": "basic",
+                    "user": "user",
+                    "password": "password"
+                },
+                "status": "ok"
+            }
+
++ Request No Authorization Header (application/json)
+
++ Response 401 (application/json)
+
+    + Body
+
+            {
+                "message": "Authorization header is required"
+            }
+
++ Request Not Authenticated (application/json)
+
+    + Headers
+
+            Authorization: Bearer 401
+
++ Response 403 (application/json)
+
+    + Body
+
+            {
+                "message": "Invalid or missing token"
+            }
+
++ Request Payment Required (application/json)
+
+    + Headers
+
+            Authorization: Bearer 402
+
++ Response 403 (application/json)
+
+    + Body
+
+            {
+                "message": "You must pay to access this resource"
+            }
+
++ Request Permission Denied (application/json)
+
+    + Headers
+
+            Authorization: Bearer 403
+
++ Response 403 (application/json)
+
+    + Body
+
+            {
+                "message": "You are not authorized to access this resource"
+            }
+
++ Request Not Found (application/json)
+
+    + Headers
+
+            Authorization: Bearer 404
+
++ Response 403 (application/json)
+
+    + Body
+
+            {
+                "message": "Could not find specified resource"
+            }

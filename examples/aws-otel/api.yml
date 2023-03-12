@@ -6,7 +6,7 @@ info:
 paths:
   /api/v1/ping:
     get:
-      description: Simple endpoint prove everything is wired together
+      description: Simple endpoint to prove everything is wired together
       operationId: ping
       parameters:
         - in: query

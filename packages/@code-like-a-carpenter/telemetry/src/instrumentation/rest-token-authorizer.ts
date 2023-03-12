@@ -1,0 +1,86 @@
+import type {Attributes} from '@opentelemetry/api';
+import {SpanKind, trace} from '@opentelemetry/api';
+import {BasicTracerProvider} from '@opentelemetry/sdk-trace-base';
+import {AWSLambda} from '@sentry/serverless';
+import type {APIGatewayAuthorizerResultContext} from 'aws-lambda/common/api-gateway';
+import type {
+  APIGatewayAuthorizerWithContextResult,
+  APIGatewayTokenAuthorizerEvent,
+} from 'aws-lambda/trigger/api-gateway-authorizer';
+
+import {assert} from '@code-like-a-carpenter/assert';
+
+import {captureException} from '../exceptions';
+import {runWithNewSpan} from '../run-with';
+
+import type {NoVoidHandler} from './types';
+
+type NoVoidAPIGatewayAuthorizerWithContextResult<
+  TAuthorizerContext extends APIGatewayAuthorizerResultContext
+> = NoVoidHandler<
+  APIGatewayTokenAuthorizerEvent,
+  APIGatewayAuthorizerWithContextResult<TAuthorizerContext>
+>;
+
+export function instrumentRestTokenAuthorizer<
+  TAuthorizerContext extends APIGatewayAuthorizerResultContext
+>(
+  handler: NoVoidAPIGatewayAuthorizerWithContextResult<TAuthorizerContext>
+): NoVoidAPIGatewayAuthorizerWithContextResult<TAuthorizerContext> {
+  // @ts-expect-error: Sentry uses the generalized AWS Handler type, which
+  // allows for nodeback-style handlers.
+  const sentryWrappedHandler: NoVoidAPIGatewayAuthorizerWithContextResult =
+    AWSLambda.wrapHandler(handler);
+
+  let cold = true;
+  return async (event, context) => {
+    try {
+      const wasCold = cold;
+      cold = false;
+
+      // event.methodArn should be of the form:
+      // arn:aws:execute-api:{regionId}:{accountId}:{apiId}/{stage}/{httpVerb}/[{resource}/[{child-resources}]]
+      const usefulParts = event.methodArn.split(':').pop();
+      assert(
+        usefulParts,
+        `methodArn is not in the expected format. Expected arn:aws:execute-api:{regionId}:{accountId}:{apiId}/{stage}/{httpVerb}/[{resource}/[{child-resources}]] but received ${event.methodArn}`
+      );
+      const [, , httpMethod, ...pathParts] = usefulParts.split('/');
+      const path = pathParts.join('/');
+      const resource = `${httpMethod} ${path}`;
+
+      const attributes: Attributes = {
+        'aws.lambda.invoked_arn': context.invokedFunctionArn,
+        'cloud.account.id': context.invokedFunctionArn.split(':')[5],
+        'faas.coldstart': wasCold,
+        'faas.execution': context.awsRequestId,
+        'faas.id': `${context.invokedFunctionArn
+          .split(':')
+          .slice(0, 7)
+          .join(':')}:${context.functionVersion}`,
+        'faas.trigger': 'http',
+        'http.method': httpMethod,
+        'http.route': resource,
+        'http.schema': 'https',
+        'http.target': path,
+      };
+
+      return await runWithNewSpan(
+        resource,
+        {attributes, kind: SpanKind.SERVER},
+        () => sentryWrappedHandler(event, context)
+      );
+    } catch (err) {
+      // We're considering this not to be escaped so that we alert on it, but
+      // we rethrow so that API Gateway does the default thing and renders an
+      // Internal Server Error of some kind.
+      captureException(err, false);
+      throw err;
+    } finally {
+      const provider = trace.getTracerProvider();
+      if (provider instanceof BasicTracerProvider) {
+        await provider.forceFlush();
+      }
+    }
+  };
+}
