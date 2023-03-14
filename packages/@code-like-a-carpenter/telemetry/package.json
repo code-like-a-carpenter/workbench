@@ -34,6 +34,6 @@
     "snake-case": "^3.0.4"
   },
   "devDependencies": {
-    "@types/aws-lambda": "^8.10.110"
+    "@types/aws-lambda": "^8.10.112"
   }
 }
