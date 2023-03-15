@@ -2,17 +2,22 @@ import type {DynamoDBStreamHandler} from 'aws-lambda';
 
 import {assert} from '@code-like-a-carpenter/assert';
 import {logger as rootLogger} from '@code-like-a-carpenter/logger';
+import {
+  instrumentDynamoDBRecordHandler,
+  instrumentDynamoDBStreamHandler,
+} from '@code-like-a-carpenter/telemetry';
 
 import type {DynamoCallback} from './types';
 
 export function handleDynamoDBStreamEvent(
   cb: DynamoCallback
 ): DynamoDBStreamHandler {
-  return async (event, context) => {
+  const instrumentedCb = instrumentDynamoDBRecordHandler(cb);
+  return instrumentDynamoDBStreamHandler(async (event, context) => {
     const promises = event.Records.map(async (record) => {
       const logger = rootLogger.child({eventID: record.eventID});
 
-      return await cb(record, {context, logger});
+      return await instrumentedCb(record, {context, logger});
     });
 
     const results = await Promise.allSettled(promises);
@@ -42,5 +47,5 @@ export function handleDynamoDBStreamEvent(
           };
         }),
     };
-  };
+  });
 }

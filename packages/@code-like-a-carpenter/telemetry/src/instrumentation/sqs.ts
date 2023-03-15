@@ -53,7 +53,6 @@ export function instrumentSQSHandler(
           .split(':')
           .slice(0, 7)
           .join(':')}:${context.functionVersion}`,
-
         'faas.trigger': 'pubsub',
         'messaging.operation': 'process',
         'messaging.source.kind': 'queue',
