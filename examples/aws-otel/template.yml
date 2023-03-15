@@ -91,6 +91,14 @@ Resources:
         Ref: 'LogRetention'
     Type: 'AWS::Logs::LogGroup'
 
+  APIStageExecutionLogs:
+    Properties:
+      LogGroupName:
+        Fn::Sub: 'API-Gateway-Execution-Logs_${Api}/${StageName}'
+      RetentionInDays:
+        Ref: 'LogRetention'
+    Type: 'AWS::Logs::LogGroup'
+
   AccessLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
