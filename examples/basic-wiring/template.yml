@@ -167,3 +167,38 @@ Resources:
         LogRetention: !Ref LogRetention
         Method: GET
         Path: /api/v1/errors
+
+  FnRoot:
+    Metadata:
+      BuildMethod: 'esbuild'
+      BuildProperties:
+        EntryPoints:
+          - 'index'
+        External:
+          - '@aws-sdk/*'
+          - 'aws-sdk'
+        Minify: false
+        Sourcemap: true
+        Target: 'es2020'
+    Properties:
+      CodeUri: 'src'
+      Handler: 'index.root'
+      Policies:
+        - 'AWSLambdaBasicExecutionRole'
+        - 'AWSLambda_ReadOnlyAccess'
+        - 'AWSXrayWriteOnlyAccess'
+        - 'CloudWatchLambdaInsightsExecutionRolePolicy'
+        - CloudWatchPutMetricPolicy: {}
+      Timeout: 30
+    Type: 'AWS::Serverless::Function'
+
+  FnRootResources:
+    Type: AWS::Serverless::Application
+    Properties:
+      Location: ../_common/rest.yml
+      Parameters:
+        Api: !Ref Api
+        FunctionName: !Ref FnRoot
+        LogRetention: !Ref LogRetention
+        Method: GET
+        Path: '/'

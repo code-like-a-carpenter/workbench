@@ -4,6 +4,23 @@ info:
   version: 1.0.0
 
 paths:
+  '/':
+    get:
+      description: Landing page
+      operationId: root
+      responses:
+        '200':
+          description: ok
+          content:
+            text/html:
+              schema:
+                type: string
+      x-amazon-apigateway-integration:
+        type: aws_proxy
+        httpMethod: POST
+        uri:
+          Fn::Sub: 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${FnRoot.Arn}/invocations'
+
   /api/v1/ping:
     get:
       description: Simple endpoint to prove everything is wired together
