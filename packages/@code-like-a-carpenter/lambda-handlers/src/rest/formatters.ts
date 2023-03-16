@@ -118,9 +118,17 @@ export function formatSuccessResult<
   S extends number & keyof O['responses'],
   R extends RestResponseBody<O, S>
 >(result: RestCallbackResult<O, S, R>): APIGatewayProxyResult {
+  let body = '';
+  if ('body' in result) {
+    if (typeof result.body === 'string') {
+      ({body} = result);
+    } else {
+      body = JSON.stringify(result.body);
+    }
+  }
   return {
     ...result,
-    body: 'body' in result ? JSON.stringify(result.body, null, 2) : '',
+    body,
   };
 }
 

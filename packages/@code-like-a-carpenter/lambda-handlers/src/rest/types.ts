@@ -1,11 +1,11 @@
 import type {APIGatewayProxyEvent, APIGatewayProxyResult} from 'aws-lambda';
-import type {
-  OperationObject,
-  ReferenceObject,
-  ResponseObject,
-} from 'openapi-typescript';
+import type {OperationObject} from 'openapi-typescript';
 
 import type {Context} from '../types';
+
+export interface ContentTypeHtml {
+  content: {'text/html': string};
+}
 
 export interface ContentTypeJson {
   content: {'application/json': unknown};
@@ -19,6 +19,8 @@ export type RestRequestBody<O extends SimplifiedOperationObject> = O extends {
   requestBody: ContentTypeJson;
 }
   ? O['requestBody']['content']['application/json']
+  : O extends {requestBody: ContentTypeHtml}
+  ? string
   : O extends {requestBody: ContentTypeUrlEncoded}
   ? URLSearchParams
   : null;
@@ -85,9 +87,15 @@ export interface SimplifiedOperationObject
 }
 
 export interface SimplifiedResponsesObject {
-  [responseCode: string]: SimplifiedResponseObject | ReferenceObject;
+  [responseCode: string]: SimplifiedResponseObject;
 }
 
-export type SimplifiedResponseObject = Omit<ResponseObject, 'description'>;
+export interface SimplifiedResponseObject {
+  headers?: Record<string, string | string[]>;
+  content?: Partial<ContentTypeJson> &
+    Partial<ContentTypeHtml> &
+    Partial<ContentTypeUrlEncoded> &
+    Record<string, unknown>;
+}
 
 export type SimplifiedParameterObject = Record<string, Record<string, string>>;

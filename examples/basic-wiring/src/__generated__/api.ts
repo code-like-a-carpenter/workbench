@@ -4,6 +4,10 @@
  */
 
 export interface paths {
+  '/': {
+    /** @description Landing page */
+    get: operations['root'];
+  };
   '/api/v1/ping': {
     /** @description Simple endpoint to prove everything is wired together */
     get: operations['ping'];
@@ -35,6 +39,17 @@ export interface components {
 export type external = Record<string, never>;
 
 export interface operations {
+  root: {
+    /** @description Landing page */
+    responses: {
+      /** @description ok */
+      200: {
+        content: {
+          'text/html': string;
+        };
+      };
+    };
+  };
   ping: {
     /** @description Simple endpoint to prove everything is wired together */
     responses: {
