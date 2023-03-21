@@ -1,0 +1,30 @@
+"""
+An event describing a change to a customer's subscription status.
+"""
+type SubscriptionEvent implements Model & Timestamped & Versioned
+  @enriches(
+    event: UPSERT
+    handlerImportName: "SubscriptionEventUpsertAccountEnricher"
+    handlerPath: "../src/enrich--subscription--upsert--account"
+    targetModel: "Account"
+  )
+  @ledger
+  @model
+  @primaryKey(
+    pkFields: ["externalId"]
+    pkPrefix: "ACCOUNT"
+    skFields: ["effectiveDate"]
+    skPrefix: "SUBSCRIPTION_EVENT"
+  ) {
+  createdAt: Date!
+  id: ID!
+  updatedAt: Date!
+  version: Int!
+
+  cancelled: Boolean!
+  effectiveDate: Date!
+  externalId: String!
+  monthlyPriceInCents: Int!
+  onFreeTrial: Boolean!
+  planName: String!
+}

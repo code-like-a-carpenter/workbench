@@ -1,0 +1,35 @@
+"""
+A summary of all the accounts on a particular plan.
+"""
+type PlanMetric implements Model & Timestamped & Versioned
+  @model
+  # This is a little weird looking, but it's basically a way to allow scans
+  # without generally building it in as a feature. This strategy should only be
+  # in very small tables where it won't matter that every record is in a single
+  # partition. In this case, we're talking about all the plans a startup might
+  # offer times 2 for each boolean (cancelled and onFreeTrial), so it's probably
+  # less than 20 records. If you find yourself with many more records, you
+  # should look at using something other than DynamoDB for aggregating this
+  # data.
+  @primaryKey(
+    pkFields: []
+    pkPrefix: "BUSINESS_METRIC"
+    skFields: ["onFreeTrial", "planName"]
+    skPrefix: "PLAN"
+  )
+  @reacts(
+    event: UPSERT
+    handlerImportName: "PlanMetricUpsertReactor"
+    handlerPath: "../src/react--plan-metric--upsert"
+  ) {
+  createdAt: Date!
+  id: ID!
+  updatedAt: Date!
+  version: Int!
+
+  cancelled: Boolean!
+  count: Int!
+  monthlyRecurringRevenueInCents: Int!
+  onFreeTrial: Boolean!
+  planName: String!
+}

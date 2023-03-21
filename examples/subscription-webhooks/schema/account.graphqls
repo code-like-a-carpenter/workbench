@@ -1,0 +1,38 @@
+"""
+A customer account.
+"""
+type Account implements Model & Versioned & Timestamped
+  @gsi(
+    name: "gsi1"
+    pkFields: ["hasEverSubscribed"]
+    pkPrefix: "PLAN"
+    skFields: ["cancelled", "indexedPlanName"]
+    skPrefix: "ACCOUNT"
+  )
+  @model
+  @primaryKey(pkFields: ["externalId"], pkPrefix: "ACCOUNT", skFields: [])
+  @reacts(
+    event: UPSERT
+    handlerImportName: "AccountUpsertReactor"
+    handlerPath: "../src/react--account--upsert"
+  ) {
+  createdAt: Date!
+  id: ID!
+  updatedAt: Date!
+  version: Int!
+
+  cancelled: Boolean!
+  effectiveDate: Date!
+  externalId: String!
+  hasEverSubscribed: Boolean
+  indexedPlanName: String
+    @computed(
+      importPath: "../src/computed-fields"
+      importName: "AccountIndexedPlanNameProviderImpl"
+      virtual: true
+    )
+  lastPlanName: String
+  monthlyPriceInCents: Int
+  onFreeTrial: Boolean!
+  planName: String
+}
