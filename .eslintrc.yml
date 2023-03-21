@@ -15,6 +15,18 @@ ignorePatterns:
 
 overrides:
   - files:
+      - '**/*.graphql'
+      - '**/*.graphqls'
+    extends: 'plugin:@graphql-eslint/schema-recommended'
+    rules:
+      # Since we're building a bunch of different schema, not all of the shared
+      # schema will be used in each combined schema ,so this rule can't be
+      # usefully enforced.
+      '@graphql-eslint/no-unreachable-types': off
+      '@graphql-eslint/no-typename-prefix': off
+      strict: off
+
+  - files:
       - '**/*.ts'
       - '**/*.tsx'
     parserOptions:

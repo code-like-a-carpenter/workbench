@@ -1,0 +1,16 @@
+# These types are just here to make the schema valid. You should probably ignore
+# them when reviewing the examples.
+
+"""
+The Node interface
+"""
+interface Node {
+  id: ID!
+}
+
+"""
+The Query type
+"""
+type Query {
+  node(id: ID!): Node
+}
