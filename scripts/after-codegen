@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+example=$1
+
+node ./packages/@code-like-a-carpenter/nx-auto package --package-name="$example" --type="example"
+npm run eslint -- --fix "examples/${example}/__generated__/**/*.ts"

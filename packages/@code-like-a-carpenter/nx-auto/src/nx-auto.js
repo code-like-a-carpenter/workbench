@@ -120,6 +120,7 @@ function configureExample(projectFilePath) {
       executor: 'nx:noop',
     },
     'build-package': {
+      dependsOn: ['build-graphql', '^build'],
       executor: 'nx:run-commands',
       inputs: [
         '{projectRoot}/src/**/*',
@@ -151,6 +152,34 @@ function configureExample(projectFilePath) {
     assert(Array.isArray(targets.build.dependsOn));
 
     targets.build.dependsOn.push('build-openapi');
+  }
+
+  if (fs.existsSync(path.join(projectRoot, '/schema'))) {
+    targets = {
+      ...targets,
+      'build-graphql': {
+        dependsOn: ['^build'],
+        executor: 'nx:run-commands',
+        inputs: [
+          '{projectRoot}/schema/**/*.graphqls',
+          '{workspaceRoot}/.graphqlrc.js',
+        ],
+        options: {
+          command: `npx --no-install graphql-codegen --debug --verbose --project ${packageName}`,
+        },
+        outputs: [
+          `${projectRoot}/src/__generated__/graphql.ts`,
+          `${projectRoot}/src/__generated__/template.yml`,
+          `${projectRoot}/src/__generated__/**/*`,
+        ],
+      },
+    };
+    assert(typeof targets.build === 'object');
+    assert(targets.build !== null);
+    assert('dependsOn' in targets.build);
+    assert(Array.isArray(targets.build.dependsOn));
+
+    targets.build.dependsOn.push('build-graphql');
   }
 
   return targets;

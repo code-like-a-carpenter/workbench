@@ -13,6 +13,35 @@ const init = {};
 const config = {
   projects: examples.reduce((acc, example) => {
     acc[example] = {
+      extensions: {
+        codegen: {
+          generates: {
+            [`examples/${example}/__generated__/graphql.ts`]: {
+              config: {
+                declarationKind: 'interface',
+                enumsAsTypes: true,
+                scalars: {
+                  Date: 'Date',
+                  JSONObject: 'Record<string, unknown>',
+                },
+                strictScalars: true,
+              },
+              plugins: [
+                'typescript',
+                '@code-like-a-carpenter/foundation-plugin-typescript',
+              ],
+            },
+            [`examples/${example}/__generated__/template.yml`]: {
+              plugins: [
+                '@code-like-a-carpenter/foundation-plugin-cloudformation',
+              ],
+            },
+          },
+          hooks: {
+            afterAllFileWrite: [`./scripts/after-codegen ${example}`],
+          },
+        },
+      },
       schema: [
         `examples/${example}/schema/**/*.graphqls`,
         // This line loads types necessary for the collective schema to be valid.
