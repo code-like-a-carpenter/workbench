@@ -1,0 +1,465 @@
+import {parseSchema} from '../test-helpers';
+
+describe('@primaryKey', () => {
+  it('defines simple primary keys', async () => {
+    const schema = /* GraphQL */ `
+      type Example implements Model & Timestamped & Versioned
+        @primaryKey(pkFields: ["id"])
+        @model {
+        createdAt: Date!
+        id: ID!
+        updatedAt: Date!
+        version: Int!
+      }
+    `;
+
+    const parsed = await parseSchema(schema);
+    expect(parsed.models[0].primaryKey).toMatchInlineSnapshot(`
+      {
+        "isComposite": false,
+        "isSingleField": true,
+        "partitionKeyFields": [
+          {
+            "columnName": "id",
+            "columnNamesForRead": [
+              "id",
+              "id",
+            ],
+            "computeFunction": undefined,
+            "ean": ":id",
+            "eav": "#id",
+            "fieldName": "id",
+            "isDateType": false,
+            "isRequired": true,
+            "isScalarType": true,
+            "typeName": "ID",
+          },
+        ],
+        "partitionKeyPrefix": undefined,
+        "type": "primary",
+      }
+    `);
+    expect(parsed.models[0].primaryKey.isComposite).toBe(false);
+    expect(parsed).toMatchSnapshot();
+  });
+
+  it('defines multi-field simple primary keys', async () => {
+    const schema = /* GraphQL */ `
+      type Example implements Model & Timestamped & Versioned
+        @primaryKey(pkFields: ["vendor", "externalId"])
+        @model {
+        createdAt: Date!
+        externalId: String!
+        id: ID!
+        updatedAt: Date!
+        version: Int!
+        vendor: String!
+      }
+    `;
+
+    const parsed = await parseSchema(schema);
+    expect(parsed.models[0].primaryKey).toMatchInlineSnapshot(`
+      {
+        "isComposite": false,
+        "isSingleField": false,
+        "partitionKeyFields": [
+          {
+            "columnName": "vendor",
+            "columnNamesForRead": [
+              "vendor",
+              "vendor",
+            ],
+            "computeFunction": undefined,
+            "ean": ":vendor",
+            "eav": "#vendor",
+            "fieldName": "vendor",
+            "isDateType": false,
+            "isRequired": true,
+            "isScalarType": true,
+            "typeName": "String",
+          },
+          {
+            "columnName": "external_id",
+            "columnNamesForRead": [
+              "external_id",
+              "externalId",
+            ],
+            "computeFunction": undefined,
+            "ean": ":externalId",
+            "eav": "#externalId",
+            "fieldName": "externalId",
+            "isDateType": false,
+            "isRequired": true,
+            "isScalarType": true,
+            "typeName": "String",
+          },
+        ],
+        "partitionKeyPrefix": undefined,
+        "type": "primary",
+      }
+    `);
+    expect(parsed.models[0].primaryKey.isComposite).toBe(false);
+    expect(parsed).toMatchSnapshot();
+  });
+
+  it('defines composite primary keys', async () => {
+    const schema = /* GraphQL */ `
+      type Example implements Model & Timestamped & Versioned
+        @primaryKey(pkFields: ["vendor"], skFields: ["externalId"])
+        @model {
+        createdAt: Date!
+        externalId: String!
+        id: ID!
+        updatedAt: Date!
+        version: Int!
+        vendor: String!
+      }
+    `;
+
+    const parsed = await parseSchema(schema);
+    expect(parsed.models[0].primaryKey).toMatchInlineSnapshot(`
+      {
+        "isComposite": true,
+        "partitionKeyFields": [
+          {
+            "columnName": "vendor",
+            "columnNamesForRead": [
+              "vendor",
+              "vendor",
+            ],
+            "computeFunction": undefined,
+            "ean": ":vendor",
+            "eav": "#vendor",
+            "fieldName": "vendor",
+            "isDateType": false,
+            "isRequired": true,
+            "isScalarType": true,
+            "typeName": "String",
+          },
+        ],
+        "partitionKeyIsSingleField": true,
+        "partitionKeyPrefix": undefined,
+        "sortKeyFields": [
+          {
+            "columnName": "external_id",
+            "columnNamesForRead": [
+              "external_id",
+              "externalId",
+            ],
+            "computeFunction": undefined,
+            "ean": ":externalId",
+            "eav": "#externalId",
+            "fieldName": "externalId",
+            "isDateType": false,
+            "isRequired": true,
+            "isScalarType": true,
+            "typeName": "String",
+          },
+        ],
+        "sortKeyIsSingleField": true,
+        "sortKeyPrefix": undefined,
+        "type": "primary",
+      }
+    `);
+    expect(parsed.models[0].primaryKey.isComposite).toBe(true);
+    expect(parsed).toMatchSnapshot();
+  });
+
+  it('defines multi-field composite primary keys', async () => {
+    const schema = /* GraphQL */ `
+      type Example implements Model & Timestamped & Versioned
+        @primaryKey(pkFields: ["vendor", "externalId"], skFields: ["x", "y"])
+        @model {
+        createdAt: Date!
+        externalId: String!
+        id: ID!
+        updatedAt: Date!
+        version: Int!
+        vendor: String!
+        x: String!
+        y: String!
+      }
+    `;
+
+    const parsed = await parseSchema(schema);
+    expect(parsed.models[0].primaryKey).toMatchInlineSnapshot(`
+      {
+        "isComposite": true,
+        "partitionKeyFields": [
+          {
+            "columnName": "vendor",
+            "columnNamesForRead": [
+              "vendor",
+              "vendor",
+            ],
+            "computeFunction": undefined,
+            "ean": ":vendor",
+            "eav": "#vendor",
+            "fieldName": "vendor",
+            "isDateType": false,
+            "isRequired": true,
+            "isScalarType": true,
+            "typeName": "String",
+          },
+          {
+            "columnName": "external_id",
+            "columnNamesForRead": [
+              "external_id",
+              "externalId",
+            ],
+            "computeFunction": undefined,
+            "ean": ":externalId",
+            "eav": "#externalId",
+            "fieldName": "externalId",
+            "isDateType": false,
+            "isRequired": true,
+            "isScalarType": true,
+            "typeName": "String",
+          },
+        ],
+        "partitionKeyIsSingleField": false,
+        "partitionKeyPrefix": undefined,
+        "sortKeyFields": [
+          {
+            "columnName": "x",
+            "columnNamesForRead": [
+              "x",
+              "x",
+            ],
+            "computeFunction": undefined,
+            "ean": ":x",
+            "eav": "#x",
+            "fieldName": "x",
+            "isDateType": false,
+            "isRequired": true,
+            "isScalarType": true,
+            "typeName": "String",
+          },
+          {
+            "columnName": "y",
+            "columnNamesForRead": [
+              "y",
+              "y",
+            ],
+            "computeFunction": undefined,
+            "ean": ":y",
+            "eav": "#y",
+            "fieldName": "y",
+            "isDateType": false,
+            "isRequired": true,
+            "isScalarType": true,
+            "typeName": "String",
+          },
+        ],
+        "sortKeyIsSingleField": false,
+        "sortKeyPrefix": undefined,
+        "type": "primary",
+      }
+    `);
+    expect(parsed.models[0].primaryKey.isComposite).toBe(true);
+    expect(parsed).toMatchSnapshot();
+  });
+
+  it('defines multi-field composite primary keys with single-field partition key', async () => {
+    const schema = /* GraphQL */ `
+      type Example implements Model & Timestamped & Versioned
+        @primaryKey(pkFields: ["externalId"], skFields: ["x", "y"])
+        @model {
+        createdAt: Date!
+        externalId: String!
+        id: ID!
+        updatedAt: Date!
+        version: Int!
+        x: String!
+        y: String!
+      }
+    `;
+
+    const parsed = await parseSchema(schema);
+    expect(parsed.models[0].primaryKey).toMatchInlineSnapshot(`
+      {
+        "isComposite": true,
+        "partitionKeyFields": [
+          {
+            "columnName": "external_id",
+            "columnNamesForRead": [
+              "external_id",
+              "externalId",
+            ],
+            "computeFunction": undefined,
+            "ean": ":externalId",
+            "eav": "#externalId",
+            "fieldName": "externalId",
+            "isDateType": false,
+            "isRequired": true,
+            "isScalarType": true,
+            "typeName": "String",
+          },
+        ],
+        "partitionKeyIsSingleField": true,
+        "partitionKeyPrefix": undefined,
+        "sortKeyFields": [
+          {
+            "columnName": "x",
+            "columnNamesForRead": [
+              "x",
+              "x",
+            ],
+            "computeFunction": undefined,
+            "ean": ":x",
+            "eav": "#x",
+            "fieldName": "x",
+            "isDateType": false,
+            "isRequired": true,
+            "isScalarType": true,
+            "typeName": "String",
+          },
+          {
+            "columnName": "y",
+            "columnNamesForRead": [
+              "y",
+              "y",
+            ],
+            "computeFunction": undefined,
+            "ean": ":y",
+            "eav": "#y",
+            "fieldName": "y",
+            "isDateType": false,
+            "isRequired": true,
+            "isScalarType": true,
+            "typeName": "String",
+          },
+        ],
+        "sortKeyIsSingleField": false,
+        "sortKeyPrefix": undefined,
+        "type": "primary",
+      }
+    `);
+    expect(parsed.models[0].primaryKey.isComposite).toBe(true);
+    expect(parsed).toMatchSnapshot();
+  });
+
+  it('defines multi-field composite primary keys with single-field sort key', async () => {
+    const schema = /* GraphQL */ `
+      type Example implements Model & Timestamped & Versioned
+        @primaryKey(pkFields: ["vendor", "externalId"], skFields: ["y"])
+        @model {
+        createdAt: Date!
+        externalId: String!
+        id: ID!
+        updatedAt: Date!
+        version: Int!
+        vendor: String!
+        y: String!
+      }
+    `;
+
+    const parsed = await parseSchema(schema);
+    expect(parsed.models[0].primaryKey).toMatchInlineSnapshot(`
+      {
+        "isComposite": true,
+        "partitionKeyFields": [
+          {
+            "columnName": "vendor",
+            "columnNamesForRead": [
+              "vendor",
+              "vendor",
+            ],
+            "computeFunction": undefined,
+            "ean": ":vendor",
+            "eav": "#vendor",
+            "fieldName": "vendor",
+            "isDateType": false,
+            "isRequired": true,
+            "isScalarType": true,
+            "typeName": "String",
+          },
+          {
+            "columnName": "external_id",
+            "columnNamesForRead": [
+              "external_id",
+              "externalId",
+            ],
+            "computeFunction": undefined,
+            "ean": ":externalId",
+            "eav": "#externalId",
+            "fieldName": "externalId",
+            "isDateType": false,
+            "isRequired": true,
+            "isScalarType": true,
+            "typeName": "String",
+          },
+        ],
+        "partitionKeyIsSingleField": false,
+        "partitionKeyPrefix": undefined,
+        "sortKeyFields": [
+          {
+            "columnName": "y",
+            "columnNamesForRead": [
+              "y",
+              "y",
+            ],
+            "computeFunction": undefined,
+            "ean": ":y",
+            "eav": "#y",
+            "fieldName": "y",
+            "isDateType": false,
+            "isRequired": true,
+            "isScalarType": true,
+            "typeName": "String",
+          },
+        ],
+        "sortKeyIsSingleField": true,
+        "sortKeyPrefix": undefined,
+        "type": "primary",
+      }
+    `);
+    expect(parsed.models[0].primaryKey.isComposite).toBe(true);
+    expect(parsed).toMatchSnapshot();
+  });
+
+  it('defines a composite primary key with no sort key fields', async () => {
+    const schema = /* GraphQL */ `
+      type Example implements Model & Timestamped & Versioned
+        @primaryKey(pkFields: ["id"], skFields: [])
+        @model {
+        createdAt: Date!
+        id: ID!
+        updatedAt: Date!
+        version: Int!
+      }
+    `;
+
+    const parsed = await parseSchema(schema);
+    expect(parsed.models[0].primaryKey).toMatchInlineSnapshot(`
+      {
+        "isComposite": true,
+        "partitionKeyFields": [
+          {
+            "columnName": "id",
+            "columnNamesForRead": [
+              "id",
+              "id",
+            ],
+            "computeFunction": undefined,
+            "ean": ":id",
+            "eav": "#id",
+            "fieldName": "id",
+            "isDateType": false,
+            "isRequired": true,
+            "isScalarType": true,
+            "typeName": "ID",
+          },
+        ],
+        "partitionKeyIsSingleField": true,
+        "partitionKeyPrefix": undefined,
+        "sortKeyFields": [],
+        "sortKeyIsSingleField": false,
+        "sortKeyPrefix": undefined,
+        "type": "primary",
+      }
+    `);
+    expect(parsed.models[0].primaryKey.isComposite).toBe(true);
+    expect(parsed).toMatchSnapshot();
+  });
+});

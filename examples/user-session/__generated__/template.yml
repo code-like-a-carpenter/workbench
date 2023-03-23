@@ -1,0 +1,37 @@
+Conditions: {}
+Globals:
+  Function:
+    Environment:
+      Variables:
+        TABLE_USER_SESSION:
+          Ref: TableUserSession
+Outputs:
+  TableUserSession:
+    Description: The name of the DynamoDB table for TableUserSession
+    Export:
+      Name:
+        Fn::Sub: ${AWS::StackName}-TableUserSession
+    Value:
+      Ref: TableUserSession
+Parameters: {}
+Resources:
+  TableUserSession:
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: pk
+          AttributeType: S
+      BillingMode: PAY_PER_REQUEST
+      KeySchema:
+        - AttributeName: pk
+          KeyType: HASH
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
+      SSESpecification:
+        SSEEnabled: true
+      Tags:
+        - Key: StageName
+          Value:
+            Ref: StageName
+        - Key: TableName
+          Value: TableUserSession
+    Type: AWS::DynamoDB::Table

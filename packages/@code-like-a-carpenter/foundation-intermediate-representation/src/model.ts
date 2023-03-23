@@ -5,6 +5,7 @@ export interface Model {
   readonly consistent: boolean;
   readonly fields: readonly Field[];
   readonly isLedger: boolean;
+  readonly isPublic: boolean;
   readonly table: Table;
   readonly typeName: string;
   readonly primaryKey: PrimaryKey;
