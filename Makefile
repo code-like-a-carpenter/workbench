@@ -31,6 +31,8 @@ MAKEFLAGS += --warn-undefined-variables
 # Disable all the magical-but-unreadable bits of Make
 MAKEFLAGS += --no-builtin-rules
 
+ESLINT := npm run eslint --silent --
+
 # Wrap npx so it only uses local dependencies
 NPX := npx --no-install
 
@@ -62,6 +64,12 @@ print-%:
 ###############################################################################
 ## Targets
 ###############################################################################
+
+packages/@code-like-a-carpenter/foundation-plugin-cloudformation/src/__generated__/serverless-application-model.ts: json-schema/serverless-application-model.json
+	mkdir -p $(@D)
+	$(NPX) json2ts $(<) $(@)
+	$(ESLINT) --fix $(@)
+build: packages/@code-like-a-carpenter/foundation-plugin-cloudformation/src/__generated__/serverless-application-model.ts
 
 README.md:
 	$(NPX) markdown-toc -i --bullets='-' --maxdepth=3 README.md
