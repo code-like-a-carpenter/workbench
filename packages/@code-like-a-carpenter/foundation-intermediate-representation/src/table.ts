@@ -4,6 +4,7 @@ export interface Table {
   readonly enableEncryption: boolean | Condition;
   readonly enablePointInTimeRecovery: boolean | Condition;
   readonly hasPublicModels: boolean;
+  readonly hasTtl: boolean;
   readonly primaryKey: TablePrimaryKeyConfig;
   readonly secondaryIndexes: readonly TableSecondaryIndex[];
   readonly tableName: string;

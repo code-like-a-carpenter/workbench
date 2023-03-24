@@ -57,6 +57,7 @@ function defineNewTable(
     enableEncryption: shouldEnableEncryption(type),
     enablePointInTimeRecovery: shouldEnablePointIntTimeRecovery(type),
     hasPublicModels: hasInterface('PublicModel', type),
+    hasTtl: !!model.ttlConfig,
     primaryKey: model.primaryKey,
     secondaryIndexes: model.secondaryIndexes.map(modelIndexToTableIndex),
     tableName,
@@ -129,6 +130,8 @@ function updateExistingTable(
 
   existingTable.hasPublicModels =
     existingTable.hasPublicModels || hasInterface('PublicModel', type);
+
+  existingTable.hasTtl = existingTable.hasTtl || !!model.ttlConfig;
 
   assertPrimaryKeysMatch(tableName, existingTable.primaryKey, model.primaryKey);
 

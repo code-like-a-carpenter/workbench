@@ -10,6 +10,7 @@ export interface Model {
   readonly typeName: string;
   readonly primaryKey: PrimaryKey;
   readonly secondaryIndexes: readonly SecondaryIndex[];
+  readonly ttlConfig?: TTLConfig;
 }
 
 export interface SimpleKey {
@@ -59,3 +60,16 @@ export interface LSI {
 }
 
 export type SecondaryIndex = GSI | LSI;
+
+export type TTLConfig =
+  | {
+      readonly argumentAllowed: true;
+      readonly argumentRequired: boolean;
+      readonly fieldName: string;
+    }
+  | {
+      readonly argumentAllowed: boolean;
+      readonly argumentRequired: boolean;
+      readonly duration: number;
+      readonly fieldName: string;
+    };

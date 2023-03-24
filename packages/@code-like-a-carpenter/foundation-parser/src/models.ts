@@ -11,7 +11,11 @@ import type {
   Model,
 } from '@code-like-a-carpenter/foundation-intermediate-representation';
 
-import {extractPrimaryKey, extractSecondaryIndexes} from './extractors';
+import {
+  extractPrimaryKey,
+  extractSecondaryIndexes,
+  extractTTLConfig,
+} from './extractors';
 import {extractFields} from './fields';
 import {hasDirective, hasInterface} from './helpers';
 import {extractTable} from './tables';
@@ -46,6 +50,7 @@ export function extractModel(
     isPublic: hasInterface('PublicModel', type),
     primaryKey: extractPrimaryKey(type, fieldMap),
     secondaryIndexes: extractSecondaryIndexes(type, fieldMap),
+    ttlConfig: extractTTLConfig(type),
     typeName: type.name,
   };
 

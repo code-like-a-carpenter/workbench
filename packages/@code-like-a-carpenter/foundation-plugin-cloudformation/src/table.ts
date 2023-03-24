@@ -15,6 +15,7 @@ import type {
 export function defineTable({
   enableEncryption,
   enablePointInTimeRecovery,
+  hasTtl,
   primaryKey: {isComposite},
   secondaryIndexes,
   tableName,
@@ -39,6 +40,7 @@ export function defineTable({
           Value: tableName,
         },
       ],
+      ...defineTTL(hasTtl),
     },
     Type: 'AWS::DynamoDB::Table',
   };
@@ -205,6 +207,19 @@ function defineSSESpecification(condition: boolean | Condition) {
       PointInTimeRecoveryEnabled: {
         'Fn::If': [condition.condition, true, false],
       },
+    },
+  };
+}
+
+function defineTTL(hasTtl: boolean) {
+  if (!hasTtl) {
+    return undefined;
+  }
+
+  return {
+    TimeToLiveSpecification: {
+      AttributeName: 'ttl',
+      Enabled: true,
     },
   };
 }

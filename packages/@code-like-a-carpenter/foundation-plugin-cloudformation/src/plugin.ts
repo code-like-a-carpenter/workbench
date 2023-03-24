@@ -10,7 +10,7 @@ import {defineTable} from './table';
 
 export const plugin: PluginFunction<Config> = logGraphQLCodegenPluginErrors(
   (schema, documents, config, info) => {
-    const {models, tables} = parse(schema, documents, config, info);
+    const {tables} = parse(schema, documents, config, info);
 
     const tpl: ServerlessApplicationModel = combineFragments(
       {

@@ -34,4 +34,7 @@ Resources:
             Ref: StageName
         - Key: TableName
           Value: TableUserSession
+      TimeToLiveSpecification:
+        AttributeName: ttl
+        Enabled: true
     Type: AWS::DynamoDB::Table

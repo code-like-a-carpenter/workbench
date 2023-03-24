@@ -1,5 +1,4 @@
-import type {GraphQLObjectType} from 'graphql';
-import type {GraphQLInterfaceType} from 'graphql/index';
+import type {GraphQLObjectType, GraphQLInterfaceType} from 'graphql';
 
 import {assert} from '@code-like-a-carpenter/assert';
 import type {

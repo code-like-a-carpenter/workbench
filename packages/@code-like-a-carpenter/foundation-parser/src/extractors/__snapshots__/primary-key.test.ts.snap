@@ -97,6 +97,7 @@ exports[`@primaryKey defines a composite primary key with no sort key fields 2`]
         "enableEncryption": true,
         "enablePointInTimeRecovery": true,
         "hasPublicModels": false,
+        "hasTtl": false,
         "primaryKey": {
           "isComposite": true,
           "partitionKeyFields": [
@@ -126,6 +127,7 @@ exports[`@primaryKey defines a composite primary key with no sort key fields 2`]
         "secondaryIndexes": [],
         "tableName": "TableExample",
       },
+      "ttlConfig": undefined,
       "typeName": "Example",
     },
   ],
@@ -134,6 +136,7 @@ exports[`@primaryKey defines a composite primary key with no sort key fields 2`]
       "enableEncryption": true,
       "enablePointInTimeRecovery": true,
       "hasPublicModels": false,
+      "hasTtl": false,
       "primaryKey": {
         "isComposite": true,
         "partitionKeyFields": [
@@ -310,6 +313,7 @@ exports[`@primaryKey defines composite primary keys 2`] = `
         "enableEncryption": true,
         "enablePointInTimeRecovery": true,
         "hasPublicModels": false,
+        "hasTtl": false,
         "primaryKey": {
           "isComposite": true,
           "partitionKeyFields": [
@@ -355,6 +359,7 @@ exports[`@primaryKey defines composite primary keys 2`] = `
         "secondaryIndexes": [],
         "tableName": "TableExample",
       },
+      "ttlConfig": undefined,
       "typeName": "Example",
     },
   ],
@@ -363,6 +368,7 @@ exports[`@primaryKey defines composite primary keys 2`] = `
       "enableEncryption": true,
       "enablePointInTimeRecovery": true,
       "hasPublicModels": false,
+      "hasTtl": false,
       "primaryKey": {
         "isComposite": true,
         "partitionKeyFields": [
@@ -615,6 +621,7 @@ exports[`@primaryKey defines multi-field composite primary keys 2`] = `
         "enableEncryption": true,
         "enablePointInTimeRecovery": true,
         "hasPublicModels": false,
+        "hasTtl": false,
         "primaryKey": {
           "isComposite": true,
           "partitionKeyFields": [
@@ -690,6 +697,7 @@ exports[`@primaryKey defines multi-field composite primary keys 2`] = `
         "secondaryIndexes": [],
         "tableName": "TableExample",
       },
+      "ttlConfig": undefined,
       "typeName": "Example",
     },
   ],
@@ -698,6 +706,7 @@ exports[`@primaryKey defines multi-field composite primary keys 2`] = `
       "enableEncryption": true,
       "enablePointInTimeRecovery": true,
       "hasPublicModels": false,
+      "hasTtl": false,
       "primaryKey": {
         "isComposite": true,
         "partitionKeyFields": [
@@ -950,6 +959,7 @@ exports[`@primaryKey defines multi-field composite primary keys with single-fiel
         "enableEncryption": true,
         "enablePointInTimeRecovery": true,
         "hasPublicModels": false,
+        "hasTtl": false,
         "primaryKey": {
           "isComposite": true,
           "partitionKeyFields": [
@@ -1010,6 +1020,7 @@ exports[`@primaryKey defines multi-field composite primary keys with single-fiel
         "secondaryIndexes": [],
         "tableName": "TableExample",
       },
+      "ttlConfig": undefined,
       "typeName": "Example",
     },
   ],
@@ -1018,6 +1029,7 @@ exports[`@primaryKey defines multi-field composite primary keys with single-fiel
       "enableEncryption": true,
       "enablePointInTimeRecovery": true,
       "hasPublicModels": false,
+      "hasTtl": false,
       "primaryKey": {
         "isComposite": true,
         "partitionKeyFields": [
@@ -1255,6 +1267,7 @@ exports[`@primaryKey defines multi-field composite primary keys with single-fiel
         "enableEncryption": true,
         "enablePointInTimeRecovery": true,
         "hasPublicModels": false,
+        "hasTtl": false,
         "primaryKey": {
           "isComposite": true,
           "partitionKeyFields": [
@@ -1315,6 +1328,7 @@ exports[`@primaryKey defines multi-field composite primary keys with single-fiel
         "secondaryIndexes": [],
         "tableName": "TableExample",
       },
+      "ttlConfig": undefined,
       "typeName": "Example",
     },
   ],
@@ -1323,6 +1337,7 @@ exports[`@primaryKey defines multi-field composite primary keys with single-fiel
       "enableEncryption": true,
       "enablePointInTimeRecovery": true,
       "hasPublicModels": false,
+      "hasTtl": false,
       "primaryKey": {
         "isComposite": true,
         "partitionKeyFields": [
@@ -1526,6 +1541,7 @@ exports[`@primaryKey defines multi-field simple primary keys 2`] = `
         "enableEncryption": true,
         "enablePointInTimeRecovery": true,
         "hasPublicModels": false,
+        "hasTtl": false,
         "primaryKey": {
           "isComposite": false,
           "isSingleField": false,
@@ -1567,6 +1583,7 @@ exports[`@primaryKey defines multi-field simple primary keys 2`] = `
         "secondaryIndexes": [],
         "tableName": "TableExample",
       },
+      "ttlConfig": undefined,
       "typeName": "Example",
     },
   ],
@@ -1575,6 +1592,7 @@ exports[`@primaryKey defines multi-field simple primary keys 2`] = `
       "enableEncryption": true,
       "enablePointInTimeRecovery": true,
       "hasPublicModels": false,
+      "hasTtl": false,
       "primaryKey": {
         "isComposite": false,
         "isSingleField": false,
@@ -1714,6 +1732,7 @@ exports[`@primaryKey defines simple primary keys 2`] = `
         "enableEncryption": true,
         "enablePointInTimeRecovery": true,
         "hasPublicModels": false,
+        "hasTtl": false,
         "primaryKey": {
           "isComposite": false,
           "isSingleField": true,
@@ -1740,6 +1759,7 @@ exports[`@primaryKey defines simple primary keys 2`] = `
         "secondaryIndexes": [],
         "tableName": "TableExample",
       },
+      "ttlConfig": undefined,
       "typeName": "Example",
     },
   ],
@@ -1748,6 +1768,7 @@ exports[`@primaryKey defines simple primary keys 2`] = `
       "enableEncryption": true,
       "enablePointInTimeRecovery": true,
       "hasPublicModels": false,
+      "hasTtl": false,
       "primaryKey": {
         "isComposite": false,
         "isSingleField": true,

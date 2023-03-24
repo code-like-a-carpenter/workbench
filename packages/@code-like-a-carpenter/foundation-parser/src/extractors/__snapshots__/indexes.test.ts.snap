@@ -229,6 +229,7 @@ exports[`@gsi defines a composite, multi-pk, multi-sk GSI 2`] = `
         "enableEncryption": true,
         "enablePointInTimeRecovery": true,
         "hasPublicModels": false,
+        "hasTtl": false,
         "primaryKey": {
           "isComposite": false,
           "isSingleField": true,
@@ -264,6 +265,7 @@ exports[`@gsi defines a composite, multi-pk, multi-sk GSI 2`] = `
         ],
         "tableName": "TableExample",
       },
+      "ttlConfig": undefined,
       "typeName": "Example",
     },
   ],
@@ -272,6 +274,7 @@ exports[`@gsi defines a composite, multi-pk, multi-sk GSI 2`] = `
       "enableEncryption": true,
       "enablePointInTimeRecovery": true,
       "hasPublicModels": false,
+      "hasTtl": false,
       "primaryKey": {
         "isComposite": false,
         "isSingleField": true,
@@ -525,6 +528,7 @@ exports[`@gsi defines a composite, multi-pk, single-sk GSI 2`] = `
         "enableEncryption": true,
         "enablePointInTimeRecovery": true,
         "hasPublicModels": false,
+        "hasTtl": false,
         "primaryKey": {
           "isComposite": false,
           "isSingleField": true,
@@ -560,6 +564,7 @@ exports[`@gsi defines a composite, multi-pk, single-sk GSI 2`] = `
         ],
         "tableName": "TableExample",
       },
+      "ttlConfig": undefined,
       "typeName": "Example",
     },
   ],
@@ -568,6 +573,7 @@ exports[`@gsi defines a composite, multi-pk, single-sk GSI 2`] = `
       "enableEncryption": true,
       "enablePointInTimeRecovery": true,
       "hasPublicModels": false,
+      "hasTtl": false,
       "primaryKey": {
         "isComposite": false,
         "isSingleField": true,
@@ -821,6 +827,7 @@ exports[`@gsi defines a composite, single-pk, multi-sk GSI 2`] = `
         "enableEncryption": true,
         "enablePointInTimeRecovery": true,
         "hasPublicModels": false,
+        "hasTtl": false,
         "primaryKey": {
           "isComposite": false,
           "isSingleField": true,
@@ -856,6 +863,7 @@ exports[`@gsi defines a composite, single-pk, multi-sk GSI 2`] = `
         ],
         "tableName": "TableExample",
       },
+      "ttlConfig": undefined,
       "typeName": "Example",
     },
   ],
@@ -864,6 +872,7 @@ exports[`@gsi defines a composite, single-pk, multi-sk GSI 2`] = `
       "enableEncryption": true,
       "enablePointInTimeRecovery": true,
       "hasPublicModels": false,
+      "hasTtl": false,
       "primaryKey": {
         "isComposite": false,
         "isSingleField": true,
@@ -1102,6 +1111,7 @@ exports[`@gsi defines a composite, single-pk, single-sk GSI 2`] = `
         "enableEncryption": true,
         "enablePointInTimeRecovery": true,
         "hasPublicModels": false,
+        "hasTtl": false,
         "primaryKey": {
           "isComposite": false,
           "isSingleField": true,
@@ -1137,6 +1147,7 @@ exports[`@gsi defines a composite, single-pk, single-sk GSI 2`] = `
         ],
         "tableName": "TableExample",
       },
+      "ttlConfig": undefined,
       "typeName": "Example",
     },
   ],
@@ -1145,6 +1156,7 @@ exports[`@gsi defines a composite, single-pk, single-sk GSI 2`] = `
       "enableEncryption": true,
       "enablePointInTimeRecovery": true,
       "hasPublicModels": false,
+      "hasTtl": false,
       "primaryKey": {
         "isComposite": false,
         "isSingleField": true,
@@ -1382,6 +1394,7 @@ exports[`@gsi defines a simple, multi-field GSI 2`] = `
         "enableEncryption": true,
         "enablePointInTimeRecovery": true,
         "hasPublicModels": false,
+        "hasTtl": false,
         "primaryKey": {
           "isComposite": false,
           "isSingleField": true,
@@ -1417,6 +1430,7 @@ exports[`@gsi defines a simple, multi-field GSI 2`] = `
         ],
         "tableName": "TableExample",
       },
+      "ttlConfig": undefined,
       "typeName": "Example",
     },
   ],
@@ -1425,6 +1439,7 @@ exports[`@gsi defines a simple, multi-field GSI 2`] = `
       "enableEncryption": true,
       "enablePointInTimeRecovery": true,
       "hasPublicModels": false,
+      "hasTtl": false,
       "primaryKey": {
         "isComposite": false,
         "isSingleField": true,
@@ -1647,6 +1662,7 @@ exports[`@gsi defines a simple, single-field GSI 2`] = `
         "enableEncryption": true,
         "enablePointInTimeRecovery": true,
         "hasPublicModels": false,
+        "hasTtl": false,
         "primaryKey": {
           "isComposite": false,
           "isSingleField": true,
@@ -1682,6 +1698,7 @@ exports[`@gsi defines a simple, single-field GSI 2`] = `
         ],
         "tableName": "TableExample",
       },
+      "ttlConfig": undefined,
       "typeName": "Example",
     },
   ],
@@ -1690,6 +1707,7 @@ exports[`@gsi defines a simple, single-field GSI 2`] = `
       "enableEncryption": true,
       "enablePointInTimeRecovery": true,
       "hasPublicModels": false,
+      "hasTtl": false,
       "primaryKey": {
         "isComposite": false,
         "isSingleField": true,
@@ -1973,6 +1991,7 @@ exports[`@lsi adds a multi-field LSI to a multi-field primary key 2`] = `
         "enableEncryption": true,
         "enablePointInTimeRecovery": true,
         "hasPublicModels": false,
+        "hasTtl": false,
         "primaryKey": {
           "isComposite": false,
           "isSingleField": false,
@@ -2021,6 +2040,7 @@ exports[`@lsi adds a multi-field LSI to a multi-field primary key 2`] = `
         ],
         "tableName": "TableExample",
       },
+      "ttlConfig": undefined,
       "typeName": "Example",
     },
   ],
@@ -2029,6 +2049,7 @@ exports[`@lsi adds a multi-field LSI to a multi-field primary key 2`] = `
       "enableEncryption": true,
       "enablePointInTimeRecovery": true,
       "hasPublicModels": false,
+      "hasTtl": false,
       "primaryKey": {
         "isComposite": false,
         "isSingleField": false,
@@ -2295,6 +2316,7 @@ exports[`@lsi adds a multi-field LSI to a single-field primary key 2`] = `
         "enableEncryption": true,
         "enablePointInTimeRecovery": true,
         "hasPublicModels": false,
+        "hasTtl": false,
         "primaryKey": {
           "isComposite": false,
           "isSingleField": true,
@@ -2328,6 +2350,7 @@ exports[`@lsi adds a multi-field LSI to a single-field primary key 2`] = `
         ],
         "tableName": "TableExample",
       },
+      "ttlConfig": undefined,
       "typeName": "Example",
     },
   ],
@@ -2336,6 +2359,7 @@ exports[`@lsi adds a multi-field LSI to a single-field primary key 2`] = `
       "enableEncryption": true,
       "enablePointInTimeRecovery": true,
       "hasPublicModels": false,
+      "hasTtl": false,
       "primaryKey": {
         "isComposite": false,
         "isSingleField": true,
@@ -2602,6 +2626,7 @@ exports[`@lsi adds a single-field LSI to a multi-field primary key 2`] = `
         "enableEncryption": true,
         "enablePointInTimeRecovery": true,
         "hasPublicModels": false,
+        "hasTtl": false,
         "primaryKey": {
           "isComposite": false,
           "isSingleField": false,
@@ -2650,6 +2675,7 @@ exports[`@lsi adds a single-field LSI to a multi-field primary key 2`] = `
         ],
         "tableName": "TableExample",
       },
+      "ttlConfig": undefined,
       "typeName": "Example",
     },
   ],
@@ -2658,6 +2684,7 @@ exports[`@lsi adds a single-field LSI to a multi-field primary key 2`] = `
       "enableEncryption": true,
       "enablePointInTimeRecovery": true,
       "hasPublicModels": false,
+      "hasTtl": false,
       "primaryKey": {
         "isComposite": false,
         "isSingleField": false,
@@ -2909,6 +2936,7 @@ exports[`@lsi adds a single-field LSI to a single-field primary key 2`] = `
         "enableEncryption": true,
         "enablePointInTimeRecovery": true,
         "hasPublicModels": false,
+        "hasTtl": false,
         "primaryKey": {
           "isComposite": false,
           "isSingleField": true,
@@ -2942,6 +2970,7 @@ exports[`@lsi adds a single-field LSI to a single-field primary key 2`] = `
         ],
         "tableName": "TableExample",
       },
+      "ttlConfig": undefined,
       "typeName": "Example",
     },
   ],
@@ -2950,6 +2979,7 @@ exports[`@lsi adds a single-field LSI to a single-field primary key 2`] = `
       "enableEncryption": true,
       "enablePointInTimeRecovery": true,
       "hasPublicModels": false,
+      "hasTtl": false,
       "primaryKey": {
         "isComposite": false,
         "isSingleField": true,
@@ -3166,6 +3196,7 @@ exports[`@simpleIndex defines a simple, single-field GSI 2`] = `
         "enableEncryption": true,
         "enablePointInTimeRecovery": true,
         "hasPublicModels": false,
+        "hasTtl": false,
         "primaryKey": {
           "isComposite": false,
           "isSingleField": true,
@@ -3201,6 +3232,7 @@ exports[`@simpleIndex defines a simple, single-field GSI 2`] = `
         ],
         "tableName": "TableExample",
       },
+      "ttlConfig": undefined,
       "typeName": "Example",
     },
   ],
@@ -3209,6 +3241,7 @@ exports[`@simpleIndex defines a simple, single-field GSI 2`] = `
       "enableEncryption": true,
       "enablePointInTimeRecovery": true,
       "hasPublicModels": false,
+      "hasTtl": false,
       "primaryKey": {
         "isComposite": false,
         "isSingleField": true,
@@ -3499,6 +3532,7 @@ exports[`@simpleIndex is repeatable 2`] = `
         "enableEncryption": true,
         "enablePointInTimeRecovery": true,
         "hasPublicModels": false,
+        "hasTtl": false,
         "primaryKey": {
           "isComposite": false,
           "isSingleField": true,
@@ -3558,6 +3592,7 @@ exports[`@simpleIndex is repeatable 2`] = `
         ],
         "tableName": "TableExample",
       },
+      "ttlConfig": undefined,
       "typeName": "Example",
     },
   ],
@@ -3566,6 +3601,7 @@ exports[`@simpleIndex is repeatable 2`] = `
       "enableEncryption": true,
       "enablePointInTimeRecovery": true,
       "hasPublicModels": false,
+      "hasTtl": false,
       "primaryKey": {
         "isComposite": false,
         "isSingleField": true,
@@ -3821,6 +3857,7 @@ exports[`PublicModel automatically indexes the publicId field 2`] = `
         "enableEncryption": true,
         "enablePointInTimeRecovery": true,
         "hasPublicModels": true,
+        "hasTtl": false,
         "primaryKey": {
           "isComposite": false,
           "isSingleField": true,
@@ -3856,6 +3893,7 @@ exports[`PublicModel automatically indexes the publicId field 2`] = `
         ],
         "tableName": "TableExample",
       },
+      "ttlConfig": undefined,
       "typeName": "Example",
     },
   ],
@@ -3864,6 +3902,7 @@ exports[`PublicModel automatically indexes the publicId field 2`] = `
       "enableEncryption": true,
       "enablePointInTimeRecovery": true,
       "hasPublicModels": true,
+      "hasTtl": false,
       "primaryKey": {
         "isComposite": false,
         "isSingleField": true,

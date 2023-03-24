@@ -156,6 +156,7 @@ describe('parse()', () => {
               "enableEncryption": true,
               "enablePointInTimeRecovery": true,
               "hasPublicModels": false,
+              "hasTtl": true,
               "primaryKey": {
                 "isComposite": false,
                 "isSingleField": true,
@@ -182,6 +183,12 @@ describe('parse()', () => {
               "secondaryIndexes": [],
               "tableName": "TableUserSession",
             },
+            "ttlConfig": {
+              "argumentAllowed": false,
+              "argumentRequired": false,
+              "duration": 86400000,
+              "fieldName": "expires",
+            },
             "typeName": "UserSession",
           },
         ],
@@ -190,6 +197,7 @@ describe('parse()', () => {
             "enableEncryption": true,
             "enablePointInTimeRecovery": true,
             "hasPublicModels": false,
+            "hasTtl": true,
             "primaryKey": {
               "isComposite": false,
               "isSingleField": true,
