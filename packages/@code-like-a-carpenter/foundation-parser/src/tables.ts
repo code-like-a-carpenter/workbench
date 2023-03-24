@@ -6,14 +6,16 @@ import type {
 
 import {assert} from '@code-like-a-carpenter/assert';
 import type {
+  Condition,
   SecondaryIndex,
   Table,
   TableSecondaryIndex,
 } from '@code-like-a-carpenter/foundation-intermediate-representation';
 
 import {assertPrimaryKeysMatch} from './assertions';
+import type {Config} from './config';
 import {
-  getOptionalArgBooleanValue,
+  getCondition,
   getOptionalArgStringValue,
   getOptionalDirective,
   hasInterface,
@@ -25,6 +27,7 @@ type Writeable<T> = {-readonly [P in keyof T]: T[P]};
 const tables = new Map<GraphQLSchema, Map<string, Table>>();
 
 export function extractTable(
+  config: Config,
   schema: GraphQLSchema,
   type: GraphQLInterfaceType | GraphQLObjectType
 ): Table {
@@ -38,24 +41,25 @@ export function extractTable(
 
   const existingTable = mapForSchema.get(tableName);
   if (existingTable) {
-    return updateExistingTable(type, existingTable, tableName);
+    return updateExistingTable(config, type, existingTable, tableName);
   }
 
-  const newTable = defineNewTable(type, tableName);
+  const newTable = defineNewTable(config, type, tableName);
   mapForSchema.set(newTable.tableName, newTable);
 
   return newTable;
 }
 
 function defineNewTable(
+  config: Config,
   type: GraphQLInterfaceType | GraphQLObjectType,
   tableName: string
 ): Table {
   const model = getModel(type);
 
   const table: Table = {
-    enableEncryption: shouldEnableEncryption(type),
-    enablePointInTimeRecovery: shouldEnablePointIntTimeRecovery(type),
+    enableEncryption: shouldEnableEncryption(config, type),
+    enablePointInTimeRecovery: shouldEnablePointIntTimeRecovery(config, type),
     hasPublicModels: hasInterface('PublicModel', type),
     hasTtl: !!model.ttlConfig,
     primaryKey: model.primaryKey,
@@ -117,16 +121,47 @@ function combineSecondaryIndexes(
   }
 }
 
+// eslint-disable-next-line complexity
+function combineConditions(current: Condition, next: Condition): Condition {
+  if (typeof current === 'string' && typeof next === 'string') {
+    assert(
+      current === next,
+      `Cannot combine conditions ${current} and ${next}`
+    );
+    return current;
+  }
+
+  if (typeof current === 'boolean' && typeof next === 'boolean') {
+    return current || next;
+  }
+
+  if (current === next) {
+    return current;
+  }
+
+  if (current === true || next === true) {
+    return true;
+  }
+
+  return current || next || false;
+}
+
 function updateExistingTable(
+  config: Config,
   type: GraphQLInterfaceType | GraphQLObjectType,
   existingTable: Writeable<Table>,
   tableName: string
 ): Table {
   const model = getModel(type);
 
-  existingTable.enablePointInTimeRecovery =
-    existingTable.enablePointInTimeRecovery ||
-    shouldEnablePointIntTimeRecovery(type);
+  existingTable.enablePointInTimeRecovery = combineConditions(
+    existingTable.enablePointInTimeRecovery,
+    shouldEnablePointIntTimeRecovery(config, type)
+  );
+  existingTable.enableEncryption = combineConditions(
+    existingTable.enableEncryption,
+    shouldEnableEncryption(config, type)
+  );
 
   existingTable.hasPublicModels =
     existingTable.hasPublicModels || hasInterface('PublicModel', type);
@@ -165,22 +200,31 @@ function modelIndexToTableIndex(mi: SecondaryIndex): TableSecondaryIndex {
 }
 
 function shouldEnableEncryption(
+  config: Config,
   type: GraphQLInterfaceType | GraphQLObjectType
-): boolean {
-  // FIXME this should be dynamic and should return a Condition type
-  return true;
+): Condition {
+  const tableDirective = getOptionalDirective('table', type);
+  if (!tableDirective) {
+    return config.tableDefaults.enableEncryption;
+  }
+  const condition = getCondition(tableDirective, 'enableEncryption');
+  if (!condition) {
+    return config.tableDefaults.enableEncryption;
+  }
+  return condition;
 }
 
 function shouldEnablePointIntTimeRecovery(
+  config: Config,
   type: GraphQLInterfaceType | GraphQLObjectType
-  // FIXME this should return a Condition type
-): boolean {
+): Condition {
   const tableDirective = getOptionalDirective('table', type);
-
-  return tableDirective
-    ? getOptionalArgBooleanValue(
-        'enablePointInTimeRecovery',
-        tableDirective
-      ) !== false
-    : true;
+  if (!tableDirective) {
+    return config.tableDefaults.enablePointInTimeRecovery;
+  }
+  const condition = getCondition(tableDirective, 'enablePointInTimeRecovery');
+  if (!condition) {
+    return config.tableDefaults.enablePointInTimeRecovery;
+  }
+  return condition;
 }

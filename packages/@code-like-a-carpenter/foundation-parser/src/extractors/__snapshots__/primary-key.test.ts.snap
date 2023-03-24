@@ -94,8 +94,8 @@ exports[`@primaryKey defines a composite primary key with no sort key fields 2`]
       },
       "secondaryIndexes": [],
       "table": {
-        "enableEncryption": true,
-        "enablePointInTimeRecovery": true,
+        "enableEncryption": "IsProd",
+        "enablePointInTimeRecovery": "IsProd",
         "hasPublicModels": false,
         "hasTtl": false,
         "primaryKey": {
@@ -133,8 +133,8 @@ exports[`@primaryKey defines a composite primary key with no sort key fields 2`]
   ],
   "tables": [
     {
-      "enableEncryption": true,
-      "enablePointInTimeRecovery": true,
+      "enableEncryption": "IsProd",
+      "enablePointInTimeRecovery": "IsProd",
       "hasPublicModels": false,
       "hasTtl": false,
       "primaryKey": {
@@ -310,8 +310,8 @@ exports[`@primaryKey defines composite primary keys 2`] = `
       },
       "secondaryIndexes": [],
       "table": {
-        "enableEncryption": true,
-        "enablePointInTimeRecovery": true,
+        "enableEncryption": "IsProd",
+        "enablePointInTimeRecovery": "IsProd",
         "hasPublicModels": false,
         "hasTtl": false,
         "primaryKey": {
@@ -365,8 +365,8 @@ exports[`@primaryKey defines composite primary keys 2`] = `
   ],
   "tables": [
     {
-      "enableEncryption": true,
-      "enablePointInTimeRecovery": true,
+      "enableEncryption": "IsProd",
+      "enablePointInTimeRecovery": "IsProd",
       "hasPublicModels": false,
       "hasTtl": false,
       "primaryKey": {
@@ -618,8 +618,8 @@ exports[`@primaryKey defines multi-field composite primary keys 2`] = `
       },
       "secondaryIndexes": [],
       "table": {
-        "enableEncryption": true,
-        "enablePointInTimeRecovery": true,
+        "enableEncryption": "IsProd",
+        "enablePointInTimeRecovery": "IsProd",
         "hasPublicModels": false,
         "hasTtl": false,
         "primaryKey": {
@@ -703,8 +703,8 @@ exports[`@primaryKey defines multi-field composite primary keys 2`] = `
   ],
   "tables": [
     {
-      "enableEncryption": true,
-      "enablePointInTimeRecovery": true,
+      "enableEncryption": "IsProd",
+      "enablePointInTimeRecovery": "IsProd",
       "hasPublicModels": false,
       "hasTtl": false,
       "primaryKey": {
@@ -956,8 +956,8 @@ exports[`@primaryKey defines multi-field composite primary keys with single-fiel
       },
       "secondaryIndexes": [],
       "table": {
-        "enableEncryption": true,
-        "enablePointInTimeRecovery": true,
+        "enableEncryption": "IsProd",
+        "enablePointInTimeRecovery": "IsProd",
         "hasPublicModels": false,
         "hasTtl": false,
         "primaryKey": {
@@ -1026,8 +1026,8 @@ exports[`@primaryKey defines multi-field composite primary keys with single-fiel
   ],
   "tables": [
     {
-      "enableEncryption": true,
-      "enablePointInTimeRecovery": true,
+      "enableEncryption": "IsProd",
+      "enablePointInTimeRecovery": "IsProd",
       "hasPublicModels": false,
       "hasTtl": false,
       "primaryKey": {
@@ -1264,8 +1264,8 @@ exports[`@primaryKey defines multi-field composite primary keys with single-fiel
       },
       "secondaryIndexes": [],
       "table": {
-        "enableEncryption": true,
-        "enablePointInTimeRecovery": true,
+        "enableEncryption": "IsProd",
+        "enablePointInTimeRecovery": "IsProd",
         "hasPublicModels": false,
         "hasTtl": false,
         "primaryKey": {
@@ -1334,8 +1334,8 @@ exports[`@primaryKey defines multi-field composite primary keys with single-fiel
   ],
   "tables": [
     {
-      "enableEncryption": true,
-      "enablePointInTimeRecovery": true,
+      "enableEncryption": "IsProd",
+      "enablePointInTimeRecovery": "IsProd",
       "hasPublicModels": false,
       "hasTtl": false,
       "primaryKey": {
@@ -1538,8 +1538,8 @@ exports[`@primaryKey defines multi-field simple primary keys 2`] = `
       },
       "secondaryIndexes": [],
       "table": {
-        "enableEncryption": true,
-        "enablePointInTimeRecovery": true,
+        "enableEncryption": "IsProd",
+        "enablePointInTimeRecovery": "IsProd",
         "hasPublicModels": false,
         "hasTtl": false,
         "primaryKey": {
@@ -1589,8 +1589,8 @@ exports[`@primaryKey defines multi-field simple primary keys 2`] = `
   ],
   "tables": [
     {
-      "enableEncryption": true,
-      "enablePointInTimeRecovery": true,
+      "enableEncryption": "IsProd",
+      "enablePointInTimeRecovery": "IsProd",
       "hasPublicModels": false,
       "hasTtl": false,
       "primaryKey": {
@@ -1729,8 +1729,8 @@ exports[`@primaryKey defines simple primary keys 2`] = `
       },
       "secondaryIndexes": [],
       "table": {
-        "enableEncryption": true,
-        "enablePointInTimeRecovery": true,
+        "enableEncryption": "IsProd",
+        "enablePointInTimeRecovery": "IsProd",
         "hasPublicModels": false,
         "hasTtl": false,
         "primaryKey": {
@@ -1765,8 +1765,8 @@ exports[`@primaryKey defines simple primary keys 2`] = `
   ],
   "tables": [
     {
-      "enableEncryption": true,
-      "enablePointInTimeRecovery": true,
+      "enableEncryption": "IsProd",
+      "enablePointInTimeRecovery": "IsProd",
       "hasPublicModels": false,
       "hasTtl": false,
       "primaryKey": {

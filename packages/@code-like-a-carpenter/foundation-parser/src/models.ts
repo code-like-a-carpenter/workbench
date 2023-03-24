@@ -11,6 +11,7 @@ import type {
   Model,
 } from '@code-like-a-carpenter/foundation-intermediate-representation';
 
+import type {Config} from './config';
 import {
   extractPrimaryKey,
   extractSecondaryIndexes,
@@ -29,6 +30,7 @@ export function getModel(type: GraphQLType): Readonly<Model> {
 }
 
 export function extractModel(
+  config: Config,
   schema: GraphQLSchema,
   type: GraphQLInterfaceType | GraphQLObjectType
 ): Model {
@@ -61,8 +63,12 @@ export function extractModel(
   // @ts-expect-error - we know that the table is not undefined, it gets fixed
   // on the next line.
   const wholeModel: Model = model;
+  // extraction and assignment are on two different lines so the scope of the
+  // ts-expect-error is as small as possible.
+  const table = extractTable(config, schema, type);
+
   // @ts-expect-error - it's ok that we're assigning to a readonly property
-  wholeModel.table = extractTable(schema, type);
+  wholeModel.table = table;
 
   return model as Model;
 }

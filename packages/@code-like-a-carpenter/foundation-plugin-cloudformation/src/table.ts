@@ -9,17 +9,22 @@ import type {
 
 import type {
   AWSDynamoDBTable,
+  Model,
   Model as ServerlessApplicationModel,
 } from './__generated__/serverless-application-model';
+import type {Config} from './config';
 
-export function defineTable({
-  enableEncryption,
-  enablePointInTimeRecovery,
-  hasTtl,
-  primaryKey: {isComposite},
-  secondaryIndexes,
-  tableName,
-}: Table): ServerlessApplicationModel {
+export function defineTable(
+  config: Config,
+  {
+    enableEncryption,
+    enablePointInTimeRecovery,
+    hasTtl,
+    primaryKey: {isComposite},
+    secondaryIndexes,
+    tableName,
+  }: Table
+): ServerlessApplicationModel {
   const resource: AWSDynamoDBTable = {
     Properties: {
       AttributeDefinitions: defineAttributes(isComposite),
@@ -55,7 +60,8 @@ export function defineTable({
 
   return {
     Conditions: {
-      ...makeCondition(enablePointInTimeRecovery),
+      ...makeCondition(config, enableEncryption),
+      ...makeCondition(config, enablePointInTimeRecovery),
     },
     Globals: {
       Function: {
@@ -173,9 +179,7 @@ function defineLSIs(secondaryIndexes: readonly TableSecondaryIndex[]) {
     });
 }
 
-function definePointInTimeRecoverySpecification(
-  condition: boolean | Condition
-) {
+function definePointInTimeRecoverySpecification(condition: Condition) {
   if (typeof condition === 'boolean') {
     return {
       PointInTimeRecoverySpecification: {
@@ -187,13 +191,13 @@ function definePointInTimeRecoverySpecification(
   return {
     PointInTimeRecoverySpecification: {
       PointInTimeRecoveryEnabled: {
-        'Fn::If': [condition.condition, true, false],
+        'Fn::If': [condition, true, false],
       },
     },
   };
 }
 
-function defineSSESpecification(condition: boolean | Condition) {
+function defineSSESpecification(condition: Condition) {
   if (typeof condition === 'boolean') {
     return {
       SSESpecification: {
@@ -204,8 +208,8 @@ function defineSSESpecification(condition: boolean | Condition) {
 
   return {
     SSESpecification: {
-      PointInTimeRecoveryEnabled: {
-        'Fn::If': [condition.condition, true, false],
+      SSEEnabled: {
+        'Fn::If': [condition, true, false],
       },
     },
   };
@@ -224,14 +228,16 @@ function defineTTL(hasTtl: boolean) {
   };
 }
 
-function makeCondition(condition: boolean | Condition) {
+function makeCondition(
+  config: Config,
+  condition: Condition
+): Model['Conditions'] {
   if (typeof condition === 'boolean') {
     return {};
   }
 
+  // @ts-expect-error - Conditions are not well-typed in the SAM typedef
   return {
-    [condition.condition]: {
-      'Fn::Equals': [{Ref: condition.name}, condition.value],
-    },
+    [condition]: config.conditions[condition],
   };
 }

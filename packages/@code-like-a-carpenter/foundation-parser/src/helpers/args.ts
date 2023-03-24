@@ -1,6 +1,7 @@
 import type {ConstDirectiveNode} from 'graphql';
 
-import {assert} from '@code-like-a-carpenter/assert';
+import {assert, fail} from '@code-like-a-carpenter/assert';
+import type {Condition} from '@code-like-a-carpenter/foundation-intermediate-representation';
 
 /** Gets the specified argument from the given directive. */
 export function getArg(name: string, directive: ConstDirectiveNode) {
@@ -133,4 +134,47 @@ export function getOptionalArgStringValue(
   );
 
   return arg.value.value;
+}
+
+export function getCondition(
+  directive: ConstDirectiveNode,
+  name: string,
+  defaultValue = false
+): Condition {
+  const arg = getOptionalArg(name, directive);
+  if (!arg) {
+    return defaultValue;
+  }
+
+  assert(arg.value.kind === 'ObjectValue', 'Condition must be an object');
+
+  const always = arg.value.fields.find(
+    (field) => field.name.value === 'always'
+  );
+  const condition = arg.value.fields.find(
+    (field) => field.name.value === 'condition'
+  );
+
+  if (condition && typeof always === 'boolean') {
+    throw new Error(
+      `The @${name} directive cannot have both an "always" argument and a "condition" argument.`
+    );
+  }
+
+  if (always) {
+    assert(always.value.kind === 'BooleanValue', 'always must be a boolean');
+    return always.value.value;
+  }
+
+  if (condition) {
+    assert(
+      condition.value.kind === 'StringValue',
+      'condition must be a string'
+    );
+    return condition.value.value;
+  }
+
+  fail(
+    `Condition ${name} on ${directive.name.value} must supply one of "always" or "condition"`
+  );
 }

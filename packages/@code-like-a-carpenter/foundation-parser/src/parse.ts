@@ -9,6 +9,7 @@ import type {
 } from '@code-like-a-carpenter/foundation-intermediate-representation';
 
 import type {Config} from './config';
+import {applyDefaults} from './config';
 import {hasDirective} from './helpers';
 import {extractModel} from './models';
 import {extractTable} from './tables';
@@ -28,6 +29,8 @@ export function parse(
   config: Config,
   info?: Info
 ): IntermediateRepresentation {
+  const configWithDefaults = applyDefaults(config);
+
   const typesMap = schema.getTypeMap();
 
   const models: Model[] = Object.keys(typesMap)
@@ -35,10 +38,10 @@ export function parse(
     .filter((type) => hasDirective('model', type))
     .map((type) => {
       if (isObjectType(type)) {
-        return extractModel(schema, type);
+        return extractModel(config, schema, type);
       }
       if (isInterfaceType(type)) {
-        return extractModel(schema, type);
+        return extractModel(config, schema, type);
       }
       throw new Error(`Type ${type} is not an object or interface`);
     });
@@ -48,10 +51,10 @@ export function parse(
     .filter((type) => hasDirective('model', type))
     .map((type) => {
       if (isObjectType(type)) {
-        return extractTable(schema, type);
+        return extractTable(configWithDefaults, schema, type);
       }
       if (isInterfaceType(type)) {
-        return extractTable(schema, type);
+        return extractTable(configWithDefaults, schema, type);
       }
       throw new Error(`Type ${type} is not an object or interface`);
     });

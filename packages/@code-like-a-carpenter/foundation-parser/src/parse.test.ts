@@ -153,8 +153,8 @@ describe('parse()', () => {
             },
             "secondaryIndexes": [],
             "table": {
-              "enableEncryption": true,
-              "enablePointInTimeRecovery": true,
+              "enableEncryption": "IsProd",
+              "enablePointInTimeRecovery": "IsProd",
               "hasPublicModels": false,
               "hasTtl": true,
               "primaryKey": {
@@ -194,8 +194,8 @@ describe('parse()', () => {
         ],
         "tables": [
           {
-            "enableEncryption": true,
-            "enablePointInTimeRecovery": true,
+            "enableEncryption": "IsProd",
+            "enablePointInTimeRecovery": "IsProd",
             "hasPublicModels": false,
             "hasTtl": true,
             "primaryKey": {

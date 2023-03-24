@@ -1,7 +1,7 @@
 import type {PluginFunction} from '@graphql-codegen/plugin-helpers';
 import yml from 'js-yaml';
 
-import {parse} from '@code-like-a-carpenter/foundation-parser';
+import {applyDefaults, parse} from '@code-like-a-carpenter/foundation-parser';
 
 import type {Model as ServerlessApplicationModel} from './__generated__/serverless-application-model';
 import {combineFragments} from './combine-fragments';
@@ -10,7 +10,8 @@ import {defineTable} from './table';
 
 export const plugin: PluginFunction<Config> = logGraphQLCodegenPluginErrors(
   (schema, documents, config, info) => {
-    const {tables} = parse(schema, documents, config, info);
+    const configWithDefaults = applyDefaults(config);
+    const {tables} = parse(schema, documents, configWithDefaults, info);
 
     const tpl: ServerlessApplicationModel = combineFragments(
       {
@@ -20,13 +21,15 @@ export const plugin: PluginFunction<Config> = logGraphQLCodegenPluginErrors(
         Parameters: {},
         Resources: {},
       },
-      combineFragments(...tables.map(defineTable))
+      combineFragments(
+        ...tables.map((table) => defineTable(configWithDefaults, table))
+      )
     );
 
     return yml.dump(tpl, {
       noRefs: true,
       sortKeys: true,
-      ...config.outputConfig?.yamlConfig,
+      ...configWithDefaults.outputConfig?.yamlConfig,
     });
   }
 );

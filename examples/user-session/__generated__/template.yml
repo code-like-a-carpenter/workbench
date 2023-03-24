@@ -1,4 +1,8 @@
-Conditions: {}
+Conditions:
+  IsProd:
+    Fn::Equals:
+      - StageName
+      - Production
 Globals:
   Function:
     Environment:
@@ -25,9 +29,17 @@ Resources:
         - AttributeName: pk
           KeyType: HASH
       PointInTimeRecoverySpecification:
-        PointInTimeRecoveryEnabled: true
+        PointInTimeRecoveryEnabled:
+          Fn::If:
+            - IsProd
+            - true
+            - false
       SSESpecification:
-        SSEEnabled: true
+        SSEEnabled:
+          Fn::If:
+            - IsProd
+            - true
+            - false
       Tags:
         - Key: StageName
           Value:

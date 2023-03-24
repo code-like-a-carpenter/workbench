@@ -226,8 +226,8 @@ exports[`@gsi defines a composite, multi-pk, multi-sk GSI 2`] = `
         },
       ],
       "table": {
-        "enableEncryption": true,
-        "enablePointInTimeRecovery": true,
+        "enableEncryption": "IsProd",
+        "enablePointInTimeRecovery": "IsProd",
         "hasPublicModels": false,
         "hasTtl": false,
         "primaryKey": {
@@ -271,8 +271,8 @@ exports[`@gsi defines a composite, multi-pk, multi-sk GSI 2`] = `
   ],
   "tables": [
     {
-      "enableEncryption": true,
-      "enablePointInTimeRecovery": true,
+      "enableEncryption": "IsProd",
+      "enablePointInTimeRecovery": "IsProd",
       "hasPublicModels": false,
       "hasTtl": false,
       "primaryKey": {
@@ -525,8 +525,8 @@ exports[`@gsi defines a composite, multi-pk, single-sk GSI 2`] = `
         },
       ],
       "table": {
-        "enableEncryption": true,
-        "enablePointInTimeRecovery": true,
+        "enableEncryption": "IsProd",
+        "enablePointInTimeRecovery": "IsProd",
         "hasPublicModels": false,
         "hasTtl": false,
         "primaryKey": {
@@ -570,8 +570,8 @@ exports[`@gsi defines a composite, multi-pk, single-sk GSI 2`] = `
   ],
   "tables": [
     {
-      "enableEncryption": true,
-      "enablePointInTimeRecovery": true,
+      "enableEncryption": "IsProd",
+      "enablePointInTimeRecovery": "IsProd",
       "hasPublicModels": false,
       "hasTtl": false,
       "primaryKey": {
@@ -824,8 +824,8 @@ exports[`@gsi defines a composite, single-pk, multi-sk GSI 2`] = `
         },
       ],
       "table": {
-        "enableEncryption": true,
-        "enablePointInTimeRecovery": true,
+        "enableEncryption": "IsProd",
+        "enablePointInTimeRecovery": "IsProd",
         "hasPublicModels": false,
         "hasTtl": false,
         "primaryKey": {
@@ -869,8 +869,8 @@ exports[`@gsi defines a composite, single-pk, multi-sk GSI 2`] = `
   ],
   "tables": [
     {
-      "enableEncryption": true,
-      "enablePointInTimeRecovery": true,
+      "enableEncryption": "IsProd",
+      "enablePointInTimeRecovery": "IsProd",
       "hasPublicModels": false,
       "hasTtl": false,
       "primaryKey": {
@@ -1108,8 +1108,8 @@ exports[`@gsi defines a composite, single-pk, single-sk GSI 2`] = `
         },
       ],
       "table": {
-        "enableEncryption": true,
-        "enablePointInTimeRecovery": true,
+        "enableEncryption": "IsProd",
+        "enablePointInTimeRecovery": "IsProd",
         "hasPublicModels": false,
         "hasTtl": false,
         "primaryKey": {
@@ -1153,8 +1153,8 @@ exports[`@gsi defines a composite, single-pk, single-sk GSI 2`] = `
   ],
   "tables": [
     {
-      "enableEncryption": true,
-      "enablePointInTimeRecovery": true,
+      "enableEncryption": "IsProd",
+      "enablePointInTimeRecovery": "IsProd",
       "hasPublicModels": false,
       "hasTtl": false,
       "primaryKey": {
@@ -1391,8 +1391,8 @@ exports[`@gsi defines a simple, multi-field GSI 2`] = `
         },
       ],
       "table": {
-        "enableEncryption": true,
-        "enablePointInTimeRecovery": true,
+        "enableEncryption": "IsProd",
+        "enablePointInTimeRecovery": "IsProd",
         "hasPublicModels": false,
         "hasTtl": false,
         "primaryKey": {
@@ -1436,8 +1436,8 @@ exports[`@gsi defines a simple, multi-field GSI 2`] = `
   ],
   "tables": [
     {
-      "enableEncryption": true,
-      "enablePointInTimeRecovery": true,
+      "enableEncryption": "IsProd",
+      "enablePointInTimeRecovery": "IsProd",
       "hasPublicModels": false,
       "hasTtl": false,
       "primaryKey": {
@@ -1659,8 +1659,8 @@ exports[`@gsi defines a simple, single-field GSI 2`] = `
         },
       ],
       "table": {
-        "enableEncryption": true,
-        "enablePointInTimeRecovery": true,
+        "enableEncryption": "IsProd",
+        "enablePointInTimeRecovery": "IsProd",
         "hasPublicModels": false,
         "hasTtl": false,
         "primaryKey": {
@@ -1704,8 +1704,8 @@ exports[`@gsi defines a simple, single-field GSI 2`] = `
   ],
   "tables": [
     {
-      "enableEncryption": true,
-      "enablePointInTimeRecovery": true,
+      "enableEncryption": "IsProd",
+      "enablePointInTimeRecovery": "IsProd",
       "hasPublicModels": false,
       "hasTtl": false,
       "primaryKey": {
@@ -1988,8 +1988,8 @@ exports[`@lsi adds a multi-field LSI to a multi-field primary key 2`] = `
         },
       ],
       "table": {
-        "enableEncryption": true,
-        "enablePointInTimeRecovery": true,
+        "enableEncryption": "IsProd",
+        "enablePointInTimeRecovery": "IsProd",
         "hasPublicModels": false,
         "hasTtl": false,
         "primaryKey": {
@@ -2046,8 +2046,8 @@ exports[`@lsi adds a multi-field LSI to a multi-field primary key 2`] = `
   ],
   "tables": [
     {
-      "enableEncryption": true,
-      "enablePointInTimeRecovery": true,
+      "enableEncryption": "IsProd",
+      "enablePointInTimeRecovery": "IsProd",
       "hasPublicModels": false,
       "hasTtl": false,
       "primaryKey": {
@@ -2313,8 +2313,8 @@ exports[`@lsi adds a multi-field LSI to a single-field primary key 2`] = `
         },
       ],
       "table": {
-        "enableEncryption": true,
-        "enablePointInTimeRecovery": true,
+        "enableEncryption": "IsProd",
+        "enablePointInTimeRecovery": "IsProd",
         "hasPublicModels": false,
         "hasTtl": false,
         "primaryKey": {
@@ -2356,8 +2356,8 @@ exports[`@lsi adds a multi-field LSI to a single-field primary key 2`] = `
   ],
   "tables": [
     {
-      "enableEncryption": true,
-      "enablePointInTimeRecovery": true,
+      "enableEncryption": "IsProd",
+      "enablePointInTimeRecovery": "IsProd",
       "hasPublicModels": false,
       "hasTtl": false,
       "primaryKey": {
@@ -2623,8 +2623,8 @@ exports[`@lsi adds a single-field LSI to a multi-field primary key 2`] = `
         },
       ],
       "table": {
-        "enableEncryption": true,
-        "enablePointInTimeRecovery": true,
+        "enableEncryption": "IsProd",
+        "enablePointInTimeRecovery": "IsProd",
         "hasPublicModels": false,
         "hasTtl": false,
         "primaryKey": {
@@ -2681,8 +2681,8 @@ exports[`@lsi adds a single-field LSI to a multi-field primary key 2`] = `
   ],
   "tables": [
     {
-      "enableEncryption": true,
-      "enablePointInTimeRecovery": true,
+      "enableEncryption": "IsProd",
+      "enablePointInTimeRecovery": "IsProd",
       "hasPublicModels": false,
       "hasTtl": false,
       "primaryKey": {
@@ -2933,8 +2933,8 @@ exports[`@lsi adds a single-field LSI to a single-field primary key 2`] = `
         },
       ],
       "table": {
-        "enableEncryption": true,
-        "enablePointInTimeRecovery": true,
+        "enableEncryption": "IsProd",
+        "enablePointInTimeRecovery": "IsProd",
         "hasPublicModels": false,
         "hasTtl": false,
         "primaryKey": {
@@ -2976,8 +2976,8 @@ exports[`@lsi adds a single-field LSI to a single-field primary key 2`] = `
   ],
   "tables": [
     {
-      "enableEncryption": true,
-      "enablePointInTimeRecovery": true,
+      "enableEncryption": "IsProd",
+      "enablePointInTimeRecovery": "IsProd",
       "hasPublicModels": false,
       "hasTtl": false,
       "primaryKey": {
@@ -3193,8 +3193,8 @@ exports[`@simpleIndex defines a simple, single-field GSI 2`] = `
         },
       ],
       "table": {
-        "enableEncryption": true,
-        "enablePointInTimeRecovery": true,
+        "enableEncryption": "IsProd",
+        "enablePointInTimeRecovery": "IsProd",
         "hasPublicModels": false,
         "hasTtl": false,
         "primaryKey": {
@@ -3238,8 +3238,8 @@ exports[`@simpleIndex defines a simple, single-field GSI 2`] = `
   ],
   "tables": [
     {
-      "enableEncryption": true,
-      "enablePointInTimeRecovery": true,
+      "enableEncryption": "IsProd",
+      "enablePointInTimeRecovery": "IsProd",
       "hasPublicModels": false,
       "hasTtl": false,
       "primaryKey": {
@@ -3529,8 +3529,8 @@ exports[`@simpleIndex is repeatable 2`] = `
         },
       ],
       "table": {
-        "enableEncryption": true,
-        "enablePointInTimeRecovery": true,
+        "enableEncryption": "IsProd",
+        "enablePointInTimeRecovery": "IsProd",
         "hasPublicModels": false,
         "hasTtl": false,
         "primaryKey": {
@@ -3598,8 +3598,8 @@ exports[`@simpleIndex is repeatable 2`] = `
   ],
   "tables": [
     {
-      "enableEncryption": true,
-      "enablePointInTimeRecovery": true,
+      "enableEncryption": "IsProd",
+      "enablePointInTimeRecovery": "IsProd",
       "hasPublicModels": false,
       "hasTtl": false,
       "primaryKey": {
@@ -3854,8 +3854,8 @@ exports[`PublicModel automatically indexes the publicId field 2`] = `
         },
       ],
       "table": {
-        "enableEncryption": true,
-        "enablePointInTimeRecovery": true,
+        "enableEncryption": "IsProd",
+        "enablePointInTimeRecovery": "IsProd",
         "hasPublicModels": true,
         "hasTtl": false,
         "primaryKey": {
@@ -3899,8 +3899,8 @@ exports[`PublicModel automatically indexes the publicId field 2`] = `
   ],
   "tables": [
     {
-      "enableEncryption": true,
-      "enablePointInTimeRecovery": true,
+      "enableEncryption": "IsProd",
+      "enablePointInTimeRecovery": "IsProd",
       "hasPublicModels": true,
       "hasTtl": false,
       "primaryKey": {

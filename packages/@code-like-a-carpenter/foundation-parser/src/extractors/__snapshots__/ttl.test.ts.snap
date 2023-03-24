@@ -105,8 +105,8 @@ exports[`@ttl expires a record after a specified duration 2`] = `
       },
       "secondaryIndexes": [],
       "table": {
-        "enableEncryption": true,
-        "enablePointInTimeRecovery": true,
+        "enableEncryption": "IsProd",
+        "enablePointInTimeRecovery": "IsProd",
         "hasPublicModels": false,
         "hasTtl": true,
         "primaryKey": {
@@ -146,8 +146,8 @@ exports[`@ttl expires a record after a specified duration 2`] = `
   ],
   "tables": [
     {
-      "enableEncryption": true,
-      "enablePointInTimeRecovery": true,
+      "enableEncryption": "IsProd",
+      "enablePointInTimeRecovery": "IsProd",
       "hasPublicModels": false,
       "hasTtl": true,
       "primaryKey": {
@@ -285,8 +285,8 @@ exports[`@ttl marks a fields as the ttl field 2`] = `
       },
       "secondaryIndexes": [],
       "table": {
-        "enableEncryption": true,
-        "enablePointInTimeRecovery": true,
+        "enableEncryption": "IsProd",
+        "enablePointInTimeRecovery": "IsProd",
         "hasPublicModels": false,
         "hasTtl": true,
         "primaryKey": {
@@ -325,8 +325,8 @@ exports[`@ttl marks a fields as the ttl field 2`] = `
   ],
   "tables": [
     {
-      "enableEncryption": true,
-      "enablePointInTimeRecovery": true,
+      "enableEncryption": "IsProd",
+      "enablePointInTimeRecovery": "IsProd",
       "hasPublicModels": false,
       "hasTtl": true,
       "primaryKey": {
@@ -464,8 +464,8 @@ exports[`@ttl optionally allows the end-user to specify an alternative expiratio
       },
       "secondaryIndexes": [],
       "table": {
-        "enableEncryption": true,
-        "enablePointInTimeRecovery": true,
+        "enableEncryption": "IsProd",
+        "enablePointInTimeRecovery": "IsProd",
         "hasPublicModels": false,
         "hasTtl": true,
         "primaryKey": {
@@ -505,8 +505,8 @@ exports[`@ttl optionally allows the end-user to specify an alternative expiratio
   ],
   "tables": [
     {
-      "enableEncryption": true,
-      "enablePointInTimeRecovery": true,
+      "enableEncryption": "IsProd",
+      "enablePointInTimeRecovery": "IsProd",
       "hasPublicModels": false,
       "hasTtl": true,
       "primaryKey": {

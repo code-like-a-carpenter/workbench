@@ -1,6 +1,4 @@
-export interface Condition extends Parameter {
-  readonly condition: string;
-}
+export type Condition = boolean | string;
 
 export interface Parameter {
   readonly name: string;
