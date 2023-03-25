@@ -5,10 +5,13 @@ import type {UpdateCommandInput} from '@aws-sdk/lib-dynamodb';
 import {UpdateCommand} from '@aws-sdk/lib-dynamodb';
 import {ServiceException} from '@aws-sdk/smithy-client';
 import type {NativeAttributeValue} from '@aws-sdk/util-dynamodb';
+import Base64 from 'base64url';
 
 import {assert} from '@code-like-a-carpenter/assert';
 import type {ResultType} from '@code-like-a-carpenter/foundation-runtime';
 import {
+  unmarshallRequiredField,
+  unmarshallOptionalField,
   AlreadyExistsError,
   BaseDataLibraryError,
   DataIntegrityError,
@@ -401,6 +404,93 @@ export function marshallAccount(
   };
 }
 
+/** Unmarshalls a DynamoDB record into a Account object */
+export function unmarshallAccount(item: Record<string, any>): Account {
+  let result: Account = {
+    cancelled: unmarshallRequiredField(item, 'cancelled', [
+      'cancelled',
+      'cancelled',
+    ]),
+    createdAt: unmarshallRequiredField(
+      item,
+      'createdAt',
+      ['_ct'],
+      (v) => new Date(v)
+    ),
+    effectiveDate: unmarshallRequiredField(
+      item,
+      'effectiveDate',
+      ['effective_date', 'effectiveDate'],
+      (v) => new Date(v)
+    ),
+    externalId: unmarshallRequiredField(item, 'externalId', [
+      'external_id',
+      'externalId',
+    ]),
+    id: Base64.encode(`Account:${item.pk}#:#${item.sk}`),
+    onFreeTrial: unmarshallRequiredField(item, 'onFreeTrial', [
+      'on_free_trial',
+      'onFreeTrial',
+    ]),
+    updatedAt: unmarshallRequiredField(
+      item,
+      'updatedAt',
+      ['_md'],
+      (v) => new Date(v)
+    ),
+    version: unmarshallRequiredField(item, 'version', ['_v']),
+  };
+
+  if ('has_ever_subscribed' in item || 'hasEverSubscribed' in item) {
+    result = {
+      ...result,
+      hasEverSubscribed: unmarshallOptionalField(item, 'hasEverSubscribed', [
+        'has_ever_subscribed',
+        'hasEverSubscribed',
+      ]),
+    };
+  }
+  if ('indexed_plan_name' in item || 'indexedPlanName' in item) {
+    result = {
+      ...result,
+      indexedPlanName: unmarshallOptionalField(item, 'indexedPlanName', [
+        'indexed_plan_name',
+        'indexedPlanName',
+      ]),
+    };
+  }
+  if ('last_plan_name' in item || 'lastPlanName' in item) {
+    result = {
+      ...result,
+      lastPlanName: unmarshallOptionalField(item, 'lastPlanName', [
+        'last_plan_name',
+        'lastPlanName',
+      ]),
+    };
+  }
+  if ('monthly_price_in_cents' in item || 'monthlyPriceInCents' in item) {
+    result = {
+      ...result,
+      monthlyPriceInCents: unmarshallOptionalField(
+        item,
+        'monthlyPriceInCents',
+        ['monthly_price_in_cents', 'monthlyPriceInCents']
+      ),
+    };
+  }
+  if ('plan_name' in item || 'planName' in item) {
+    result = {
+      ...result,
+      planName: unmarshallOptionalField(item, 'planName', [
+        'plan_name',
+        'planName',
+      ]),
+    };
+  }
+
+  return result;
+}
+
 export type CreateMetricInput = Omit<
   Metric,
   'createdAt' | 'id' | 'updatedAt' | 'version'
@@ -543,6 +633,38 @@ export function marshallMetric(
     ExpressionAttributeValues: eav,
     UpdateExpression: `SET ${updateExpression.join(', ')}`,
   };
+}
+
+/** Unmarshalls a DynamoDB record into a Metric object */
+export function unmarshallMetric(item: Record<string, any>): Metric {
+  const result: Metric = {
+    count: unmarshallRequiredField(item, 'count', ['count', 'count']),
+    createdAt: unmarshallRequiredField(
+      item,
+      'createdAt',
+      ['_ct'],
+      (v) => new Date(v)
+    ),
+    id: Base64.encode(`Metric:${item.pk}#:#${item.sk}`),
+    monthlyRecurringRevenueInCents: unmarshallRequiredField(
+      item,
+      'monthlyRecurringRevenueInCents',
+      ['monthly_recurring_revenue_in_cents', 'monthlyRecurringRevenueInCents']
+    ),
+    onFreeTrial: unmarshallRequiredField(item, 'onFreeTrial', [
+      'on_free_trial',
+      'onFreeTrial',
+    ]),
+    updatedAt: unmarshallRequiredField(
+      item,
+      'updatedAt',
+      ['_md'],
+      (v) => new Date(v)
+    ),
+    version: unmarshallRequiredField(item, 'version', ['_v']),
+  };
+
+  return result;
 }
 
 export type CreatePlanMetricInput = Omit<
@@ -700,6 +822,46 @@ export function marshallPlanMetric(
     ExpressionAttributeValues: eav,
     UpdateExpression: `SET ${updateExpression.join(', ')}`,
   };
+}
+
+/** Unmarshalls a DynamoDB record into a PlanMetric object */
+export function unmarshallPlanMetric(item: Record<string, any>): PlanMetric {
+  const result: PlanMetric = {
+    cancelled: unmarshallRequiredField(item, 'cancelled', [
+      'cancelled',
+      'cancelled',
+    ]),
+    count: unmarshallRequiredField(item, 'count', ['count', 'count']),
+    createdAt: unmarshallRequiredField(
+      item,
+      'createdAt',
+      ['_ct'],
+      (v) => new Date(v)
+    ),
+    id: Base64.encode(`PlanMetric:${item.pk}#:#${item.sk}`),
+    monthlyRecurringRevenueInCents: unmarshallRequiredField(
+      item,
+      'monthlyRecurringRevenueInCents',
+      ['monthly_recurring_revenue_in_cents', 'monthlyRecurringRevenueInCents']
+    ),
+    onFreeTrial: unmarshallRequiredField(item, 'onFreeTrial', [
+      'on_free_trial',
+      'onFreeTrial',
+    ]),
+    planName: unmarshallRequiredField(item, 'planName', [
+      'plan_name',
+      'planName',
+    ]),
+    updatedAt: unmarshallRequiredField(
+      item,
+      'updatedAt',
+      ['_md'],
+      (v) => new Date(v)
+    ),
+    version: unmarshallRequiredField(item, 'version', ['_v']),
+  };
+
+  return result;
 }
 
 export type CreateSubscriptionEventInput = Omit<
@@ -872,4 +1034,54 @@ export function marshallSubscriptionEvent(
     ExpressionAttributeValues: eav,
     UpdateExpression: `SET ${updateExpression.join(', ')}`,
   };
+}
+
+/** Unmarshalls a DynamoDB record into a SubscriptionEvent object */
+export function unmarshallSubscriptionEvent(
+  item: Record<string, any>
+): SubscriptionEvent {
+  const result: SubscriptionEvent = {
+    cancelled: unmarshallRequiredField(item, 'cancelled', [
+      'cancelled',
+      'cancelled',
+    ]),
+    createdAt: unmarshallRequiredField(
+      item,
+      'createdAt',
+      ['_ct'],
+      (v) => new Date(v)
+    ),
+    effectiveDate: unmarshallRequiredField(
+      item,
+      'effectiveDate',
+      ['effective_date', 'effectiveDate'],
+      (v) => new Date(v)
+    ),
+    externalId: unmarshallRequiredField(item, 'externalId', [
+      'external_id',
+      'externalId',
+    ]),
+    id: Base64.encode(`SubscriptionEvent:${item.pk}#:#${item.sk}`),
+    monthlyPriceInCents: unmarshallRequiredField(item, 'monthlyPriceInCents', [
+      'monthly_price_in_cents',
+      'monthlyPriceInCents',
+    ]),
+    onFreeTrial: unmarshallRequiredField(item, 'onFreeTrial', [
+      'on_free_trial',
+      'onFreeTrial',
+    ]),
+    planName: unmarshallRequiredField(item, 'planName', [
+      'plan_name',
+      'planName',
+    ]),
+    updatedAt: unmarshallRequiredField(
+      item,
+      'updatedAt',
+      ['_md'],
+      (v) => new Date(v)
+    ),
+    version: unmarshallRequiredField(item, 'version', ['_v']),
+  };
+
+  return result;
 }

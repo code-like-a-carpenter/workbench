@@ -8,6 +8,7 @@ import {TypescriptPluginConfigSchema} from './config';
 import {filterNull} from './helpers';
 import {createItemTpl} from './templates/create-item';
 import {marshallTpl} from './templates/marshall';
+import {unmarshallTpl} from './templates/unmarshall';
 
 export const plugin: PluginFunction<Config> = logGraphQLCodegenPluginErrors(
   (schema, documents, config, info) => {
@@ -20,7 +21,11 @@ export const plugin: PluginFunction<Config> = logGraphQLCodegenPluginErrors(
     );
 
     const content = models
-      .map((model) => [createItemTpl(config, model), marshallTpl(model)])
+      .map((model) => [
+        createItemTpl(config, model),
+        marshallTpl(model),
+        unmarshallTpl(model),
+      ])
       .flat()
       .join('\n');
 
@@ -47,7 +52,10 @@ export const plugin: PluginFunction<Config> = logGraphQLCodegenPluginErrors(
         `import {ServiceException} from '@aws-sdk/smithy-client';`,
         `import {assert} from '@code-like-a-carpenter/assert';`,
         `import {NativeAttributeValue} from '@aws-sdk/util-dynamodb';`,
+        `import Base64 from 'base64url';`,
         `import {
+          unmarshallRequiredField,
+          unmarshallOptionalField,
           AlreadyExistsError,
           BaseDataLibraryError,
           DataIntegrityError,

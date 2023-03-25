@@ -7,7 +7,8 @@
     "@code-like-a-carpenter/assert": "*",
     "@code-like-a-carpenter/foundation-plugin-cloudformation": "*",
     "@code-like-a-carpenter/foundation-plugin-typescript": "*",
-    "@code-like-a-carpenter/foundation-runtime": "*"
+    "@code-like-a-carpenter/foundation-runtime": "*",
+    "base64url": "^3.0.1"
   },
   "engines": {
     "node": "18.x",

@@ -17,6 +17,18 @@ export function filterNull<T>(x: T | undefined | null): x is T {
   return Boolean(x);
 }
 
+function getTransformString(field: Field): string {
+  if (field.columnName === 'ttl') {
+    return '(v) => new Date(v * 1000)';
+  }
+
+  if (field.isDateType) {
+    return '(v) => new Date(v)';
+  }
+
+  return '';
+}
+
 /** Generates the template for producing the desired primary key or index column */
 export function makeKeyTemplate(
   prefix: string | undefined,
@@ -83,4 +95,33 @@ export function marshallField({
 /** Converts a compile-time object to a runtime object */
 export function objectToString(obj: object): string {
   return `{${Object.entries(obj).map(([k, value]) => `${k}: ${value}`)}}`;
+}
+
+/**
+ * Helper function for building a field unmarshaller
+ */
+export function unmarshallFieldValue(field: Field): string {
+  const transformString = getTransformString(field);
+
+  const func = field.isRequired
+    ? 'unmarshallRequiredField'
+    : 'unmarshallOptionalField';
+
+  const args = [
+    'item',
+    `'${field.fieldName}'`,
+    `[${field.columnNamesForRead.map((c) => `'${c}'`).join(',')}]`,
+    transformString,
+  ];
+
+  return `${func}(${args.join(', ')})`;
+}
+
+/**
+ * Helper function for building a field unmarshaller
+ */
+export function unmarshallField(field: Field) {
+  const out = unmarshallFieldValue(field);
+
+  return `${field.fieldName}: ${out}`;
 }

@@ -5,10 +5,13 @@ import type {UpdateCommandInput} from '@aws-sdk/lib-dynamodb';
 import {UpdateCommand} from '@aws-sdk/lib-dynamodb';
 import {ServiceException} from '@aws-sdk/smithy-client';
 import type {NativeAttributeValue} from '@aws-sdk/util-dynamodb';
+import Base64 from 'base64url';
 
 import {assert} from '@code-like-a-carpenter/assert';
 import type {ResultType} from '@code-like-a-carpenter/foundation-runtime';
 import {
+  unmarshallRequiredField,
+  unmarshallOptionalField,
   AlreadyExistsError,
   BaseDataLibraryError,
   DataIntegrityError,
@@ -292,4 +295,37 @@ export function marshallUserSession(
     ExpressionAttributeValues: eav,
     UpdateExpression: `SET ${updateExpression.join(', ')}`,
   };
+}
+
+/** Unmarshalls a DynamoDB record into a UserSession object */
+export function unmarshallUserSession(item: Record<string, any>): UserSession {
+  const result: UserSession = {
+    createdAt: unmarshallRequiredField(
+      item,
+      'createdAt',
+      ['_ct'],
+      (v) => new Date(v)
+    ),
+    expires: unmarshallRequiredField(
+      item,
+      'expires',
+      ['ttl'],
+      (v) => new Date(v * 1000)
+    ),
+    id: Base64.encode(`UserSession:${item.pk}`),
+    session: unmarshallRequiredField(item, 'session', ['session', 'session']),
+    sessionId: unmarshallRequiredField(item, 'sessionId', [
+      'session_id',
+      'sessionId',
+    ]),
+    updatedAt: unmarshallRequiredField(
+      item,
+      'updatedAt',
+      ['_md'],
+      (v) => new Date(v)
+    ),
+    version: unmarshallRequiredField(item, 'version', ['_v']),
+  };
+
+  return result;
 }
