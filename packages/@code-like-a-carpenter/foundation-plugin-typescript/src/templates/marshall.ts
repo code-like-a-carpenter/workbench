@@ -222,7 +222,6 @@ export function marshall${typeName}(input: ${inputTypeName}, now = new Date()): 
   `;
 }
 
-/** template helper */
 function renderTTL(ttlConfig: TTLConfig | undefined): string {
   if (!ttlConfig) {
     return '';

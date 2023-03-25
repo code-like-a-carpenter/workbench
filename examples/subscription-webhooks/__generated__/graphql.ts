@@ -1,8 +1,16 @@
 import {AssertionError} from 'node:assert';
 
-import {ConditionalCheckFailedException} from '@aws-sdk/client-dynamodb';
-import type {GetCommandInput, UpdateCommandInput} from '@aws-sdk/lib-dynamodb';
-import {GetCommand, UpdateCommand} from '@aws-sdk/lib-dynamodb';
+import {
+  ConditionalCheckFailedException,
+  ConsumedCapacity,
+  ItemCollectionMetrics,
+} from '@aws-sdk/client-dynamodb';
+import type {
+  DeleteCommandInput,
+  GetCommandInput,
+  UpdateCommandInput,
+} from '@aws-sdk/lib-dynamodb';
+import {DeleteCommand, GetCommand, UpdateCommand} from '@aws-sdk/lib-dynamodb';
 import {ServiceException} from '@aws-sdk/smithy-client';
 import type {NativeAttributeValue} from '@aws-sdk/util-dynamodb';
 import Base64 from 'base64url';
@@ -16,6 +24,7 @@ import {
   BaseDataLibraryError,
   DataIntegrityError,
   NotFoundError,
+  OptimisticLockingError,
   UnexpectedAwsError,
   UnexpectedError,
 } from '@code-like-a-carpenter/foundation-runtime';
@@ -342,6 +351,146 @@ export async function readAccount(
       metrics: undefined,
     };
   } catch (err) {
+    if (err instanceof AssertionError || err instanceof BaseDataLibraryError) {
+      throw err;
+    }
+    if (err instanceof ServiceException) {
+      throw new UnexpectedAwsError(err);
+    }
+    throw new UnexpectedError(err);
+  }
+}
+
+export type UpdateAccountInput = Omit<
+  Account,
+  'createdAt' | 'id' | 'updatedAt'
+>;
+export type UpdateAccountOutput = ResultType<Account>;
+
+/**  */
+export async function updateAccount(
+  input: Readonly<UpdateAccountInput>
+): Promise<Readonly<UpdateAccountOutput>> {
+  const tableName = process.env.TABLE_ACCOUNT;
+  assert(tableName, 'TABLE_ACCOUNT is not set');
+
+  const {
+    ExpressionAttributeNames,
+    ExpressionAttributeValues,
+    UpdateExpression,
+  } = marshallAccount(input);
+  try {
+    let previousVersionCE = '';
+    let previousVersionEAV = {};
+    if ('version' in input && typeof input.version !== 'undefined') {
+      previousVersionCE = '#version = :previousVersion AND ';
+      previousVersionEAV = {':previousVersion': input.version};
+    }
+
+    const commandInput: UpdateCommandInput = {
+      ConditionExpression: `${previousVersionCE}#entity = :entity AND attribute_exists(#pk)`,
+      ExpressionAttributeNames,
+      ExpressionAttributeValues: {
+        ...ExpressionAttributeValues,
+        ...previousVersionEAV,
+      },
+      Key: {pk: ['ACCOUNT', input.externalId].join('#'), sk: [].join('#')},
+      ReturnConsumedCapacity: 'INDEXES',
+      ReturnItemCollectionMetrics: 'SIZE',
+      ReturnValues: 'ALL_NEW',
+      TableName: tableName,
+      UpdateExpression,
+    };
+
+    const {
+      Attributes: item,
+      ConsumedCapacity: capacity,
+      ItemCollectionMetrics: metrics,
+    } = await ddbDocClient.send(new UpdateCommand(commandInput));
+
+    assert(
+      capacity,
+      'Expected ConsumedCapacity to be returned. This is a bug in codegen.'
+    );
+
+    assert(item, 'Expected DynamoDB to return an Attributes prop.');
+    assert(
+      item._et === 'Account',
+      () =>
+        new DataIntegrityError(
+          `Expected ${JSON.stringify({
+            externalId: input.externalId,
+          })} to update a Account but updated ${item._et} instead`
+        )
+    );
+
+    return {
+      capacity,
+      item: unmarshallAccount(item),
+      metrics,
+    };
+  } catch (err) {
+    if (err instanceof ConditionalCheckFailedException) {
+      try {
+        await readAccount(input);
+      } catch {
+        throw new NotFoundError('Account', {externalId: input.externalId});
+      }
+      throw new OptimisticLockingError('Account', {
+        externalId: input.externalId,
+      });
+    }
+
+    if (err instanceof AssertionError || err instanceof BaseDataLibraryError) {
+      throw err;
+    }
+    if (err instanceof ServiceException) {
+      throw new UnexpectedAwsError(err);
+    }
+    throw new UnexpectedError(err);
+  }
+}
+
+export type DeleteAccountOutput = ResultType<void>;
+
+/**  */
+export async function deleteAccount(
+  input: AccountPrimaryKey
+): Promise<DeleteAccountOutput> {
+  const tableName = process.env.TABLE_ACCOUNT;
+  assert(tableName, 'TABLE_ACCOUNT is not set');
+
+  try {
+    const commandInput: DeleteCommandInput = {
+      ConditionExpression: 'attribute_exists(#pk)',
+      ExpressionAttributeNames: {
+        '#pk': 'pk',
+      },
+      Key: {pk: ['ACCOUNT', input.externalId].join('#'), sk: [].join('#')},
+      ReturnConsumedCapacity: 'INDEXES',
+      ReturnItemCollectionMetrics: 'SIZE',
+      ReturnValues: 'NONE',
+      TableName: tableName,
+    };
+
+    const {ConsumedCapacity: capacity, ItemCollectionMetrics: metrics} =
+      await ddbDocClient.send(new DeleteCommand(commandInput));
+
+    assert(
+      capacity,
+      'Expected ConsumedCapacity to be returned. This is a bug in codegen.'
+    );
+
+    return {
+      capacity,
+      item: undefined,
+      metrics,
+    };
+  } catch (err) {
+    if (err instanceof ConditionalCheckFailedException) {
+      throw new NotFoundError('Account', input);
+    }
+
     if (err instanceof AssertionError || err instanceof BaseDataLibraryError) {
       throw err;
     }
@@ -700,6 +849,149 @@ export async function readMetric(
   }
 }
 
+export type UpdateMetricInput = Omit<Metric, 'createdAt' | 'id' | 'updatedAt'>;
+export type UpdateMetricOutput = ResultType<Metric>;
+
+/**  */
+export async function updateMetric(
+  input: Readonly<UpdateMetricInput>
+): Promise<Readonly<UpdateMetricOutput>> {
+  const tableName = process.env.TABLE_METRIC;
+  assert(tableName, 'TABLE_METRIC is not set');
+
+  const {
+    ExpressionAttributeNames,
+    ExpressionAttributeValues,
+    UpdateExpression,
+  } = marshallMetric(input);
+  try {
+    let previousVersionCE = '';
+    let previousVersionEAV = {};
+    if ('version' in input && typeof input.version !== 'undefined') {
+      previousVersionCE = '#version = :previousVersion AND ';
+      previousVersionEAV = {':previousVersion': input.version};
+    }
+
+    const commandInput: UpdateCommandInput = {
+      ConditionExpression: `${previousVersionCE}#entity = :entity AND attribute_exists(#pk)`,
+      ExpressionAttributeNames,
+      ExpressionAttributeValues: {
+        ...ExpressionAttributeValues,
+        ...previousVersionEAV,
+      },
+      Key: {
+        pk: ['BUSINESS_METRIC'].join('#'),
+        sk: ['SUMMARY', input.onFreeTrial].join('#'),
+      },
+      ReturnConsumedCapacity: 'INDEXES',
+      ReturnItemCollectionMetrics: 'SIZE',
+      ReturnValues: 'ALL_NEW',
+      TableName: tableName,
+      UpdateExpression,
+    };
+
+    const {
+      Attributes: item,
+      ConsumedCapacity: capacity,
+      ItemCollectionMetrics: metrics,
+    } = await ddbDocClient.send(new UpdateCommand(commandInput));
+
+    assert(
+      capacity,
+      'Expected ConsumedCapacity to be returned. This is a bug in codegen.'
+    );
+
+    assert(item, 'Expected DynamoDB to return an Attributes prop.');
+    assert(
+      item._et === 'Metric',
+      () =>
+        new DataIntegrityError(
+          `Expected ${JSON.stringify({
+            onFreeTrial: input.onFreeTrial,
+          })} to update a Metric but updated ${item._et} instead`
+        )
+    );
+
+    return {
+      capacity,
+      item: unmarshallMetric(item),
+      metrics,
+    };
+  } catch (err) {
+    if (err instanceof ConditionalCheckFailedException) {
+      try {
+        await readMetric(input);
+      } catch {
+        throw new NotFoundError('Metric', {onFreeTrial: input.onFreeTrial});
+      }
+      throw new OptimisticLockingError('Metric', {
+        onFreeTrial: input.onFreeTrial,
+      });
+    }
+
+    if (err instanceof AssertionError || err instanceof BaseDataLibraryError) {
+      throw err;
+    }
+    if (err instanceof ServiceException) {
+      throw new UnexpectedAwsError(err);
+    }
+    throw new UnexpectedError(err);
+  }
+}
+
+export type DeleteMetricOutput = ResultType<void>;
+
+/**  */
+export async function deleteMetric(
+  input: MetricPrimaryKey
+): Promise<DeleteMetricOutput> {
+  const tableName = process.env.TABLE_METRIC;
+  assert(tableName, 'TABLE_METRIC is not set');
+
+  try {
+    const commandInput: DeleteCommandInput = {
+      ConditionExpression: 'attribute_exists(#pk)',
+      ExpressionAttributeNames: {
+        '#pk': 'pk',
+      },
+      Key: {
+        pk: ['BUSINESS_METRIC'].join('#'),
+        sk: ['SUMMARY', input.onFreeTrial].join('#'),
+      },
+      ReturnConsumedCapacity: 'INDEXES',
+      ReturnItemCollectionMetrics: 'SIZE',
+      ReturnValues: 'NONE',
+      TableName: tableName,
+    };
+
+    const {ConsumedCapacity: capacity, ItemCollectionMetrics: metrics} =
+      await ddbDocClient.send(new DeleteCommand(commandInput));
+
+    assert(
+      capacity,
+      'Expected ConsumedCapacity to be returned. This is a bug in codegen.'
+    );
+
+    return {
+      capacity,
+      item: undefined,
+      metrics,
+    };
+  } catch (err) {
+    if (err instanceof ConditionalCheckFailedException) {
+      throw new NotFoundError('Metric', input);
+    }
+
+    if (err instanceof AssertionError || err instanceof BaseDataLibraryError) {
+      throw err;
+    }
+    if (err instanceof ServiceException) {
+      throw new UnexpectedAwsError(err);
+    }
+    throw new UnexpectedError(err);
+  }
+}
+
 export interface MarshallMetricOutput {
   ExpressionAttributeNames: Record<string, string>;
   ExpressionAttributeValues: Record<string, NativeAttributeValue>;
@@ -927,6 +1219,157 @@ export async function readPlanMetric(
       metrics: undefined,
     };
   } catch (err) {
+    if (err instanceof AssertionError || err instanceof BaseDataLibraryError) {
+      throw err;
+    }
+    if (err instanceof ServiceException) {
+      throw new UnexpectedAwsError(err);
+    }
+    throw new UnexpectedError(err);
+  }
+}
+
+export type UpdatePlanMetricInput = Omit<
+  PlanMetric,
+  'createdAt' | 'id' | 'updatedAt'
+>;
+export type UpdatePlanMetricOutput = ResultType<PlanMetric>;
+
+/**  */
+export async function updatePlanMetric(
+  input: Readonly<UpdatePlanMetricInput>
+): Promise<Readonly<UpdatePlanMetricOutput>> {
+  const tableName = process.env.TABLE_PLAN_METRIC;
+  assert(tableName, 'TABLE_PLAN_METRIC is not set');
+
+  const {
+    ExpressionAttributeNames,
+    ExpressionAttributeValues,
+    UpdateExpression,
+  } = marshallPlanMetric(input);
+  try {
+    let previousVersionCE = '';
+    let previousVersionEAV = {};
+    if ('version' in input && typeof input.version !== 'undefined') {
+      previousVersionCE = '#version = :previousVersion AND ';
+      previousVersionEAV = {':previousVersion': input.version};
+    }
+
+    const commandInput: UpdateCommandInput = {
+      ConditionExpression: `${previousVersionCE}#entity = :entity AND attribute_exists(#pk)`,
+      ExpressionAttributeNames,
+      ExpressionAttributeValues: {
+        ...ExpressionAttributeValues,
+        ...previousVersionEAV,
+      },
+      Key: {
+        pk: ['BUSINESS_METRIC'].join('#'),
+        sk: ['PLAN', input.onFreeTrial, input.planName].join('#'),
+      },
+      ReturnConsumedCapacity: 'INDEXES',
+      ReturnItemCollectionMetrics: 'SIZE',
+      ReturnValues: 'ALL_NEW',
+      TableName: tableName,
+      UpdateExpression,
+    };
+
+    const {
+      Attributes: item,
+      ConsumedCapacity: capacity,
+      ItemCollectionMetrics: metrics,
+    } = await ddbDocClient.send(new UpdateCommand(commandInput));
+
+    assert(
+      capacity,
+      'Expected ConsumedCapacity to be returned. This is a bug in codegen.'
+    );
+
+    assert(item, 'Expected DynamoDB to return an Attributes prop.');
+    assert(
+      item._et === 'PlanMetric',
+      () =>
+        new DataIntegrityError(
+          `Expected ${JSON.stringify({
+            onFreeTrial: input.onFreeTrial,
+            planName: input.planName,
+          })} to update a PlanMetric but updated ${item._et} instead`
+        )
+    );
+
+    return {
+      capacity,
+      item: unmarshallPlanMetric(item),
+      metrics,
+    };
+  } catch (err) {
+    if (err instanceof ConditionalCheckFailedException) {
+      try {
+        await readPlanMetric(input);
+      } catch {
+        throw new NotFoundError('PlanMetric', {
+          onFreeTrial: input.onFreeTrial,
+          planName: input.planName,
+        });
+      }
+      throw new OptimisticLockingError('PlanMetric', {
+        onFreeTrial: input.onFreeTrial,
+        planName: input.planName,
+      });
+    }
+
+    if (err instanceof AssertionError || err instanceof BaseDataLibraryError) {
+      throw err;
+    }
+    if (err instanceof ServiceException) {
+      throw new UnexpectedAwsError(err);
+    }
+    throw new UnexpectedError(err);
+  }
+}
+
+export type DeletePlanMetricOutput = ResultType<void>;
+
+/**  */
+export async function deletePlanMetric(
+  input: PlanMetricPrimaryKey
+): Promise<DeletePlanMetricOutput> {
+  const tableName = process.env.TABLE_PLAN_METRIC;
+  assert(tableName, 'TABLE_PLAN_METRIC is not set');
+
+  try {
+    const commandInput: DeleteCommandInput = {
+      ConditionExpression: 'attribute_exists(#pk)',
+      ExpressionAttributeNames: {
+        '#pk': 'pk',
+      },
+      Key: {
+        pk: ['BUSINESS_METRIC'].join('#'),
+        sk: ['PLAN', input.onFreeTrial, input.planName].join('#'),
+      },
+      ReturnConsumedCapacity: 'INDEXES',
+      ReturnItemCollectionMetrics: 'SIZE',
+      ReturnValues: 'NONE',
+      TableName: tableName,
+    };
+
+    const {ConsumedCapacity: capacity, ItemCollectionMetrics: metrics} =
+      await ddbDocClient.send(new DeleteCommand(commandInput));
+
+    assert(
+      capacity,
+      'Expected ConsumedCapacity to be returned. This is a bug in codegen.'
+    );
+
+    return {
+      capacity,
+      item: undefined,
+      metrics,
+    };
+  } catch (err) {
+    if (err instanceof ConditionalCheckFailedException) {
+      throw new NotFoundError('PlanMetric', input);
+    }
+
     if (err instanceof AssertionError || err instanceof BaseDataLibraryError) {
       throw err;
     }
@@ -1198,6 +1641,167 @@ export async function readSubscriptionEvent(
       metrics: undefined,
     };
   } catch (err) {
+    if (err instanceof AssertionError || err instanceof BaseDataLibraryError) {
+      throw err;
+    }
+    if (err instanceof ServiceException) {
+      throw new UnexpectedAwsError(err);
+    }
+    throw new UnexpectedError(err);
+  }
+}
+
+export type UpdateSubscriptionEventInput = Omit<
+  SubscriptionEvent,
+  'createdAt' | 'id' | 'updatedAt'
+>;
+export type UpdateSubscriptionEventOutput = ResultType<SubscriptionEvent>;
+
+/**  */
+export async function updateSubscriptionEvent(
+  input: Readonly<UpdateSubscriptionEventInput>
+): Promise<Readonly<UpdateSubscriptionEventOutput>> {
+  const tableName = process.env.TABLE_SUBSCRIPTION_EVENT;
+  assert(tableName, 'TABLE_SUBSCRIPTION_EVENT is not set');
+
+  const {
+    ExpressionAttributeNames,
+    ExpressionAttributeValues,
+    UpdateExpression,
+  } = marshallSubscriptionEvent(input);
+  try {
+    let previousVersionCE = '';
+    let previousVersionEAV = {};
+    if ('version' in input && typeof input.version !== 'undefined') {
+      previousVersionCE = '#version = :previousVersion AND ';
+      previousVersionEAV = {':previousVersion': input.version};
+    }
+
+    const commandInput: UpdateCommandInput = {
+      ConditionExpression: `${previousVersionCE}#entity = :entity AND attribute_exists(#pk)`,
+      ExpressionAttributeNames,
+      ExpressionAttributeValues: {
+        ...ExpressionAttributeValues,
+        ...previousVersionEAV,
+      },
+      Key: {
+        pk: ['ACCOUNT', input.externalId].join('#'),
+        sk: [
+          'SUBSCRIPTION_EVENT',
+          input.effectiveDate === null
+            ? null
+            : input.effectiveDate.toISOString(),
+        ].join('#'),
+      },
+      ReturnConsumedCapacity: 'INDEXES',
+      ReturnItemCollectionMetrics: 'SIZE',
+      ReturnValues: 'ALL_NEW',
+      TableName: tableName,
+      UpdateExpression,
+    };
+
+    const {
+      Attributes: item,
+      ConsumedCapacity: capacity,
+      ItemCollectionMetrics: metrics,
+    } = await ddbDocClient.send(new UpdateCommand(commandInput));
+
+    assert(
+      capacity,
+      'Expected ConsumedCapacity to be returned. This is a bug in codegen.'
+    );
+
+    assert(item, 'Expected DynamoDB to return an Attributes prop.');
+    assert(
+      item._et === 'SubscriptionEvent',
+      () =>
+        new DataIntegrityError(
+          `Expected ${JSON.stringify({
+            effectiveDate: input.effectiveDate,
+            externalId: input.externalId,
+          })} to update a SubscriptionEvent but updated ${item._et} instead`
+        )
+    );
+
+    return {
+      capacity,
+      item: unmarshallSubscriptionEvent(item),
+      metrics,
+    };
+  } catch (err) {
+    if (err instanceof ConditionalCheckFailedException) {
+      try {
+        await readSubscriptionEvent(input);
+      } catch {
+        throw new NotFoundError('SubscriptionEvent', {
+          effectiveDate: input.effectiveDate,
+          externalId: input.externalId,
+        });
+      }
+      throw new OptimisticLockingError('SubscriptionEvent', {
+        effectiveDate: input.effectiveDate,
+        externalId: input.externalId,
+      });
+    }
+
+    if (err instanceof AssertionError || err instanceof BaseDataLibraryError) {
+      throw err;
+    }
+    if (err instanceof ServiceException) {
+      throw new UnexpectedAwsError(err);
+    }
+    throw new UnexpectedError(err);
+  }
+}
+
+export type DeleteSubscriptionEventOutput = ResultType<void>;
+
+/**  */
+export async function deleteSubscriptionEvent(
+  input: SubscriptionEventPrimaryKey
+): Promise<DeleteSubscriptionEventOutput> {
+  const tableName = process.env.TABLE_SUBSCRIPTION_EVENT;
+  assert(tableName, 'TABLE_SUBSCRIPTION_EVENT is not set');
+
+  try {
+    const commandInput: DeleteCommandInput = {
+      ConditionExpression: 'attribute_exists(#pk)',
+      ExpressionAttributeNames: {
+        '#pk': 'pk',
+      },
+      Key: {
+        pk: ['ACCOUNT', input.externalId].join('#'),
+        sk: [
+          'SUBSCRIPTION_EVENT',
+          input.effectiveDate === null
+            ? null
+            : input.effectiveDate.toISOString(),
+        ].join('#'),
+      },
+      ReturnConsumedCapacity: 'INDEXES',
+      ReturnItemCollectionMetrics: 'SIZE',
+      ReturnValues: 'NONE',
+      TableName: tableName,
+    };
+
+    const {ConsumedCapacity: capacity, ItemCollectionMetrics: metrics} =
+      await ddbDocClient.send(new DeleteCommand(commandInput));
+
+    assert(
+      capacity,
+      'Expected ConsumedCapacity to be returned. This is a bug in codegen.'
+    );
+
+    return {
+      capacity,
+      item: undefined,
+      metrics,
+    };
+  } catch (err) {
+    if (err instanceof ConditionalCheckFailedException) {
+      throw new NotFoundError('SubscriptionEvent', input);
+    }
+
     if (err instanceof AssertionError || err instanceof BaseDataLibraryError) {
       throw err;
     }

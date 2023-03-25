@@ -1,8 +1,16 @@
 import {AssertionError} from 'node:assert';
 
-import {ConditionalCheckFailedException} from '@aws-sdk/client-dynamodb';
-import type {GetCommandInput, UpdateCommandInput} from '@aws-sdk/lib-dynamodb';
-import {GetCommand, UpdateCommand} from '@aws-sdk/lib-dynamodb';
+import {
+  ConditionalCheckFailedException,
+  ConsumedCapacity,
+  ItemCollectionMetrics,
+} from '@aws-sdk/client-dynamodb';
+import type {
+  DeleteCommandInput,
+  GetCommandInput,
+  UpdateCommandInput,
+} from '@aws-sdk/lib-dynamodb';
+import {DeleteCommand, GetCommand, UpdateCommand} from '@aws-sdk/lib-dynamodb';
 import {ServiceException} from '@aws-sdk/smithy-client';
 import type {NativeAttributeValue} from '@aws-sdk/util-dynamodb';
 import Base64 from 'base64url';
@@ -16,6 +24,7 @@ import {
   BaseDataLibraryError,
   DataIntegrityError,
   NotFoundError,
+  OptimisticLockingError,
   UnexpectedAwsError,
   UnexpectedError,
 } from '@code-like-a-carpenter/foundation-runtime';
@@ -291,6 +300,147 @@ export async function readUserSession(
       metrics: undefined,
     };
   } catch (err) {
+    if (err instanceof AssertionError || err instanceof BaseDataLibraryError) {
+      throw err;
+    }
+    if (err instanceof ServiceException) {
+      throw new UnexpectedAwsError(err);
+    }
+    throw new UnexpectedError(err);
+  }
+}
+
+export type UpdateUserSessionInput = Omit<
+  UserSession,
+  'createdAt' | 'id' | 'updatedAt'
+> &
+  Partial<Pick<UserSession, 'expires'>>;
+export type UpdateUserSessionOutput = ResultType<UserSession>;
+
+/**  */
+export async function updateUserSession(
+  input: Readonly<UpdateUserSessionInput>
+): Promise<Readonly<UpdateUserSessionOutput>> {
+  const tableName = process.env.TABLE_USER_SESSION;
+  assert(tableName, 'TABLE_USER_SESSION is not set');
+
+  const {
+    ExpressionAttributeNames,
+    ExpressionAttributeValues,
+    UpdateExpression,
+  } = marshallUserSession(input);
+  try {
+    let previousVersionCE = '';
+    let previousVersionEAV = {};
+    if ('version' in input && typeof input.version !== 'undefined') {
+      previousVersionCE = '#version = :previousVersion AND ';
+      previousVersionEAV = {':previousVersion': input.version};
+    }
+
+    const commandInput: UpdateCommandInput = {
+      ConditionExpression: `${previousVersionCE}#entity = :entity AND attribute_exists(#pk)`,
+      ExpressionAttributeNames,
+      ExpressionAttributeValues: {
+        ...ExpressionAttributeValues,
+        ...previousVersionEAV,
+      },
+      Key: {pk: ['USER_SESSION', input.sessionId].join('#')},
+      ReturnConsumedCapacity: 'INDEXES',
+      ReturnItemCollectionMetrics: 'SIZE',
+      ReturnValues: 'ALL_NEW',
+      TableName: tableName,
+      UpdateExpression,
+    };
+
+    const {
+      Attributes: item,
+      ConsumedCapacity: capacity,
+      ItemCollectionMetrics: metrics,
+    } = await ddbDocClient.send(new UpdateCommand(commandInput));
+
+    assert(
+      capacity,
+      'Expected ConsumedCapacity to be returned. This is a bug in codegen.'
+    );
+
+    assert(item, 'Expected DynamoDB to return an Attributes prop.');
+    assert(
+      item._et === 'UserSession',
+      () =>
+        new DataIntegrityError(
+          `Expected ${JSON.stringify({
+            sessionId: input.sessionId,
+          })} to update a UserSession but updated ${item._et} instead`
+        )
+    );
+
+    return {
+      capacity,
+      item: unmarshallUserSession(item),
+      metrics,
+    };
+  } catch (err) {
+    if (err instanceof ConditionalCheckFailedException) {
+      try {
+        await readUserSession(input);
+      } catch {
+        throw new NotFoundError('UserSession', {sessionId: input.sessionId});
+      }
+      throw new OptimisticLockingError('UserSession', {
+        sessionId: input.sessionId,
+      });
+    }
+
+    if (err instanceof AssertionError || err instanceof BaseDataLibraryError) {
+      throw err;
+    }
+    if (err instanceof ServiceException) {
+      throw new UnexpectedAwsError(err);
+    }
+    throw new UnexpectedError(err);
+  }
+}
+
+export type DeleteUserSessionOutput = ResultType<void>;
+
+/**  */
+export async function deleteUserSession(
+  input: UserSessionPrimaryKey
+): Promise<DeleteUserSessionOutput> {
+  const tableName = process.env.TABLE_USER_SESSION;
+  assert(tableName, 'TABLE_USER_SESSION is not set');
+
+  try {
+    const commandInput: DeleteCommandInput = {
+      ConditionExpression: 'attribute_exists(#pk)',
+      ExpressionAttributeNames: {
+        '#pk': 'pk',
+      },
+      Key: {pk: ['USER_SESSION', input.sessionId].join('#')},
+      ReturnConsumedCapacity: 'INDEXES',
+      ReturnItemCollectionMetrics: 'SIZE',
+      ReturnValues: 'NONE',
+      TableName: tableName,
+    };
+
+    const {ConsumedCapacity: capacity, ItemCollectionMetrics: metrics} =
+      await ddbDocClient.send(new DeleteCommand(commandInput));
+
+    assert(
+      capacity,
+      'Expected ConsumedCapacity to be returned. This is a bug in codegen.'
+    );
+
+    return {
+      capacity,
+      item: undefined,
+      metrics,
+    };
+  } catch (err) {
+    if (err instanceof ConditionalCheckFailedException) {
+      throw new NotFoundError('UserSession', input);
+    }
+
     if (err instanceof AssertionError || err instanceof BaseDataLibraryError) {
       throw err;
     }

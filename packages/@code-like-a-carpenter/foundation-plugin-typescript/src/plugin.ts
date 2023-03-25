@@ -7,10 +7,12 @@ import type {Config} from './config';
 import {TypescriptPluginConfigSchema} from './config';
 import {filterNull} from './helpers';
 import {createItemTpl} from './templates/create-item';
+import {deleteItemTpl} from './templates/delete-item';
 import {marshallTpl} from './templates/marshall';
 import {primaryKeyTpl} from './templates/primary-key';
 import {readItemTpl} from './templates/read-item';
 import {unmarshallTpl} from './templates/unmarshall';
+import {updateItemTpl} from './templates/update-item';
 
 export const plugin: PluginFunction<Config> = logGraphQLCodegenPluginErrors(
   (schema, documents, config, info) => {
@@ -27,6 +29,8 @@ export const plugin: PluginFunction<Config> = logGraphQLCodegenPluginErrors(
         primaryKeyTpl(model),
         createItemTpl(config, model),
         readItemTpl(config, model),
+        updateItemTpl(config, model),
+        deleteItemTpl(config, model),
         marshallTpl(model),
         unmarshallTpl(model),
       ])
@@ -48,8 +52,14 @@ export const plugin: PluginFunction<Config> = logGraphQLCodegenPluginErrors(
       content,
       prepend: [
         `import {AssertionError} from 'node:assert';`,
-        `import {ConditionalCheckFailedException} from '@aws-sdk/client-dynamodb';`,
         `import {
+          ConditionalCheckFailedException,
+          ConsumedCapacity,
+          ItemCollectionMetrics
+        } from '@aws-sdk/client-dynamodb';`,
+        `import {
+          DeleteCommand,
+          DeleteCommandInput,
           GetCommand,
           GetCommandInput,
           UpdateCommand,
@@ -66,6 +76,7 @@ export const plugin: PluginFunction<Config> = logGraphQLCodegenPluginErrors(
           BaseDataLibraryError,
           DataIntegrityError,
           NotFoundError,
+          OptimisticLockingError,
           ResultType,
           UnexpectedAwsError,
           UnexpectedError
