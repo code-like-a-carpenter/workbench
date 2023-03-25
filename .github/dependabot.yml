@@ -10,6 +10,8 @@ updates:
       # Node.
       - dependency-name: '@types/node'
         update-types: ['version-update:semver-major']
+      # Pin AWS SDK to the version included in the Lambda Node 18 Runtime.
+      - dependency-name: '@aws-sdk/*'
     schedule:
       interval: 'daily'
     versioning-strategy: 'increase'
