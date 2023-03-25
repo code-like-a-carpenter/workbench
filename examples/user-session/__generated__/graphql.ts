@@ -4,6 +4,7 @@ import {ConditionalCheckFailedException} from '@aws-sdk/client-dynamodb';
 import type {UpdateCommandInput} from '@aws-sdk/lib-dynamodb';
 import {UpdateCommand} from '@aws-sdk/lib-dynamodb';
 import {ServiceException} from '@aws-sdk/smithy-client';
+import type {NativeAttributeValue} from '@aws-sdk/util-dynamodb';
 
 import {assert} from '@code-like-a-carpenter/assert';
 import type {ResultType} from '@code-like-a-carpenter/foundation-runtime';
@@ -237,4 +238,58 @@ export async function createUserSession(
     }
     throw new UnexpectedError(err);
   }
+}
+
+export interface MarshallUserSessionOutput {
+  ExpressionAttributeNames: Record<string, string>;
+  ExpressionAttributeValues: Record<string, NativeAttributeValue>;
+  UpdateExpression: string;
+}
+
+export type MarshallUserSessionInput = Required<
+  Pick<UserSession, 'session' | 'sessionId'>
+> &
+  Partial<Pick<UserSession, 'expires' | 'version'>>;
+
+/** Marshalls a DynamoDB record into a UserSession object */
+export function marshallUserSession(
+  input: MarshallUserSessionInput,
+  now = new Date()
+): MarshallUserSessionOutput {
+  const updateExpression: string[] = [
+    '#entity = :entity',
+    '#session = :session',
+    '#sessionId = :sessionId',
+    '#updatedAt = :updatedAt',
+    '#version = :version',
+  ];
+
+  const ean: Record<string, string> = {
+    '#entity': '_et',
+    '#pk': 'pk',
+    '#session': 'session',
+    '#sessionId': 'session_id',
+    '#updatedAt': '_md',
+    '#version': '_v',
+  };
+
+  const eav: Record<string, unknown> = {
+    ':entity': 'UserSession',
+    ':session': input.session,
+    ':sessionId': input.sessionId,
+    ':updatedAt': now.getTime(),
+    ':version': ('version' in input ? input.version ?? 0 : 0) + 1,
+  };
+
+  ean['#expires'] = 'ttl';
+  eav[':expires'] = now.getTime() + 86400000;
+  updateExpression.push('#expires = :expires');
+
+  updateExpression.sort();
+
+  return {
+    ExpressionAttributeNames: ean,
+    ExpressionAttributeValues: eav,
+    UpdateExpression: `SET ${updateExpression.join(', ')}`,
+  };
 }

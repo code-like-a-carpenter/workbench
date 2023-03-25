@@ -7,6 +7,7 @@ import type {Config} from './config';
 import {TypescriptPluginConfigSchema} from './config';
 import {filterNull} from './helpers';
 import {createItemTpl} from './templates/create-item';
+import {marshallTpl} from './templates/marshall';
 
 export const plugin: PluginFunction<Config> = logGraphQLCodegenPluginErrors(
   (schema, documents, config, info) => {
@@ -19,7 +20,8 @@ export const plugin: PluginFunction<Config> = logGraphQLCodegenPluginErrors(
     );
 
     const content = models
-      .map((model) => createItemTpl(config, model))
+      .map((model) => [createItemTpl(config, model), marshallTpl(model)])
+      .flat()
       .join('\n');
 
     const runtimeModuleId = '@code-like-a-carpenter/foundation-runtime';
@@ -44,6 +46,7 @@ export const plugin: PluginFunction<Config> = logGraphQLCodegenPluginErrors(
         } from '@aws-sdk/lib-dynamodb';`,
         `import {ServiceException} from '@aws-sdk/smithy-client';`,
         `import {assert} from '@code-like-a-carpenter/assert';`,
+        `import {NativeAttributeValue} from '@aws-sdk/util-dynamodb';`,
         `import {
           AlreadyExistsError,
           BaseDataLibraryError,

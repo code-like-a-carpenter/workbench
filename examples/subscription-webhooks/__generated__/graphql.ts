@@ -4,6 +4,7 @@ import {ConditionalCheckFailedException} from '@aws-sdk/client-dynamodb';
 import type {UpdateCommandInput} from '@aws-sdk/lib-dynamodb';
 import {UpdateCommand} from '@aws-sdk/lib-dynamodb';
 import {ServiceException} from '@aws-sdk/smithy-client';
+import type {NativeAttributeValue} from '@aws-sdk/util-dynamodb';
 
 import {assert} from '@code-like-a-carpenter/assert';
 import type {ResultType} from '@code-like-a-carpenter/foundation-runtime';
@@ -290,6 +291,116 @@ export async function createAccount(
   }
 }
 
+export interface MarshallAccountOutput {
+  ExpressionAttributeNames: Record<string, string>;
+  ExpressionAttributeValues: Record<string, NativeAttributeValue>;
+  UpdateExpression: string;
+}
+
+export type MarshallAccountInput = Required<
+  Pick<Account, 'cancelled' | 'effectiveDate' | 'externalId' | 'onFreeTrial'>
+> &
+  Partial<
+    Pick<
+      Account,
+      | 'hasEverSubscribed'
+      | 'indexedPlanName'
+      | 'lastPlanName'
+      | 'monthlyPriceInCents'
+      | 'planName'
+      | 'version'
+    >
+  >;
+
+/** Marshalls a DynamoDB record into a Account object */
+export function marshallAccount(
+  input: MarshallAccountInput,
+  now = new Date()
+): MarshallAccountOutput {
+  const updateExpression: string[] = [
+    '#entity = :entity',
+    '#cancelled = :cancelled',
+    '#effectiveDate = :effectiveDate',
+    '#externalId = :externalId',
+    '#onFreeTrial = :onFreeTrial',
+    '#updatedAt = :updatedAt',
+    '#version = :version',
+  ];
+
+  const ean: Record<string, string> = {
+    '#entity': '_et',
+    '#pk': 'pk',
+    '#cancelled': 'cancelled',
+    '#effectiveDate': 'effective_date',
+    '#externalId': 'external_id',
+    '#onFreeTrial': 'on_free_trial',
+    '#updatedAt': '_md',
+    '#version': '_v',
+    '#gsi1': 'gsi1',
+    '#gsi1sk': 'gsi1sk',
+  };
+
+  const eav: Record<string, unknown> = {
+    ':entity': 'Account',
+    ':cancelled': input.cancelled,
+    ':effectiveDate':
+      input.effectiveDate === null ? null : input.effectiveDate.toISOString(),
+    ':externalId': input.externalId,
+    ':onFreeTrial': input.onFreeTrial,
+    ':updatedAt': now.getTime(),
+    ':version': ('version' in input ? input.version ?? 0 : 0) + 1,
+
+    ':gsi1': ['PLAN', input.hasEverSubscribed].join('#'),
+    ':gsi1sk': ['ACCOUNT', input.cancelled, input.indexedPlanName].join('#'),
+  };
+
+  if (
+    'hasEverSubscribed' in input &&
+    typeof input.hasEverSubscribed !== 'undefined'
+  ) {
+    ean['#hasEverSubscribed'] = 'has_ever_subscribed';
+    eav[':hasEverSubscribed'] = input.hasEverSubscribed;
+    updateExpression.push('#hasEverSubscribed = :hasEverSubscribed');
+  }
+
+  if (
+    'indexedPlanName' in input &&
+    typeof input.indexedPlanName !== 'undefined'
+  ) {
+    ean['#indexedPlanName'] = 'indexed_plan_name';
+    eav[':indexedPlanName'] = input.indexedPlanName;
+    updateExpression.push('#indexedPlanName = :indexedPlanName');
+  }
+
+  if ('lastPlanName' in input && typeof input.lastPlanName !== 'undefined') {
+    ean['#lastPlanName'] = 'last_plan_name';
+    eav[':lastPlanName'] = input.lastPlanName;
+    updateExpression.push('#lastPlanName = :lastPlanName');
+  }
+
+  if (
+    'monthlyPriceInCents' in input &&
+    typeof input.monthlyPriceInCents !== 'undefined'
+  ) {
+    ean['#monthlyPriceInCents'] = 'monthly_price_in_cents';
+    eav[':monthlyPriceInCents'] = input.monthlyPriceInCents;
+    updateExpression.push('#monthlyPriceInCents = :monthlyPriceInCents');
+  }
+
+  if ('planName' in input && typeof input.planName !== 'undefined') {
+    ean['#planName'] = 'plan_name';
+    eav[':planName'] = input.planName;
+    updateExpression.push('#planName = :planName');
+  }
+  updateExpression.sort();
+
+  return {
+    ExpressionAttributeNames: ean,
+    ExpressionAttributeValues: eav,
+    UpdateExpression: `SET ${updateExpression.join(', ')}`,
+  };
+}
+
 export type CreateMetricInput = Omit<
   Metric,
   'createdAt' | 'id' | 'updatedAt' | 'version'
@@ -381,6 +492,59 @@ export async function createMetric(
   }
 }
 
+export interface MarshallMetricOutput {
+  ExpressionAttributeNames: Record<string, string>;
+  ExpressionAttributeValues: Record<string, NativeAttributeValue>;
+  UpdateExpression: string;
+}
+
+export type MarshallMetricInput = Required<
+  Pick<Metric, 'count' | 'monthlyRecurringRevenueInCents' | 'onFreeTrial'>
+> &
+  Partial<Pick<Metric, 'version'>>;
+
+/** Marshalls a DynamoDB record into a Metric object */
+export function marshallMetric(
+  input: MarshallMetricInput,
+  now = new Date()
+): MarshallMetricOutput {
+  const updateExpression: string[] = [
+    '#entity = :entity',
+    '#count = :count',
+    '#monthlyRecurringRevenueInCents = :monthlyRecurringRevenueInCents',
+    '#onFreeTrial = :onFreeTrial',
+    '#updatedAt = :updatedAt',
+    '#version = :version',
+  ];
+
+  const ean: Record<string, string> = {
+    '#entity': '_et',
+    '#pk': 'pk',
+    '#count': 'count',
+    '#monthlyRecurringRevenueInCents': 'monthly_recurring_revenue_in_cents',
+    '#onFreeTrial': 'on_free_trial',
+    '#updatedAt': '_md',
+    '#version': '_v',
+  };
+
+  const eav: Record<string, unknown> = {
+    ':entity': 'Metric',
+    ':count': input.count,
+    ':monthlyRecurringRevenueInCents': input.monthlyRecurringRevenueInCents,
+    ':onFreeTrial': input.onFreeTrial,
+    ':updatedAt': now.getTime(),
+    ':version': ('version' in input ? input.version ?? 0 : 0) + 1,
+  };
+
+  updateExpression.sort();
+
+  return {
+    ExpressionAttributeNames: ean,
+    ExpressionAttributeValues: eav,
+    UpdateExpression: `SET ${updateExpression.join(', ')}`,
+  };
+}
+
 export type CreatePlanMetricInput = Omit<
   PlanMetric,
   'createdAt' | 'id' | 'updatedAt' | 'version'
@@ -470,6 +634,72 @@ export async function createPlanMetric(
     }
     throw new UnexpectedError(err);
   }
+}
+
+export interface MarshallPlanMetricOutput {
+  ExpressionAttributeNames: Record<string, string>;
+  ExpressionAttributeValues: Record<string, NativeAttributeValue>;
+  UpdateExpression: string;
+}
+
+export type MarshallPlanMetricInput = Required<
+  Pick<
+    PlanMetric,
+    | 'cancelled'
+    | 'count'
+    | 'monthlyRecurringRevenueInCents'
+    | 'onFreeTrial'
+    | 'planName'
+  >
+> &
+  Partial<Pick<PlanMetric, 'version'>>;
+
+/** Marshalls a DynamoDB record into a PlanMetric object */
+export function marshallPlanMetric(
+  input: MarshallPlanMetricInput,
+  now = new Date()
+): MarshallPlanMetricOutput {
+  const updateExpression: string[] = [
+    '#entity = :entity',
+    '#cancelled = :cancelled',
+    '#count = :count',
+    '#monthlyRecurringRevenueInCents = :monthlyRecurringRevenueInCents',
+    '#onFreeTrial = :onFreeTrial',
+    '#planName = :planName',
+    '#updatedAt = :updatedAt',
+    '#version = :version',
+  ];
+
+  const ean: Record<string, string> = {
+    '#entity': '_et',
+    '#pk': 'pk',
+    '#cancelled': 'cancelled',
+    '#count': 'count',
+    '#monthlyRecurringRevenueInCents': 'monthly_recurring_revenue_in_cents',
+    '#onFreeTrial': 'on_free_trial',
+    '#planName': 'plan_name',
+    '#updatedAt': '_md',
+    '#version': '_v',
+  };
+
+  const eav: Record<string, unknown> = {
+    ':entity': 'PlanMetric',
+    ':cancelled': input.cancelled,
+    ':count': input.count,
+    ':monthlyRecurringRevenueInCents': input.monthlyRecurringRevenueInCents,
+    ':onFreeTrial': input.onFreeTrial,
+    ':planName': input.planName,
+    ':updatedAt': now.getTime(),
+    ':version': ('version' in input ? input.version ?? 0 : 0) + 1,
+  };
+
+  updateExpression.sort();
+
+  return {
+    ExpressionAttributeNames: ean,
+    ExpressionAttributeValues: eav,
+    UpdateExpression: `SET ${updateExpression.join(', ')}`,
+  };
 }
 
 export type CreateSubscriptionEventInput = Omit<
@@ -571,4 +801,75 @@ export async function createSubscriptionEvent(
     }
     throw new UnexpectedError(err);
   }
+}
+
+export interface MarshallSubscriptionEventOutput {
+  ExpressionAttributeNames: Record<string, string>;
+  ExpressionAttributeValues: Record<string, NativeAttributeValue>;
+  UpdateExpression: string;
+}
+
+export type MarshallSubscriptionEventInput = Required<
+  Pick<
+    SubscriptionEvent,
+    | 'cancelled'
+    | 'effectiveDate'
+    | 'externalId'
+    | 'monthlyPriceInCents'
+    | 'onFreeTrial'
+    | 'planName'
+  >
+> &
+  Partial<Pick<SubscriptionEvent, 'version'>>;
+
+/** Marshalls a DynamoDB record into a SubscriptionEvent object */
+export function marshallSubscriptionEvent(
+  input: MarshallSubscriptionEventInput,
+  now = new Date()
+): MarshallSubscriptionEventOutput {
+  const updateExpression: string[] = [
+    '#entity = :entity',
+    '#cancelled = :cancelled',
+    '#effectiveDate = :effectiveDate',
+    '#externalId = :externalId',
+    '#monthlyPriceInCents = :monthlyPriceInCents',
+    '#onFreeTrial = :onFreeTrial',
+    '#planName = :planName',
+    '#updatedAt = :updatedAt',
+    '#version = :version',
+  ];
+
+  const ean: Record<string, string> = {
+    '#entity': '_et',
+    '#pk': 'pk',
+    '#cancelled': 'cancelled',
+    '#effectiveDate': 'effective_date',
+    '#externalId': 'external_id',
+    '#monthlyPriceInCents': 'monthly_price_in_cents',
+    '#onFreeTrial': 'on_free_trial',
+    '#planName': 'plan_name',
+    '#updatedAt': '_md',
+    '#version': '_v',
+  };
+
+  const eav: Record<string, unknown> = {
+    ':entity': 'SubscriptionEvent',
+    ':cancelled': input.cancelled,
+    ':effectiveDate':
+      input.effectiveDate === null ? null : input.effectiveDate.toISOString(),
+    ':externalId': input.externalId,
+    ':monthlyPriceInCents': input.monthlyPriceInCents,
+    ':onFreeTrial': input.onFreeTrial,
+    ':planName': input.planName,
+    ':updatedAt': now.getTime(),
+    ':version': ('version' in input ? input.version ?? 0 : 0) + 1,
+  };
+
+  updateExpression.sort();
+
+  return {
+    ExpressionAttributeNames: ean,
+    ExpressionAttributeValues: eav,
+    UpdateExpression: `SET ${updateExpression.join(', ')}`,
+  };
 }
