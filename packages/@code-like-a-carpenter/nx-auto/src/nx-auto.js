@@ -163,6 +163,8 @@ function configureExample(projectFilePath) {
         inputs: [
           '{projectRoot}/schema/**/*.graphqls',
           '{workspaceRoot}/.graphqlrc.js',
+          '{workspaceRoot}/packages/@code-like-a-carpenter/foundation-plugin-cloudformation/dist/cjs/index.js',
+          '{workspaceRoot}/packages/@code-like-a-carpenter/foundation-plugin-typescript/dist/cjs/index.js',
         ],
         options: {
           command: `npx --no-install graphql-codegen --debug --verbose --project ${packageName}`,
