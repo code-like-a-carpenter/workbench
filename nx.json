@@ -26,13 +26,13 @@
       "options": {
         "cacheableOperations": [
           "build",
-          "build:cjs",
-          "build:esm",
-          "build:openapi",
-          "build:package",
-          "build:project-refs",
-          "build:readme",
-          "build:types"
+          "build-cjs",
+          "build-esm",
+          "build-openapi",
+          "build-package",
+          "build-project-refs",
+          "build-readme",
+          "build-types"
         ]
       }
     }

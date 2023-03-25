@@ -22,7 +22,7 @@
     "access": "public"
   },
   "dependencies": {
-    "@aws-sdk/smithy-client": "^3.279.0",
+    "@aws-sdk/smithy-client": "3.188.0",
     "@code-like-a-carpenter/assert": "*",
     "@code-like-a-carpenter/env": "*",
     "@code-like-a-carpenter/errors": "*",

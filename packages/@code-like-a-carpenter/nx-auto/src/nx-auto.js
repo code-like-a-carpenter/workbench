@@ -1,6 +1,8 @@
 'use strict';
 
-const path = require('path');
+const assert = require('node:assert');
+const fs = require('node:fs');
+const path = require('node:path');
 
 const glob = require('glob');
 
@@ -33,15 +35,15 @@ exports.registerProjectTargets = function registerProjectTargets(
   return {
     build: {
       dependsOn: [
-        'build:cjs',
-        'build:esm',
-        'build:readme',
-        'build:types',
+        'build-cjs',
+        'build-esm',
+        'build-readme',
+        'build-types',
         '^build',
       ],
       executor: 'nx:noop',
     },
-    'build:cjs': {
+    'build-cjs': {
       executor: 'nx:run-commands',
       inputs: ['{projectRoot}/src/**/*', 'sharedGlobals'],
       options: {
@@ -49,7 +51,7 @@ exports.registerProjectTargets = function registerProjectTargets(
       },
       outputs: ['{projectRoot}/dist/cjs'],
     },
-    'build:esm': {
+    'build-esm': {
       executor: 'nx:run-commands',
       inputs: ['{projectRoot}/src/**/*', 'sharedGlobals'],
       options: {
@@ -57,7 +59,7 @@ exports.registerProjectTargets = function registerProjectTargets(
       },
       outputs: ['{projectRoot}/dist/esm'],
     },
-    'build:package': {
+    'build-package': {
       executor: 'nx:run-commands',
       inputs: [
         '{projectRoot}/src/**/*',
@@ -69,8 +71,8 @@ exports.registerProjectTargets = function registerProjectTargets(
       },
       outputs: ['{projectRoot}/package.json'],
     },
-    'build:project-refs': {
-      dependsOn: ['build:package', '^build:project-refs'],
+    'build-project-refs': {
+      dependsOn: ['build-package', '^build-project-refs'],
       executor: 'nx:run-commands',
       inputs: ['{projectRoot}/package.json', 'sharedGlobals'],
       options: {
@@ -78,8 +80,8 @@ exports.registerProjectTargets = function registerProjectTargets(
       },
       outputs: ['{projectRoot}/tsconfig.json', '{workspaceRoot}/tsconfig.json'],
     },
-    'build:readme': {
-      dependsOn: ['build:package'],
+    'build-readme': {
+      dependsOn: ['build-package'],
       executor: 'nx:run-commands',
       inputs: [
         '{projectRoot}/README.md',
@@ -92,8 +94,8 @@ exports.registerProjectTargets = function registerProjectTargets(
       },
       outputs: ['{projectRoot}/README.md'],
     },
-    'build:types': {
-      dependsOn: ['build:project-refs', '^build:types'],
+    'build-types': {
+      dependsOn: ['build-project-refs', '^build-types'],
       executor: 'nx:run-commands',
       inputs: ['{projectRoot}/src/**/*', 'sharedGlobals'],
       options: {
@@ -109,21 +111,15 @@ function configureExample(projectFilePath) {
   const projectRoot = path.dirname(projectFilePath);
 
   const packageName = projectRoot.split('/').slice(-1).join('/');
+  assert(packageName);
 
-  return {
+  /** @type Record<string, unknown> */
+  let targets = {
     build: {
-      dependsOn: ['build:openapi', 'build:package', '^build'],
+      dependsOn: ['build-package', '^build'],
       executor: 'nx:noop',
     },
-    'build:openapi': {
-      executor: 'nx:run-commands',
-      inputs: ['{projectRoot}/api.yml'],
-      options: {
-        command: `npx --no-install openapi-typescript ${projectRoot}/api.yml --prettier-config ./.prettierrc --output ${projectRoot}/src/__generated__/api.ts && npm run eslint -- ${projectRoot}/src/__generated__/api.ts --fix`,
-      },
-      outputs: [`{projectRoot}/src/__generated__/api.ts`],
-    },
-    'build:package': {
+    'build-package': {
       executor: 'nx:run-commands',
       inputs: [
         '{projectRoot}/src/**/*',
@@ -131,9 +127,31 @@ function configureExample(projectFilePath) {
         'sharedGlobals',
       ],
       options: {
-        command: `node ./packages/@code-like-a-carpenter/nx-auto/ package --package-name ${packageName} --type="example"`,
+        command: `node ./packages/@code-like-a-carpenter/nx-auto package --package-name ${packageName} --type="example"`,
       },
       outputs: ['{projectRoot}/package.json'],
     },
   };
+
+  if (fs.existsSync(path.join(projectRoot, '/api.yml'))) {
+    targets = {
+      ...targets,
+      'build-openapi': {
+        executor: 'nx:run-commands',
+        inputs: ['{projectRoot}/api.yml'],
+        options: {
+          command: `npx --no-install openapi-typescript ${projectRoot}/api.yml --prettier-config ./.prettierrc --output ${projectRoot}/src/__generated__/api.ts && npm run eslint -- ${projectRoot}/src/__generated__/api.ts --fix`,
+        },
+        outputs: [`{projectRoot}/src/__generated__/api.ts`],
+      },
+    };
+    assert(typeof targets.build === 'object');
+    assert(targets.build !== null);
+    assert('dependsOn' in targets.build);
+    assert(Array.isArray(targets.build.dependsOn));
+
+    targets.build.dependsOn.push('build-openapi');
+  }
+
+  return targets;
 }

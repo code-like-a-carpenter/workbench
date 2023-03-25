@@ -168,23 +168,37 @@ function addMissingLocalDependencies(packageName, dependencies) {
   });
 }
 
+// This is the current version bundled with lambda
+const awsSdkVersion = '3.188.0';
+
 /**
  * @param {string} packageName
  * @param {readonly string[]} dependencies
  */
 function addMissingNodeDependencies(packageName, dependencies) {
-  spawnSync(
-    'npm',
-    [
-      'install',
-      '--workspace',
-      packageName,
-      ...dependencies.map((d) => `${d}@latest`),
-    ],
-    {
+  const awsDeps = dependencies
+    .filter((d) => d.startsWith('@aws-sdk'))
+    .map((d) => `${d}@${awsSdkVersion}`);
+
+  const normalDeps = dependencies
+    .filter((d) => !d.startsWith('@aws-sdk'))
+    .map((d) => `${d}@latest`);
+
+  if (awsDeps.length) {
+    spawnSync(
+      'npm',
+      ['install', '--workspace', packageName, '--save-exact', ...awsDeps],
+      {
+        stdio: 'inherit',
+      }
+    );
+  }
+
+  if (normalDeps.length) {
+    spawnSync('npm', ['install', '--workspace', packageName, ...normalDeps], {
       stdio: 'inherit',
-    }
-  );
+    });
+  }
 }
 
 /**

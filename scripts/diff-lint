@@ -3,11 +3,13 @@
 set -euo pipefail
 
 if [ $(git diff --name-only | wc -l) -gt 0 ]; then
-  echo "::error::'make build' altered tracked files. Please run 'make build' and commit the changes"
+  echo "::error::The CI build process altered tracked files. Please run build and commit the changes"
   {
-    echo "'make build' altered tracked files. Please run 'make build' and commit the changes"
+    echo "The CI build process altered tracked files. Please build locally and commit the changes"
     echo ''
+    echo \`\`\`diff
     git diff
+    echo \`\`\`
   } >> "$GITHUB_STEP_SUMMARY"
   exit 1
 fi
