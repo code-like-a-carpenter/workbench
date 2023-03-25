@@ -5,5 +5,18 @@
   },
   "extends": "../../../tsconfig.references.json",
   "include": ["src"],
-  "references": []
+  "references": [
+    {
+      "path": "../assert"
+    },
+    {
+      "path": "../foundation-intermediate-representation"
+    },
+    {
+      "path": "../foundation-parser"
+    },
+    {
+      "path": "../graphql-codegen-helpers"
+    }
+  ]
 }

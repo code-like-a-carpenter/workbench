@@ -175,3 +175,431 @@ export interface Timestamped {
 export interface Versioned {
   version: Scalars['Int'];
 }
+
+export type CreateAccountInput = Omit<
+  Account,
+  | 'cancelled'
+  | 'createdAt'
+  | 'createdAt'
+  | 'effectiveDate'
+  | 'externalId'
+  | 'hasEverSubscribed'
+  | 'id'
+  | 'id'
+  | 'indexedPlanName'
+  | 'lastPlanName'
+  | 'monthlyPriceInCents'
+  | 'onFreeTrial'
+  | 'planName'
+  | 'updatedAt'
+  | 'updatedAt'
+  | 'version'
+  | 'version'
+>;
+
+export type CreateAccountOutput = ResultType<Account>;
+
+export async function createAccount(
+  input: Readonly<CreateAccountInput>
+): Promise<Readonly<CreateAccountOutput>> {
+  const tableName = process.env.TABLE_ACCOUNT;
+  assert(tableName, 'TABLE_ACCOUNT is not set');
+
+  const now = new Date();
+
+  const {
+    ExpressionAttributeNames,
+    ExpressionAttributeValues,
+    UpdateExpression,
+  } = marshallAccount(input, now);
+
+  try {
+    // Reminder: we use UpdateCommand rather than PutCommand because PutCommand
+    // cannot return the newly written values.
+    const commandInput: UpdateCommandInput = {
+      ConditionExpression: 'attribute_not_exists(#pk)',
+      ExpressionAttributeNames: {
+        ...ExpressionAttributeNames,
+        '#createdAt': '_ct',
+        '#gsi1': 'gsi1',
+        '#gsi1sk': 'gsi1sk',
+      },
+      ExpressionAttributeValues: {
+        ...ExpressionAttributeValues,
+        ':createdAt': now.getTime(),
+        ':gsi1': ['PLAN', input.hasEverSubscribed].join('#'),
+        ':gsi1sk': ['ACCOUNT', input.cancelled, input.indexedPlanName].join(
+          '#'
+        ),
+      },
+      Key: {pk: ['ACCOUNT', input.externalId].join('#'), sk: [].join('#')},
+      ReturnConsumedCapacity: 'INDEXES',
+      ReturnItemCollectionMetrics: 'SIZE',
+      ReturnValues: 'ALL_NEW',
+      TableName: tableName,
+      UpdateExpression: [
+        ...UpdateExpression.split(', '),
+        '#createdAt = :createdAt',
+      ].join(', '),
+    };
+
+    const {
+      ConsumedCapacity: capacity,
+      ItemCollectionMetrics: metrics,
+      Attributes: item,
+    } = await ddbDocClient.send(new UpdateCommand(commandInput));
+
+    assert(
+      capacity,
+      'Expected ConsumedCapacity to be returned. This is a bug in codegen.'
+    );
+
+    assert(item, 'Expected DynamoDB to return an Attributes prop.');
+    assert(
+      item._et === 'Account',
+      () =>
+        new DataIntegrityError(
+          `Expected to write Account but wrote ${item?._et} instead`
+        )
+    );
+
+    return {
+      capacity,
+      item: unmarshallAccount(item),
+      metrics,
+    };
+  } catch (err) {
+    if (err instanceof ConditionalCheckFailedException) {
+      throw new AlreadyExistsError('Account', {
+        pk: ['ACCOUNT', input.externalId].join('#'),
+        sk: [].join('#'),
+      });
+    }
+
+    if (err instanceof AssertionError || err instanceof BaseDataLibraryError) {
+      throw err;
+    }
+    if (err instanceof ServiceException) {
+      throw new UnexpectedAwsError(err);
+    }
+    throw new UnexpectedError(err);
+  }
+}
+
+export type CreateMetricInput = Omit<
+  Metric,
+  | 'count'
+  | 'createdAt'
+  | 'createdAt'
+  | 'id'
+  | 'id'
+  | 'monthlyRecurringRevenueInCents'
+  | 'onFreeTrial'
+  | 'updatedAt'
+  | 'updatedAt'
+  | 'version'
+  | 'version'
+>;
+
+export type CreateMetricOutput = ResultType<Metric>;
+
+export async function createMetric(
+  input: Readonly<CreateMetricInput>
+): Promise<Readonly<CreateMetricOutput>> {
+  const tableName = process.env.TABLE_METRIC;
+  assert(tableName, 'TABLE_METRIC is not set');
+
+  const now = new Date();
+
+  const {
+    ExpressionAttributeNames,
+    ExpressionAttributeValues,
+    UpdateExpression,
+  } = marshallMetric(input, now);
+
+  try {
+    // Reminder: we use UpdateCommand rather than PutCommand because PutCommand
+    // cannot return the newly written values.
+    const commandInput: UpdateCommandInput = {
+      ConditionExpression: 'attribute_not_exists(#pk)',
+      ExpressionAttributeNames: {
+        ...ExpressionAttributeNames,
+        '#createdAt': '_ct',
+      },
+      ExpressionAttributeValues: {
+        ...ExpressionAttributeValues,
+        ':createdAt': now.getTime(),
+      },
+      Key: {
+        pk: ['BUSINESS_METRIC'].join('#'),
+        sk: ['SUMMARY', input.onFreeTrial].join('#'),
+      },
+      ReturnConsumedCapacity: 'INDEXES',
+      ReturnItemCollectionMetrics: 'SIZE',
+      ReturnValues: 'ALL_NEW',
+      TableName: tableName,
+      UpdateExpression: [
+        ...UpdateExpression.split(', '),
+        '#createdAt = :createdAt',
+      ].join(', '),
+    };
+
+    const {
+      ConsumedCapacity: capacity,
+      ItemCollectionMetrics: metrics,
+      Attributes: item,
+    } = await ddbDocClient.send(new UpdateCommand(commandInput));
+
+    assert(
+      capacity,
+      'Expected ConsumedCapacity to be returned. This is a bug in codegen.'
+    );
+
+    assert(item, 'Expected DynamoDB to return an Attributes prop.');
+    assert(
+      item._et === 'Metric',
+      () =>
+        new DataIntegrityError(
+          `Expected to write Metric but wrote ${item?._et} instead`
+        )
+    );
+
+    return {
+      capacity,
+      item: unmarshallMetric(item),
+      metrics,
+    };
+  } catch (err) {
+    if (err instanceof ConditionalCheckFailedException) {
+      throw new AlreadyExistsError('Metric', {
+        pk: ['BUSINESS_METRIC'].join('#'),
+        sk: ['SUMMARY', input.onFreeTrial].join('#'),
+      });
+    }
+
+    if (err instanceof AssertionError || err instanceof BaseDataLibraryError) {
+      throw err;
+    }
+    if (err instanceof ServiceException) {
+      throw new UnexpectedAwsError(err);
+    }
+    throw new UnexpectedError(err);
+  }
+}
+
+export type CreatePlanMetricInput = Omit<
+  PlanMetric,
+  | 'cancelled'
+  | 'count'
+  | 'createdAt'
+  | 'createdAt'
+  | 'id'
+  | 'id'
+  | 'monthlyRecurringRevenueInCents'
+  | 'onFreeTrial'
+  | 'planName'
+  | 'updatedAt'
+  | 'updatedAt'
+  | 'version'
+  | 'version'
+>;
+
+export type CreatePlanMetricOutput = ResultType<PlanMetric>;
+
+export async function createPlanMetric(
+  input: Readonly<CreatePlanMetricInput>
+): Promise<Readonly<CreatePlanMetricOutput>> {
+  const tableName = process.env.TABLE_PLAN_METRIC;
+  assert(tableName, 'TABLE_PLAN_METRIC is not set');
+
+  const now = new Date();
+
+  const {
+    ExpressionAttributeNames,
+    ExpressionAttributeValues,
+    UpdateExpression,
+  } = marshallPlanMetric(input, now);
+
+  try {
+    // Reminder: we use UpdateCommand rather than PutCommand because PutCommand
+    // cannot return the newly written values.
+    const commandInput: UpdateCommandInput = {
+      ConditionExpression: 'attribute_not_exists(#pk)',
+      ExpressionAttributeNames: {
+        ...ExpressionAttributeNames,
+        '#createdAt': '_ct',
+      },
+      ExpressionAttributeValues: {
+        ...ExpressionAttributeValues,
+        ':createdAt': now.getTime(),
+      },
+      Key: {
+        pk: ['BUSINESS_METRIC'].join('#'),
+        sk: ['PLAN', input.onFreeTrial, input.planName].join('#'),
+      },
+      ReturnConsumedCapacity: 'INDEXES',
+      ReturnItemCollectionMetrics: 'SIZE',
+      ReturnValues: 'ALL_NEW',
+      TableName: tableName,
+      UpdateExpression: [
+        ...UpdateExpression.split(', '),
+        '#createdAt = :createdAt',
+      ].join(', '),
+    };
+
+    const {
+      ConsumedCapacity: capacity,
+      ItemCollectionMetrics: metrics,
+      Attributes: item,
+    } = await ddbDocClient.send(new UpdateCommand(commandInput));
+
+    assert(
+      capacity,
+      'Expected ConsumedCapacity to be returned. This is a bug in codegen.'
+    );
+
+    assert(item, 'Expected DynamoDB to return an Attributes prop.');
+    assert(
+      item._et === 'PlanMetric',
+      () =>
+        new DataIntegrityError(
+          `Expected to write PlanMetric but wrote ${item?._et} instead`
+        )
+    );
+
+    return {
+      capacity,
+      item: unmarshallPlanMetric(item),
+      metrics,
+    };
+  } catch (err) {
+    if (err instanceof ConditionalCheckFailedException) {
+      throw new AlreadyExistsError('PlanMetric', {
+        pk: ['BUSINESS_METRIC'].join('#'),
+        sk: ['PLAN', input.onFreeTrial, input.planName].join('#'),
+      });
+    }
+
+    if (err instanceof AssertionError || err instanceof BaseDataLibraryError) {
+      throw err;
+    }
+    if (err instanceof ServiceException) {
+      throw new UnexpectedAwsError(err);
+    }
+    throw new UnexpectedError(err);
+  }
+}
+
+export type CreateSubscriptionEventInput = Omit<
+  SubscriptionEvent,
+  | 'cancelled'
+  | 'createdAt'
+  | 'createdAt'
+  | 'effectiveDate'
+  | 'externalId'
+  | 'id'
+  | 'id'
+  | 'monthlyPriceInCents'
+  | 'onFreeTrial'
+  | 'planName'
+  | 'updatedAt'
+  | 'updatedAt'
+  | 'version'
+  | 'version'
+>;
+
+export type CreateSubscriptionEventOutput = ResultType<SubscriptionEvent>;
+
+export async function createSubscriptionEvent(
+  input: Readonly<CreateSubscriptionEventInput>
+): Promise<Readonly<CreateSubscriptionEventOutput>> {
+  const tableName = process.env.TABLE_SUBSCRIPTION_EVENT;
+  assert(tableName, 'TABLE_SUBSCRIPTION_EVENT is not set');
+
+  const now = new Date();
+
+  const {
+    ExpressionAttributeNames,
+    ExpressionAttributeValues,
+    UpdateExpression,
+  } = marshallSubscriptionEvent(input, now);
+
+  try {
+    // Reminder: we use UpdateCommand rather than PutCommand because PutCommand
+    // cannot return the newly written values.
+    const commandInput: UpdateCommandInput = {
+      ConditionExpression: 'attribute_not_exists(#pk)',
+      ExpressionAttributeNames: {
+        ...ExpressionAttributeNames,
+        '#createdAt': '_ct',
+      },
+      ExpressionAttributeValues: {
+        ...ExpressionAttributeValues,
+        ':createdAt': now.getTime(),
+      },
+      Key: {
+        pk: ['ACCOUNT', input.externalId].join('#'),
+        sk: [
+          'SUBSCRIPTION_EVENT',
+          input.effectiveDate === null
+            ? null
+            : input.effectiveDate.toISOString(),
+        ].join('#'),
+      },
+      ReturnConsumedCapacity: 'INDEXES',
+      ReturnItemCollectionMetrics: 'SIZE',
+      ReturnValues: 'ALL_NEW',
+      TableName: tableName,
+      UpdateExpression: [
+        ...UpdateExpression.split(', '),
+        '#createdAt = :createdAt',
+      ].join(', '),
+    };
+
+    const {
+      ConsumedCapacity: capacity,
+      ItemCollectionMetrics: metrics,
+      Attributes: item,
+    } = await ddbDocClient.send(new UpdateCommand(commandInput));
+
+    assert(
+      capacity,
+      'Expected ConsumedCapacity to be returned. This is a bug in codegen.'
+    );
+
+    assert(item, 'Expected DynamoDB to return an Attributes prop.');
+    assert(
+      item._et === 'SubscriptionEvent',
+      () =>
+        new DataIntegrityError(
+          `Expected to write SubscriptionEvent but wrote ${item?._et} instead`
+        )
+    );
+
+    return {
+      capacity,
+      item: unmarshallSubscriptionEvent(item),
+      metrics,
+    };
+  } catch (err) {
+    if (err instanceof ConditionalCheckFailedException) {
+      throw new AlreadyExistsError('SubscriptionEvent', {
+        pk: ['ACCOUNT', input.externalId].join('#'),
+        sk: [
+          'SUBSCRIPTION_EVENT',
+          input.effectiveDate === null
+            ? null
+            : input.effectiveDate.toISOString(),
+        ].join('#'),
+      });
+    }
+
+    if (err instanceof AssertionError || err instanceof BaseDataLibraryError) {
+      throw err;
+    }
+    if (err instanceof ServiceException) {
+      throw new UnexpectedAwsError(err);
+    }
+    throw new UnexpectedError(err);
+  }
+}

@@ -132,3 +132,101 @@ export interface UserSession extends Model, Timestamped, Versioned {
 export interface Versioned {
   version: Scalars['Int'];
 }
+
+export type CreateUserSessionInput = Omit<
+  UserSession,
+  | 'createdAt'
+  | 'createdAt'
+  | 'expires'
+  | 'id'
+  | 'id'
+  | 'session'
+  | 'sessionId'
+  | 'updatedAt'
+  | 'updatedAt'
+  | 'version'
+  | 'version'
+> &
+  Partial<Pick<UserSession, 'expires'>>;
+
+export type CreateUserSessionOutput = ResultType<UserSession>;
+
+export async function createUserSession(
+  input: Readonly<CreateUserSessionInput>
+): Promise<Readonly<CreateUserSessionOutput>> {
+  const tableName = process.env.TABLE_USER_SESSION;
+  assert(tableName, 'TABLE_USER_SESSION is not set');
+
+  const now = new Date();
+
+  const {
+    ExpressionAttributeNames,
+    ExpressionAttributeValues,
+    UpdateExpression,
+  } = marshallUserSession(input, now);
+
+  try {
+    // Reminder: we use UpdateCommand rather than PutCommand because PutCommand
+    // cannot return the newly written values.
+    const commandInput: UpdateCommandInput = {
+      ConditionExpression: 'attribute_not_exists(#pk)',
+      ExpressionAttributeNames: {
+        ...ExpressionAttributeNames,
+        '#createdAt': '_ct',
+      },
+      ExpressionAttributeValues: {
+        ...ExpressionAttributeValues,
+        ':createdAt': now.getTime(),
+      },
+      Key: {pk: ['USER_SESSION', input.sessionId].join('#')},
+      ReturnConsumedCapacity: 'INDEXES',
+      ReturnItemCollectionMetrics: 'SIZE',
+      ReturnValues: 'ALL_NEW',
+      TableName: tableName,
+      UpdateExpression: [
+        ...UpdateExpression.split(', '),
+        '#createdAt = :createdAt',
+      ].join(', '),
+    };
+
+    const {
+      ConsumedCapacity: capacity,
+      ItemCollectionMetrics: metrics,
+      Attributes: item,
+    } = await ddbDocClient.send(new UpdateCommand(commandInput));
+
+    assert(
+      capacity,
+      'Expected ConsumedCapacity to be returned. This is a bug in codegen.'
+    );
+
+    assert(item, 'Expected DynamoDB to return an Attributes prop.');
+    assert(
+      item._et === 'UserSession',
+      () =>
+        new DataIntegrityError(
+          `Expected to write UserSession but wrote ${item?._et} instead`
+        )
+    );
+
+    return {
+      capacity,
+      item: unmarshallUserSession(item),
+      metrics,
+    };
+  } catch (err) {
+    if (err instanceof ConditionalCheckFailedException) {
+      throw new AlreadyExistsError('UserSession', {
+        pk: ['USER_SESSION', input.sessionId].join('#'),
+      });
+    }
+
+    if (err instanceof AssertionError || err instanceof BaseDataLibraryError) {
+      throw err;
+    }
+    if (err instanceof ServiceException) {
+      throw new UnexpectedAwsError(err);
+    }
+    throw new UnexpectedError(err);
+  }
+}
