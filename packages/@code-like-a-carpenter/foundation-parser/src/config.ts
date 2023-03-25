@@ -1,36 +1,22 @@
-import type {Condition} from '@code-like-a-carpenter/foundation-intermediate-representation';
+import {z} from 'zod';
 
-export interface Config {
-  conditions: Record<string, unknown>;
-  tableDefaults: {
-    enableEncryption: Condition;
-    enablePointInTimeRecovery: Condition;
-  };
-}
-
-export const defaultConfig: Config = {
-  conditions: {
+export const ParserConfigSchema = z.object({
+  conditions: z.record(z.unknown()).default({
     IsProd: {
       'Fn::Equals': ['StageName', 'Production'],
     },
-  },
-  tableDefaults: {
-    enableEncryption: 'IsProd',
-    enablePointInTimeRecovery: 'IsProd',
-  },
-};
+  }),
+  tableDefaults: z
+    .object({
+      enableEncryption: z.union([z.boolean(), z.string()]).default('IsProd'),
+      enablePointInTimeRecovery: z
+        .union([z.boolean(), z.string()])
+        .default('IsProd'),
+    })
+    .default({
+      enableEncryption: 'IsProd',
+      enablePointInTimeRecovery: 'IsProd',
+    }),
+});
 
-export function applyDefaults<T extends Config>(config: T): T {
-  return {
-    ...defaultConfig,
-    ...config,
-    conditions: {
-      ...defaultConfig.conditions,
-      ...config.conditions,
-    },
-    tableDefaults: {
-      ...defaultConfig.tableDefaults,
-      ...config.tableDefaults,
-    },
-  };
-}
+export type Config = z.infer<typeof ParserConfigSchema>;

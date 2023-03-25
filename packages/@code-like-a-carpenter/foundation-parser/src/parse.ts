@@ -9,13 +9,14 @@ import type {
 } from '@code-like-a-carpenter/foundation-intermediate-representation';
 
 import type {Config} from './config';
-import {applyDefaults} from './config';
+import {ParserConfigSchema} from './config';
 import {hasDirective} from './helpers';
 import {extractModel} from './models';
 import {extractTable} from './tables';
 
 export interface Info {
   [key: string]: unknown;
+
   outputFile?: string;
   allPlugins?: Types.ConfiguredPlugin[];
   pluginContext?: {
@@ -29,7 +30,7 @@ export function parse(
   config: Config,
   info?: Info
 ): IntermediateRepresentation {
-  const configWithDefaults = applyDefaults(config);
+  const configWithDefaults = ParserConfigSchema.parse(config);
 
   const typesMap = schema.getTypeMap();
 

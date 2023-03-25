@@ -3,7 +3,7 @@ import path from 'node:path';
 
 import {buildSchema} from 'graphql';
 
-import {defaultConfig} from './config';
+import {ParserConfigSchema} from './config';
 import {parse} from './parse';
 
 export async function parseSchema(raw: string) {
@@ -14,5 +14,5 @@ export async function parseSchema(raw: string) {
 
   const schema = buildSchema(`${coreSchema}\n${raw}`);
 
-  return parse(schema, [], defaultConfig, {});
+  return parse(schema, [], ParserConfigSchema.parse({}), {});
 }

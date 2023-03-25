@@ -1,5 +1,9 @@
-import type {Config as ParserConfig} from '@code-like-a-carpenter/foundation-parser';
+import {z} from 'zod';
 
-export interface Config extends ParserConfig {
-  legacyEmptySortFieldBehavior?: boolean;
-}
+import {ParserConfigSchema} from '@code-like-a-carpenter/foundation-parser';
+
+export const TypescriptPluginConfigSchema = ParserConfigSchema.extend({
+  legacyEmptySortFieldBehavior: z.boolean().default(false),
+});
+
+export type Config = z.infer<typeof TypescriptPluginConfigSchema>;

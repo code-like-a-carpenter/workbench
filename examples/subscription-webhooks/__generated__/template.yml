@@ -1,179 +1,179 @@
 Conditions:
   IsProd:
     Fn::Equals:
-      - StageName
-      - Production
+      - 'StageName'
+      - 'Production'
 Globals:
   Function:
     Environment:
       Variables:
         TABLE_SUBSCRIPTION_EVENT:
-          Ref: TableSubscriptionEvent
+          Ref: 'TableSubscriptionEvent'
 Outputs:
   TableAccount:
-    Description: The name of the DynamoDB table for TableAccount
+    Description: 'The name of the DynamoDB table for TableAccount'
     Export:
       Name:
-        Fn::Sub: ${AWS::StackName}-TableAccount
+        Fn::Sub: '${AWS::StackName}-TableAccount'
     Value:
-      Ref: TableAccount
+      Ref: 'TableAccount'
   TableMetric:
-    Description: The name of the DynamoDB table for TableMetric
+    Description: 'The name of the DynamoDB table for TableMetric'
     Export:
       Name:
-        Fn::Sub: ${AWS::StackName}-TableMetric
+        Fn::Sub: '${AWS::StackName}-TableMetric'
     Value:
-      Ref: TableMetric
+      Ref: 'TableMetric'
   TablePlanMetric:
-    Description: The name of the DynamoDB table for TablePlanMetric
+    Description: 'The name of the DynamoDB table for TablePlanMetric'
     Export:
       Name:
-        Fn::Sub: ${AWS::StackName}-TablePlanMetric
+        Fn::Sub: '${AWS::StackName}-TablePlanMetric'
     Value:
-      Ref: TablePlanMetric
+      Ref: 'TablePlanMetric'
   TableSubscriptionEvent:
-    Description: The name of the DynamoDB table for TableSubscriptionEvent
+    Description: 'The name of the DynamoDB table for TableSubscriptionEvent'
     Export:
       Name:
-        Fn::Sub: ${AWS::StackName}-TableSubscriptionEvent
+        Fn::Sub: '${AWS::StackName}-TableSubscriptionEvent'
     Value:
-      Ref: TableSubscriptionEvent
+      Ref: 'TableSubscriptionEvent'
 Parameters: {}
 Resources:
   TableAccount:
     Properties:
       AttributeDefinitions:
-        - AttributeName: pk
-          AttributeType: S
-        - AttributeName: sk
-          AttributeType: S
-      BillingMode: PAY_PER_REQUEST
+        - AttributeName: 'pk'
+          AttributeType: 'S'
+        - AttributeName: 'sk'
+          AttributeType: 'S'
+      BillingMode: 'PAY_PER_REQUEST'
       GlobalSecondaryIndexes:
-        - IndexName: gsi1
+        - IndexName: 'gsi1'
           KeySchema:
-            - AttributeName: gsi1pk
-              KeyType: HASH
-            - AttributeName: gsi1sk
-              KeyType: RANGE
+            - AttributeName: 'gsi1pk'
+              KeyType: 'HASH'
+            - AttributeName: 'gsi1sk'
+              KeyType: 'RANGE'
           Projection:
-            ProjectionType: ALL
+            ProjectionType: 'ALL'
       KeySchema:
-        - AttributeName: pk
-          KeyType: HASH
-        - AttributeName: sk
-          KeyType: RANGE
+        - AttributeName: 'pk'
+          KeyType: 'HASH'
+        - AttributeName: 'sk'
+          KeyType: 'RANGE'
       PointInTimeRecoverySpecification:
         PointInTimeRecoveryEnabled:
           Fn::If:
-            - IsProd
+            - 'IsProd'
             - true
             - false
       SSESpecification:
         SSEEnabled:
           Fn::If:
-            - IsProd
+            - 'IsProd'
             - true
             - false
       Tags:
-        - Key: StageName
+        - Key: 'StageName'
           Value:
-            Ref: StageName
-        - Key: TableName
-          Value: TableAccount
-    Type: AWS::DynamoDB::Table
+            Ref: 'StageName'
+        - Key: 'TableName'
+          Value: 'TableAccount'
+    Type: 'AWS::DynamoDB::Table'
   TableMetric:
     Properties:
       AttributeDefinitions:
-        - AttributeName: pk
-          AttributeType: S
-        - AttributeName: sk
-          AttributeType: S
-      BillingMode: PAY_PER_REQUEST
+        - AttributeName: 'pk'
+          AttributeType: 'S'
+        - AttributeName: 'sk'
+          AttributeType: 'S'
+      BillingMode: 'PAY_PER_REQUEST'
       KeySchema:
-        - AttributeName: pk
-          KeyType: HASH
-        - AttributeName: sk
-          KeyType: RANGE
+        - AttributeName: 'pk'
+          KeyType: 'HASH'
+        - AttributeName: 'sk'
+          KeyType: 'RANGE'
       PointInTimeRecoverySpecification:
         PointInTimeRecoveryEnabled:
           Fn::If:
-            - IsProd
+            - 'IsProd'
             - true
             - false
       SSESpecification:
         SSEEnabled:
           Fn::If:
-            - IsProd
+            - 'IsProd'
             - true
             - false
       Tags:
-        - Key: StageName
+        - Key: 'StageName'
           Value:
-            Ref: StageName
-        - Key: TableName
-          Value: TableMetric
-    Type: AWS::DynamoDB::Table
+            Ref: 'StageName'
+        - Key: 'TableName'
+          Value: 'TableMetric'
+    Type: 'AWS::DynamoDB::Table'
   TablePlanMetric:
     Properties:
       AttributeDefinitions:
-        - AttributeName: pk
-          AttributeType: S
-        - AttributeName: sk
-          AttributeType: S
-      BillingMode: PAY_PER_REQUEST
+        - AttributeName: 'pk'
+          AttributeType: 'S'
+        - AttributeName: 'sk'
+          AttributeType: 'S'
+      BillingMode: 'PAY_PER_REQUEST'
       KeySchema:
-        - AttributeName: pk
-          KeyType: HASH
-        - AttributeName: sk
-          KeyType: RANGE
+        - AttributeName: 'pk'
+          KeyType: 'HASH'
+        - AttributeName: 'sk'
+          KeyType: 'RANGE'
       PointInTimeRecoverySpecification:
         PointInTimeRecoveryEnabled:
           Fn::If:
-            - IsProd
+            - 'IsProd'
             - true
             - false
       SSESpecification:
         SSEEnabled:
           Fn::If:
-            - IsProd
+            - 'IsProd'
             - true
             - false
       Tags:
-        - Key: StageName
+        - Key: 'StageName'
           Value:
-            Ref: StageName
-        - Key: TableName
-          Value: TablePlanMetric
-    Type: AWS::DynamoDB::Table
+            Ref: 'StageName'
+        - Key: 'TableName'
+          Value: 'TablePlanMetric'
+    Type: 'AWS::DynamoDB::Table'
   TableSubscriptionEvent:
     Properties:
       AttributeDefinitions:
-        - AttributeName: pk
-          AttributeType: S
-        - AttributeName: sk
-          AttributeType: S
-      BillingMode: PAY_PER_REQUEST
+        - AttributeName: 'pk'
+          AttributeType: 'S'
+        - AttributeName: 'sk'
+          AttributeType: 'S'
+      BillingMode: 'PAY_PER_REQUEST'
       KeySchema:
-        - AttributeName: pk
-          KeyType: HASH
-        - AttributeName: sk
-          KeyType: RANGE
+        - AttributeName: 'pk'
+          KeyType: 'HASH'
+        - AttributeName: 'sk'
+          KeyType: 'RANGE'
       PointInTimeRecoverySpecification:
         PointInTimeRecoveryEnabled:
           Fn::If:
-            - IsProd
+            - 'IsProd'
             - true
             - false
       SSESpecification:
         SSEEnabled:
           Fn::If:
-            - IsProd
+            - 'IsProd'
             - true
             - false
       Tags:
-        - Key: StageName
+        - Key: 'StageName'
           Value:
-            Ref: StageName
-        - Key: TableName
-          Value: TableSubscriptionEvent
-    Type: AWS::DynamoDB::Table
+            Ref: 'StageName'
+        - Key: 'TableName'
+          Value: 'TableSubscriptionEvent'
+    Type: 'AWS::DynamoDB::Table'
