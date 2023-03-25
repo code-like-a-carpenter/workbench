@@ -35,15 +35,15 @@ exports.registerProjectTargets = function registerProjectTargets(
   return {
     build: {
       dependsOn: [
-        'build:cjs',
-        'build:esm',
-        'build:readme',
-        'build:types',
+        'build-cjs',
+        'build-esm',
+        'build-readme',
+        'build-types',
         '^build',
       ],
       executor: 'nx:noop',
     },
-    'build:cjs': {
+    'build-cjs': {
       executor: 'nx:run-commands',
       inputs: ['{projectRoot}/src/**/*', 'sharedGlobals'],
       options: {
@@ -51,7 +51,7 @@ exports.registerProjectTargets = function registerProjectTargets(
       },
       outputs: ['{projectRoot}/dist/cjs'],
     },
-    'build:esm': {
+    'build-esm': {
       executor: 'nx:run-commands',
       inputs: ['{projectRoot}/src/**/*', 'sharedGlobals'],
       options: {
@@ -59,7 +59,7 @@ exports.registerProjectTargets = function registerProjectTargets(
       },
       outputs: ['{projectRoot}/dist/esm'],
     },
-    'build:package': {
+    'build-package': {
       executor: 'nx:run-commands',
       inputs: [
         '{projectRoot}/src/**/*',
@@ -71,8 +71,8 @@ exports.registerProjectTargets = function registerProjectTargets(
       },
       outputs: ['{projectRoot}/package.json'],
     },
-    'build:project-refs': {
-      dependsOn: ['build:package', '^build:project-refs'],
+    'build-project-refs': {
+      dependsOn: ['build-package', '^build-project-refs'],
       executor: 'nx:run-commands',
       inputs: ['{projectRoot}/package.json', 'sharedGlobals'],
       options: {
@@ -80,8 +80,8 @@ exports.registerProjectTargets = function registerProjectTargets(
       },
       outputs: ['{projectRoot}/tsconfig.json', '{workspaceRoot}/tsconfig.json'],
     },
-    'build:readme': {
-      dependsOn: ['build:package'],
+    'build-readme': {
+      dependsOn: ['build-package'],
       executor: 'nx:run-commands',
       inputs: [
         '{projectRoot}/README.md',
@@ -94,8 +94,8 @@ exports.registerProjectTargets = function registerProjectTargets(
       },
       outputs: ['{projectRoot}/README.md'],
     },
-    'build:types': {
-      dependsOn: ['build:project-refs', '^build:types'],
+    'build-types': {
+      dependsOn: ['build-project-refs', '^build-types'],
       executor: 'nx:run-commands',
       inputs: ['{projectRoot}/src/**/*', 'sharedGlobals'],
       options: {
@@ -116,10 +116,10 @@ function configureExample(projectFilePath) {
   /** @type Record<string, unknown> */
   let targets = {
     build: {
-      dependsOn: ['build:package', '^build'],
+      dependsOn: ['build-package', '^build'],
       executor: 'nx:noop',
     },
-    'build:package': {
+    'build-package': {
       executor: 'nx:run-commands',
       inputs: [
         '{projectRoot}/src/**/*',
@@ -136,7 +136,7 @@ function configureExample(projectFilePath) {
   if (fs.existsSync(path.join(projectRoot, '/api.yml'))) {
     targets = {
       ...targets,
-      'build:openapi': {
+      'build-openapi': {
         executor: 'nx:run-commands',
         inputs: ['{projectRoot}/api.yml'],
         options: {
@@ -150,7 +150,7 @@ function configureExample(projectFilePath) {
     assert('dependsOn' in targets.build);
     assert(Array.isArray(targets.build.dependsOn));
 
-    targets.build.dependsOn.push('build:openapi');
+    targets.build.dependsOn.push('build-openapi');
   }
 
   return targets;
