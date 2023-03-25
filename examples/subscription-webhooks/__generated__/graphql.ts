@@ -1,3 +1,21 @@
+import {AssertionError} from 'node:assert';
+
+import {ConditionalCheckFailedException} from '@aws-sdk/client-dynamodb';
+import type {UpdateCommandInput} from '@aws-sdk/lib-dynamodb';
+import {UpdateCommand} from '@aws-sdk/lib-dynamodb';
+import {ServiceException} from '@aws-sdk/smithy-client';
+
+import {assert} from '@code-like-a-carpenter/assert';
+import type {ResultType} from '@code-like-a-carpenter/foundation-runtime';
+import {
+  AlreadyExistsError,
+  BaseDataLibraryError,
+  DataIntegrityError,
+  UnexpectedAwsError,
+  UnexpectedError,
+} from '@code-like-a-carpenter/foundation-runtime';
+
+import {ddbDocClient} from '../../shared-dependencies';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends {[key: string]: unknown}> = {[K in keyof T]: T[K]};
@@ -178,23 +196,7 @@ export interface Versioned {
 
 export type CreateAccountInput = Omit<
   Account,
-  | 'cancelled'
-  | 'createdAt'
-  | 'createdAt'
-  | 'effectiveDate'
-  | 'externalId'
-  | 'hasEverSubscribed'
-  | 'id'
-  | 'id'
-  | 'indexedPlanName'
-  | 'lastPlanName'
-  | 'monthlyPriceInCents'
-  | 'onFreeTrial'
-  | 'planName'
-  | 'updatedAt'
-  | 'updatedAt'
-  | 'version'
-  | 'version'
+  'createdAt' | 'id' | 'updatedAt' | 'version'
 >;
 
 export type CreateAccountOutput = ResultType<Account>;
@@ -221,12 +223,14 @@ export async function createAccount(
       ExpressionAttributeNames: {
         ...ExpressionAttributeNames,
         '#createdAt': '_ct',
+
         '#gsi1': 'gsi1',
         '#gsi1sk': 'gsi1sk',
       },
       ExpressionAttributeValues: {
         ...ExpressionAttributeValues,
         ':createdAt': now.getTime(),
+
         ':gsi1': ['PLAN', input.hasEverSubscribed].join('#'),
         ':gsi1sk': ['ACCOUNT', input.cancelled, input.indexedPlanName].join(
           '#'
@@ -288,17 +292,7 @@ export async function createAccount(
 
 export type CreateMetricInput = Omit<
   Metric,
-  | 'count'
-  | 'createdAt'
-  | 'createdAt'
-  | 'id'
-  | 'id'
-  | 'monthlyRecurringRevenueInCents'
-  | 'onFreeTrial'
-  | 'updatedAt'
-  | 'updatedAt'
-  | 'version'
-  | 'version'
+  'createdAt' | 'id' | 'updatedAt' | 'version'
 >;
 
 export type CreateMetricOutput = ResultType<Metric>;
@@ -389,19 +383,7 @@ export async function createMetric(
 
 export type CreatePlanMetricInput = Omit<
   PlanMetric,
-  | 'cancelled'
-  | 'count'
-  | 'createdAt'
-  | 'createdAt'
-  | 'id'
-  | 'id'
-  | 'monthlyRecurringRevenueInCents'
-  | 'onFreeTrial'
-  | 'planName'
-  | 'updatedAt'
-  | 'updatedAt'
-  | 'version'
-  | 'version'
+  'createdAt' | 'id' | 'updatedAt' | 'version'
 >;
 
 export type CreatePlanMetricOutput = ResultType<PlanMetric>;
@@ -492,20 +474,7 @@ export async function createPlanMetric(
 
 export type CreateSubscriptionEventInput = Omit<
   SubscriptionEvent,
-  | 'cancelled'
-  | 'createdAt'
-  | 'createdAt'
-  | 'effectiveDate'
-  | 'externalId'
-  | 'id'
-  | 'id'
-  | 'monthlyPriceInCents'
-  | 'onFreeTrial'
-  | 'planName'
-  | 'updatedAt'
-  | 'updatedAt'
-  | 'version'
-  | 'version'
+  'createdAt' | 'id' | 'updatedAt' | 'version'
 >;
 
 export type CreateSubscriptionEventOutput = ResultType<SubscriptionEvent>;

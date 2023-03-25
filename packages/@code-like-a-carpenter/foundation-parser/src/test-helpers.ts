@@ -14,5 +14,14 @@ export async function parseSchema(raw: string) {
 
   const schema = buildSchema(`${coreSchema}\n${raw}`);
 
-  return parse(schema, [], ParserConfigSchema.parse({}), {});
+  return parse(
+    schema,
+    [],
+    ParserConfigSchema.parse({
+      dependenciesModuleId: './placeholder/dependencies',
+    }),
+    {
+      outputFile: './placeholder/output',
+    }
+  );
 }

@@ -1,3 +1,21 @@
+import {AssertionError} from 'node:assert';
+
+import {ConditionalCheckFailedException} from '@aws-sdk/client-dynamodb';
+import type {UpdateCommandInput} from '@aws-sdk/lib-dynamodb';
+import {UpdateCommand} from '@aws-sdk/lib-dynamodb';
+import {ServiceException} from '@aws-sdk/smithy-client';
+
+import {assert} from '@code-like-a-carpenter/assert';
+import type {ResultType} from '@code-like-a-carpenter/foundation-runtime';
+import {
+  AlreadyExistsError,
+  BaseDataLibraryError,
+  DataIntegrityError,
+  UnexpectedAwsError,
+  UnexpectedError,
+} from '@code-like-a-carpenter/foundation-runtime';
+
+import {ddbDocClient} from '../../shared-dependencies';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends {[key: string]: unknown}> = {[K in keyof T]: T[K]};
@@ -135,17 +153,7 @@ export interface Versioned {
 
 export type CreateUserSessionInput = Omit<
   UserSession,
-  | 'createdAt'
-  | 'createdAt'
-  | 'expires'
-  | 'id'
-  | 'id'
-  | 'session'
-  | 'sessionId'
-  | 'updatedAt'
-  | 'updatedAt'
-  | 'version'
-  | 'version'
+  'createdAt' | 'id' | 'updatedAt' | 'version'
 > &
   Partial<Pick<UserSession, 'expires'>>;
 

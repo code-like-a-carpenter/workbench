@@ -6,6 +6,7 @@ export const ParserConfigSchema = z.object({
       'Fn::Equals': ['StageName', 'Production'],
     },
   }),
+  dependenciesModuleId: z.string(),
   tableDefaults: z
     .object({
       enableEncryption: z.union([z.boolean(), z.string()]).default('IsProd'),

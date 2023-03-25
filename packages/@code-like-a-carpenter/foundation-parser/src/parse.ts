@@ -1,7 +1,10 @@
+import path from 'node:path';
+
 import type {Types} from '@graphql-codegen/plugin-helpers/typings/types';
 import type {GraphQLSchema} from 'graphql';
 import {isInterfaceType, isObjectType} from 'graphql';
 
+import {assert} from '@code-like-a-carpenter/assert';
 import type {
   IntermediateRepresentation,
   Model,
@@ -22,6 +25,22 @@ export interface Info {
   pluginContext?: {
     [key: string]: unknown;
   };
+}
+
+function resolveDependenciesModuleId(config: Config, info: Info | undefined) {
+  assert(
+    info?.outputFile,
+    'You appear to be using this plugin in a context that does not require an output file. This is not supported.'
+  );
+  const {dependenciesModuleId} = config;
+  const {outputFile} = info;
+
+  return dependenciesModuleId.startsWith('.')
+    ? path.relative(
+        path.resolve(process.cwd(), path.dirname(outputFile)),
+        path.resolve(process.cwd(), dependenciesModuleId)
+      )
+    : dependenciesModuleId;
 }
 
 export function parse(
@@ -61,6 +80,7 @@ export function parse(
     });
 
   return {
+    dependenciesModuleId: resolveDependenciesModuleId(configWithDefaults, info),
     models,
     tables,
   };

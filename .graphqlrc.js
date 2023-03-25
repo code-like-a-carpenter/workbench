@@ -1,10 +1,14 @@
-const fs = require('node:fs');
+const path = require('node:path');
 
 const {sync: glob} = require('glob');
 
 const examples = glob('*/', {cwd: 'examples'}).map((pathName) =>
   pathName.replace(/\/$/, '')
 );
+
+const parserConfig = {
+  dependenciesModuleId: './examples/shared-dependencies',
+};
 
 /** @type {Record<string, import("graphql-config").IGraphQLProject>} */
 const init = {};
@@ -18,6 +22,7 @@ const config = {
           generates: {
             [`examples/${example}/__generated__/graphql.ts`]: {
               config: {
+                ...parserConfig,
                 declarationKind: 'interface',
                 enumsAsTypes: true,
                 scalars: {
@@ -32,6 +37,9 @@ const config = {
               ],
             },
             [`examples/${example}/__generated__/template.yml`]: {
+              config: {
+                ...parserConfig,
+              },
               plugins: [
                 '@code-like-a-carpenter/foundation-plugin-cloudformation',
               ],

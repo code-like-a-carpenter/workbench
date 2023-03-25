@@ -16,19 +16,16 @@ import {
 import {handleCommonErrors} from './common';
 
 function inputTypeTemplate(model: Model) {
-  const {fields, isPublic, ttlConfig, typeName} = model;
+  const {isPublic, ttlConfig, typeName} = model;
   const inputTypeName = `Create${typeName}Input`;
 
-  const fieldsToOmit = [
-    'createdAt',
-    'id',
-    'updatedAt',
-    'version',
-    isPublic && 'publicId',
-    ...fields.map(({fieldName}) => fieldName),
-  ]
-    .filter(filterNull)
-    .map((f) => `'${f}'`)
+  const fieldsToOmit = Array.from(
+    new Set(
+      ['createdAt', 'id', 'updatedAt', 'version', isPublic && 'publicId']
+        .filter(filterNull)
+        .map((f) => `'${f}'`)
+    )
+  )
     .sort()
     .join('|');
 
@@ -40,6 +37,8 @@ function inputTypeTemplate(model: Model) {
 }
 
 function commandPayloadTemplate(config: Config, model: Model) {
+  const {isPublic, secondaryIndexes} = model;
+
   const key = makeKey(config, model);
 
   return `
@@ -50,12 +49,14 @@ function commandPayloadTemplate(config: Config, model: Model) {
       ExpressionAttributeNames: {
         ...ExpressionAttributeNames,
         '#createdAt': '_ct',
-        ${model.secondaryIndexes.map(indexToEANPart).flat().join('\n')}
+        ${isPublic ? "'#publicId': 'publicId'," : ''}
+        ${secondaryIndexes.map(indexToEANPart).flat().join('\n')}
       },
       ExpressionAttributeValues: {
         ...ExpressionAttributeValues,
         ':createdAt': now.getTime(),
-        ${model.secondaryIndexes
+        ${isPublic ? "':publicId': publicId," : ''}
+        ${secondaryIndexes
           .map((index) => indexToEAVPart('create', index))
           .flat()
           .join('\n')}
@@ -68,10 +69,8 @@ function commandPayloadTemplate(config: Config, model: Model) {
       UpdateExpression: [
         ...UpdateExpression.split(', '),
         '#createdAt = :createdAt',
-        ${model.secondaryIndexes
-          .map(indexToUpdateExpressionPart)
-          .flat()
-          .join('\n')}
+        ${isPublic ? "'#publicId = :publicId'," : ''}
+        ${secondaryIndexes.map(indexToUpdateExpressionPart).flat().join('\n')}
       ].join(', ')
     };
     `;
