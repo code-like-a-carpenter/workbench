@@ -451,6 +451,90 @@ export async function deleteUserSession(
   }
 }
 
+export type BlindWriteUserSessionInput = Omit<
+  UserSession,
+  'createdAt' | 'expires' | 'id' | 'updatedAt' | 'version'
+> &
+  Partial<Pick<UserSession, 'expires'>>;
+
+export type BlindWriteUserSessionOutput = ResultType<UserSession>;
+/** */
+export async function blindWriteUserSession(
+  input: Readonly<BlindWriteUserSessionInput>
+): Promise<Readonly<BlindWriteUserSessionOutput>> {
+  const tableName = process.env.TABLE_USER_SESSION;
+  assert(tableName, 'TABLE_USER_SESSION is not set');
+  const now = new Date();
+  const {
+    ExpressionAttributeNames,
+    ExpressionAttributeValues,
+    UpdateExpression,
+  } = marshallUserSession(input, now);
+
+  delete ExpressionAttributeNames['#pk'];
+  delete ExpressionAttributeValues[':version'];
+
+  const ean = {
+    ...ExpressionAttributeNames,
+    '#createdAt': '_ct',
+  };
+  const eav = {
+    ...ExpressionAttributeValues,
+    ':one': 1,
+    ':createdAt': now.getTime(),
+  };
+  const ue = `${[
+    ...UpdateExpression.split(', ').filter((e) => !e.startsWith('#version')),
+    '#createdAt = if_not_exists(#createdAt, :createdAt)',
+  ].join(', ')} ADD #version :one`;
+
+  const commandInput: UpdateCommandInput = {
+    ExpressionAttributeNames: ean,
+    ExpressionAttributeValues: eav,
+    Key: {pk: ['USER_SESSION', input.sessionId].join('#')},
+    ReturnConsumedCapacity: 'INDEXES',
+    ReturnItemCollectionMetrics: 'SIZE',
+    ReturnValues: 'ALL_NEW',
+    TableName: tableName,
+    UpdateExpression: ue,
+  };
+
+  try {
+    const {
+      ConsumedCapacity: capacity,
+      ItemCollectionMetrics: metrics,
+      Attributes: item,
+    } = await ddbDocClient.send(new UpdateCommand(commandInput));
+    assert(
+      capacity,
+      'Expected ConsumedCapacity to be returned. This is a bug in codegen.'
+    );
+
+    assert(item, 'Expected DynamoDB ot return an Attributes prop.');
+    assert(
+      item._et === 'UserSession',
+      () =>
+        new DataIntegrityError(
+          `Expected to write UserSession but wrote ${item?._et} instead`
+        )
+    );
+
+    return {
+      capacity,
+      item: unmarshallUserSession(item),
+      metrics,
+    };
+  } catch (err) {
+    if (err instanceof AssertionError || err instanceof BaseDataLibraryError) {
+      throw err;
+    }
+    if (err instanceof ServiceException) {
+      throw new UnexpectedAwsError(err);
+    }
+    throw new UnexpectedError(err);
+  }
+}
+
 export interface MarshallUserSessionOutput {
   ExpressionAttributeNames: Record<string, string>;
   ExpressionAttributeValues: Record<string, NativeAttributeValue>;

@@ -6,6 +6,7 @@ import {logGraphQLCodegenPluginErrors} from '@code-like-a-carpenter/graphql-code
 import type {Config} from './config';
 import {TypescriptPluginConfigSchema} from './config';
 import {filterNull} from './helpers';
+import {blindWriteTpl} from './templates/blind-write-item';
 import {createItemTpl} from './templates/create-item';
 import {deleteItemTpl} from './templates/delete-item';
 import {marshallTpl} from './templates/marshall';
@@ -31,6 +32,7 @@ export const plugin: PluginFunction<Config> = logGraphQLCodegenPluginErrors(
         readItemTpl(config, model),
         updateItemTpl(config, model),
         deleteItemTpl(config, model),
+        blindWriteTpl(config, model),
         marshallTpl(model),
         unmarshallTpl(model),
       ])

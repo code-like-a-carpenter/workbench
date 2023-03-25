@@ -501,6 +501,95 @@ export async function deleteAccount(
   }
 }
 
+export type BlindWriteAccountInput = Omit<
+  Account,
+  'createdAt' | 'id' | 'updatedAt' | 'version'
+>;
+
+export type BlindWriteAccountOutput = ResultType<Account>;
+/** */
+export async function blindWriteAccount(
+  input: Readonly<BlindWriteAccountInput>
+): Promise<Readonly<BlindWriteAccountOutput>> {
+  const tableName = process.env.TABLE_ACCOUNT;
+  assert(tableName, 'TABLE_ACCOUNT is not set');
+  const now = new Date();
+  const {
+    ExpressionAttributeNames,
+    ExpressionAttributeValues,
+    UpdateExpression,
+  } = marshallAccount(input, now);
+
+  delete ExpressionAttributeNames['#pk'];
+  delete ExpressionAttributeValues[':version'];
+
+  const ean = {
+    ...ExpressionAttributeNames,
+    '#createdAt': '_ct',
+
+    '#gsi1': 'gsi1',
+    '#gsi1sk': 'gsi1sk',
+  };
+  const eav = {
+    ...ExpressionAttributeValues,
+    ':one': 1,
+    ':createdAt': now.getTime(),
+
+    ':gsi1': ['PLAN', input.hasEverSubscribed].join('#'),
+    ':gsi1sk': ['ACCOUNT', input.cancelled, input.indexedPlanName].join('#'),
+  };
+  const ue = `${[
+    ...UpdateExpression.split(', ').filter((e) => !e.startsWith('#version')),
+    '#createdAt = if_not_exists(#createdAt, :createdAt)',
+  ].join(', ')} ADD #version :one`;
+
+  const commandInput: UpdateCommandInput = {
+    ExpressionAttributeNames: ean,
+    ExpressionAttributeValues: eav,
+    Key: {pk: ['ACCOUNT', input.externalId].join('#'), sk: [].join('#')},
+    ReturnConsumedCapacity: 'INDEXES',
+    ReturnItemCollectionMetrics: 'SIZE',
+    ReturnValues: 'ALL_NEW',
+    TableName: tableName,
+    UpdateExpression: ue,
+  };
+
+  try {
+    const {
+      ConsumedCapacity: capacity,
+      ItemCollectionMetrics: metrics,
+      Attributes: item,
+    } = await ddbDocClient.send(new UpdateCommand(commandInput));
+    assert(
+      capacity,
+      'Expected ConsumedCapacity to be returned. This is a bug in codegen.'
+    );
+
+    assert(item, 'Expected DynamoDB ot return an Attributes prop.');
+    assert(
+      item._et === 'Account',
+      () =>
+        new DataIntegrityError(
+          `Expected to write Account but wrote ${item?._et} instead`
+        )
+    );
+
+    return {
+      capacity,
+      item: unmarshallAccount(item),
+      metrics,
+    };
+  } catch (err) {
+    if (err instanceof AssertionError || err instanceof BaseDataLibraryError) {
+      throw err;
+    }
+    if (err instanceof ServiceException) {
+      throw new UnexpectedAwsError(err);
+    }
+    throw new UnexpectedError(err);
+  }
+}
+
 export interface MarshallAccountOutput {
   ExpressionAttributeNames: Record<string, string>;
   ExpressionAttributeValues: Record<string, NativeAttributeValue>;
@@ -992,6 +1081,92 @@ export async function deleteMetric(
   }
 }
 
+export type BlindWriteMetricInput = Omit<
+  Metric,
+  'createdAt' | 'id' | 'updatedAt' | 'version'
+>;
+
+export type BlindWriteMetricOutput = ResultType<Metric>;
+/** */
+export async function blindWriteMetric(
+  input: Readonly<BlindWriteMetricInput>
+): Promise<Readonly<BlindWriteMetricOutput>> {
+  const tableName = process.env.TABLE_METRIC;
+  assert(tableName, 'TABLE_METRIC is not set');
+  const now = new Date();
+  const {
+    ExpressionAttributeNames,
+    ExpressionAttributeValues,
+    UpdateExpression,
+  } = marshallMetric(input, now);
+
+  delete ExpressionAttributeNames['#pk'];
+  delete ExpressionAttributeValues[':version'];
+
+  const ean = {
+    ...ExpressionAttributeNames,
+    '#createdAt': '_ct',
+  };
+  const eav = {
+    ...ExpressionAttributeValues,
+    ':one': 1,
+    ':createdAt': now.getTime(),
+  };
+  const ue = `${[
+    ...UpdateExpression.split(', ').filter((e) => !e.startsWith('#version')),
+    '#createdAt = if_not_exists(#createdAt, :createdAt)',
+  ].join(', ')} ADD #version :one`;
+
+  const commandInput: UpdateCommandInput = {
+    ExpressionAttributeNames: ean,
+    ExpressionAttributeValues: eav,
+    Key: {
+      pk: ['BUSINESS_METRIC'].join('#'),
+      sk: ['SUMMARY', input.onFreeTrial].join('#'),
+    },
+    ReturnConsumedCapacity: 'INDEXES',
+    ReturnItemCollectionMetrics: 'SIZE',
+    ReturnValues: 'ALL_NEW',
+    TableName: tableName,
+    UpdateExpression: ue,
+  };
+
+  try {
+    const {
+      ConsumedCapacity: capacity,
+      ItemCollectionMetrics: metrics,
+      Attributes: item,
+    } = await ddbDocClient.send(new UpdateCommand(commandInput));
+    assert(
+      capacity,
+      'Expected ConsumedCapacity to be returned. This is a bug in codegen.'
+    );
+
+    assert(item, 'Expected DynamoDB ot return an Attributes prop.');
+    assert(
+      item._et === 'Metric',
+      () =>
+        new DataIntegrityError(
+          `Expected to write Metric but wrote ${item?._et} instead`
+        )
+    );
+
+    return {
+      capacity,
+      item: unmarshallMetric(item),
+      metrics,
+    };
+  } catch (err) {
+    if (err instanceof AssertionError || err instanceof BaseDataLibraryError) {
+      throw err;
+    }
+    if (err instanceof ServiceException) {
+      throw new UnexpectedAwsError(err);
+    }
+    throw new UnexpectedError(err);
+  }
+}
+
 export interface MarshallMetricOutput {
   ExpressionAttributeNames: Record<string, string>;
   ExpressionAttributeValues: Record<string, NativeAttributeValue>;
@@ -1370,6 +1545,92 @@ export async function deletePlanMetric(
       throw new NotFoundError('PlanMetric', input);
     }
 
+    if (err instanceof AssertionError || err instanceof BaseDataLibraryError) {
+      throw err;
+    }
+    if (err instanceof ServiceException) {
+      throw new UnexpectedAwsError(err);
+    }
+    throw new UnexpectedError(err);
+  }
+}
+
+export type BlindWritePlanMetricInput = Omit<
+  PlanMetric,
+  'createdAt' | 'id' | 'updatedAt' | 'version'
+>;
+
+export type BlindWritePlanMetricOutput = ResultType<PlanMetric>;
+/** */
+export async function blindWritePlanMetric(
+  input: Readonly<BlindWritePlanMetricInput>
+): Promise<Readonly<BlindWritePlanMetricOutput>> {
+  const tableName = process.env.TABLE_PLAN_METRIC;
+  assert(tableName, 'TABLE_PLAN_METRIC is not set');
+  const now = new Date();
+  const {
+    ExpressionAttributeNames,
+    ExpressionAttributeValues,
+    UpdateExpression,
+  } = marshallPlanMetric(input, now);
+
+  delete ExpressionAttributeNames['#pk'];
+  delete ExpressionAttributeValues[':version'];
+
+  const ean = {
+    ...ExpressionAttributeNames,
+    '#createdAt': '_ct',
+  };
+  const eav = {
+    ...ExpressionAttributeValues,
+    ':one': 1,
+    ':createdAt': now.getTime(),
+  };
+  const ue = `${[
+    ...UpdateExpression.split(', ').filter((e) => !e.startsWith('#version')),
+    '#createdAt = if_not_exists(#createdAt, :createdAt)',
+  ].join(', ')} ADD #version :one`;
+
+  const commandInput: UpdateCommandInput = {
+    ExpressionAttributeNames: ean,
+    ExpressionAttributeValues: eav,
+    Key: {
+      pk: ['BUSINESS_METRIC'].join('#'),
+      sk: ['PLAN', input.onFreeTrial, input.planName].join('#'),
+    },
+    ReturnConsumedCapacity: 'INDEXES',
+    ReturnItemCollectionMetrics: 'SIZE',
+    ReturnValues: 'ALL_NEW',
+    TableName: tableName,
+    UpdateExpression: ue,
+  };
+
+  try {
+    const {
+      ConsumedCapacity: capacity,
+      ItemCollectionMetrics: metrics,
+      Attributes: item,
+    } = await ddbDocClient.send(new UpdateCommand(commandInput));
+    assert(
+      capacity,
+      'Expected ConsumedCapacity to be returned. This is a bug in codegen.'
+    );
+
+    assert(item, 'Expected DynamoDB ot return an Attributes prop.');
+    assert(
+      item._et === 'PlanMetric',
+      () =>
+        new DataIntegrityError(
+          `Expected to write PlanMetric but wrote ${item?._et} instead`
+        )
+    );
+
+    return {
+      capacity,
+      item: unmarshallPlanMetric(item),
+      metrics,
+    };
+  } catch (err) {
     if (err instanceof AssertionError || err instanceof BaseDataLibraryError) {
       throw err;
     }
@@ -1802,6 +2063,95 @@ export async function deleteSubscriptionEvent(
       throw new NotFoundError('SubscriptionEvent', input);
     }
 
+    if (err instanceof AssertionError || err instanceof BaseDataLibraryError) {
+      throw err;
+    }
+    if (err instanceof ServiceException) {
+      throw new UnexpectedAwsError(err);
+    }
+    throw new UnexpectedError(err);
+  }
+}
+
+export type BlindWriteSubscriptionEventInput = Omit<
+  SubscriptionEvent,
+  'createdAt' | 'id' | 'updatedAt' | 'version'
+>;
+
+export type BlindWriteSubscriptionEventOutput = ResultType<SubscriptionEvent>;
+/** */
+export async function blindWriteSubscriptionEvent(
+  input: Readonly<BlindWriteSubscriptionEventInput>
+): Promise<Readonly<BlindWriteSubscriptionEventOutput>> {
+  const tableName = process.env.TABLE_SUBSCRIPTION_EVENT;
+  assert(tableName, 'TABLE_SUBSCRIPTION_EVENT is not set');
+  const now = new Date();
+  const {
+    ExpressionAttributeNames,
+    ExpressionAttributeValues,
+    UpdateExpression,
+  } = marshallSubscriptionEvent(input, now);
+
+  delete ExpressionAttributeNames['#pk'];
+  delete ExpressionAttributeValues[':version'];
+
+  const ean = {
+    ...ExpressionAttributeNames,
+    '#createdAt': '_ct',
+  };
+  const eav = {
+    ...ExpressionAttributeValues,
+    ':one': 1,
+    ':createdAt': now.getTime(),
+  };
+  const ue = `${[
+    ...UpdateExpression.split(', ').filter((e) => !e.startsWith('#version')),
+    '#createdAt = if_not_exists(#createdAt, :createdAt)',
+  ].join(', ')} ADD #version :one`;
+
+  const commandInput: UpdateCommandInput = {
+    ExpressionAttributeNames: ean,
+    ExpressionAttributeValues: eav,
+    Key: {
+      pk: ['ACCOUNT', input.externalId].join('#'),
+      sk: [
+        'SUBSCRIPTION_EVENT',
+        input.effectiveDate === null ? null : input.effectiveDate.toISOString(),
+      ].join('#'),
+    },
+    ReturnConsumedCapacity: 'INDEXES',
+    ReturnItemCollectionMetrics: 'SIZE',
+    ReturnValues: 'ALL_NEW',
+    TableName: tableName,
+    UpdateExpression: ue,
+  };
+
+  try {
+    const {
+      ConsumedCapacity: capacity,
+      ItemCollectionMetrics: metrics,
+      Attributes: item,
+    } = await ddbDocClient.send(new UpdateCommand(commandInput));
+    assert(
+      capacity,
+      'Expected ConsumedCapacity to be returned. This is a bug in codegen.'
+    );
+
+    assert(item, 'Expected DynamoDB ot return an Attributes prop.');
+    assert(
+      item._et === 'SubscriptionEvent',
+      () =>
+        new DataIntegrityError(
+          `Expected to write SubscriptionEvent but wrote ${item?._et} instead`
+        )
+    );
+
+    return {
+      capacity,
+      item: unmarshallSubscriptionEvent(item),
+      metrics,
+    };
+  } catch (err) {
     if (err instanceof AssertionError || err instanceof BaseDataLibraryError) {
       throw err;
     }
