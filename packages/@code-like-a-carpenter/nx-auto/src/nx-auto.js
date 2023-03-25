@@ -1,6 +1,8 @@
 'use strict';
 
-const path = require('path');
+const assert = require('node:assert');
+const fs = require('node:fs');
+const path = require('node:path');
 
 const glob = require('glob');
 
@@ -109,19 +111,13 @@ function configureExample(projectFilePath) {
   const projectRoot = path.dirname(projectFilePath);
 
   const packageName = projectRoot.split('/').slice(-1).join('/');
+  assert(packageName);
 
-  return {
+  /** @type Record<string, unknown> */
+  let targets = {
     build: {
-      dependsOn: ['build:openapi', 'build:package', '^build'],
+      dependsOn: ['build:package', '^build'],
       executor: 'nx:noop',
-    },
-    'build:openapi': {
-      executor: 'nx:run-commands',
-      inputs: ['{projectRoot}/api.yml'],
-      options: {
-        command: `npx --no-install openapi-typescript ${projectRoot}/api.yml --prettier-config ./.prettierrc --output ${projectRoot}/src/__generated__/api.ts && npm run eslint -- ${projectRoot}/src/__generated__/api.ts --fix`,
-      },
-      outputs: [`{projectRoot}/src/__generated__/api.ts`],
     },
     'build:package': {
       executor: 'nx:run-commands',
@@ -131,9 +127,31 @@ function configureExample(projectFilePath) {
         'sharedGlobals',
       ],
       options: {
-        command: `node ./packages/@code-like-a-carpenter/nx-auto/ package --package-name ${packageName} --type="example"`,
+        command: `node ./packages/@code-like-a-carpenter/nx-auto package --package-name ${packageName} --type="example"`,
       },
       outputs: ['{projectRoot}/package.json'],
     },
   };
+
+  if (fs.existsSync(path.join(projectRoot, '/api.yml'))) {
+    targets = {
+      ...targets,
+      'build:openapi': {
+        executor: 'nx:run-commands',
+        inputs: ['{projectRoot}/api.yml'],
+        options: {
+          command: `npx --no-install openapi-typescript ${projectRoot}/api.yml --prettier-config ./.prettierrc --output ${projectRoot}/src/__generated__/api.ts && npm run eslint -- ${projectRoot}/src/__generated__/api.ts --fix`,
+        },
+        outputs: [`{projectRoot}/src/__generated__/api.ts`],
+      },
+    };
+    assert(typeof targets.build === 'object');
+    assert(targets.build !== null);
+    assert('dependsOn' in targets.build);
+    assert(Array.isArray(targets.build.dependsOn));
+
+    targets.build.dependsOn.push('build:openapi');
+  }
+
+  return targets;
 }
