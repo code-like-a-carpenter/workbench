@@ -1,8 +1,8 @@
 import {AssertionError} from 'node:assert';
 
 import {ConditionalCheckFailedException} from '@aws-sdk/client-dynamodb';
-import type {UpdateCommandInput} from '@aws-sdk/lib-dynamodb';
-import {UpdateCommand} from '@aws-sdk/lib-dynamodb';
+import type {GetCommandInput, UpdateCommandInput} from '@aws-sdk/lib-dynamodb';
+import {GetCommand, UpdateCommand} from '@aws-sdk/lib-dynamodb';
 import {ServiceException} from '@aws-sdk/smithy-client';
 import type {NativeAttributeValue} from '@aws-sdk/util-dynamodb';
 import Base64 from 'base64url';
@@ -15,6 +15,7 @@ import {
   AlreadyExistsError,
   BaseDataLibraryError,
   DataIntegrityError,
+  NotFoundError,
   UnexpectedAwsError,
   UnexpectedError,
 } from '@code-like-a-carpenter/foundation-runtime';
@@ -198,6 +199,10 @@ export interface Versioned {
   version: Scalars['Int'];
 }
 
+export interface AccountPrimaryKey {
+  externalId: Scalars['String'];
+}
+
 export type CreateAccountInput = Omit<
   Account,
   'createdAt' | 'id' | 'updatedAt' | 'version'
@@ -284,6 +289,59 @@ export async function createAccount(
       });
     }
 
+    if (err instanceof AssertionError || err instanceof BaseDataLibraryError) {
+      throw err;
+    }
+    if (err instanceof ServiceException) {
+      throw new UnexpectedAwsError(err);
+    }
+    throw new UnexpectedError(err);
+  }
+}
+
+export type ReadAccountOutput = ResultType<Account>;
+
+/**  */
+export async function readAccount(
+  input: AccountPrimaryKey
+): Promise<Readonly<ReadAccountOutput>> {
+  const tableName = process.env.TABLE_ACCOUNT;
+  assert(tableName, 'TABLE_ACCOUNT is not set');
+
+  const commandInput: GetCommandInput = {
+    ConsistentRead: false,
+    Key: {pk: ['ACCOUNT', input.externalId].join('#'), sk: [].join('#')},
+    ReturnConsumedCapacity: 'INDEXES',
+    TableName: tableName,
+  };
+
+  try {
+    const {ConsumedCapacity: capacity, Item: item} = await ddbDocClient.send(
+      new GetCommand(commandInput)
+    );
+
+    assert(
+      capacity,
+      'Expected ConsumedCapacity to be returned. This is a bug in codegen.'
+    );
+
+    assert(item, () => new NotFoundError('Account', input));
+    assert(
+      item._et === 'Account',
+      () =>
+        new DataIntegrityError(
+          `Expected ${JSON.stringify(input)} to load a Account but loaded ${
+            item._et
+          } instead`
+        )
+    );
+
+    return {
+      capacity,
+      item: unmarshallAccount(item),
+      metrics: undefined,
+    };
+  } catch (err) {
     if (err instanceof AssertionError || err instanceof BaseDataLibraryError) {
       throw err;
     }
@@ -491,6 +549,10 @@ export function unmarshallAccount(item: Record<string, any>): Account {
   return result;
 }
 
+export interface MetricPrimaryKey {
+  onFreeTrial: Scalars['Boolean'];
+}
+
 export type CreateMetricInput = Omit<
   Metric,
   'createdAt' | 'id' | 'updatedAt' | 'version'
@@ -572,6 +634,62 @@ export async function createMetric(
       });
     }
 
+    if (err instanceof AssertionError || err instanceof BaseDataLibraryError) {
+      throw err;
+    }
+    if (err instanceof ServiceException) {
+      throw new UnexpectedAwsError(err);
+    }
+    throw new UnexpectedError(err);
+  }
+}
+
+export type ReadMetricOutput = ResultType<Metric>;
+
+/**  */
+export async function readMetric(
+  input: MetricPrimaryKey
+): Promise<Readonly<ReadMetricOutput>> {
+  const tableName = process.env.TABLE_METRIC;
+  assert(tableName, 'TABLE_METRIC is not set');
+
+  const commandInput: GetCommandInput = {
+    ConsistentRead: false,
+    Key: {
+      pk: ['BUSINESS_METRIC'].join('#'),
+      sk: ['SUMMARY', input.onFreeTrial].join('#'),
+    },
+    ReturnConsumedCapacity: 'INDEXES',
+    TableName: tableName,
+  };
+
+  try {
+    const {ConsumedCapacity: capacity, Item: item} = await ddbDocClient.send(
+      new GetCommand(commandInput)
+    );
+
+    assert(
+      capacity,
+      'Expected ConsumedCapacity to be returned. This is a bug in codegen.'
+    );
+
+    assert(item, () => new NotFoundError('Metric', input));
+    assert(
+      item._et === 'Metric',
+      () =>
+        new DataIntegrityError(
+          `Expected ${JSON.stringify(input)} to load a Metric but loaded ${
+            item._et
+          } instead`
+        )
+    );
+
+    return {
+      capacity,
+      item: unmarshallMetric(item),
+      metrics: undefined,
+    };
+  } catch (err) {
     if (err instanceof AssertionError || err instanceof BaseDataLibraryError) {
       throw err;
     }
@@ -667,6 +785,11 @@ export function unmarshallMetric(item: Record<string, any>): Metric {
   return result;
 }
 
+export interface PlanMetricPrimaryKey {
+  onFreeTrial: Scalars['Boolean'];
+  planName: Scalars['String'];
+}
+
 export type CreatePlanMetricInput = Omit<
   PlanMetric,
   'createdAt' | 'id' | 'updatedAt' | 'version'
@@ -748,6 +871,62 @@ export async function createPlanMetric(
       });
     }
 
+    if (err instanceof AssertionError || err instanceof BaseDataLibraryError) {
+      throw err;
+    }
+    if (err instanceof ServiceException) {
+      throw new UnexpectedAwsError(err);
+    }
+    throw new UnexpectedError(err);
+  }
+}
+
+export type ReadPlanMetricOutput = ResultType<PlanMetric>;
+
+/**  */
+export async function readPlanMetric(
+  input: PlanMetricPrimaryKey
+): Promise<Readonly<ReadPlanMetricOutput>> {
+  const tableName = process.env.TABLE_PLAN_METRIC;
+  assert(tableName, 'TABLE_PLAN_METRIC is not set');
+
+  const commandInput: GetCommandInput = {
+    ConsistentRead: false,
+    Key: {
+      pk: ['BUSINESS_METRIC'].join('#'),
+      sk: ['PLAN', input.onFreeTrial, input.planName].join('#'),
+    },
+    ReturnConsumedCapacity: 'INDEXES',
+    TableName: tableName,
+  };
+
+  try {
+    const {ConsumedCapacity: capacity, Item: item} = await ddbDocClient.send(
+      new GetCommand(commandInput)
+    );
+
+    assert(
+      capacity,
+      'Expected ConsumedCapacity to be returned. This is a bug in codegen.'
+    );
+
+    assert(item, () => new NotFoundError('PlanMetric', input));
+    assert(
+      item._et === 'PlanMetric',
+      () =>
+        new DataIntegrityError(
+          `Expected ${JSON.stringify(input)} to load a PlanMetric but loaded ${
+            item._et
+          } instead`
+        )
+    );
+
+    return {
+      capacity,
+      item: unmarshallPlanMetric(item),
+      metrics: undefined,
+    };
+  } catch (err) {
     if (err instanceof AssertionError || err instanceof BaseDataLibraryError) {
       throw err;
     }
@@ -864,6 +1043,11 @@ export function unmarshallPlanMetric(item: Record<string, any>): PlanMetric {
   return result;
 }
 
+export interface SubscriptionEventPrimaryKey {
+  effectiveDate: Scalars['Date'];
+  externalId: Scalars['String'];
+}
+
 export type CreateSubscriptionEventInput = Omit<
   SubscriptionEvent,
   'createdAt' | 'id' | 'updatedAt' | 'version'
@@ -955,6 +1139,65 @@ export async function createSubscriptionEvent(
       });
     }
 
+    if (err instanceof AssertionError || err instanceof BaseDataLibraryError) {
+      throw err;
+    }
+    if (err instanceof ServiceException) {
+      throw new UnexpectedAwsError(err);
+    }
+    throw new UnexpectedError(err);
+  }
+}
+
+export type ReadSubscriptionEventOutput = ResultType<SubscriptionEvent>;
+
+/**  */
+export async function readSubscriptionEvent(
+  input: SubscriptionEventPrimaryKey
+): Promise<Readonly<ReadSubscriptionEventOutput>> {
+  const tableName = process.env.TABLE_SUBSCRIPTION_EVENT;
+  assert(tableName, 'TABLE_SUBSCRIPTION_EVENT is not set');
+
+  const commandInput: GetCommandInput = {
+    ConsistentRead: false,
+    Key: {
+      pk: ['ACCOUNT', input.externalId].join('#'),
+      sk: [
+        'SUBSCRIPTION_EVENT',
+        input.effectiveDate === null ? null : input.effectiveDate.toISOString(),
+      ].join('#'),
+    },
+    ReturnConsumedCapacity: 'INDEXES',
+    TableName: tableName,
+  };
+
+  try {
+    const {ConsumedCapacity: capacity, Item: item} = await ddbDocClient.send(
+      new GetCommand(commandInput)
+    );
+
+    assert(
+      capacity,
+      'Expected ConsumedCapacity to be returned. This is a bug in codegen.'
+    );
+
+    assert(item, () => new NotFoundError('SubscriptionEvent', input));
+    assert(
+      item._et === 'SubscriptionEvent',
+      () =>
+        new DataIntegrityError(
+          `Expected ${JSON.stringify(
+            input
+          )} to load a SubscriptionEvent but loaded ${item._et} instead`
+        )
+    );
+
+    return {
+      capacity,
+      item: unmarshallSubscriptionEvent(item),
+      metrics: undefined,
+    };
+  } catch (err) {
     if (err instanceof AssertionError || err instanceof BaseDataLibraryError) {
       throw err;
     }

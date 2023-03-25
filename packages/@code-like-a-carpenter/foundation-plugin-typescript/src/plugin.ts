@@ -8,6 +8,8 @@ import {TypescriptPluginConfigSchema} from './config';
 import {filterNull} from './helpers';
 import {createItemTpl} from './templates/create-item';
 import {marshallTpl} from './templates/marshall';
+import {primaryKeyTpl} from './templates/primary-key';
+import {readItemTpl} from './templates/read-item';
 import {unmarshallTpl} from './templates/unmarshall';
 
 export const plugin: PluginFunction<Config> = logGraphQLCodegenPluginErrors(
@@ -22,7 +24,9 @@ export const plugin: PluginFunction<Config> = logGraphQLCodegenPluginErrors(
 
     const content = models
       .map((model) => [
+        primaryKeyTpl(model),
         createItemTpl(config, model),
+        readItemTpl(config, model),
         marshallTpl(model),
         unmarshallTpl(model),
       ])
@@ -46,6 +50,8 @@ export const plugin: PluginFunction<Config> = logGraphQLCodegenPluginErrors(
         `import {AssertionError} from 'node:assert';`,
         `import {ConditionalCheckFailedException} from '@aws-sdk/client-dynamodb';`,
         `import {
+          GetCommand,
+          GetCommandInput,
           UpdateCommand,
           UpdateCommandInput
         } from '@aws-sdk/lib-dynamodb';`,
@@ -59,6 +65,7 @@ export const plugin: PluginFunction<Config> = logGraphQLCodegenPluginErrors(
           AlreadyExistsError,
           BaseDataLibraryError,
           DataIntegrityError,
+          NotFoundError,
           ResultType,
           UnexpectedAwsError,
           UnexpectedError

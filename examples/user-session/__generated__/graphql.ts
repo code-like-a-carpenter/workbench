@@ -1,8 +1,8 @@
 import {AssertionError} from 'node:assert';
 
 import {ConditionalCheckFailedException} from '@aws-sdk/client-dynamodb';
-import type {UpdateCommandInput} from '@aws-sdk/lib-dynamodb';
-import {UpdateCommand} from '@aws-sdk/lib-dynamodb';
+import type {GetCommandInput, UpdateCommandInput} from '@aws-sdk/lib-dynamodb';
+import {GetCommand, UpdateCommand} from '@aws-sdk/lib-dynamodb';
 import {ServiceException} from '@aws-sdk/smithy-client';
 import type {NativeAttributeValue} from '@aws-sdk/util-dynamodb';
 import Base64 from 'base64url';
@@ -15,6 +15,7 @@ import {
   AlreadyExistsError,
   BaseDataLibraryError,
   DataIntegrityError,
+  NotFoundError,
   UnexpectedAwsError,
   UnexpectedError,
 } from '@code-like-a-carpenter/foundation-runtime';
@@ -155,6 +156,10 @@ export interface Versioned {
   version: Scalars['Int'];
 }
 
+export interface UserSessionPrimaryKey {
+  sessionId: Scalars['String'];
+}
+
 export type CreateUserSessionInput = Omit<
   UserSession,
   'createdAt' | 'id' | 'updatedAt' | 'version'
@@ -233,6 +238,59 @@ export async function createUserSession(
       });
     }
 
+    if (err instanceof AssertionError || err instanceof BaseDataLibraryError) {
+      throw err;
+    }
+    if (err instanceof ServiceException) {
+      throw new UnexpectedAwsError(err);
+    }
+    throw new UnexpectedError(err);
+  }
+}
+
+export type ReadUserSessionOutput = ResultType<UserSession>;
+
+/**  */
+export async function readUserSession(
+  input: UserSessionPrimaryKey
+): Promise<Readonly<ReadUserSessionOutput>> {
+  const tableName = process.env.TABLE_USER_SESSION;
+  assert(tableName, 'TABLE_USER_SESSION is not set');
+
+  const commandInput: GetCommandInput = {
+    ConsistentRead: true,
+    Key: {pk: ['USER_SESSION', input.sessionId].join('#')},
+    ReturnConsumedCapacity: 'INDEXES',
+    TableName: tableName,
+  };
+
+  try {
+    const {ConsumedCapacity: capacity, Item: item} = await ddbDocClient.send(
+      new GetCommand(commandInput)
+    );
+
+    assert(
+      capacity,
+      'Expected ConsumedCapacity to be returned. This is a bug in codegen.'
+    );
+
+    assert(item, () => new NotFoundError('UserSession', input));
+    assert(
+      item._et === 'UserSession',
+      () =>
+        new DataIntegrityError(
+          `Expected ${JSON.stringify(input)} to load a UserSession but loaded ${
+            item._et
+          } instead`
+        )
+    );
+
+    return {
+      capacity,
+      item: unmarshallUserSession(item),
+      metrics: undefined,
+    };
+  } catch (err) {
     if (err instanceof AssertionError || err instanceof BaseDataLibraryError) {
       throw err;
     }

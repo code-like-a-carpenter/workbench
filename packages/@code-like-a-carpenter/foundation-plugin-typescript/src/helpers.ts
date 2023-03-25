@@ -29,6 +29,27 @@ function getTransformString(field: Field): string {
   return '';
 }
 
+/** Gets the TypeScript type for that corresponds to the field. */
+export function getTypeScriptTypeForField({
+  fieldName,
+  isRequired,
+  isScalarType: isScalar,
+  typeName,
+}: Field): [string, string] {
+  if (isRequired) {
+    if (isScalar) {
+      return [fieldName, `Scalars["${typeName}"]`];
+    }
+    return [fieldName, typeName];
+  }
+
+  if (isScalar) {
+    return [`${fieldName}?`, `Maybe<Scalars["${typeName}"]>`];
+  }
+
+  return [`${fieldName}?`, `Maybe<${typeName}>`];
+}
+
 /** Generates the template for producing the desired primary key or index column */
 export function makeKeyTemplate(
   prefix: string | undefined,
