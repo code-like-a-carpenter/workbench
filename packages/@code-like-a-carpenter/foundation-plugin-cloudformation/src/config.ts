@@ -2,6 +2,13 @@ import {z} from 'zod';
 
 import {ParserConfigSchema} from '@code-like-a-carpenter/foundation-parser';
 
+const BuildPropertiesSchema = z.object({
+  external: z.array(z.string()).default(['@aws-sdk/*']),
+  minify: z.boolean().default(false),
+  sourcemap: z.boolean().default(true),
+  target: z.string().default('es2020'),
+});
+
 const DumpOptions = z.object({
   condenseFlow: z.boolean().optional(),
   flowLevel: z.number().optional(),
@@ -17,6 +24,9 @@ const DumpOptions = z.object({
 });
 
 export const CloudFormationPluginConfigSchema = ParserConfigSchema.extend({
+  buildProperties: BuildPropertiesSchema.default(
+    BuildPropertiesSchema.parse({})
+  ),
   outputConfig: z
     .object({
       format: z.enum(['json', 'yaml']).default('yaml'),

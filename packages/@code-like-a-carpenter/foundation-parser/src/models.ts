@@ -17,6 +17,7 @@ import {
   extractSecondaryIndexes,
   extractTTLConfig,
 } from './extractors';
+import {extractChangeDataCaptureConfig} from './extractors/cdc';
 import {extractFields} from './fields';
 import {hasDirective, hasInterface} from './helpers';
 import {extractTable} from './tables';
@@ -32,7 +33,8 @@ export function getModel(type: GraphQLType): Readonly<Model> {
 export function extractModel(
   config: Config,
   schema: GraphQLSchema,
-  type: GraphQLInterfaceType | GraphQLObjectType
+  type: GraphQLInterfaceType | GraphQLObjectType,
+  outputPath: string
 ): Model {
   const cachedModel = models.get(type);
   if (cachedModel) {
@@ -46,6 +48,11 @@ export function extractModel(
   // we can't attach the table until after the model is in the cache because
   // extractTable needs to read the model from the cache.
   const model: Omit<Model, 'table'> = {
+    changeDataCaptureConfig: extractChangeDataCaptureConfig(
+      config,
+      schema,
+      type
+    ),
     consistent: hasDirective('consistent', type),
     fields,
     isLedger: hasDirective('ledger', type),
@@ -65,7 +72,7 @@ export function extractModel(
   const wholeModel: Model = model;
   // extraction and assignment are on two different lines so the scope of the
   // ts-expect-error is as small as possible.
-  const table = extractTable(config, schema, type);
+  const table = extractTable(config, schema, type, outputPath);
 
   // @ts-expect-error - it's ok that we're assigning to a readonly property
   wholeModel.table = table;

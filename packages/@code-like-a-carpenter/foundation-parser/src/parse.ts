@@ -50,6 +50,11 @@ export function parse(
   info?: Info
 ): IntermediateRepresentation {
   const configWithDefaults = ParserConfigSchema.parse(config);
+  const outputFile = info?.outputFile;
+  assert(
+    outputFile,
+    'You appear to be using this plugin in a context that does not require an output file. This is not supported.'
+  );
 
   const typesMap = schema.getTypeMap();
 
@@ -58,10 +63,10 @@ export function parse(
     .filter((type) => hasDirective('model', type))
     .map((type) => {
       if (isObjectType(type)) {
-        return extractModel(config, schema, type);
+        return extractModel(config, schema, type, outputFile);
       }
       if (isInterfaceType(type)) {
-        return extractModel(config, schema, type);
+        return extractModel(config, schema, type, outputFile);
       }
       throw new Error(`Type ${type} is not an object or interface`);
     });
@@ -71,10 +76,10 @@ export function parse(
     .filter((type) => hasDirective('model', type))
     .map((type) => {
       if (isObjectType(type)) {
-        return extractTable(configWithDefaults, schema, type);
+        return extractTable(configWithDefaults, schema, type, outputFile);
       }
       if (isInterfaceType(type)) {
-        return extractTable(configWithDefaults, schema, type);
+        return extractTable(configWithDefaults, schema, type, outputFile);
       }
       throw new Error(`Type ${type} is not an object or interface`);
     });

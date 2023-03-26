@@ -12,19 +12,24 @@ import type {
   Model,
   Model as ServerlessApplicationModel,
 } from './__generated__/serverless-application-model';
+import {defineTableDispatcher} from './cdc/fragments/table-dispatcher';
+import {combineFragments} from './combine-fragments';
 import type {Config} from './config';
 
 export function defineTable(
   config: Config,
-  {
+  table: Table
+): ServerlessApplicationModel {
+  const {
     enableEncryption,
     enablePointInTimeRecovery,
+    hasCdc,
     hasTtl,
     primaryKey: {isComposite},
     secondaryIndexes,
     tableName,
-  }: Table
-): ServerlessApplicationModel {
+  } = table;
+
   const resource: AWSDynamoDBTable = {
     Properties: {
       AttributeDefinitions: defineAttributes(isComposite),
@@ -34,6 +39,7 @@ export function defineTable(
       LocalSecondaryIndexes: defineLSIs(secondaryIndexes),
       ...definePointInTimeRecoverySpecification(enablePointInTimeRecovery),
       ...defineSSESpecification(enableEncryption),
+      ...defineStreamSpecification(hasCdc),
       Tags: [
         {
           Key: 'StageName',
@@ -58,36 +64,39 @@ export function defineTable(
     delete resource.Properties.LocalSecondaryIndexes;
   }
 
-  return {
-    Conditions: {
-      ...makeCondition(config, enableEncryption),
-      ...makeCondition(config, enablePointInTimeRecovery),
-    },
-    Globals: {
-      Function: {
-        Environment: {
-          Variables: {
-            [snakeCase(tableName).toUpperCase()]: {Ref: tableName},
+  return combineFragments(
+    {
+      Conditions: {
+        ...makeCondition(config, enableEncryption),
+        ...makeCondition(config, enablePointInTimeRecovery),
+      },
+      Globals: {
+        Function: {
+          Environment: {
+            Variables: {
+              [snakeCase(tableName).toUpperCase()]: {Ref: tableName},
+            },
           },
         },
       },
-    },
-    Outputs: {
-      [tableName]: {
-        Description: `The name of the DynamoDB table for ${tableName}`,
-        Export: {
-          Name: {'Fn::Sub': `\${AWS::StackName}-${tableName}`},
-        },
-        Value: {
-          Ref: tableName,
+      Outputs: {
+        [tableName]: {
+          Description: `The name of the DynamoDB table for ${tableName}`,
+          Export: {
+            Name: {'Fn::Sub': `\${AWS::StackName}-${tableName}`},
+          },
+          Value: {
+            Ref: tableName,
+          },
         },
       },
+      Parameters: {},
+      Resources: {
+        [tableName]: resource,
+      },
     },
-    Parameters: {},
-    Resources: {
-      [tableName]: resource,
-    },
-  };
+    defineTableDispatcher(config, table)
+  );
 }
 
 function defineAttributes(isComposite: boolean) {
@@ -211,6 +220,18 @@ function defineSSESpecification(condition: Condition) {
       SSEEnabled: {
         'Fn::If': [condition, true, false],
       },
+    },
+  };
+}
+
+function defineStreamSpecification(hasCdc: boolean) {
+  if (!hasCdc) {
+    return {};
+  }
+
+  return {
+    StreamSpecification: {
+      StreamViewType: 'NEW_AND_OLD_IMAGES',
     },
   };
 }

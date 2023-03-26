@@ -2,6 +2,7 @@ import type {
   ConsumedCapacity,
   ItemCollectionMetrics,
 } from '@aws-sdk/client-dynamodb';
+import type {EventBridgeClient} from '@aws-sdk/client-eventbridge';
 import type {NativeAttributeValue} from '@aws-sdk/util-dynamodb';
 
 export interface QueryOptions {
@@ -28,4 +29,12 @@ export interface MultiResultType<T> {
   hasNextPage: boolean;
   items: T[];
   nextToken: Record<string, NativeAttributeValue> | undefined;
+}
+
+export interface WithTableName {
+  tableName: string;
+}
+
+export interface WithEventBridge {
+  eventBridge: EventBridgeClient;
 }

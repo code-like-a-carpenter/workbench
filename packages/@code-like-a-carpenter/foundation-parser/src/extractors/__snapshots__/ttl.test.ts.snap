@@ -6,6 +6,7 @@ exports[`@ttl expires a record after a specified duration 2`] = `
   "dependenciesModuleId": "dependencies",
   "models": [
     {
+      "changeDataCaptureConfig": [],
       "consistent": false,
       "fields": [
         {
@@ -109,6 +110,7 @@ exports[`@ttl expires a record after a specified duration 2`] = `
       "table": {
         "enableEncryption": "IsProd",
         "enablePointInTimeRecovery": "IsProd",
+        "hasCdc": false,
         "hasPublicModels": false,
         "hasTtl": true,
         "primaryKey": {
@@ -150,6 +152,7 @@ exports[`@ttl expires a record after a specified duration 2`] = `
     {
       "enableEncryption": "IsProd",
       "enablePointInTimeRecovery": "IsProd",
+      "hasCdc": false,
       "hasPublicModels": false,
       "hasTtl": true,
       "primaryKey": {
@@ -188,6 +191,7 @@ exports[`@ttl marks a fields as the ttl field 2`] = `
   "dependenciesModuleId": "dependencies",
   "models": [
     {
+      "changeDataCaptureConfig": [],
       "consistent": false,
       "fields": [
         {
@@ -291,6 +295,7 @@ exports[`@ttl marks a fields as the ttl field 2`] = `
       "table": {
         "enableEncryption": "IsProd",
         "enablePointInTimeRecovery": "IsProd",
+        "hasCdc": false,
         "hasPublicModels": false,
         "hasTtl": true,
         "primaryKey": {
@@ -331,6 +336,7 @@ exports[`@ttl marks a fields as the ttl field 2`] = `
     {
       "enableEncryption": "IsProd",
       "enablePointInTimeRecovery": "IsProd",
+      "hasCdc": false,
       "hasPublicModels": false,
       "hasTtl": true,
       "primaryKey": {
@@ -369,6 +375,7 @@ exports[`@ttl optionally allows the end-user to specify an alternative expiratio
   "dependenciesModuleId": "dependencies",
   "models": [
     {
+      "changeDataCaptureConfig": [],
       "consistent": false,
       "fields": [
         {
@@ -472,6 +479,7 @@ exports[`@ttl optionally allows the end-user to specify an alternative expiratio
       "table": {
         "enableEncryption": "IsProd",
         "enablePointInTimeRecovery": "IsProd",
+        "hasCdc": false,
         "hasPublicModels": false,
         "hasTtl": true,
         "primaryKey": {
@@ -513,6 +521,7 @@ exports[`@ttl optionally allows the end-user to specify an alternative expiratio
     {
       "enableEncryption": "IsProd",
       "enablePointInTimeRecovery": "IsProd",
+      "hasCdc": false,
       "hasPublicModels": false,
       "hasTtl": true,
       "primaryKey": {

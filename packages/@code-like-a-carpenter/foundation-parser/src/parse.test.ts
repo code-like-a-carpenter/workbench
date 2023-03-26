@@ -24,6 +24,7 @@ describe('parse()', () => {
         "dependenciesModuleId": "dependencies",
         "models": [
           {
+            "changeDataCaptureConfig": [],
             "consistent": true,
             "fields": [
               {
@@ -157,6 +158,7 @@ describe('parse()', () => {
             "table": {
               "enableEncryption": "IsProd",
               "enablePointInTimeRecovery": "IsProd",
+              "hasCdc": false,
               "hasPublicModels": false,
               "hasTtl": true,
               "primaryKey": {
@@ -198,6 +200,7 @@ describe('parse()', () => {
           {
             "enableEncryption": "IsProd",
             "enablePointInTimeRecovery": "IsProd",
+            "hasCdc": false,
             "hasPublicModels": false,
             "hasTtl": true,
             "primaryKey": {

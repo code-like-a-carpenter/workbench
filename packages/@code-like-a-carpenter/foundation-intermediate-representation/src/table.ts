@@ -1,6 +1,18 @@
 import type {Condition} from './cloudformation';
 
-export interface Table {
+export interface DispatcherConfig {
+  readonly batchSize: number;
+  readonly dependenciesModuleId: string;
+  readonly directory: string;
+  readonly filename: string;
+  readonly functionName: string;
+  readonly maximumRetryAttempts: number;
+  readonly memorySize: number;
+  readonly runtimeModuleId: string;
+  readonly timeout: number;
+}
+
+export interface BaseTable {
   readonly enableEncryption: boolean | Condition;
   readonly enablePointInTimeRecovery: boolean | Condition;
   readonly hasPublicModels: boolean;
@@ -9,6 +21,17 @@ export interface Table {
   readonly secondaryIndexes: readonly TableSecondaryIndex[];
   readonly tableName: string;
 }
+
+export interface TableWithCdc extends BaseTable {
+  readonly hasCdc: true;
+  readonly dispatcherConfig: DispatcherConfig;
+}
+
+export interface TableWithoutCdc extends BaseTable {
+  readonly hasCdc: false;
+}
+
+export type Table = TableWithCdc | TableWithoutCdc;
 
 export interface TablePrimaryKeyConfig {
   readonly isComposite: boolean;

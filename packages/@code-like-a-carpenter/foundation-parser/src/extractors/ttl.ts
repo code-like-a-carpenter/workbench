@@ -14,7 +14,7 @@ import {
  * Determines TTL configuration for a particular Model.
  */
 export function extractTTLConfig(
-  type: GraphQLInterfaceType | GraphQLObjectType<unknown, unknown>
+  type: GraphQLInterfaceType | GraphQLObjectType
 ): TTLConfig | undefined {
   const fields =
     type.astNode?.fields?.filter((field) =>

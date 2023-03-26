@@ -6,6 +6,7 @@ import type {
 
 import {assert} from '@code-like-a-carpenter/assert';
 import type {
+  BaseTable,
   Condition,
   SecondaryIndex,
   Table,
@@ -14,6 +15,7 @@ import type {
 
 import {assertPrimaryKeysMatch} from './assertions';
 import type {Config} from './config';
+import {extractDispatcherConfig} from './extractors/cdc';
 import {
   getCondition,
   getOptionalArgStringValue,
@@ -29,7 +31,8 @@ const tables = new Map<GraphQLSchema, Map<string, Table>>();
 export function extractTable(
   config: Config,
   schema: GraphQLSchema,
-  type: GraphQLInterfaceType | GraphQLObjectType
+  type: GraphQLInterfaceType | GraphQLObjectType,
+  outputFile: string
 ): Table {
   let mapForSchema = tables.get(schema);
   if (!mapForSchema) {
@@ -44,7 +47,7 @@ export function extractTable(
     return updateExistingTable(config, type, existingTable, tableName);
   }
 
-  const newTable = defineNewTable(config, type, tableName);
+  const newTable = defineNewTable(config, type, tableName, outputFile);
   mapForSchema.set(newTable.tableName, newTable);
 
   return newTable;
@@ -53,11 +56,12 @@ export function extractTable(
 function defineNewTable(
   config: Config,
   type: GraphQLInterfaceType | GraphQLObjectType,
-  tableName: string
+  tableName: string,
+  outputFile: string
 ): Table {
   const model = getModel(type);
 
-  const table: Table = {
+  const table: BaseTable = {
     enableEncryption: shouldEnableEncryption(config, type),
     enablePointInTimeRecovery: shouldEnablePointIntTimeRecovery(config, type),
     hasPublicModels: hasInterface('PublicModel', type),
@@ -67,10 +71,24 @@ function defineNewTable(
     tableName,
   };
 
-  return table;
+  if (model.changeDataCaptureConfig.length) {
+    return {
+      ...table,
+      dispatcherConfig: extractDispatcherConfig(
+        config,
+        type,
+        tableName,
+        model,
+        outputFile
+      ),
+      hasCdc: true,
+    };
+  }
+
+  return {...table, hasCdc: false};
 }
 
-function extractTableName(
+export function extractTableName(
   type: GraphQLInterfaceType | GraphQLObjectType
 ): string {
   const directive = getOptionalDirective('table', type);

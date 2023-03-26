@@ -2,6 +2,7 @@ import type {Field} from './field';
 import type {Table} from './table';
 
 export interface Model {
+  readonly changeDataCaptureConfig: readonly ChangeDataCaptureConfig[];
   readonly consistent: boolean;
   readonly fields: readonly Field[];
   readonly isLedger: boolean;
@@ -73,3 +74,26 @@ export type TTLConfig =
       readonly duration: number;
       readonly fieldName: string;
     };
+
+export type ChangeDataCaptureEvent = 'INSERT' | 'MODIFY' | 'REMOVE' | 'UPSERT';
+
+export type ChangeDataCaptureConfig =
+  | ChangeDataCaptureEnricherConfig
+  | ChangeDataCaptureReactorConfig;
+
+export interface BaseChangeDataCaptureConfig {
+  readonly event: ChangeDataCaptureEvent;
+}
+
+export interface ChangeDataCaptureEnricherConfig
+  extends BaseChangeDataCaptureConfig {
+  readonly sourceModelName: string;
+  readonly targetModelName: string;
+  readonly type: 'ENRICHER';
+}
+
+export interface ChangeDataCaptureReactorConfig
+  extends BaseChangeDataCaptureConfig {
+  readonly sourceModelName: string;
+  readonly type: 'TRIGGER';
+}

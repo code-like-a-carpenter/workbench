@@ -6,6 +6,7 @@ exports[`@primaryKey defines a composite primary key with no sort key fields 2`]
   "dependenciesModuleId": "dependencies",
   "models": [
     {
+      "changeDataCaptureConfig": [],
       "consistent": false,
       "fields": [
         {
@@ -98,6 +99,7 @@ exports[`@primaryKey defines a composite primary key with no sort key fields 2`]
       "table": {
         "enableEncryption": "IsProd",
         "enablePointInTimeRecovery": "IsProd",
+        "hasCdc": false,
         "hasPublicModels": false,
         "hasTtl": false,
         "primaryKey": {
@@ -137,6 +139,7 @@ exports[`@primaryKey defines a composite primary key with no sort key fields 2`]
     {
       "enableEncryption": "IsProd",
       "enablePointInTimeRecovery": "IsProd",
+      "hasCdc": false,
       "hasPublicModels": false,
       "hasTtl": false,
       "primaryKey": {
@@ -178,6 +181,7 @@ exports[`@primaryKey defines composite primary keys 2`] = `
   "dependenciesModuleId": "dependencies",
   "models": [
     {
+      "changeDataCaptureConfig": [],
       "consistent": false,
       "fields": [
         {
@@ -316,6 +320,7 @@ exports[`@primaryKey defines composite primary keys 2`] = `
       "table": {
         "enableEncryption": "IsProd",
         "enablePointInTimeRecovery": "IsProd",
+        "hasCdc": false,
         "hasPublicModels": false,
         "hasTtl": false,
         "primaryKey": {
@@ -371,6 +376,7 @@ exports[`@primaryKey defines composite primary keys 2`] = `
     {
       "enableEncryption": "IsProd",
       "enablePointInTimeRecovery": "IsProd",
+      "hasCdc": false,
       "hasPublicModels": false,
       "hasTtl": false,
       "primaryKey": {
@@ -428,6 +434,7 @@ exports[`@primaryKey defines multi-field composite primary keys 2`] = `
   "dependenciesModuleId": "dependencies",
   "models": [
     {
+      "changeDataCaptureConfig": [],
       "consistent": false,
       "fields": [
         {
@@ -626,6 +633,7 @@ exports[`@primaryKey defines multi-field composite primary keys 2`] = `
       "table": {
         "enableEncryption": "IsProd",
         "enablePointInTimeRecovery": "IsProd",
+        "hasCdc": false,
         "hasPublicModels": false,
         "hasTtl": false,
         "primaryKey": {
@@ -711,6 +719,7 @@ exports[`@primaryKey defines multi-field composite primary keys 2`] = `
     {
       "enableEncryption": "IsProd",
       "enablePointInTimeRecovery": "IsProd",
+      "hasCdc": false,
       "hasPublicModels": false,
       "hasTtl": false,
       "primaryKey": {
@@ -798,6 +807,7 @@ exports[`@primaryKey defines multi-field composite primary keys with single-fiel
   "dependenciesModuleId": "dependencies",
   "models": [
     {
+      "changeDataCaptureConfig": [],
       "consistent": false,
       "fields": [
         {
@@ -966,6 +976,7 @@ exports[`@primaryKey defines multi-field composite primary keys with single-fiel
       "table": {
         "enableEncryption": "IsProd",
         "enablePointInTimeRecovery": "IsProd",
+        "hasCdc": false,
         "hasPublicModels": false,
         "hasTtl": false,
         "primaryKey": {
@@ -1036,6 +1047,7 @@ exports[`@primaryKey defines multi-field composite primary keys with single-fiel
     {
       "enableEncryption": "IsProd",
       "enablePointInTimeRecovery": "IsProd",
+      "hasCdc": false,
       "hasPublicModels": false,
       "hasTtl": false,
       "primaryKey": {
@@ -1108,6 +1120,7 @@ exports[`@primaryKey defines multi-field composite primary keys with single-fiel
   "dependenciesModuleId": "dependencies",
   "models": [
     {
+      "changeDataCaptureConfig": [],
       "consistent": false,
       "fields": [
         {
@@ -1276,6 +1289,7 @@ exports[`@primaryKey defines multi-field composite primary keys with single-fiel
       "table": {
         "enableEncryption": "IsProd",
         "enablePointInTimeRecovery": "IsProd",
+        "hasCdc": false,
         "hasPublicModels": false,
         "hasTtl": false,
         "primaryKey": {
@@ -1346,6 +1360,7 @@ exports[`@primaryKey defines multi-field composite primary keys with single-fiel
     {
       "enableEncryption": "IsProd",
       "enablePointInTimeRecovery": "IsProd",
+      "hasCdc": false,
       "hasPublicModels": false,
       "hasTtl": false,
       "primaryKey": {
@@ -1418,6 +1433,7 @@ exports[`@primaryKey defines multi-field simple primary keys 2`] = `
   "dependenciesModuleId": "dependencies",
   "models": [
     {
+      "changeDataCaptureConfig": [],
       "consistent": false,
       "fields": [
         {
@@ -1552,6 +1568,7 @@ exports[`@primaryKey defines multi-field simple primary keys 2`] = `
       "table": {
         "enableEncryption": "IsProd",
         "enablePointInTimeRecovery": "IsProd",
+        "hasCdc": false,
         "hasPublicModels": false,
         "hasTtl": false,
         "primaryKey": {
@@ -1603,6 +1620,7 @@ exports[`@primaryKey defines multi-field simple primary keys 2`] = `
     {
       "enableEncryption": "IsProd",
       "enablePointInTimeRecovery": "IsProd",
+      "hasCdc": false,
       "hasPublicModels": false,
       "hasTtl": false,
       "primaryKey": {
@@ -1656,6 +1674,7 @@ exports[`@primaryKey defines simple primary keys 2`] = `
   "dependenciesModuleId": "dependencies",
   "models": [
     {
+      "changeDataCaptureConfig": [],
       "consistent": false,
       "fields": [
         {
@@ -1745,6 +1764,7 @@ exports[`@primaryKey defines simple primary keys 2`] = `
       "table": {
         "enableEncryption": "IsProd",
         "enablePointInTimeRecovery": "IsProd",
+        "hasCdc": false,
         "hasPublicModels": false,
         "hasTtl": false,
         "primaryKey": {
@@ -1781,6 +1801,7 @@ exports[`@primaryKey defines simple primary keys 2`] = `
     {
       "enableEncryption": "IsProd",
       "enablePointInTimeRecovery": "IsProd",
+      "hasCdc": false,
       "hasPublicModels": false,
       "hasTtl": false,
       "primaryKey": {

@@ -1,3 +1,4 @@
+export * from './cdc';
 export * from './errors';
 export * from './field-provider';
 export * from './query';
