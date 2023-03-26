@@ -11,6 +11,7 @@ import {createItemTpl} from './templates/create-item';
 import {deleteItemTpl} from './templates/delete-item';
 import {marshallTpl} from './templates/marshall';
 import {primaryKeyTpl} from './templates/primary-key';
+import {queryTpl} from './templates/query';
 import {readItemTpl} from './templates/read-item';
 import {unmarshallTpl} from './templates/unmarshall';
 import {updateItemTpl} from './templates/update-item';
@@ -33,6 +34,7 @@ export const plugin: PluginFunction<Config> = logGraphQLCodegenPluginErrors(
         updateItemTpl(config, model),
         deleteItemTpl(config, model),
         blindWriteTpl(config, model),
+        queryTpl(model),
         marshallTpl(model),
         unmarshallTpl(model),
       ])
@@ -64,6 +66,8 @@ export const plugin: PluginFunction<Config> = logGraphQLCodegenPluginErrors(
           DeleteCommandInput,
           GetCommand,
           GetCommandInput,
+          QueryCommand,
+          QueryCommandInput,
           UpdateCommand,
           UpdateCommandInput
         } from '@aws-sdk/lib-dynamodb';`,
@@ -72,13 +76,16 @@ export const plugin: PluginFunction<Config> = logGraphQLCodegenPluginErrors(
         `import {NativeAttributeValue} from '@aws-sdk/util-dynamodb';`,
         `import Base64 from 'base64url';`,
         `import {
+          makeSortKeyForQuery,
           unmarshallRequiredField,
           unmarshallOptionalField,
           AlreadyExistsError,
           BaseDataLibraryError,
           DataIntegrityError,
+          MultiResultType,
           NotFoundError,
           OptimisticLockingError,
+          QueryOptions,
           ResultType,
           UnexpectedAwsError,
           UnexpectedError

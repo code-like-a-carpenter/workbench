@@ -8,16 +8,27 @@ import {
 import type {
   DeleteCommandInput,
   GetCommandInput,
+  QueryCommandInput,
   UpdateCommandInput,
 } from '@aws-sdk/lib-dynamodb';
-import {DeleteCommand, GetCommand, UpdateCommand} from '@aws-sdk/lib-dynamodb';
+import {
+  DeleteCommand,
+  GetCommand,
+  QueryCommand,
+  UpdateCommand,
+} from '@aws-sdk/lib-dynamodb';
 import {ServiceException} from '@aws-sdk/smithy-client';
 import type {NativeAttributeValue} from '@aws-sdk/util-dynamodb';
 import Base64 from 'base64url';
 
 import {assert} from '@code-like-a-carpenter/assert';
-import type {ResultType} from '@code-like-a-carpenter/foundation-runtime';
+import type {
+  MultiResultType,
+  QueryOptions,
+  ResultType,
+} from '@code-like-a-carpenter/foundation-runtime';
 import {
+  makeSortKeyForQuery,
   unmarshallRequiredField,
   unmarshallOptionalField,
   AlreadyExistsError,
@@ -533,6 +544,143 @@ export async function blindWriteUserSession(
     }
     throw new UnexpectedError(err);
   }
+}
+
+export interface QueryUserSessionInput {
+  sessionId: Scalars['String'];
+}
+export type QueryUserSessionOutput = MultiResultType<UserSession>;
+
+/** helper */
+function makeEanForQueryUserSession(
+  input: QueryUserSessionInput
+): Record<string, string> {
+  if ('index' in input) {
+    throw new Error(
+      'Invalid index. If TypeScript did not catch this, then this is a bug in codegen.'
+    );
+  } else {
+    return {'#pk': 'pk'};
+  }
+}
+
+/** helper */
+function makeEavForQueryUserSession(
+  input: QueryUserSessionInput
+): Record<string, any> {
+  if ('index' in input) {
+    throw new Error(
+      'Invalid index. If TypeScript did not catch this, then this is a bug in codegen.'
+    );
+  } else {
+    return {':pk': ['USER_SESSION', input.sessionId].join('#')};
+  }
+}
+
+/** helper */
+function makeKceForQueryUserSession(
+  input: QueryUserSessionInput,
+  {operator}: Pick<QueryOptions, 'operator'>
+): string {
+  if ('index' in input) {
+    throw new Error(
+      'Invalid index. If TypeScript did not catch this, then this is a bug in codegen.'
+    );
+  } else {
+    return '#pk = :pk';
+  }
+}
+
+export async function queryUserSession(
+  input: Readonly<QueryUserSessionInput>,
+  {
+    limit = undefined,
+    nextToken,
+    operator = 'begins_with',
+    reverse = false,
+  }: QueryOptions = {}
+): Promise<Readonly<QueryUserSessionOutput>> {
+  const tableName = process.env.TABLE_USER_SESSION;
+  assert(tableName, 'TABLE_USER_SESSION is not set');
+
+  const ExpressionAttributeNames = makeEanForQueryUserSession(input);
+  const ExpressionAttributeValues = makeEavForQueryUserSession(input);
+  const KeyConditionExpression = makeKceForQueryUserSession(input, {operator});
+
+  const commandInput: QueryCommandInput = {
+    ConsistentRead: !('index' in input),
+    ExpressionAttributeNames,
+    ExpressionAttributeValues,
+    ExclusiveStartKey: nextToken,
+    IndexName: undefined,
+    KeyConditionExpression,
+    Limit: limit,
+    ReturnConsumedCapacity: 'INDEXES',
+    ScanIndexForward: !reverse,
+    TableName: tableName,
+  };
+
+  try {
+    const {
+      ConsumedCapacity: capacity,
+      Items: items = [],
+      LastEvaluatedKey: lastEvaluatedKey,
+    } = await ddbDocClient.send(new QueryCommand(commandInput));
+
+    assert(
+      capacity,
+      'Expected ConsumedCapacity to be returned. This is a bug in codegen.'
+    );
+
+    return {
+      capacity,
+      hasNextPage: !!lastEvaluatedKey,
+      items: items.map((item) => {
+        assert(
+          item._et === 'UserSession',
+          () =>
+            new DataIntegrityError(
+              `Query result included at item with type ${item._et}. Only UserSession was expected.`
+            )
+        );
+        return unmarshallUserSession(item);
+      }),
+      nextToken: lastEvaluatedKey,
+    };
+  } catch (err) {
+    if (err instanceof AssertionError || err instanceof BaseDataLibraryError) {
+      throw err;
+    }
+    if (err instanceof ServiceException) {
+      throw new UnexpectedAwsError(err);
+    }
+    throw new UnexpectedError(err);
+  }
+}
+
+/** queries the UserSession table by primary key using a node id */
+export async function queryUserSessionByNodeId(
+  id: Scalars['ID']
+): Promise<Readonly<Omit<ResultType<UserSession>, 'metrics'>>> {
+  const primaryKeyValues = Base64.decode(id)
+    .split(':')
+    .slice(1)
+    .join(':')
+    .split('#');
+
+  const primaryKey: QueryUserSessionInput = {
+    sessionId: primaryKeyValues[1],
+  };
+
+  const {capacity, items} = await queryUserSession(primaryKey);
+
+  assert(items.length > 0, () => new NotFoundError('UserSession', primaryKey));
+  assert(
+    items.length < 2,
+    () => new DataIntegrityError(`Found multiple UserSession with id ${id}`)
+  );
+
+  return {capacity, item: items[0]};
 }
 
 export interface MarshallUserSessionOutput {

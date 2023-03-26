@@ -8,16 +8,27 @@ import {
 import type {
   DeleteCommandInput,
   GetCommandInput,
+  QueryCommandInput,
   UpdateCommandInput,
 } from '@aws-sdk/lib-dynamodb';
-import {DeleteCommand, GetCommand, UpdateCommand} from '@aws-sdk/lib-dynamodb';
+import {
+  DeleteCommand,
+  GetCommand,
+  QueryCommand,
+  UpdateCommand,
+} from '@aws-sdk/lib-dynamodb';
 import {ServiceException} from '@aws-sdk/smithy-client';
 import type {NativeAttributeValue} from '@aws-sdk/util-dynamodb';
 import Base64 from 'base64url';
 
 import {assert} from '@code-like-a-carpenter/assert';
-import type {ResultType} from '@code-like-a-carpenter/foundation-runtime';
+import type {
+  MultiResultType,
+  QueryOptions,
+  ResultType,
+} from '@code-like-a-carpenter/foundation-runtime';
 import {
+  makeSortKeyForQuery,
   unmarshallRequiredField,
   unmarshallOptionalField,
   AlreadyExistsError,
@@ -588,6 +599,179 @@ export async function blindWriteAccount(
     }
     throw new UnexpectedError(err);
   }
+}
+
+export type QueryAccountInput =
+  | {externalId: Scalars['String']}
+  | {index: 'gsi1'; hasEverSubscribed?: Maybe<Scalars['Boolean']>}
+  | {
+      index: 'gsi1';
+      cancelled: Scalars['Boolean'];
+      hasEverSubscribed?: Maybe<Scalars['Boolean']>;
+    }
+  | {
+      index: 'gsi1';
+      cancelled: Scalars['Boolean'];
+      hasEverSubscribed?: Maybe<Scalars['Boolean']>;
+      indexedPlanName?: Maybe<Scalars['String']>;
+    };
+export type QueryAccountOutput = MultiResultType<Account>;
+
+/** helper */
+function makeEanForQueryAccount(
+  input: QueryAccountInput
+): Record<string, string> {
+  if ('index' in input) {
+    if (input.index === 'gsi1') {
+      return {'#pk': 'gsi1', '#sk': 'gsi1sk'};
+    }
+    throw new Error(
+      'Invalid index. If TypeScript did not catch this, then this is a bug in codegen.'
+    );
+  } else {
+    return {'#pk': 'pk', '#sk': 'sk'};
+  }
+}
+
+/** helper */
+function makeEavForQueryAccount(input: QueryAccountInput): Record<string, any> {
+  if ('index' in input) {
+    if (input.index === 'gsi1') {
+      return {
+        ':pk': ['PLAN', input.hasEverSubscribed].join('#'),
+        ':sk': makeSortKeyForQuery(
+          'ACCOUNT',
+          ['cancelled', 'indexedPlanName'],
+          input
+        ),
+      };
+    }
+    throw new Error(
+      'Invalid index. If TypeScript did not catch this, then this is a bug in codegen.'
+    );
+  } else {
+    return {
+      ':pk': ['ACCOUNT', input.externalId].join('#'),
+      ':sk': makeSortKeyForQuery('undefined', [], input),
+    };
+  }
+}
+
+/** helper */
+function makeKceForQueryAccount(
+  input: QueryAccountInput,
+  {operator}: Pick<QueryOptions, 'operator'>
+): string {
+  if ('index' in input) {
+    if (input.index === 'gsi1') {
+      return `#pk = :pk AND ${
+        operator === 'begins_with'
+          ? 'begins_with(#sk, :sk)'
+          : `#sk ${operator} :sk`
+      }`;
+    }
+    throw new Error(
+      'Invalid index. If TypeScript did not catch this, then this is a bug in codegen.'
+    );
+  } else {
+    return `#pk = :pk AND ${
+      operator === 'begins_with'
+        ? 'begins_with(#sk, :sk)'
+        : `#sk ${operator} :sk`
+    }`;
+  }
+}
+
+export async function queryAccount(
+  input: Readonly<QueryAccountInput>,
+  {
+    limit = undefined,
+    nextToken,
+    operator = 'begins_with',
+    reverse = false,
+  }: QueryOptions = {}
+): Promise<Readonly<QueryAccountOutput>> {
+  const tableName = process.env.TABLE_ACCOUNT;
+  assert(tableName, 'TABLE_ACCOUNT is not set');
+
+  const ExpressionAttributeNames = makeEanForQueryAccount(input);
+  const ExpressionAttributeValues = makeEavForQueryAccount(input);
+  const KeyConditionExpression = makeKceForQueryAccount(input, {operator});
+
+  const commandInput: QueryCommandInput = {
+    ConsistentRead: false,
+    ExpressionAttributeNames,
+    ExpressionAttributeValues,
+    ExclusiveStartKey: nextToken,
+    IndexName: 'index' in input ? input.index : undefined,
+    KeyConditionExpression,
+    Limit: limit,
+    ReturnConsumedCapacity: 'INDEXES',
+    ScanIndexForward: !reverse,
+    TableName: tableName,
+  };
+
+  try {
+    const {
+      ConsumedCapacity: capacity,
+      Items: items = [],
+      LastEvaluatedKey: lastEvaluatedKey,
+    } = await ddbDocClient.send(new QueryCommand(commandInput));
+
+    assert(
+      capacity,
+      'Expected ConsumedCapacity to be returned. This is a bug in codegen.'
+    );
+
+    return {
+      capacity,
+      hasNextPage: !!lastEvaluatedKey,
+      items: items.map((item) => {
+        assert(
+          item._et === 'Account',
+          () =>
+            new DataIntegrityError(
+              `Query result included at item with type ${item._et}. Only Account was expected.`
+            )
+        );
+        return unmarshallAccount(item);
+      }),
+      nextToken: lastEvaluatedKey,
+    };
+  } catch (err) {
+    if (err instanceof AssertionError || err instanceof BaseDataLibraryError) {
+      throw err;
+    }
+    if (err instanceof ServiceException) {
+      throw new UnexpectedAwsError(err);
+    }
+    throw new UnexpectedError(err);
+  }
+}
+
+/** queries the Account table by primary key using a node id */
+export async function queryAccountByNodeId(
+  id: Scalars['ID']
+): Promise<Readonly<Omit<ResultType<Account>, 'metrics'>>> {
+  const primaryKeyValues = Base64.decode(id)
+    .split(':')
+    .slice(1)
+    .join(':')
+    .split('#');
+
+  const primaryKey: QueryAccountInput = {
+    externalId: primaryKeyValues[1],
+  };
+
+  const {capacity, items} = await queryAccount(primaryKey);
+
+  assert(items.length > 0, () => new NotFoundError('Account', primaryKey));
+  assert(
+    items.length < 2,
+    () => new DataIntegrityError(`Found multiple Account with id ${id}`)
+  );
+
+  return {capacity, item: items[0]};
 }
 
 export interface MarshallAccountOutput {
@@ -1167,6 +1351,148 @@ export async function blindWriteMetric(
   }
 }
 
+export interface QueryMetricInput {
+  onFreeTrial: Scalars['Boolean'];
+}
+export type QueryMetricOutput = MultiResultType<Metric>;
+
+/** helper */
+function makeEanForQueryMetric(
+  input: QueryMetricInput
+): Record<string, string> {
+  if ('index' in input) {
+    throw new Error(
+      'Invalid index. If TypeScript did not catch this, then this is a bug in codegen.'
+    );
+  } else {
+    return {'#pk': 'pk', '#sk': 'sk'};
+  }
+}
+
+/** helper */
+function makeEavForQueryMetric(input: QueryMetricInput): Record<string, any> {
+  if ('index' in input) {
+    throw new Error(
+      'Invalid index. If TypeScript did not catch this, then this is a bug in codegen.'
+    );
+  } else {
+    return {
+      ':pk': ['BUSINESS_METRIC'].join('#'),
+      ':sk': makeSortKeyForQuery('SUMMARY', ['onFreeTrial'], input),
+    };
+  }
+}
+
+/** helper */
+function makeKceForQueryMetric(
+  input: QueryMetricInput,
+  {operator}: Pick<QueryOptions, 'operator'>
+): string {
+  if ('index' in input) {
+    throw new Error(
+      'Invalid index. If TypeScript did not catch this, then this is a bug in codegen.'
+    );
+  } else {
+    return `#pk = :pk AND ${
+      operator === 'begins_with'
+        ? 'begins_with(#sk, :sk)'
+        : `#sk ${operator} :sk`
+    }`;
+  }
+}
+
+export async function queryMetric(
+  input: Readonly<QueryMetricInput>,
+  {
+    limit = undefined,
+    nextToken,
+    operator = 'begins_with',
+    reverse = false,
+  }: QueryOptions = {}
+): Promise<Readonly<QueryMetricOutput>> {
+  const tableName = process.env.TABLE_METRIC;
+  assert(tableName, 'TABLE_METRIC is not set');
+
+  const ExpressionAttributeNames = makeEanForQueryMetric(input);
+  const ExpressionAttributeValues = makeEavForQueryMetric(input);
+  const KeyConditionExpression = makeKceForQueryMetric(input, {operator});
+
+  const commandInput: QueryCommandInput = {
+    ConsistentRead: false,
+    ExpressionAttributeNames,
+    ExpressionAttributeValues,
+    ExclusiveStartKey: nextToken,
+    IndexName: undefined,
+    KeyConditionExpression,
+    Limit: limit,
+    ReturnConsumedCapacity: 'INDEXES',
+    ScanIndexForward: !reverse,
+    TableName: tableName,
+  };
+
+  try {
+    const {
+      ConsumedCapacity: capacity,
+      Items: items = [],
+      LastEvaluatedKey: lastEvaluatedKey,
+    } = await ddbDocClient.send(new QueryCommand(commandInput));
+
+    assert(
+      capacity,
+      'Expected ConsumedCapacity to be returned. This is a bug in codegen.'
+    );
+
+    return {
+      capacity,
+      hasNextPage: !!lastEvaluatedKey,
+      items: items.map((item) => {
+        assert(
+          item._et === 'Metric',
+          () =>
+            new DataIntegrityError(
+              `Query result included at item with type ${item._et}. Only Metric was expected.`
+            )
+        );
+        return unmarshallMetric(item);
+      }),
+      nextToken: lastEvaluatedKey,
+    };
+  } catch (err) {
+    if (err instanceof AssertionError || err instanceof BaseDataLibraryError) {
+      throw err;
+    }
+    if (err instanceof ServiceException) {
+      throw new UnexpectedAwsError(err);
+    }
+    throw new UnexpectedError(err);
+  }
+}
+
+/** queries the Metric table by primary key using a node id */
+export async function queryMetricByNodeId(
+  id: Scalars['ID']
+): Promise<Readonly<Omit<ResultType<Metric>, 'metrics'>>> {
+  const primaryKeyValues = Base64.decode(id)
+    .split(':')
+    .slice(1)
+    .join(':')
+    .split('#');
+
+  const primaryKey: QueryMetricInput = {
+    onFreeTrial: Boolean(primaryKeyValues[1]),
+  };
+
+  const {capacity, items} = await queryMetric(primaryKey);
+
+  assert(items.length > 0, () => new NotFoundError('Metric', primaryKey));
+  assert(
+    items.length < 2,
+    () => new DataIntegrityError(`Found multiple Metric with id ${id}`)
+  );
+
+  return {capacity, item: items[0]};
+}
+
 export interface MarshallMetricOutput {
   ExpressionAttributeNames: Record<string, string>;
   ExpressionAttributeValues: Record<string, NativeAttributeValue>;
@@ -1639,6 +1965,151 @@ export async function blindWritePlanMetric(
     }
     throw new UnexpectedError(err);
   }
+}
+
+export type QueryPlanMetricInput =
+  | {onFreeTrial: Scalars['Boolean']}
+  | {onFreeTrial: Scalars['Boolean']; planName: Scalars['String']};
+export type QueryPlanMetricOutput = MultiResultType<PlanMetric>;
+
+/** helper */
+function makeEanForQueryPlanMetric(
+  input: QueryPlanMetricInput
+): Record<string, string> {
+  if ('index' in input) {
+    throw new Error(
+      'Invalid index. If TypeScript did not catch this, then this is a bug in codegen.'
+    );
+  } else {
+    return {'#pk': 'pk', '#sk': 'sk'};
+  }
+}
+
+/** helper */
+function makeEavForQueryPlanMetric(
+  input: QueryPlanMetricInput
+): Record<string, any> {
+  if ('index' in input) {
+    throw new Error(
+      'Invalid index. If TypeScript did not catch this, then this is a bug in codegen.'
+    );
+  } else {
+    return {
+      ':pk': ['BUSINESS_METRIC'].join('#'),
+      ':sk': makeSortKeyForQuery('PLAN', ['onFreeTrial', 'planName'], input),
+    };
+  }
+}
+
+/** helper */
+function makeKceForQueryPlanMetric(
+  input: QueryPlanMetricInput,
+  {operator}: Pick<QueryOptions, 'operator'>
+): string {
+  if ('index' in input) {
+    throw new Error(
+      'Invalid index. If TypeScript did not catch this, then this is a bug in codegen.'
+    );
+  } else {
+    return `#pk = :pk AND ${
+      operator === 'begins_with'
+        ? 'begins_with(#sk, :sk)'
+        : `#sk ${operator} :sk`
+    }`;
+  }
+}
+
+export async function queryPlanMetric(
+  input: Readonly<QueryPlanMetricInput>,
+  {
+    limit = undefined,
+    nextToken,
+    operator = 'begins_with',
+    reverse = false,
+  }: QueryOptions = {}
+): Promise<Readonly<QueryPlanMetricOutput>> {
+  const tableName = process.env.TABLE_PLAN_METRIC;
+  assert(tableName, 'TABLE_PLAN_METRIC is not set');
+
+  const ExpressionAttributeNames = makeEanForQueryPlanMetric(input);
+  const ExpressionAttributeValues = makeEavForQueryPlanMetric(input);
+  const KeyConditionExpression = makeKceForQueryPlanMetric(input, {operator});
+
+  const commandInput: QueryCommandInput = {
+    ConsistentRead: false,
+    ExpressionAttributeNames,
+    ExpressionAttributeValues,
+    ExclusiveStartKey: nextToken,
+    IndexName: undefined,
+    KeyConditionExpression,
+    Limit: limit,
+    ReturnConsumedCapacity: 'INDEXES',
+    ScanIndexForward: !reverse,
+    TableName: tableName,
+  };
+
+  try {
+    const {
+      ConsumedCapacity: capacity,
+      Items: items = [],
+      LastEvaluatedKey: lastEvaluatedKey,
+    } = await ddbDocClient.send(new QueryCommand(commandInput));
+
+    assert(
+      capacity,
+      'Expected ConsumedCapacity to be returned. This is a bug in codegen.'
+    );
+
+    return {
+      capacity,
+      hasNextPage: !!lastEvaluatedKey,
+      items: items.map((item) => {
+        assert(
+          item._et === 'PlanMetric',
+          () =>
+            new DataIntegrityError(
+              `Query result included at item with type ${item._et}. Only PlanMetric was expected.`
+            )
+        );
+        return unmarshallPlanMetric(item);
+      }),
+      nextToken: lastEvaluatedKey,
+    };
+  } catch (err) {
+    if (err instanceof AssertionError || err instanceof BaseDataLibraryError) {
+      throw err;
+    }
+    if (err instanceof ServiceException) {
+      throw new UnexpectedAwsError(err);
+    }
+    throw new UnexpectedError(err);
+  }
+}
+
+/** queries the PlanMetric table by primary key using a node id */
+export async function queryPlanMetricByNodeId(
+  id: Scalars['ID']
+): Promise<Readonly<Omit<ResultType<PlanMetric>, 'metrics'>>> {
+  const primaryKeyValues = Base64.decode(id)
+    .split(':')
+    .slice(1)
+    .join(':')
+    .split('#');
+
+  const primaryKey: QueryPlanMetricInput = {
+    onFreeTrial: Boolean(primaryKeyValues[1]),
+    planName: primaryKeyValues[2],
+  };
+
+  const {capacity, items} = await queryPlanMetric(primaryKey);
+
+  assert(items.length > 0, () => new NotFoundError('PlanMetric', primaryKey));
+  assert(
+    items.length < 2,
+    () => new DataIntegrityError(`Found multiple PlanMetric with id ${id}`)
+  );
+
+  return {capacity, item: items[0]};
 }
 
 export interface MarshallPlanMetricOutput {
@@ -2160,6 +2631,161 @@ export async function blindWriteSubscriptionEvent(
     }
     throw new UnexpectedError(err);
   }
+}
+
+export type QuerySubscriptionEventInput =
+  | {externalId: Scalars['String']}
+  | {effectiveDate: Scalars['Date']; externalId: Scalars['String']};
+export type QuerySubscriptionEventOutput = MultiResultType<SubscriptionEvent>;
+
+/** helper */
+function makeEanForQuerySubscriptionEvent(
+  input: QuerySubscriptionEventInput
+): Record<string, string> {
+  if ('index' in input) {
+    throw new Error(
+      'Invalid index. If TypeScript did not catch this, then this is a bug in codegen.'
+    );
+  } else {
+    return {'#pk': 'pk', '#sk': 'sk'};
+  }
+}
+
+/** helper */
+function makeEavForQuerySubscriptionEvent(
+  input: QuerySubscriptionEventInput
+): Record<string, any> {
+  if ('index' in input) {
+    throw new Error(
+      'Invalid index. If TypeScript did not catch this, then this is a bug in codegen.'
+    );
+  } else {
+    return {
+      ':pk': ['ACCOUNT', input.externalId].join('#'),
+      ':sk': makeSortKeyForQuery(
+        'SUBSCRIPTION_EVENT',
+        ['effectiveDate'],
+        input
+      ),
+    };
+  }
+}
+
+/** helper */
+function makeKceForQuerySubscriptionEvent(
+  input: QuerySubscriptionEventInput,
+  {operator}: Pick<QueryOptions, 'operator'>
+): string {
+  if ('index' in input) {
+    throw new Error(
+      'Invalid index. If TypeScript did not catch this, then this is a bug in codegen.'
+    );
+  } else {
+    return `#pk = :pk AND ${
+      operator === 'begins_with'
+        ? 'begins_with(#sk, :sk)'
+        : `#sk ${operator} :sk`
+    }`;
+  }
+}
+
+export async function querySubscriptionEvent(
+  input: Readonly<QuerySubscriptionEventInput>,
+  {
+    limit = undefined,
+    nextToken,
+    operator = 'begins_with',
+    reverse = false,
+  }: QueryOptions = {}
+): Promise<Readonly<QuerySubscriptionEventOutput>> {
+  const tableName = process.env.TABLE_SUBSCRIPTION_EVENT;
+  assert(tableName, 'TABLE_SUBSCRIPTION_EVENT is not set');
+
+  const ExpressionAttributeNames = makeEanForQuerySubscriptionEvent(input);
+  const ExpressionAttributeValues = makeEavForQuerySubscriptionEvent(input);
+  const KeyConditionExpression = makeKceForQuerySubscriptionEvent(input, {
+    operator,
+  });
+
+  const commandInput: QueryCommandInput = {
+    ConsistentRead: false,
+    ExpressionAttributeNames,
+    ExpressionAttributeValues,
+    ExclusiveStartKey: nextToken,
+    IndexName: undefined,
+    KeyConditionExpression,
+    Limit: limit,
+    ReturnConsumedCapacity: 'INDEXES',
+    ScanIndexForward: !reverse,
+    TableName: tableName,
+  };
+
+  try {
+    const {
+      ConsumedCapacity: capacity,
+      Items: items = [],
+      LastEvaluatedKey: lastEvaluatedKey,
+    } = await ddbDocClient.send(new QueryCommand(commandInput));
+
+    assert(
+      capacity,
+      'Expected ConsumedCapacity to be returned. This is a bug in codegen.'
+    );
+
+    return {
+      capacity,
+      hasNextPage: !!lastEvaluatedKey,
+      items: items.map((item) => {
+        assert(
+          item._et === 'SubscriptionEvent',
+          () =>
+            new DataIntegrityError(
+              `Query result included at item with type ${item._et}. Only SubscriptionEvent was expected.`
+            )
+        );
+        return unmarshallSubscriptionEvent(item);
+      }),
+      nextToken: lastEvaluatedKey,
+    };
+  } catch (err) {
+    if (err instanceof AssertionError || err instanceof BaseDataLibraryError) {
+      throw err;
+    }
+    if (err instanceof ServiceException) {
+      throw new UnexpectedAwsError(err);
+    }
+    throw new UnexpectedError(err);
+  }
+}
+
+/** queries the SubscriptionEvent table by primary key using a node id */
+export async function querySubscriptionEventByNodeId(
+  id: Scalars['ID']
+): Promise<Readonly<Omit<ResultType<SubscriptionEvent>, 'metrics'>>> {
+  const primaryKeyValues = Base64.decode(id)
+    .split(':')
+    .slice(1)
+    .join(':')
+    .split('#');
+
+  const primaryKey: QuerySubscriptionEventInput = {
+    externalId: primaryKeyValues[1],
+    effectiveDate: new Date(primaryKeyValues[2]),
+  };
+
+  const {capacity, items} = await querySubscriptionEvent(primaryKey);
+
+  assert(
+    items.length > 0,
+    () => new NotFoundError('SubscriptionEvent', primaryKey)
+  );
+  assert(
+    items.length < 2,
+    () =>
+      new DataIntegrityError(`Found multiple SubscriptionEvent with id ${id}`)
+  );
+
+  return {capacity, item: items[0]};
 }
 
 export interface MarshallSubscriptionEventOutput {
