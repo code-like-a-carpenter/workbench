@@ -1,4 +1,4 @@
-const path = require('node:path');
+'use strict';
 
 const {sync: glob} = require('glob');
 
@@ -8,6 +8,16 @@ const examples = glob('*/', {cwd: 'examples'}).map((pathName) =>
 
 const parserConfig = {
   dependenciesModuleId: './examples/shared-dependencies',
+};
+
+const typescriptConfig = {
+  declarationKind: 'interface',
+  enumsAsTypes: true,
+  scalars: {
+    Date: 'Date',
+    JSONObject: 'Record<string, unknown>',
+  },
+  strictScalars: true,
 };
 
 /** @type {Record<string, import("graphql-config").IGraphQLProject>} */
@@ -23,13 +33,7 @@ const config = {
             [`examples/${example}/__generated__/graphql.ts`]: {
               config: {
                 ...parserConfig,
-                declarationKind: 'interface',
-                enumsAsTypes: true,
-                scalars: {
-                  Date: 'Date',
-                  JSONObject: 'Record<string, unknown>',
-                },
-                strictScalars: true,
+                ...typescriptConfig,
               },
               plugins: [
                 'typescript',

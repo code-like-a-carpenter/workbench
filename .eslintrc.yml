@@ -12,6 +12,7 @@ extends:
 
 ignorePatterns:
   - dist
+  - '!.graphqlrc.js'
 
 overrides:
   - files:

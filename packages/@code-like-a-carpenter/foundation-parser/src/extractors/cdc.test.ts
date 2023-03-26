@@ -24,7 +24,11 @@ describe('@reacts', () => {
           skFields: ["onFreeTrial", "planName"]
           skPrefix: "PLAN"
         )
-        @reacts(event: UPSERT, handler: "../src/react--plan-metric--upsert") {
+        @reacts(
+          event: UPSERT
+          handlerImportName: "PlanMetricReactor"
+          handlerPath: "../src/react--plan-metric--upsert"
+        ) {
         createdAt: Date!
         id: ID!
         updatedAt: Date!
@@ -81,7 +85,7 @@ describe('@triggers', () => {
       """
       A customer account.
       """
-      interface BaseAccount implements Model & Versioned & Timestamped
+      type BaseAccount implements Model & Versioned & Timestamped
         @model
         @primaryKey(
           pkFields: ["externalId"]
@@ -104,7 +108,8 @@ describe('@triggers', () => {
       type SubscriptionEvent implements Model & Timestamped & Versioned
         @enriches(
           event: UPSERT
-          handler: "../src/enrich--subscription--upsert--account"
+          handlerImportName: "SubscriptionEventUpsertAccountEnricher"
+          handlerPath: "../src/enrich--subscription--upsert--account"
           targetModel: "Account"
         )
         @ledger
