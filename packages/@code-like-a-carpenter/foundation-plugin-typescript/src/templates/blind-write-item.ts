@@ -14,9 +14,10 @@ import {
 } from '../indexes';
 
 import {handleCommonErrors} from './common';
+import {defineComputedInputFields, inputName} from './computed-fields';
 
 function inputTypeTemplate(model: Model) {
-  const {isPublic, ttlConfig, typeName} = model;
+  const {fields, isPublic, ttlConfig, typeName} = model;
 
   const inputTypeName = `BlindWrite${typeName}Input`;
   const fieldsToOmit = [
@@ -26,6 +27,9 @@ function inputTypeTemplate(model: Model) {
     'version',
     isPublic && 'publicId',
     ttlConfig?.fieldName,
+    ...fields
+      .filter(({computeFunction}) => !!computeFunction)
+      .map(({fieldName}) => fieldName),
   ]
     .filter(filterNull)
     .map((f) => `'${f}'`)
@@ -120,6 +124,7 @@ function makeKey(config: Config, model: Model) {
 /** template */
 export function blindWriteTpl(config: Config, model: Model) {
   const {
+    fields,
     table: {tableName},
     typeName,
   } = model;
@@ -131,9 +136,12 @@ ${inputTypeTemplate(model)}
 
 export type ${outputTypeName} = ResultType<${typeName}>;
 /** */
-export async function blindWrite${typeName}(input: Readonly<BlindWrite${typeName}Input>): Promise<Readonly<${outputTypeName}>> {
+export async function blindWrite${typeName}(${inputName(
+    model
+  )}: Readonly<BlindWrite${typeName}Input>): Promise<Readonly<${outputTypeName}>> {
 ${ensureTableTemplate(tableName)}
   const now = new Date();
+${defineComputedInputFields(fields, typeName)}
   const {ExpressionAttributeNames, ExpressionAttributeValues, UpdateExpression} = marshall${typeName}(input, now);
 
   ${commandPayloadTemplate(config, model)}

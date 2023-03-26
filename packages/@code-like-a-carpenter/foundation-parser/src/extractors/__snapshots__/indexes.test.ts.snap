@@ -2,6 +2,7 @@
 
 exports[`@gsi defines a composite, multi-pk, multi-sk GSI 2`] = `
 {
+  "additionalImports": [],
   "dependenciesModuleId": "dependencies",
   "models": [
     {
@@ -317,6 +318,7 @@ exports[`@gsi defines a composite, multi-pk, multi-sk GSI 2`] = `
 
 exports[`@gsi defines a composite, multi-pk, single-sk GSI 2`] = `
 {
+  "additionalImports": [],
   "dependenciesModuleId": "dependencies",
   "models": [
     {
@@ -617,6 +619,7 @@ exports[`@gsi defines a composite, multi-pk, single-sk GSI 2`] = `
 
 exports[`@gsi defines a composite, single-pk, multi-sk GSI 2`] = `
 {
+  "additionalImports": [],
   "dependenciesModuleId": "dependencies",
   "models": [
     {
@@ -917,6 +920,7 @@ exports[`@gsi defines a composite, single-pk, multi-sk GSI 2`] = `
 
 exports[`@gsi defines a composite, single-pk, single-sk GSI 2`] = `
 {
+  "additionalImports": [],
   "dependenciesModuleId": "dependencies",
   "models": [
     {
@@ -1202,6 +1206,7 @@ exports[`@gsi defines a composite, single-pk, single-sk GSI 2`] = `
 
 exports[`@gsi defines a simple, multi-field GSI 2`] = `
 {
+  "additionalImports": [],
   "dependenciesModuleId": "dependencies",
   "models": [
     {
@@ -1486,6 +1491,7 @@ exports[`@gsi defines a simple, multi-field GSI 2`] = `
 
 exports[`@gsi defines a simple, single-field GSI 2`] = `
 {
+  "additionalImports": [],
   "dependenciesModuleId": "dependencies",
   "models": [
     {
@@ -1755,6 +1761,7 @@ exports[`@gsi defines a simple, single-field GSI 2`] = `
 
 exports[`@lsi adds a multi-field LSI to a multi-field primary key 2`] = `
 {
+  "additionalImports": [],
   "dependenciesModuleId": "dependencies",
   "models": [
     {
@@ -2111,6 +2118,7 @@ exports[`@lsi adds a multi-field LSI to a multi-field primary key 2`] = `
 
 exports[`@lsi adds a multi-field LSI to a single-field primary key 2`] = `
 {
+  "additionalImports": [],
   "dependenciesModuleId": "dependencies",
   "models": [
     {
@@ -2407,6 +2415,7 @@ exports[`@lsi adds a multi-field LSI to a single-field primary key 2`] = `
 
 exports[`@lsi adds a single-field LSI to a multi-field primary key 2`] = `
 {
+  "additionalImports": [],
   "dependenciesModuleId": "dependencies",
   "models": [
     {
@@ -2748,6 +2757,7 @@ exports[`@lsi adds a single-field LSI to a multi-field primary key 2`] = `
 
 exports[`@lsi adds a single-field LSI to a single-field primary key 2`] = `
 {
+  "additionalImports": [],
   "dependenciesModuleId": "dependencies",
   "models": [
     {
@@ -3029,6 +3039,7 @@ exports[`@lsi adds a single-field LSI to a single-field primary key 2`] = `
 
 exports[`@simpleIndex defines a simple, single-field GSI 2`] = `
 {
+  "additionalImports": [],
   "dependenciesModuleId": "dependencies",
   "models": [
     {
@@ -3294,6 +3305,7 @@ exports[`@simpleIndex defines a simple, single-field GSI 2`] = `
 
 exports[`@simpleIndex is repeatable 2`] = `
 {
+  "additionalImports": [],
   "dependenciesModuleId": "dependencies",
   "models": [
     {
@@ -3679,6 +3691,7 @@ exports[`@simpleIndex is repeatable 2`] = `
 
 exports[`PublicModel automatically indexes the publicId field 2`] = `
 {
+  "additionalImports": [],
   "dependenciesModuleId": "dependencies",
   "models": [
     {

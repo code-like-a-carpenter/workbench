@@ -2,6 +2,8 @@ import type {Model} from '@code-like-a-carpenter/foundation-intermediate-represe
 
 import {unmarshallField} from '../helpers';
 
+import {defineComputedOutputFields} from './computed-fields';
+
 export const DIVIDER = '#:#';
 
 /** Generates the unmarshall function for a table */
@@ -51,6 +53,8 @@ ${optionalFields
   }`;
   })
   .join('\n')}
+
+${defineComputedOutputFields(fields)}
 
   return result;
 }

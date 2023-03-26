@@ -9,15 +9,25 @@ import {
 } from '../helpers';
 
 import {handleCommonErrors} from './common';
+import {defineComputedInputFields, inputName} from './computed-fields';
 import {getPrimaryKeyFields, pluckPrimaryKey} from './primary-key';
 
 function inputTypeTemplate(model: Model) {
-  const {isPublic, ttlConfig, typeName} = model;
+  const {fields, isPublic, ttlConfig, typeName} = model;
   const inputTypeName = `Update${typeName}Input`;
 
   const fieldsToOmit = Array.from(
     new Set(
-      ['createdAt', 'id', 'updatedAt', isPublic && 'publicId']
+      [
+        'createdAt',
+        'id',
+        'updatedAt',
+        isPublic && 'publicId',
+        ttlConfig?.fieldName,
+        ...fields
+          .filter(({computeFunction}) => !!computeFunction)
+          .map(({fieldName}) => fieldName),
+      ]
         .filter(filterNull)
         .filter(
           (fieldName) =>
@@ -91,7 +101,7 @@ function makeKey(config: Config, model: Model) {
 }
 
 export function updateItemTpl(config: Config, model: Model) {
-  const {typeName} = model;
+  const {fields, typeName} = model;
 
   const inputTypeName = `Update${typeName}Input`;
 
@@ -102,9 +112,11 @@ ${inputTypeTemplate(model)}
 export type ${outputTypeName} = ResultType<${typeName}>
 
 /**  */
-export async function update${typeName}(input: Readonly<${inputTypeName}>): Promise<Readonly<${outputTypeName}>> {
+export async function update${typeName}(${inputName(
+    model
+  )}: Readonly<${inputTypeName}>): Promise<Readonly<${outputTypeName}>> {
 ${ensureTableTemplate(model.table.tableName)}
-
+${defineComputedInputFields(fields, typeName)}
   const {ExpressionAttributeNames, ExpressionAttributeValues, UpdateExpression} = marshall${typeName}(input);
   try {
     let previousVersionCE = '';

@@ -13,7 +13,7 @@ import type {
 
 import type {Config} from './config';
 import {ParserConfigSchema} from './config';
-import {hasDirective} from './helpers';
+import {filterNull, hasDirective} from './helpers';
 import {extractModel} from './models';
 import {extractTable} from './tables';
 
@@ -80,6 +80,9 @@ export function parse(
     });
 
   return {
+    additionalImports: models
+      .flatMap((model) => model.fields.map((field) => field.computeFunction))
+      .filter(filterNull),
     dependenciesModuleId: resolveDependenciesModuleId(configWithDefaults, info),
     models,
     tables,

@@ -29,25 +29,41 @@ function getTransformString(field: Field): string {
   return '';
 }
 
-/** Gets the TypeScript type for that corresponds to the field. */
-export function getTypeScriptTypeForField({
-  fieldName,
+export function getTypeScriptTypeForGraphQLType({
   isRequired,
   isScalarType: isScalar,
   typeName,
-}: Field): [string, string] {
+}: Field): string {
   if (isRequired) {
     if (isScalar) {
-      return [fieldName, `Scalars["${typeName}"]`];
+      return `Scalars["${typeName}"]`;
     }
-    return [fieldName, typeName];
+    return typeName;
   }
 
   if (isScalar) {
-    return [`${fieldName}?`, `Maybe<Scalars["${typeName}"]>`];
+    return `Maybe<Scalars["${typeName}"]>`;
   }
 
-  return [`${fieldName}?`, `Maybe<${typeName}>`];
+  return `Maybe<${typeName}>`;
+}
+
+/** Gets the TypeScript type for that corresponds to the field. */
+export function getTypeScriptTypeForField(field: Field): [string, string] {
+  const {fieldName, isRequired, isScalarType: isScalar} = field;
+
+  if (isRequired) {
+    if (isScalar) {
+      return [fieldName, getTypeScriptTypeForGraphQLType(field)];
+    }
+    return [fieldName, getTypeScriptTypeForGraphQLType(field)];
+  }
+
+  if (isScalar) {
+    return [`${fieldName}?`, getTypeScriptTypeForGraphQLType(field)];
+  }
+
+  return [`${fieldName}?`, getTypeScriptTypeForGraphQLType(field)];
 }
 
 /** Generates the template for producing the desired primary key or index column */

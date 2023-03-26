@@ -2,6 +2,7 @@
 
 exports[`@ttl expires a record after a specified duration 2`] = `
 {
+  "additionalImports": [],
   "dependenciesModuleId": "dependencies",
   "models": [
     {
@@ -183,6 +184,7 @@ exports[`@ttl expires a record after a specified duration 2`] = `
 
 exports[`@ttl marks a fields as the ttl field 2`] = `
 {
+  "additionalImports": [],
   "dependenciesModuleId": "dependencies",
   "models": [
     {
@@ -363,6 +365,7 @@ exports[`@ttl marks a fields as the ttl field 2`] = `
 
 exports[`@ttl optionally allows the end-user to specify an alternative expiration 2`] = `
 {
+  "additionalImports": [],
   "dependenciesModuleId": "dependencies",
   "models": [
     {

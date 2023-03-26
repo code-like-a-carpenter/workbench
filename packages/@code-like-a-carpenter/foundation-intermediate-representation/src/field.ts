@@ -1,3 +1,12 @@
+export interface Import {
+  readonly importName: string;
+  readonly importPath: string;
+}
+
+export interface ComputeFunction extends Import {
+  readonly isVirtual: boolean;
+}
+
 export interface Field {
   /** The database column name. */
   readonly columnName: string;
@@ -6,6 +15,7 @@ export interface Field {
    * column permutations
    */
   readonly columnNamesForRead: readonly string[];
+  readonly computeFunction: ComputeFunction | undefined;
   /** String to use as the field's EntityAttributeName key */
   readonly ean: string;
   /** String to use as the field's EntityAttributeValue key */

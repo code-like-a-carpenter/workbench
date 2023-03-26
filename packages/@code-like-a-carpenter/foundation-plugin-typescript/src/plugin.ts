@@ -7,6 +7,7 @@ import type {Config} from './config';
 import {TypescriptPluginConfigSchema} from './config';
 import {filterNull} from './helpers';
 import {blindWriteTpl} from './templates/blind-write-item';
+import {defineComputedFieldProviders} from './templates/computed-fields';
 import {createItemTpl} from './templates/create-item';
 import {deleteItemTpl} from './templates/delete-item';
 import {marshallTpl} from './templates/marshall';
@@ -19,7 +20,7 @@ import {updateItemTpl} from './templates/update-item';
 export const plugin: PluginFunction<Config> = logGraphQLCodegenPluginErrors(
   (schema, documents, config, info) => {
     const configWithDefaults = TypescriptPluginConfigSchema.parse(config);
-    const {dependenciesModuleId, models, tables} = parse(
+    const {additionalImports, dependenciesModuleId, models, tables} = parse(
       schema,
       documents,
       configWithDefaults,
@@ -82,6 +83,7 @@ export const plugin: PluginFunction<Config> = logGraphQLCodegenPluginErrors(
           AlreadyExistsError,
           BaseDataLibraryError,
           DataIntegrityError,
+          FieldProvider,
           MultiResultType,
           NotFoundError,
           OptimisticLockingError,
@@ -91,6 +93,11 @@ export const plugin: PluginFunction<Config> = logGraphQLCodegenPluginErrors(
           UnexpectedError
         } from '${runtimeModuleId}';`,
         `import {${importFromDependencies}} from "${dependenciesModuleId}";`,
+        ...additionalImports.map(
+          ({importName, importPath}) =>
+            `import {${importName}} from '${importPath}';`
+        ),
+        defineComputedFieldProviders(models),
       ],
     };
   }

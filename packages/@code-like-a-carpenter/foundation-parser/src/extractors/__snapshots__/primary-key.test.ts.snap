@@ -2,6 +2,7 @@
 
 exports[`@primaryKey defines a composite primary key with no sort key fields 2`] = `
 {
+  "additionalImports": [],
   "dependenciesModuleId": "dependencies",
   "models": [
     {
@@ -173,6 +174,7 @@ exports[`@primaryKey defines a composite primary key with no sort key fields 2`]
 
 exports[`@primaryKey defines composite primary keys 2`] = `
 {
+  "additionalImports": [],
   "dependenciesModuleId": "dependencies",
   "models": [
     {
@@ -422,6 +424,7 @@ exports[`@primaryKey defines composite primary keys 2`] = `
 
 exports[`@primaryKey defines multi-field composite primary keys 2`] = `
 {
+  "additionalImports": [],
   "dependenciesModuleId": "dependencies",
   "models": [
     {
@@ -791,6 +794,7 @@ exports[`@primaryKey defines multi-field composite primary keys 2`] = `
 
 exports[`@primaryKey defines multi-field composite primary keys with single-field partition key 2`] = `
 {
+  "additionalImports": [],
   "dependenciesModuleId": "dependencies",
   "models": [
     {
@@ -1100,6 +1104,7 @@ exports[`@primaryKey defines multi-field composite primary keys with single-fiel
 
 exports[`@primaryKey defines multi-field composite primary keys with single-field sort key 2`] = `
 {
+  "additionalImports": [],
   "dependenciesModuleId": "dependencies",
   "models": [
     {
@@ -1409,6 +1414,7 @@ exports[`@primaryKey defines multi-field composite primary keys with single-fiel
 
 exports[`@primaryKey defines multi-field simple primary keys 2`] = `
 {
+  "additionalImports": [],
   "dependenciesModuleId": "dependencies",
   "models": [
     {
@@ -1646,6 +1652,7 @@ exports[`@primaryKey defines multi-field simple primary keys 2`] = `
 
 exports[`@primaryKey defines simple primary keys 2`] = `
 {
+  "additionalImports": [],
   "dependenciesModuleId": "dependencies",
   "models": [
     {

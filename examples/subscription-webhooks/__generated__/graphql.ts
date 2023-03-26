@@ -34,6 +34,7 @@ import {
   AlreadyExistsError,
   BaseDataLibraryError,
   DataIntegrityError,
+  FieldProvider,
   NotFoundError,
   OptimisticLockingError,
   UnexpectedAwsError,
@@ -41,6 +42,7 @@ import {
 } from '@code-like-a-carpenter/foundation-runtime';
 
 import {ddbDocClient} from '../../shared-dependencies';
+import {AccountIndexedPlanNameProviderImpl} from '../src/computed-fields';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends {[key: string]: unknown}> = {[K in keyof T]: T[K]};
@@ -50,6 +52,10 @@ export type MakeOptional<T, K extends keyof T> = Omit<T, K> & {
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & {
   [SubKey in K]: Maybe<T[SubKey]>;
 };
+export abstract class AccountIndexedPlanNameProvider extends FieldProvider<
+  Account,
+  Maybe<Scalars['String']>
+> {}
 /** All built-in and custom scalars, mapped to their actual values */
 export interface Scalars {
   ID: string;
@@ -225,18 +231,32 @@ export interface AccountPrimaryKey {
 
 export type CreateAccountInput = Omit<
   Account,
-  'createdAt' | 'id' | 'updatedAt' | 'version'
+  'createdAt' | 'id' | 'indexedPlanName' | 'updatedAt' | 'version'
 >;
 
 export type CreateAccountOutput = ResultType<Account>;
 
 export async function createAccount(
-  input: Readonly<CreateAccountInput>
+  _input: Readonly<CreateAccountInput>
 ): Promise<Readonly<CreateAccountOutput>> {
   const tableName = process.env.TABLE_ACCOUNT;
   assert(tableName, 'TABLE_ACCOUNT is not set');
 
   const now = new Date();
+
+  // This has to be cast because we're adding computed fields on the next
+  // lines.
+  const input: MarshallAccountInput = {..._input} as MarshallAccountInput;
+
+  const indexedPlanNameProvider = new AccountIndexedPlanNameProviderImpl();
+
+  Object.defineProperty(input, 'indexedPlanName', {
+    enumerable: true,
+    /** getter */
+    get() {
+      return indexedPlanNameProvider.compute(this);
+    },
+  });
 
   const {
     ExpressionAttributeNames,
@@ -374,16 +394,30 @@ export async function readAccount(
 
 export type UpdateAccountInput = Omit<
   Account,
-  'createdAt' | 'id' | 'updatedAt'
+  'createdAt' | 'id' | 'indexedPlanName' | 'updatedAt'
 >;
 export type UpdateAccountOutput = ResultType<Account>;
 
 /**  */
 export async function updateAccount(
-  input: Readonly<UpdateAccountInput>
+  _input: Readonly<UpdateAccountInput>
 ): Promise<Readonly<UpdateAccountOutput>> {
   const tableName = process.env.TABLE_ACCOUNT;
   assert(tableName, 'TABLE_ACCOUNT is not set');
+
+  // This has to be cast because we're adding computed fields on the next
+  // lines.
+  const input: MarshallAccountInput = {..._input} as MarshallAccountInput;
+
+  const indexedPlanNameProvider = new AccountIndexedPlanNameProviderImpl();
+
+  Object.defineProperty(input, 'indexedPlanName', {
+    enumerable: true,
+    /** getter */
+    get() {
+      return indexedPlanNameProvider.compute(this);
+    },
+  });
 
   const {
     ExpressionAttributeNames,
@@ -514,17 +548,32 @@ export async function deleteAccount(
 
 export type BlindWriteAccountInput = Omit<
   Account,
-  'createdAt' | 'id' | 'updatedAt' | 'version'
+  'createdAt' | 'id' | 'indexedPlanName' | 'updatedAt' | 'version'
 >;
 
 export type BlindWriteAccountOutput = ResultType<Account>;
 /** */
 export async function blindWriteAccount(
-  input: Readonly<BlindWriteAccountInput>
+  _input: Readonly<BlindWriteAccountInput>
 ): Promise<Readonly<BlindWriteAccountOutput>> {
   const tableName = process.env.TABLE_ACCOUNT;
   assert(tableName, 'TABLE_ACCOUNT is not set');
   const now = new Date();
+
+  // This has to be cast because we're adding computed fields on the next
+  // lines.
+  const input: MarshallAccountInput = {..._input} as MarshallAccountInput;
+
+  const indexedPlanNameProvider = new AccountIndexedPlanNameProviderImpl();
+
+  Object.defineProperty(input, 'indexedPlanName', {
+    enumerable: true,
+    /** getter */
+    get() {
+      return indexedPlanNameProvider.compute(this);
+    },
+  });
+
   const {
     ExpressionAttributeNames,
     ExpressionAttributeValues,
@@ -968,6 +1017,21 @@ export function unmarshallAccount(item: Record<string, any>): Account {
     };
   }
 
+  const indexedPlanNameProvider = new AccountIndexedPlanNameProviderImpl(
+    unmarshallOptionalField(item, 'indexedPlanName', [
+      'indexed_plan_name',
+      'indexedPlanName',
+    ])
+  );
+
+  Object.defineProperty(result, 'indexedPlanName', {
+    enumerable: true,
+    /** getter */
+    get() {
+      return indexedPlanNameProvider.compute(this);
+    },
+  });
+
   return result;
 }
 
@@ -1278,6 +1342,7 @@ export async function blindWriteMetric(
   const tableName = process.env.TABLE_METRIC;
   assert(tableName, 'TABLE_METRIC is not set');
   const now = new Date();
+
   const {
     ExpressionAttributeNames,
     ExpressionAttributeValues,
@@ -1894,6 +1959,7 @@ export async function blindWritePlanMetric(
   const tableName = process.env.TABLE_PLAN_METRIC;
   assert(tableName, 'TABLE_PLAN_METRIC is not set');
   const now = new Date();
+
   const {
     ExpressionAttributeNames,
     ExpressionAttributeValues,
@@ -2557,6 +2623,7 @@ export async function blindWriteSubscriptionEvent(
   const tableName = process.env.TABLE_SUBSCRIPTION_EVENT;
   assert(tableName, 'TABLE_SUBSCRIPTION_EVENT is not set');
   const now = new Date();
+
   const {
     ExpressionAttributeNames,
     ExpressionAttributeValues,

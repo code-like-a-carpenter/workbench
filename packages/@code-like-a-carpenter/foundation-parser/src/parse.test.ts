@@ -20,6 +20,7 @@ describe('parse()', () => {
 
     expect(await parseSchema(schema)).toMatchInlineSnapshot(`
       {
+        "additionalImports": [],
         "dependenciesModuleId": "dependencies",
         "models": [
           {

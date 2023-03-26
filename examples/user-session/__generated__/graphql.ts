@@ -34,6 +34,7 @@ import {
   AlreadyExistsError,
   BaseDataLibraryError,
   DataIntegrityError,
+  FieldProvider,
   NotFoundError,
   OptimisticLockingError,
   UnexpectedAwsError,
@@ -182,7 +183,7 @@ export interface UserSessionPrimaryKey {
 
 export type CreateUserSessionInput = Omit<
   UserSession,
-  'createdAt' | 'id' | 'updatedAt' | 'version'
+  'createdAt' | 'expires' | 'id' | 'updatedAt' | 'version'
 > &
   Partial<Pick<UserSession, 'expires'>>;
 
@@ -323,7 +324,7 @@ export async function readUserSession(
 
 export type UpdateUserSessionInput = Omit<
   UserSession,
-  'createdAt' | 'id' | 'updatedAt'
+  'createdAt' | 'expires' | 'id' | 'updatedAt'
 > &
   Partial<Pick<UserSession, 'expires'>>;
 export type UpdateUserSessionOutput = ResultType<UserSession>;
@@ -476,6 +477,7 @@ export async function blindWriteUserSession(
   const tableName = process.env.TABLE_USER_SESSION;
   assert(tableName, 'TABLE_USER_SESSION is not set');
   const now = new Date();
+
   const {
     ExpressionAttributeNames,
     ExpressionAttributeValues,
