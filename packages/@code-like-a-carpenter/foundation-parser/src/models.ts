@@ -51,7 +51,8 @@ export function extractModel(
     changeDataCaptureConfig: extractChangeDataCaptureConfig(
       config,
       schema,
-      type
+      type,
+      outputPath
     ),
     consistent: hasDirective('consistent', type),
     fields,

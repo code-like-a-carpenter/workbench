@@ -26,14 +26,17 @@ const init = {};
 /** @type {import("graphql-config").IGraphQLConfig } */
 const config = {
   projects: examples.reduce((acc, example) => {
+    const actionsModuleId = `./examples/${example}/__generated__/graphql.ts`;
+
     acc[example] = {
       extensions: {
         codegen: {
           generates: {
-            [`examples/${example}/__generated__/graphql.ts`]: {
+            [actionsModuleId]: {
               config: {
                 ...parserConfig,
                 ...typescriptConfig,
+                actionsModuleId,
               },
               plugins: [
                 'typescript',
@@ -43,6 +46,7 @@ const config = {
             [`examples/${example}/__generated__/template.yml`]: {
               config: {
                 ...parserConfig,
+                actionsModuleId,
               },
               plugins: [
                 '@code-like-a-carpenter/foundation-plugin-cloudformation',

@@ -13,6 +13,11 @@ export const DispatcherConfigSchema = LambdaConfigSchema.extend({
 export const HandlerConfigSchema = LambdaConfigSchema.extend({});
 
 export const ParserConfigSchema = z.object({
+  actionsModuleId: z
+    .string()
+    .describe(
+      'Relative path to the output location of the foundation typescript plugin from the graphql config file.'
+    ),
   conditions: z.record(z.unknown()).default({
     IsProd: {
       'Fn::Equals': ['StageName', 'Production'],

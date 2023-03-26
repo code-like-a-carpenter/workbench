@@ -68,9 +68,18 @@ describe('@reacts', () => {
     expect(model.changeDataCaptureConfig).toMatchInlineSnapshot(`
       [
         {
+          "actionsModuleId": "../actions",
+          "directory": "placeholder/reactor--plan-metric--upsert",
           "event": "UPSERT",
+          "filename": "reactor--plan-metric--upsert",
+          "functionName": "FnReactorPMUpsert2b2e8d7d",
+          "handlerImportName": "PlanMetricReactor",
+          "handlerModuleId": "../../../src/react--plan-metric--upsert",
+          "memorySize": 256,
+          "runtimeModuleId": "@code-like-a-carpenter/foundation-runtime",
           "sourceModelName": "PlanMetric",
-          "type": "TRIGGER",
+          "timeout": 30,
+          "type": "REACTOR",
         },
       ]
     `);
@@ -79,7 +88,7 @@ describe('@reacts', () => {
   });
 });
 
-describe('@triggers', () => {
+describe('@enriches', () => {
   it('configures the handler to update one model when another changes', async () => {
     const schema = /* GraphQL */ `
       """
@@ -164,9 +173,18 @@ describe('@triggers', () => {
     expect(model.changeDataCaptureConfig).toMatchInlineSnapshot(`
       [
         {
+          "actionsModuleId": "../actions",
+          "directory": "placeholder/enricher--subscription-event--upsert",
           "event": "UPSERT",
+          "filename": "enricher--subscription-event--upsert",
+          "functionName": "FnEnricherSEUpsertc3e5eadf",
+          "handlerImportName": "SubscriptionEventUpsertAccountEnricher",
+          "handlerModuleId": "../../../src/enrich--subscription--upsert--account",
+          "memorySize": 256,
+          "runtimeModuleId": "@code-like-a-carpenter/foundation-runtime",
           "sourceModelName": "SubscriptionEvent",
           "targetModelName": "Account",
+          "timeout": 30,
           "type": "ENRICHER",
         },
       ]

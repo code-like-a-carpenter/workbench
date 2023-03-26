@@ -82,18 +82,26 @@ export type ChangeDataCaptureConfig =
   | ChangeDataCaptureReactorConfig;
 
 export interface BaseChangeDataCaptureConfig {
+  readonly actionsModuleId: string;
   readonly event: ChangeDataCaptureEvent;
+  readonly directory: string;
+  readonly filename: string;
+  readonly functionName: string;
+  readonly handlerImportName: string;
+  readonly handlerModuleId: string;
+  readonly memorySize: number;
+  readonly runtimeModuleId: string;
+  readonly sourceModelName: string;
+  readonly timeout: number;
 }
 
 export interface ChangeDataCaptureEnricherConfig
   extends BaseChangeDataCaptureConfig {
-  readonly sourceModelName: string;
   readonly targetModelName: string;
   readonly type: 'ENRICHER';
 }
 
 export interface ChangeDataCaptureReactorConfig
   extends BaseChangeDataCaptureConfig {
-  readonly sourceModelName: string;
-  readonly type: 'TRIGGER';
+  readonly type: 'REACTOR';
 }

@@ -4,7 +4,7 @@ import {blindWriteMetric, queryPlanMetric} from '../__generated__/graphql';
 import type {PlanMetric} from '../__generated__/graphql';
 
 export class PlanMetricUpsertReactor extends Reactor<PlanMetric> {
-  protected async handle(): Promise<void> {
+  async react(): Promise<void> {
     await Promise.all(
       [true, false].map(async (onFreeTrial) => {
         const {items: metrics} = await queryPlanMetric(
