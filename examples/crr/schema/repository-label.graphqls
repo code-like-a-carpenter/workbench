@@ -1,0 +1,22 @@
+"""
+A repository
+"""
+
+type RepositoryLabel implements Model & Timestamped & Versioned
+  @model
+  @primaryKey(
+    pkFields: ["vendor", "externalId"]
+    pkPrefix: "REPOSITORY"
+    skFields: ["label"]
+    skPrefix: "LABEL"
+  ) {
+  createdAt: Date!
+  duration: Float
+  externalId: String!
+  id: ID!
+  label: String!
+  stability: Float
+  updatedAt: Date!
+  version: Int!
+  vendor: Vendor!
+}

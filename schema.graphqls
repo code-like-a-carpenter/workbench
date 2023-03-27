@@ -226,10 +226,16 @@ input Condition {
   condition: String
 }
 
+enum ColumnCase {
+  CAMEL_CASE
+  SNAKE_CASE
+}
+
 """
 Allows customizing the generated attributes for a table.
 """
 directive @table(
+  columnCase: ColumnCase
   """
   Defaults to true
   """

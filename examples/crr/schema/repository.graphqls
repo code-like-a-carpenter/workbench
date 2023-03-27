@@ -1,0 +1,43 @@
+"""
+A Repository
+"""
+
+type Repository implements PublicModel & Model & Timestamped & Versioned & SubmissionSummary
+  @model
+  @primaryKey(
+    pkFields: ["vendor", "externalId"]
+    pkPrefix: "REPOSITORY"
+    skFields: []
+    skPrefix: "REPOSITORY"
+  )
+  @gsi(
+    name: "gsi1"
+    pkFields: ["vendor", "organization"]
+    pkPrefix: "REPOSITORY"
+    skFields: ["repository"]
+    skPrefix: "REPOSITORY"
+  )
+  @table(columnCase: CAMEL_CASE, name: "TableApplicationData") {
+  count: Int
+  countThisMonth: Int
+  createdAt: Date!
+  defaultBranchName: String
+  externalAccountId: String!
+  externalId: String!
+  externalInstallationId: String!
+  fileCount: Int
+  fileCountThisMonth: Int
+  lastSeenUserAgent: String
+  lastSubmissionDate: Date
+  id: ID!
+  organization: String!
+  private: Boolean
+  publicId: String!
+  repository: String
+  size: Int
+  sizeThisMonth: Int
+  token: String! @simpleIndex
+  updatedAt: Date!
+  vendor: Vendor!
+  version: Int!
+}

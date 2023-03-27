@@ -1,0 +1,34 @@
+"""
+Keeps track of each email known for an account
+"""
+
+type AccountEmail implements PublicModel & Model & Timestamped & Versioned
+  @model
+  @primaryKey(
+    pkFields: ["vendor", "externalId"]
+    pkPrefix: "ACCOUNT"
+    skFields: ["vendor", "email"]
+    skPrefix: "ACCOUNT_EMAIL"
+  )
+  @gsi(
+    name: "gsi1"
+    pkFields: ["vendor", "email"]
+    pkPrefix: "ACCOUNT_EMAIL"
+    skFields: ["updatedAt"]
+    skPrefix: "ACCOUNT"
+  )
+  @enriches(
+    event: UPSERT    handlerImportName: "placeholder"
+    handlerPath: "@check-run-reporter/enricher--account-email--upsert--account"
+    targetModel: "Account"
+  )
+  @table(columnCase: CAMEL_CASE, name: "TableAccounts") {
+  createdAt: Date!
+  email: String!
+  externalId: String!
+  id: ID!
+  publicId: String!
+  updatedAt: Date!
+  vendor: Vendor!
+  version: Int!
+}

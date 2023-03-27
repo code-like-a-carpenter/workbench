@@ -1,0 +1,39 @@
+"""
+Types of email templates
+"""
+enum EmailTemplate {
+  CANCELLATION
+  NUDGE
+  WELCOME
+}
+
+"""
+An email to be sent
+"""
+
+type ScheduledEmail implements PublicModel & Model & Timestamped & Versioned
+  @model
+  @primaryKey(
+    pkFields: ["vendor", "externalId"]
+    pkPrefix: "ACCOUNT"
+    skFields: ["template"]
+    skPrefix: "SCHEDULED_EMAIL"
+  )
+  @ledger
+  @reacts(
+    event: REMOVE
+    readableModels: ["Account"]    handlerImportName: "placeholder"
+    handlerPath: "@check-run-reporter/trigger--scheduled-email--remove"
+    writableModels: ["SentEmail"]
+  )
+  @table(columnCase: CAMEL_CASE, name: "TableEmail") {
+  createdAt: Date!
+  externalId: String!
+  id: ID!
+  template: EmailTemplate!
+  ttl: Date @ttl
+  publicId: String!
+  updatedAt: Date!
+  vendor: Vendor!
+  version: Int!
+}

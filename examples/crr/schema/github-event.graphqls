@@ -1,0 +1,77 @@
+"""
+Represents an event from a Source Control provider (i.e., GitHub).
+"""
+
+type GithubEvent implements PublicModel & Model & Timestamped & Versioned
+  @model
+  @primaryKey(
+    pkPrefix: "EVENT"
+    pkFields: ["vendor", "accountId"]
+    skPrefix: "ACTION"
+    skFields: ["event", "action", "delivery"]
+  )
+  @gsi(
+    name: "gsi1"
+    pkFields: ["senderId"]
+    pkPrefix: "SENDER"
+    skFields: ["event", "action"]
+    skPrefix: "EVENT_ACTION"
+  )
+  @gsi(
+    name: "gsi2"
+    pkFields: ["installationId"]
+    pkPrefix: "INSTALLATION"
+    skFields: ["event", "action"]
+    skPrefix: "EVENT_ACTION"
+  )
+  @ledger
+  @reacts(
+    event: INSERT
+    readableModels: [
+      "Account"
+      "AccountEmail"
+      "AccountLogin"
+      "Repository"
+      "Subscription"
+    ]    handlerImportName: "placeholder"
+    handlerPath: "@check-run-reporter/trigger--github-event--insert"
+    writableModels: [
+      "AccountEmail"
+      "AccountInstallation"
+      "AccountLogin"
+      "Repository"
+      "UserEmail"
+      "UserLogin"
+    ]
+  )
+  @table(columnCase: CAMEL_CASE, name: "TableVendorEvents") {
+  accountId: String!
+    @computed(
+      importPath: "@check-run-reporter/computed-fields"
+      importName: "computeGithubEventAccountId"
+    )
+  action: String
+    @computed(
+      importPath: "@check-run-reporter/computed-fields"
+      importName: "computeGithubEventAction"
+    )
+  createdAt: Date!
+  delivery: String!
+  event: String!
+  id: ID!
+  installationId: String
+    @computed(
+      importPath: "@check-run-reporter/computed-fields"
+      importName: "computeGithubEventInstallationId"
+    )
+  payload: JSONObject!
+  publicId: String!
+  senderId: String
+    @computed(
+      importPath: "@check-run-reporter/computed-fields"
+      importName: "computeGithubEventSenderId"
+    )
+  updatedAt: Date!
+  vendor: Vendor!
+  version: Int!
+}

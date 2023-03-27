@@ -1,0 +1,17 @@
+{
+  "name": "crr",
+  "private": true,
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "3.188.0",
+    "@aws-sdk/lib-dynamodb": "3.188.0",
+    "@aws-sdk/smithy-client": "3.188.0",
+    "@aws-sdk/util-dynamodb": "3.188.0",
+    "@code-like-a-carpenter/assert": "*",
+    "@code-like-a-carpenter/foundation-runtime": "*",
+    "base64url": "^3.0.1"
+  },
+  "engines": {
+    "node": "18.x",
+    "npm": "9.x"
+  }
+}

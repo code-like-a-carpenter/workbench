@@ -1,0 +1,48 @@
+"""
+A change in customer's subscription
+"""
+
+type Subscription implements PublicModel & Model & Timestamped & Versioned
+  @model
+  @primaryKey(
+    pkFields: ["vendor", "externalId"]
+    pkPrefix: "ACCOUNT"
+    skFields: ["effectiveDate", "githubEventActionSort"]
+    skPrefix: "SUBSCRIPTION_CHANGE"
+  )
+  @ledger
+  @reacts(
+    event: UPSERT
+    readableModels: ["Account", "Subscription"]    handlerImportName: "placeholder"
+    handlerPath: "@check-run-reporter/trigger--subscription--upsert"
+    writableModels: ["Account", "ScheduledEmail", "SentEmail"]
+  )
+  @table(columnCase: CAMEL_CASE, name: "TableAccounts") {
+  billingCycle: BillingCycle
+  cancelled: Boolean
+  createdAt: Date!
+  effectiveDate: Date!
+  externalId: String!
+  freeTrialEndsOn: Date
+  githubEventAction: String
+  githubEventActionSort: String!
+    @computed(
+      importPath: "@check-run-reporter/computed-fields"
+      importName: "computeSubscriptionGithubEventActionSort"
+    )
+  githubEventId: String
+  id: ID!
+  marketplacePurchase: JSONObject
+  marketplacePurchaseAction: String
+  monthlyPriceInCents: Int
+  nextBillingDate: Date
+  onFreeTrial: Boolean
+  planId: String
+  planName: String
+  publicId: String!
+  reason: String
+  updatedAt: Date!
+  vendor: Vendor!
+  version: Int!
+  yearlyPriceInCents: Int
+}

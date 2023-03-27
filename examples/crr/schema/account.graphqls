@@ -1,0 +1,96 @@
+"""
+Billing cycle
+"""
+enum BillingCycle {
+  MONTHLY
+  YEARLY
+}
+
+"""
+Keeps track of each installation known for an account
+"""
+
+type Account implements PublicModel & Model & Timestamped & Versioned & SubmissionSummary
+  @model
+  @primaryKey(
+    pkFields: ["vendor", "externalId"]
+    pkPrefix: "ACCOUNT"
+    skFields: []
+    skPrefix: "ACCOUNT"
+  )
+  @gsi(
+    name: "gsi1"
+    pkFields: ["vendor", "login"]
+    pkPrefix: "ACCOUNT"
+    skFields: ["externalInstallationId"]
+    skPrefix: "INSTALLATION"
+  )
+  @gsi(
+    name: "gsi2"
+    pkFields: ["hasEverSubscribed"]
+    pkPrefix: "PLAN"
+    skFields: ["cancelled", "indexedPlanName", "indexedPlanId"]
+    skPrefix: "ACCOUNT"
+  )
+  @reacts(
+    event: UPSERT
+    handlerImportName: "placeholder"
+    handlerPath: "@check-run-reporter/trigger--account--upsert"
+    writableModels: ["BusinessMetric"]
+  )
+  @table(columnCase: CAMEL_CASE, name: "TableAccounts") {
+  billingCycle: BillingCycle
+  billingEmail: String
+  cancelled: Boolean
+  count: Int
+  countThisMonth: Int
+  createdAt: Date!
+  effectiveDate: Date
+  email: String
+  externalId: String!
+  externalInstallationId: String
+  freeTrialEndsOn: Date
+  fileCount: Int
+  fileCountThisMonth: Int
+  githubAppAuthorizationRevokedOn: Date
+  githubEventAction: String
+  githubEventActionSort: String!
+    @computed(
+      importPath: "@check-run-reporter/computed-fields"
+      importName: "computeAccountGithubEventActionSort"
+    )
+  hasEverSubscribed: Boolean
+  htmlUrl: String
+  id: ID!
+  indexedPlanId: String
+    @computed(
+      importPath: "@check-run-reporter/computed-fields"
+      importName: "computeAccountIndexPlanName"
+      virtual: true
+    )
+  indexedPlanName: String
+    @computed(
+      importPath: "@check-run-reporter/computed-fields"
+      importName: "computeAccountIndexPlanId"
+      virtual: true
+    )
+  lastPlanId: String
+  lastPlanName: String
+  lastSeenUserAgent: String
+  lastSubmissionDate: Date
+  login: String
+  monthlyPriceInCents: Int
+  nextBillingDate: Date
+  onFreeTrial: Boolean
+  planId: String
+  planName: String
+  publicId: String!
+  size: Int
+  sizeThisMonth: Int
+  subscriptionCount: Int
+  subscriptionStatusEventId: String
+  updatedAt: Date!
+  vendor: Vendor!
+  version: Int!
+  yearlyPriceInCents: Int
+}

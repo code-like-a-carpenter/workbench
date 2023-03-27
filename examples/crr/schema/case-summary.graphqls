@@ -1,0 +1,26 @@
+"""
+Describes the aggregate state of a Case.
+"""
+
+type CaseSummary implements Model & Timestamped & Versioned
+  @model
+  @primaryKey(
+    pkPrefix: "CASE"
+    pkFields: ["vendor", "repoId", "branchName", "label"]
+    skPrefix: "SUMMARY"
+    skFields: ["lineage"]
+  )
+  @lsi(skFields: ["stability"], name: "lsi1", skPrefix: "SUMMARY")
+  @lsi(skFields: ["duration"], name: "lsi2", skPrefix: "SUMMARY") {
+  branchName: String!
+  createdAt: Date!
+  duration: Float!
+  id: ID!
+  label: String
+  lineage: String!
+  repoId: String!
+  stability: Float!
+  updatedAt: Date!
+  vendor: Vendor!
+  version: Int!
+}

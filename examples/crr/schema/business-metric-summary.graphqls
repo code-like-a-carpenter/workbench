@@ -1,0 +1,25 @@
+"""
+Summarizes business metrics
+"""
+
+type BusinessMetricSummary implements PublicModel & Model & Timestamped & Versioned
+  @model
+  @primaryKey(
+    pkFields: []
+    pkPrefix: "BUSINESS_METRIC"
+    skFields: ["onFreeTrial"]
+    skPrefix: "SUMMARY"
+  )
+  @table(columnCase: CAMEL_CASE, name: "TableAccounts") {
+  arrInCents: Int!
+  arrInCentsIncludingMonthly: Int!
+  count: Int!
+  createdAt: Date!
+  id: ID!
+  mrrInCents: Int!
+  mrrInCentsIncludingYearly: Int!
+  onFreeTrial: Boolean!
+  publicId: String!
+  updatedAt: Date!
+  version: Int!
+}

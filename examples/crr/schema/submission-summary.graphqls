@@ -1,0 +1,13 @@
+"""
+Common fields used summarize submissions for Repos and Accounts
+"""
+interface SubmissionSummary {
+  count: Int
+  countThisMonth: Int
+  fileCount: Int
+  fileCountThisMonth: Int
+  lastSeenUserAgent: String
+  lastSubmissionDate: Date
+  size: Int
+  sizeThisMonth: Int
+}

@@ -1,0 +1,24 @@
+"""
+A record of an email having been sent.
+"""
+
+type SentEmail implements PublicModel & Model & Timestamped & Versioned
+  @model
+  @primaryKey(
+    pkFields: ["vendor", "externalId"]
+    pkPrefix: "ACCOUNT"
+    skFields: ["template", "createdAt"]
+    skPrefix: "TEMPLATE"
+  )
+  @ledger
+  @table(columnCase: CAMEL_CASE, name: "TableEmail") {
+  createdAt: Date!
+  externalId: String!
+  id: ID!
+  messageId: String!
+  publicId: String!
+  template: EmailTemplate!
+  updatedAt: Date!
+  vendor: Vendor!
+  version: Int!
+}

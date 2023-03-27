@@ -1,0 +1,47 @@
+"""
+Describes the result of a specific Case execution.
+"""
+
+type CaseInstance implements Model & Timestamped & Versioned
+  @model
+  @primaryKey(
+    pkPrefix: "CASE"
+    pkFields: ["vendor", "repoId", "branchName", "label", "lineage"]
+    skPrefix: "INSTANCE"
+    skFields: ["sha", "retry"]
+  )
+  @gsi(
+    name: "gsi1"
+    pkFields: ["vendor", "repoId", "branchName", "label", "sha"]
+    pkPrefix: "CASE"
+    skFields: ["lineage", "retry"]
+    skPrefix: "INSTANCE"
+  )
+  @gsi(
+    name: "gsi2"
+    pkFields: ["vendor", "repoId", "branchName"]
+    pkPrefix: "CASE"
+    skFields: ["label", "sha"]
+    skPrefix: "INSTANCE"
+  )
+  @lsi(name: "lsi1", skFields: ["createdAt"], skPrefix: "INSTANCE")
+  @lsi(
+    name: "lsi2"
+    skFields: ["conclusion", "createdAt"]
+    skPrefix: "INSTANCE"
+  ) {
+  branchName: String!
+  conclusion: String!
+  createdAt: Date!
+  duration: Float
+  filename: String
+  id: ID!
+  label: String
+  lineage: String!
+  repoId: String!
+  retry: Int!
+  sha: String!
+  updatedAt: Date!
+  vendor: Vendor!
+  version: Int!
+}

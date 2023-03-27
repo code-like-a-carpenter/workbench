@@ -1,0 +1,26 @@
+"""
+A user object
+"""
+
+type User implements PublicModel & Model & Timestamped & Versioned
+  @model
+  @primaryKey(
+    pkFields: ["vendor", "externalId"]
+    pkPrefix: "USER"
+    skFields: []
+    skPrefix: "USER"
+  )
+  @table(columnCase: CAMEL_CASE, name: "TableApplicationData") {
+  avatarUrl: String
+  createdAt: Date!
+  displayName: String
+  email: String
+  externalId: String!
+  id: ID!
+  login: String
+  publicId: String!
+  raw: JSONObject
+  updatedAt: Date!
+  vendor: Vendor!
+  version: Int!
+}

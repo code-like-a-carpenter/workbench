@@ -1,0 +1,31 @@
+"""
+Business metric for a specific plan
+"""
+
+type BusinessMetric implements PublicModel & Model & Timestamped & Versioned
+  @model
+  @primaryKey(
+    pkFields: []
+    pkPrefix: "BUSINESS_METRIC"
+    skFields: ["onFreeTrial", "planName"]
+    skPrefix: "PLAN"
+  )
+  @reacts(
+    event: UPSERT    handlerImportName: "placeholder"
+    handlerPath: "@check-run-reporter/trigger--business-metric--upsert"
+    writableModels: ["BusinessMetricSummary"]
+  )
+  @table(columnCase: CAMEL_CASE, name: "TableAccounts") {
+  arrInCents: Int!
+  arrInCentsIncludingMonthly: Int!
+  count: Int!
+  createdAt: Date!
+  id: ID!
+  mrrInCents: Int!
+  mrrInCentsIncludingYearly: Int!
+  onFreeTrial: Boolean!
+  planName: String!
+  publicId: String!
+  updatedAt: Date!
+  version: Int!
+}

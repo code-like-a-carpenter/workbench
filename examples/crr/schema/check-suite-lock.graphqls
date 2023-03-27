@@ -1,0 +1,22 @@
+"""
+Represents a mutex lock for a CheckSuite. While this record exists, other
+background processes may not interact with the corresponding CheckSuite.
+"""
+
+type CheckSuiteLock implements Model & Timestamped & Versioned
+  @model
+  @primaryKey(
+    pkFields: ["repoId", "sha"]
+    pkPrefix: "GH"
+    skFields: ["label"]
+    skPrefix: "LOCK"
+  )
+  @table(columnCase: CAMEL_CASE, name: "TableCheckSuiteLocks") {
+  createdAt: Date!
+  id: ID!
+  label: String
+  repoId: String!
+  sha: String!
+  updatedAt: Date!
+  version: Int!
+}

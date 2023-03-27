@@ -1,0 +1,38 @@
+"""
+A recording of a single submission, for analytics
+"""
+
+type RepositorySubmissionEvent implements PublicModel & Model & Timestamped & Versioned
+  @model
+  @primaryKey(
+    pkFields: ["vendor", "externalId"]
+    pkPrefix: "REPOSITORY"
+    skFields: ["createdAt", "publicId"]
+    skPrefix: "REPOSITORY"
+  )
+  @enriches(
+    event: UPSERT    handlerImportName: "placeholder"
+    handlerPath: "@check-run-reporter/enricher--repository-submission-event--upsert--account"
+    targetModel: "Account"
+  )
+  @enriches(
+    event: UPSERT    handlerImportName: "placeholder"
+    handlerPath: "@check-run-reporter/enricher--repository-submission-event--upsert--repository"
+    targetModel: "Repository"
+  )
+  @ledger
+  @table(columnCase: CAMEL_CASE, name: "TableApplicationData") {
+  createdAt: Date!
+  externalAccountId: String!
+  externalId: String!
+  fileCount: Int!
+  id: ID!
+  label: String
+  sha: String!
+  size: Float!
+  publicId: String!
+  updatedAt: Date!
+  userAgent: String
+  vendor: Vendor!
+  version: Int!
+}

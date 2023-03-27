@@ -1,0 +1,21 @@
+"""
+A user session object.
+"""
+
+type UserSession implements Model & Timestamped & Versioned
+  @consistent
+  @model
+  @primaryKey(pkFields: ["sessionId"], pkPrefix: "USER_SESSION")
+  @table(columnCase: CAMEL_CASE, enablePointInTimeRecovery: {always: false}) {
+  createdAt: Date!
+  expires: Date! @ttl(duration: "1d")
+  id: ID!
+  """
+  Since `id` is a reserved field, sessionId is the field we'll use to inject a
+  random uuid, which the underlying system will use as the basis for `id`.
+  """
+  sessionId: String!
+  session: JSONObject!
+  updatedAt: Date!
+  version: Int!
+}
