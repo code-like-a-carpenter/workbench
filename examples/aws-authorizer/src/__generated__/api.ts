@@ -31,8 +31,8 @@ export interface components {
 export type external = Record<string, never>;
 
 export interface operations {
+  /** @description Simple endpoint to prove everything is wired together */
   ping: {
-    /** @description Simple endpoint to prove everything is wired together */
     responses: {
       /** @description ok */
       200: {

@@ -103,9 +103,9 @@ function extractPersonInfo(person) {
   assert(person.name, 'Person must have a name');
 
   return {
-    email: person.email,
+    email: person.email ?? null,
     name: person.name,
-    url: person.url,
+    url: person.url ?? null,
   };
 }
 exports.extractPersonInfo = extractPersonInfo;

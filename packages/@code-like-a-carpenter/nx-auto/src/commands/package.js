@@ -89,14 +89,13 @@ async function config(packageName) {
     'packages',
     packageName
   );
-  // @ts-expect-error - the typedef seems to be incorrect here.
   pkg.homepage = homepage.toString();
   pkg.license = pkg.license ?? rootPackageJson.license;
   pkg.name = packageName;
   pkg.repository = rootPackageJson.repository;
   pkg.types = 'dist/types';
 
-  if (pkg.publishConfig?.access !== false) {
+  if (!pkg.publishConfig?.access || pkg.publishConfig.access === 'public') {
     pkg.publishConfig = {
       ...pkg.publishConfig,
       access: 'public',

@@ -5,7 +5,7 @@
     "@code-like-a-carpenter/assert": "*",
     "dredd-transactions": "^10.1.0",
     "gavel": "^10.0.4",
-    "jest-diff": "^29.4.3"
+    "jest-diff": "^29.5.0"
   },
   "author": "Ian Remmel <1182361+ianwremmel@users.noreply.github.com> (https://www.ianwremmel.com)",
   "bugs": "https://www.github.com/code-like-a-carpenter/workbench/issues",

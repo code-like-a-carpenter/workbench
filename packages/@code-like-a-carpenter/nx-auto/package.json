@@ -12,7 +12,7 @@
     "yargs": "^17.7.1"
   },
   "devDependencies": {
-    "@schemastore/package": "^0.0.6",
+    "@schemastore/package": "^0.0.8",
     "@schemastore/tsconfig": "^0.0.10",
     "@types/glob": "^8.0.1",
     "@types/prettier": "^2.7.2",
