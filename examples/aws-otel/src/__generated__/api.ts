@@ -31,11 +31,11 @@ export interface components {
 export type external = Record<string, never>;
 
 export interface operations {
+  /** @description Simple endpoint to prove everything is wired together */
   ping: {
-    /** @description Simple endpoint to prove everything is wired together */
     parameters: {
-      /** @description Indicates in which span to throw an exception, if any. */
       query: {
+        /** @description Indicates in which span to throw an exception, if any. */
         throwType?: 'immediate' | 'fast' | 'slow' | 'none';
       };
     };

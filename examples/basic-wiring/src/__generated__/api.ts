@@ -39,8 +39,8 @@ export interface components {
 export type external = Record<string, never>;
 
 export interface operations {
+  /** @description Landing page */
   root: {
-    /** @description Landing page */
     responses: {
       /** @description ok */
       200: {
@@ -50,8 +50,8 @@ export interface operations {
       };
     };
   };
+  /** @description Simple endpoint to prove everything is wired together */
   ping: {
-    /** @description Simple endpoint to prove everything is wired together */
     responses: {
       /** @description ok */
       200: {
@@ -61,11 +61,11 @@ export interface operations {
       };
     };
   };
+  /** @description Endpoint that throws client-specified errors for debugging cloudformation */
   errors: {
-    /** @description Endpoint that throws client-specified errors for debugging cloudformation */
     parameters: {
-      /** @description Http Status Code to return */
       path: {
+        /** @description Http Status Code to return */
         statusCode: string;
       };
     };
