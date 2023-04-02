@@ -6,14 +6,8 @@ import {unmarshallField} from './helpers';
 
 export const DIVIDER = '#:#';
 
-export interface UnmarshallTplInput {
-  readonly model: Model;
-}
-
 /** Generates the unmarshall function for a table */
-export function unmarshallTpl({
-  model: {fields, primaryKey, typeName},
-}: UnmarshallTplInput): string {
+export function unmarshallTpl({fields, primaryKey, typeName}: Model): string {
   const requiredFields = fields
     .filter((f) => f.isRequired)
     .filter(({computeFunction}) => !computeFunction?.isVirtual);

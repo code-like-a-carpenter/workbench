@@ -1,14 +1,17 @@
+import type {Model} from '@code-like-a-carpenter/foundation-intermediate-representation';
+
+import type {Config} from '../../config';
+
 import {ensureTableTemplate} from './ensure-table';
-import {handleCommonErrors, objectToString} from './helpers';
+import {handleCommonErrors, makeKeyForRead, objectToString} from './helpers';
 
-export interface DeleteItemTplInput {
-  readonly key: Record<string, string>;
-  readonly tableName: string;
-  readonly typeName: string;
-}
+/**
+ * Generates the deleteItem function for a table
+ */
+export function deleteItemTemplate(config: Config, model: Model) {
+  const {tableName, typeName} = model;
+  const key = makeKeyForRead(config, model.primaryKey);
 
-/** template */
-export function deleteItemTpl({key, tableName, typeName}: DeleteItemTplInput) {
   const outputTypeName = `Delete${typeName}Output`;
   const primaryKeyType = `${typeName}PrimaryKey`;
 

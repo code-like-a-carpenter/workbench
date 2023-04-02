@@ -2,6 +2,7 @@ import type {
   Field,
   PrimaryKeyConfig,
   SecondaryIndex,
+  Model,
 } from '@code-like-a-carpenter/foundation-intermediate-representation';
 
 import {ensureTableTemplate} from './ensure-table';
@@ -12,24 +13,32 @@ import {
   objectToString,
 } from './helpers';
 
-export interface QueryTplInput {
-  readonly consistent: boolean;
-  readonly isPublicModel: boolean;
-  readonly primaryKey: PrimaryKeyConfig;
-  readonly secondaryIndexes: readonly SecondaryIndex[];
-  readonly tableName: string;
-  readonly typeName: string;
-}
+/**
+ * Generates the query function for a table
+ */
+export function queryTemplate(model: Model) {
+  const {
+    consistent,
+    isPublicModel,
+    primaryKey,
+    secondaryIndexes,
+    tableName,
+    typeName,
+  } = model;
 
-/** template */
-export function queryTpl({
-  consistent,
-  isPublicModel,
-  primaryKey,
-  secondaryIndexes,
-  tableName,
-  typeName,
-}: QueryTplInput): string {
+  let isQueryable = false;
+
+  if (primaryKey.isComposite) {
+    isQueryable = true;
+  }
+  if (secondaryIndexes.length > 0) {
+    isQueryable = true;
+  }
+
+  if (!isQueryable) {
+    return '';
+  }
+
   const hasIndexes = secondaryIndexes.length > 0;
 
   const sortKeyFields = primaryKey.isComposite ? primaryKey.sortKeyFields : [];

@@ -13,20 +13,18 @@ import {makePlugin} from '@code-like-a-carpenter/graphql-codegen-helpers';
 import {ConfigSchema} from './config';
 import type {Config} from './config';
 import {filterNull} from './helpers';
-import {
-  blindWriteTemplate,
-  createItemTemplate,
-  deleteItemTemplate,
-  queryTemplate,
-  readItemTemplate,
-  updateItemTemplate,
-} from './tables/table';
+import {blindWriteTemplate} from './tables/templates/blind-write';
+import {createItemTemplate} from './tables/templates/create-item';
+import {deleteItemTemplate} from './tables/templates/delete-item';
 import {
   getTypeScriptTypeForField,
   objectToString,
 } from './tables/templates/helpers';
 import {marshallTpl} from './tables/templates/marshall';
+import {queryTemplate} from './tables/templates/query';
+import {readItemTemplate} from './tables/templates/read-item';
 import {unmarshallTpl} from './tables/templates/unmarshall';
+import {updateItemTemplate} from './tables/templates/update-item';
 
 /** @override */
 export function addToSchema(): AddToSchemaResult {
@@ -82,16 +80,16 @@ ${models
             .sort()
         )
       )}`,
-      createItemTemplate(model, config),
+      createItemTemplate(config, model),
       !model.isLedger &&
         !hasPublicIdInPrimaryKey &&
-        blindWriteTemplate(model, config),
-      !model.isLedger && deleteItemTemplate(model, config),
-      readItemTemplate(model, config),
-      !model.isLedger && updateItemTemplate(model, config),
+        blindWriteTemplate(config, model),
+      !model.isLedger && deleteItemTemplate(config, model),
+      readItemTemplate(config, model),
+      !model.isLedger && updateItemTemplate(config, model),
       queryTemplate(model),
-      marshallTpl({model}),
-      unmarshallTpl({model}),
+      marshallTpl(model),
+      unmarshallTpl(model),
     ]
       .filter(filterNull)
       .join('\n\n');

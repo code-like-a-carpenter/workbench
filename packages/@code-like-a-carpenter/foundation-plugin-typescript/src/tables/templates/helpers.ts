@@ -1,7 +1,11 @@
 import assert from 'assert';
 
-import type {Field} from '@code-like-a-carpenter/foundation-intermediate-representation';
+import type {
+  Field,
+  PrimaryKeyConfig,
+} from '@code-like-a-carpenter/foundation-intermediate-representation';
 
+import type {Config} from '../../config';
 import {filterNull} from '../../helpers';
 
 /** Gets the TypeScript type for that corresponds to the field. */
@@ -146,4 +150,29 @@ export function handleCommonErrors(): string {
     }
     throw new UnexpectedError(err);
   `;
+}
+
+/** helper */
+export function makeKeyForRead(
+  config: Config,
+  key: PrimaryKeyConfig
+): Record<string, string> {
+  if (key.isComposite) {
+    const doLegacy =
+      config.legacyEmptySortFieldBehavior && key.sortKeyFields.length === 0;
+    return {
+      pk: makeKeyTemplate(
+        key.partitionKeyPrefix,
+        key.partitionKeyFields,
+        'read'
+      ),
+      sk: doLegacy
+        ? `'${key.sortKeyPrefix}#0'`
+        : makeKeyTemplate(key.sortKeyPrefix, key.sortKeyFields, 'read'),
+    };
+  }
+
+  return {
+    pk: makeKeyTemplate(key.partitionKeyPrefix, key.partitionKeyFields, 'read'),
+  };
 }

@@ -16,10 +16,6 @@ import {
   indexToUpdateExpressionPart,
 } from './indexes';
 
-export interface MarshallTplInput {
-  readonly model: Model;
-}
-
 /** helper */
 function wrapFieldNameWithQuotes({fieldName}: Field): string {
   return `'${fieldName}'`;
@@ -43,8 +39,12 @@ function makeTypeDefinition(
 
 /** Generates the marshall function for a table */
 export function marshallTpl({
-  model: {fields, primaryKey, secondaryIndexes, ttlConfig, typeName},
-}: MarshallTplInput): string {
+  fields,
+  primaryKey,
+  secondaryIndexes,
+  ttlConfig,
+  typeName,
+}: Model): string {
   const requiredFields = fields
     .filter((f) => f.isRequired && f.fieldName !== 'publicId')
     .filter(({fieldName}) => fieldName !== 'id');

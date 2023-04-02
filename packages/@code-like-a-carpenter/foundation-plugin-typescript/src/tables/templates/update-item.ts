@@ -1,39 +1,42 @@
-import type {
-  Field,
-  TTLConfig,
-  Model,
-} from '@code-like-a-carpenter/foundation-intermediate-representation';
+import type {Model} from '@code-like-a-carpenter/foundation-intermediate-representation';
 
+import type {Config} from '../../config';
 import {filterNull} from '../../helpers';
 import {defineComputedInputFields, inputName} from '../computed-fields';
 
 import {ensureTableTemplate} from './ensure-table';
-import {handleCommonErrors, objectToString} from './helpers';
+import {handleCommonErrors, makeKeyForRead, objectToString} from './helpers';
 
-export interface UpdateItemTplInput {
-  readonly fields: readonly Field[];
-  readonly hasPublicId: boolean;
-  readonly key: Record<string, string>;
-  readonly marshallPrimaryKey: string;
-  readonly model: Model;
-  readonly primaryKeyFields: string[];
-  readonly tableName: string;
-  readonly ttlConfig: TTLConfig | undefined;
-  readonly typeName: string;
-}
+/**
+ * Generates the updateItem function for a table
+ */
+export function updateItemTemplate(config: Config, model: Model) {
+  const {
+    fields,
+    isPublicModel: hasPublicId,
+    primaryKey,
+    tableName,
+    ttlConfig,
+    typeName,
+  } = model;
+  const key = makeKeyForRead(config, primaryKey);
+  const marshallPrimaryKey = objectToString(
+    Object.fromEntries(
+      (primaryKey.isComposite
+        ? [...primaryKey.partitionKeyFields, ...primaryKey.sortKeyFields]
+        : primaryKey.partitionKeyFields
+      )
+        .map(({fieldName}) => fieldName)
+        .sort()
+        .map((fieldName) => [fieldName, `input.${fieldName}`])
+    )
+  );
+  const primaryKeyFields = (
+    primaryKey.isComposite
+      ? [...primaryKey.partitionKeyFields, ...primaryKey.sortKeyFields]
+      : primaryKey.partitionKeyFields
+  ).map(({fieldName}) => fieldName);
 
-/** template */
-export function updateItemTpl({
-  fields,
-  hasPublicId,
-  key,
-  marshallPrimaryKey,
-  model,
-  primaryKeyFields,
-  tableName,
-  ttlConfig,
-  typeName,
-}: UpdateItemTplInput) {
   const inputTypeName = `Update${typeName}Input`;
   const omitInputFields = [
     'id',

@@ -1,14 +1,14 @@
 import type {
-  Field,
-  TTLConfig,
   Model,
+  PrimaryKeyConfig,
 } from '@code-like-a-carpenter/foundation-intermediate-representation';
 
+import type {Config} from '../../config';
 import {filterNull} from '../../helpers';
 import {defineComputedInputFields, inputName} from '../computed-fields';
 
 import {ensureTableTemplate} from './ensure-table';
-import {handleCommonErrors, objectToString} from './helpers';
+import {handleCommonErrors, makeKeyTemplate, objectToString} from './helpers';
 import {
   indexHasField,
   indexToEANPart,
@@ -16,26 +16,20 @@ import {
   indexToUpdateExpressionPart,
 } from './indexes';
 
-export interface BlindWriteTplInput {
-  readonly fields: readonly Field[];
-  readonly hasPublicId: boolean;
-  readonly key: Record<string, string>;
-  readonly model: Model;
-  readonly tableName: string;
-  readonly ttlConfig: TTLConfig | undefined;
-  readonly typeName: string;
-}
+/**
+ * Generates the createItem function for a table
+ */
+export function blindWriteTemplate(config: Config, model: Model) {
+  const {
+    fields,
+    isPublicModel: hasPublicId,
+    primaryKey,
+    tableName,
+    ttlConfig,
+    typeName,
+  } = model;
+  const key = makeKeyForBlind(config, primaryKey);
 
-/** template */
-export function blindWriteTpl({
-  fields,
-  hasPublicId,
-  key,
-  model,
-  tableName,
-  ttlConfig,
-  typeName,
-}: BlindWriteTplInput) {
   const inputTypeName = `BlindWrite${typeName}Input`;
   const omitInputFields = [
     'createdAt',
@@ -136,4 +130,33 @@ ${ensureTableTemplate(tableName)}
   }
 }
 `;
+}
+
+/** helper */
+export function makeKeyForBlind(
+  config: Config,
+  key: PrimaryKeyConfig
+): Record<string, string> {
+  if (key.isComposite) {
+    const doLegacy =
+      config.legacyEmptySortFieldBehavior && key.sortKeyFields.length === 0;
+    return {
+      pk: makeKeyTemplate(
+        key.partitionKeyPrefix,
+        key.partitionKeyFields,
+        'blind'
+      ),
+      sk: doLegacy
+        ? `'${key.sortKeyPrefix}#0'`
+        : makeKeyTemplate(key.sortKeyPrefix, key.sortKeyFields, 'blind'),
+    };
+  }
+
+  return {
+    pk: makeKeyTemplate(
+      key.partitionKeyPrefix,
+      key.partitionKeyFields,
+      'blind'
+    ),
+  };
 }

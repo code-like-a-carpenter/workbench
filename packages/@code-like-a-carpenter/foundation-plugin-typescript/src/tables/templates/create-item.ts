@@ -1,14 +1,14 @@
 import type {
-  Field,
   Model,
-  TTLConfig,
+  PrimaryKeyConfig,
 } from '@code-like-a-carpenter/foundation-intermediate-representation';
 
+import type {Config} from '../../config';
 import {filterNull} from '../../helpers';
 import {defineComputedInputFields, inputName} from '../computed-fields';
 
 import {ensureTableTemplate} from './ensure-table';
-import {handleCommonErrors, objectToString} from './helpers';
+import {handleCommonErrors, makeKeyTemplate, objectToString} from './helpers';
 import {
   indexHasField,
   indexToEANPart,
@@ -16,26 +16,20 @@ import {
   indexToUpdateExpressionPart,
 } from './indexes';
 
-export interface CreateItemTplInput {
-  readonly fields: readonly Field[];
-  readonly hasPublicId: boolean;
-  readonly key: Record<string, string>;
-  readonly model: Model;
-  readonly tableName: string;
-  readonly ttlConfig: TTLConfig | undefined;
-  readonly typeName: string;
-}
+/**
+ * Generates the createItem function for a table
+ */
+export function createItemTemplate(config: Config, model: Model) {
+  const {
+    fields,
+    isPublicModel: hasPublicId,
+    primaryKey,
+    tableName,
+    ttlConfig,
+    typeName,
+  } = model;
+  const key = makeKey(primaryKey, config);
 
-/** template */
-export function createItemTpl({
-  fields,
-  hasPublicId,
-  key,
-  model,
-  tableName,
-  ttlConfig,
-  typeName,
-}: CreateItemTplInput) {
   const inputTypeName = `Create${typeName}Input`;
   const omitInputFields = [
     'createdAt',
@@ -138,4 +132,33 @@ ${ensureTableTemplate(tableName)}
     ${handleCommonErrors()}
   }
 }`;
+}
+
+/** helper */
+export function makeKey(
+  key: PrimaryKeyConfig,
+  config: Config
+): Record<string, string> {
+  if (key.isComposite) {
+    const doLegacy =
+      config.legacyEmptySortFieldBehavior && key.sortKeyFields.length === 0;
+    return {
+      pk: makeKeyTemplate(
+        key.partitionKeyPrefix,
+        key.partitionKeyFields,
+        'create'
+      ),
+      sk: doLegacy
+        ? `'${key.sortKeyPrefix}#0'`
+        : makeKeyTemplate(key.sortKeyPrefix, key.sortKeyFields, 'create'),
+    };
+  }
+
+  return {
+    pk: makeKeyTemplate(
+      key.partitionKeyPrefix,
+      key.partitionKeyFields,
+      'create'
+    ),
+  };
 }

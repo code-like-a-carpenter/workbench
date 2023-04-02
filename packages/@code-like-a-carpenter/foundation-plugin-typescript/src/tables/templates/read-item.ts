@@ -1,20 +1,17 @@
+import type {Model} from '@code-like-a-carpenter/foundation-intermediate-representation';
+
+import type {Config} from '../../config';
+
 import {ensureTableTemplate} from './ensure-table';
-import {handleCommonErrors, objectToString} from './helpers';
+import {handleCommonErrors, makeKeyForRead, objectToString} from './helpers';
 
-export interface ReadItemTplInput {
-  readonly consistent: boolean;
-  readonly key: Record<string, string>;
-  readonly tableName: string;
-  readonly typeName: string;
-}
+/**
+ * Generates the readItem function for a table
+ */
+export function readItemTemplate(config: Config, model: Model) {
+  const {consistent, primaryKey, tableName, typeName} = model;
+  const key = makeKeyForRead(config, primaryKey);
 
-/** template */
-export function readItemTpl({
-  consistent,
-  key,
-  tableName,
-  typeName,
-}: ReadItemTplInput) {
   const outputTypeName = `Read${typeName}Output`;
   const primaryKeyType = `${typeName}PrimaryKey`;
 
