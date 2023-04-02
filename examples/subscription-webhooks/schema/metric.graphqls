@@ -1,0 +1,20 @@
+"""
+A summary of all accounts.
+"""
+type Metric implements Model & Timestamped & Versioned
+  @consistent
+  @compositeKey(
+    pkFields: []
+    pkPrefix: "METRIC"
+    skFields: ["onFreeTrial"]
+    skPrefix: "SUMMARY"
+  ) {
+  createdAt: Date!
+  id: ID!
+  updatedAt: Date!
+  version: Int!
+
+  count: Int!
+  onFreeTrial: Boolean!
+  monthlyRecurringRevenueInCents: Int!
+}

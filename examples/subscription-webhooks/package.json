@@ -6,8 +6,15 @@
     "npm": "9.x"
   },
   "dependencies": {
+    "@aws-sdk/client-dynamodb": "3.188.0",
+    "@aws-sdk/lib-dynamodb": "3.188.0",
+    "@aws-sdk/smithy-client": "3.188.0",
+    "@aws-sdk/util-dynamodb": "3.188.0",
     "@code-like-a-carpenter/foundation-plugin-cloudformation": "*",
     "@code-like-a-carpenter/foundation-plugin-typescript": "*",
-    "@code-like-a-carpenter/foundation-runtime": "*"
+    "@code-like-a-carpenter/foundation-runtime": "*",
+    "@code-like-a-carpenter/wait-for": "*",
+    "@faker-js/faker": "^7.6.0",
+    "base64url": "^3.0.1"
   }
 }
