@@ -12,8 +12,21 @@ extends:
 
 ignorePatterns:
   - dist
+  - '!.graphqlrc.js'
 
 overrides:
+  - files:
+      - '**/*.graphql'
+      - '**/*.graphqls'
+    extends: 'plugin:@graphql-eslint/schema-recommended'
+    rules:
+      # Since we're building a bunch of different schema, not all of the shared
+      # schema will be used in each combined schema ,so this rule can't be
+      # usefully enforced.
+      '@graphql-eslint/no-unreachable-types': off
+      '@graphql-eslint/no-typename-prefix': off
+      strict: off
+
   - files:
       - '**/*.ts'
       - '**/*.tsx'
@@ -30,6 +43,19 @@ overrides:
       - '**/__mocks__/**/*'
     env:
       jest: true
+
+  - files:
+      - '**/__generated__/**'
+      - '**/*.generated.*'
+    rules:
+      '@typescript-eslint/no-explicit-any': off
+      '@typescript-eslint/no-unused-vars': off
+      complexity: off
+      eslint-comments/disable-enable-pair: off
+      eslint-comments/no-unlimited-disable: off
+      no-restricted-imports: off
+      prefer-destructuring: off
+      sort-keys: off
 
 parserOptions:
   sourceType: 'script'
