@@ -91,6 +91,12 @@ export default class ExampleEnvironment extends Environment {
         `TEST_ENV must be set to either "localstack" or "aws", received ${process.env.TEST_ENV}`
       );
     }
+
+    for (const [key, value] of Object.entries(process.env)) {
+      if (key.startsWith('AWS_')) {
+        this.global.process.env[key] = value;
+      }
+    }
   }
 
   private async ensureLocalStack() {
