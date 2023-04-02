@@ -25,6 +25,8 @@
     "@babel/preset-typescript": "^7.18.6",
     "@commitlint/cli": "^17.4.2",
     "@commitlint/config-conventional": "^17.4.3",
+    "@graphql-codegen/cli": "^3.2.2",
+    "@graphql-codegen/typescript": "^3.0.2",
     "@graphql-eslint/eslint-plugin": "^3.16.1",
     "@ianwremmel/eslint-plugin-ianwremmel": "^6.2.0",
     "@jest/types": "^29.4.2",

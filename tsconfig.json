@@ -41,6 +41,24 @@
       "path": "packages/@code-like-a-carpenter/exception"
     },
     {
+      "path": "packages/@code-like-a-carpenter/foundation-intermediate-representation"
+    },
+    {
+      "path": "packages/@code-like-a-carpenter/foundation-parser"
+    },
+    {
+      "path": "packages/@code-like-a-carpenter/foundation-plugin-cloudformation"
+    },
+    {
+      "path": "packages/@code-like-a-carpenter/foundation-plugin-typescript"
+    },
+    {
+      "path": "packages/@code-like-a-carpenter/foundation-runtime"
+    },
+    {
+      "path": "packages/@code-like-a-carpenter/foundation"
+    },
+    {
       "path": "packages/@code-like-a-carpenter/interact"
     },
     {

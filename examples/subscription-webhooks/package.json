@@ -1,0 +1,13 @@
+{
+  "name": "subscription-webhooks",
+  "private": true,
+  "engines": {
+    "node": "18.x",
+    "npm": "9.x"
+  },
+  "dependencies": {
+    "@code-like-a-carpenter/foundation-plugin-cloudformation": "*",
+    "@code-like-a-carpenter/foundation-plugin-typescript": "*",
+    "@code-like-a-carpenter/foundation-runtime": "*"
+  }
+}
