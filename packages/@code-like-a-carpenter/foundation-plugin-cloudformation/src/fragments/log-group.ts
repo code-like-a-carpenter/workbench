@@ -1,5 +1,6 @@
 /** cloudformation generator */
-import type {CloudFormationFragment} from '../types';
+import type {AWSLogsLogGroup} from '../__generated__/json-schemas/serverless-application-model';
+import type {ServerlessApplicationModel} from '../types';
 
 export interface LogGroupInput {
   functionName: string;
@@ -8,23 +9,27 @@ export interface LogGroupInput {
 /** cloudformation generator */
 export function makeLogGroup({
   functionName,
-}: LogGroupInput): CloudFormationFragment {
+}: LogGroupInput): ServerlessApplicationModel {
+  const logGroup: AWSLogsLogGroup = {
+    Properties: {
+      // @ts-expect-error typedef doesn't include intrinsic functions
+      LogGroupName: {'Fn::Sub': `/aws/lambda/\${${functionName}}`},
+      // @ts-expect-error typedef doesn't include intrinsic functions
+      RetentionInDays: {Ref: 'LogRetentionInDays'},
+    },
+    Type: 'AWS::Logs::LogGroup',
+  };
+
   return {
-    parameters: {
+    Parameters: {
       LogRetentionInDays: {
-        Default: 3,
+        Default: '3',
         Description: 'Log retention in days',
         Type: 'Number',
       },
     },
-    resources: {
-      [`${functionName}LogGroup`]: {
-        Properties: {
-          LogGroupName: {'Fn::Sub': `/aws/lambda/\${${functionName}}`},
-          RetentionInDays: {Ref: 'LogRetentionInDays'},
-        },
-        Type: 'AWS::Logs::LogGroup',
-      },
+    Resources: {
+      [`${functionName}LogGroup`]: logGroup,
     },
   };
 }

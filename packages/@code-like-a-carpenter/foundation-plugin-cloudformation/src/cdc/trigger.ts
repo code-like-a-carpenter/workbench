@@ -16,7 +16,7 @@ import {
 import type {CloudformationPluginConfig} from '../config';
 import {combineFragments} from '../fragments/combine-fragments';
 import {buildPropertiesWithDefaults} from '../fragments/lambda';
-import type {CloudFormationFragment} from '../types';
+import type {ServerlessApplicationModel} from '../types';
 
 import {makeHandler} from './lambdas';
 
@@ -33,7 +33,7 @@ export function defineTriggerCdc(
   }: ChangeDataCaptureTriggerConfig,
   config: CloudformationPluginConfig,
   {outputFile}: {outputFile: string}
-): CloudFormationFragment {
+): ServerlessApplicationModel {
   const {dependenciesModuleId, libImportPath, tableName} = model;
 
   const handlerFileName = `trigger--${kebabCase(

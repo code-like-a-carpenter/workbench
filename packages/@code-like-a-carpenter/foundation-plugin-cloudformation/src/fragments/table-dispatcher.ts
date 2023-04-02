@@ -1,7 +1,7 @@
 import type {DispatcherConfig} from '@code-like-a-carpenter/foundation-intermediate-representation';
 import {increasePathDepth} from '@code-like-a-carpenter/foundation-parser';
 
-import type {CloudFormationFragment} from '../types';
+import type {ServerlessApplicationModel} from '../types';
 
 import {combineFragments} from './combine-fragments';
 import type {LambdaDynamoDBEventInput, LambdaInput} from './lambda';
@@ -26,7 +26,7 @@ export function makeTableDispatcher({
   libImportPath,
   maximumRetryAttempts = 3,
   tableName,
-}: TableDispatcherInput): CloudFormationFragment {
+}: TableDispatcherInput): ServerlessApplicationModel {
   dependenciesModuleId = increasePathDepth(dependenciesModuleId);
 
   writeLambda(
@@ -46,7 +46,7 @@ export const handler = makeDynamoDBStreamDispatcher({
   const {memorySize, timeout} = dispatcherConfig;
 
   return combineFragments(makeLogGroup({functionName}), {
-    resources: {
+    Resources: {
       [functionName]: {
         Metadata: {
           BuildMethod: 'esbuild',

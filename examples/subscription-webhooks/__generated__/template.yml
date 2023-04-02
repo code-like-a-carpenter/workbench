@@ -52,7 +52,7 @@ Outputs:
       Ref: TableSubscriptionEvent
 Parameters:
   LogRetentionInDays:
-    Default: 3
+    Default: '3'
     Description: Log retention in days
     Type: Number
   StageName:

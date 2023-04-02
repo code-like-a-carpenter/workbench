@@ -18,6 +18,7 @@ import type {CloudformationPluginConfig} from './config';
 import {combineFragments} from './fragments/combine-fragments';
 import {filterNull} from './helpers';
 import {defineTable} from './table';
+import type {ServerlessApplicationModel} from './types';
 
 /** @override */
 export function addToSchema(): AddToSchemaResult {
@@ -30,18 +31,23 @@ export function addToSchema(): AddToSchemaResult {
 /**
  * Loads an existing consumer-generated CF template or returns a basic template
  */
-function getInitialTemplate({sourceTemplate}: CloudformationPluginConfig) {
+function getInitialTemplate({
+  sourceTemplate,
+}: CloudformationPluginConfig): ServerlessApplicationModel {
   if (sourceTemplate) {
     const raw = fs.readFileSync(sourceTemplate, 'utf8');
     try {
       return JSON.parse(raw);
     } catch {
-      return yml.load(raw, {schema: CLOUDFORMATION_SCHEMA});
+      return yml.load(raw, {
+        schema: CLOUDFORMATION_SCHEMA,
+      }) as ServerlessApplicationModel;
     }
   }
 
   return {
     AWSTemplateFormatVersion: '2010-09-09',
+    Resources: {},
     Transform: 'AWS::Serverless-2016-10-31',
   };
 }
@@ -103,7 +109,7 @@ export const plugin: PluginFunction<CloudformationPluginConfig> = makePlugin(
 
       Conditions: {
         ...initialTemplate.Conditions,
-        ...allResources.conditions,
+        ...allResources.Conditions,
       },
       Globals: {
         Function: {
@@ -114,21 +120,24 @@ export const plugin: PluginFunction<CloudformationPluginConfig> = makePlugin(
           Tracing: 'Active',
           ...initialTemplate?.Globals?.Function,
           Environment: {
+            // @ts-expect-error - typedef treats `Environment` as `unknown`
             ...initialTemplate?.Globals?.Function?.Environment,
             Variables: {
+              // @ts-expect-error - typedef treats `Environment` as `unknown`
               ...initialTemplate?.Globals?.Function?.Environment?.Variables,
-              ...allResources.env,
+              // @ts-expect-error - typedef treats `Environment` as `unknown`
+              ...allResources?.Globals?.Function?.Environment?.Variables,
             },
           },
         },
       },
       Outputs: {
         ...initialTemplate.Outputs,
-        ...allResources.output,
+        ...allResources.Outputs,
       },
       Parameters: {
         ...initialTemplate.Parameters,
-        ...allResources.parameters,
+        ...allResources.Parameters,
         StageName: {
           AllowedValues: ['development', 'production', 'test'],
           Default: 'development',
@@ -138,7 +147,7 @@ export const plugin: PluginFunction<CloudformationPluginConfig> = makePlugin(
       },
       Resources: {
         ...initialTemplate.Resources,
-        ...allResources.resources,
+        ...allResources.Resources,
       },
     };
     const format = config.outputConfig?.format ?? 'json';

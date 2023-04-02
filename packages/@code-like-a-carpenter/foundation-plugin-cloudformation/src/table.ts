@@ -2,7 +2,8 @@ import {snakeCase} from 'lodash';
 
 import type {Table} from '@code-like-a-carpenter/foundation-intermediate-representation';
 
-import type {CloudFormationFragment} from './types';
+import type {AWSDynamoDBTable} from './__generated__/json-schemas/serverless-application-model';
+import type {ServerlessApplicationModel} from './types';
 
 /* eslint-disable complexity */
 /** cloudformation generator */
@@ -13,7 +14,7 @@ export function defineTable({
   tableName,
   primaryKey: {isComposite},
   secondaryIndexes,
-}: Table): CloudFormationFragment {
+}: Table): ServerlessApplicationModel {
   const attributeDefinitions = isComposite
     ? [
         {
@@ -122,64 +123,70 @@ export function defineTable({
     }
   }
 
-  const properties: Record<string, unknown> = {
-    AttributeDefinitions: attributeDefinitions,
-    BillingMode: 'PAY_PER_REQUEST',
-    GlobalSecondaryIndexes: globalSecondaryIndexes.length
-      ? globalSecondaryIndexes
-      : undefined,
-    KeySchema: keySchema,
-    LocalSecondaryIndexes: localSecondaryIndexes.length
-      ? localSecondaryIndexes
-      : undefined,
-    PointInTimeRecoverySpecification: enablePointInTimeRecovery
-      ? {
-          PointInTimeRecoveryEnabled: {'Fn::If': ['IsProd', true, false]},
-        }
-      : undefined,
-    SSESpecification: {
-      SSEEnabled: {'Fn::If': ['IsProd', true, false]},
-    },
-    StreamSpecification: enableStreaming
-      ? {
-          StreamViewType: 'NEW_AND_OLD_IMAGES',
-        }
-      : undefined,
-    Tags: [
-      {
-        Key: 'StageName',
-        Value: {Ref: 'StageName'},
+  const resource: AWSDynamoDBTable = {
+    Properties: {
+      AttributeDefinitions: attributeDefinitions,
+      BillingMode: 'PAY_PER_REQUEST',
+      ...(globalSecondaryIndexes.length
+        ? {GlobalSecondaryIndexes: globalSecondaryIndexes}
+        : {}),
+      KeySchema: keySchema,
+      ...(localSecondaryIndexes.length
+        ? {LocalSecondaryIndexes: localSecondaryIndexes}
+        : {}),
+      ...(enablePointInTimeRecovery
+        ? {
+            PointInTimeRecoverySpecification: {
+              PointInTimeRecoveryEnabled: {'Fn::If': ['IsProd', true, false]},
+            },
+          }
+        : {}),
+      SSESpecification: {
+        // @ts-expect-error typedef doesn't include intrinsic functions
+        SSEEnabled: {'Fn::If': ['IsProd', true, false]},
       },
-      {
-        Key: 'TableName',
-        Value: tableName,
-      },
-    ],
-    TimeToLiveSpecification: {
-      AttributeName: 'ttl',
-      Enabled: true,
+      StreamSpecification: enableStreaming
+        ? {
+            StreamViewType: 'NEW_AND_OLD_IMAGES',
+          }
+        : undefined,
+      Tags: [
+        {
+          Key: 'StageName',
+          // @ts-expect-error typedef doesn't include intrinsic functions
+          Value: {Ref: 'StageName'},
+        },
+        {
+          Key: 'TableName',
+          Value: tableName,
+        },
+      ],
+      ...(hasTtl
+        ? {
+            TimeToLiveSpecification: {
+              AttributeName: 'ttl',
+              Enabled: true,
+            },
+          }
+        : {}),
     },
-  };
-
-  if (globalSecondaryIndexes.length === 0) {
-    delete properties.GlobalSecondaryIndexes;
-  }
-
-  if (!hasTtl) {
-    delete properties.TimeToLiveSpecification;
-  }
-
-  const resource = {
-    Properties: properties,
     Type: 'AWS::DynamoDB::Table',
   };
 
   return {
-    conditions: {
+    Conditions: {
       IsProd: {'Fn::Equals': [{Ref: 'StageName'}, 'production']},
     },
-    env: {[`${snakeCase(tableName).toUpperCase()}`]: {Ref: tableName}},
-    output: {
+    Globals: {
+      Function: {
+        Environment: {
+          Variables: {
+            [`${snakeCase(tableName).toUpperCase()}`]: {Ref: tableName},
+          },
+        },
+      },
+    },
+    Outputs: {
       [tableName]: {
         Description: `The name of the DynamoDB table for ${tableName}`,
         Export: {
@@ -188,7 +195,7 @@ export function defineTable({
         Value: {Ref: tableName},
       },
     },
-    resources: {
+    Resources: {
       [tableName]: resource,
     },
   };

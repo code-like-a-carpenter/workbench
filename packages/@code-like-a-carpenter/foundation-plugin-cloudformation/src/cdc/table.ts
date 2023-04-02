@@ -8,16 +8,18 @@ import type {CloudformationPluginConfig} from '../config';
 import {combineFragments} from '../fragments/combine-fragments';
 import {buildPropertiesWithDefaults} from '../fragments/lambda';
 import {makeTableDispatcher} from '../fragments/table-dispatcher';
-import type {CloudFormationFragment} from '../types';
+import type {ServerlessApplicationModel} from '../types';
 
 /** Generates CDC config for a table */
 export function defineTableCdc(
   table: Table,
   config: CloudformationPluginConfig,
   {outputFile}: {outputFile: string}
-): CloudFormationFragment {
+): ServerlessApplicationModel {
   if (!table.hasCdc) {
-    return {};
+    return {
+      Resources: {},
+    };
   }
 
   const {dispatcherConfig, dependenciesModuleId, libImportPath, tableName} =
