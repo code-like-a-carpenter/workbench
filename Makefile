@@ -42,7 +42,7 @@ NPX := npx --no-install
 ## Public Targets
 ################################################################################
 
-build:
+all:
 	$(NPX) nx run-many --target build
 
 ################################################################################
@@ -67,4 +67,4 @@ README.md:
 	$(NPX) markdown-toc -i --bullets='-' --maxdepth=3 README.md
 	$(NPX) prettier --write README.md
 .PHONY: README.md
-build: README.md
+all: README.md
