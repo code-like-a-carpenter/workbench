@@ -10,6 +10,7 @@ import yml from 'js-yaml';
 import {CLOUDFORMATION_SCHEMA} from 'js-yaml-cloudformation-schema';
 
 import {parse} from '@code-like-a-carpenter/foundation-parser';
+import {makePlugin} from '@code-like-a-carpenter/graphql-codegen-helpers';
 
 import {defineTableCdc, defineModelEnricher, defineTriggerCdc} from './cdc';
 import {defaultDispatcherConfig, defaultHandlerConfig} from './config';
@@ -46,112 +47,109 @@ function getInitialTemplate({sourceTemplate}: CloudformationPluginConfig) {
 }
 
 /** @override */
-export const plugin: PluginFunction<CloudformationPluginConfig> = (
-  schema,
-  documents,
-  config,
-  info
-) => {
-  const outputFile = info?.outputFile;
-  assert(outputFile, 'outputFile is required');
+export const plugin: PluginFunction<CloudformationPluginConfig> = makePlugin(
+  (schema, documents, config, info) => {
+    const outputFile = info?.outputFile;
+    assert(outputFile, 'outputFile is required');
 
-  const {models, tables} = parse(
-    schema,
-    documents,
-    {
-      ...config,
-      defaultDispatcherConfig: {
-        ...defaultDispatcherConfig,
-        ...config.defaultDispatcherConfig,
+    const {models, tables} = parse(
+      schema,
+      documents,
+      {
+        ...config,
+        defaultDispatcherConfig: {
+          ...defaultDispatcherConfig,
+          ...config.defaultDispatcherConfig,
+        },
+        defaultHandlerConfig: {
+          ...defaultHandlerConfig,
+          ...config.defaultHandlerConfig,
+        },
       },
-      defaultHandlerConfig: {
-        ...defaultHandlerConfig,
-        ...config.defaultHandlerConfig,
-      },
-    },
-    info
-  );
+      info
+    );
 
-  const allResources = combineFragments(
-    ...tables.map((table) =>
-      combineFragments(
-        defineTableCdc(table, config, {outputFile}),
-        defineTable(table)
+    const allResources = combineFragments(
+      ...tables.map((table) =>
+        combineFragments(
+          defineTableCdc(table, config, {outputFile}),
+          defineTable(table)
+        )
+      ),
+      ...models.flatMap((model) =>
+        model.changeDataCaptureConfig
+          .map((cdcConfig) =>
+            cdcConfig.type === 'ENRICHER'
+              ? defineModelEnricher(model, cdcConfig, config, {outputFile})
+              : null
+          )
+          .filter(filterNull)
+      ),
+      ...models.flatMap((model) =>
+        model.changeDataCaptureConfig
+          .map((cdcConfig) =>
+            cdcConfig.type === 'TRIGGER'
+              ? defineTriggerCdc(model, cdcConfig, config, {outputFile})
+              : null
+          )
+          .filter(filterNull)
       )
-    ),
-    ...models.flatMap((model) =>
-      model.changeDataCaptureConfig
-        .map((cdcConfig) =>
-          cdcConfig.type === 'ENRICHER'
-            ? defineModelEnricher(model, cdcConfig, config, {outputFile})
-            : null
-        )
-        .filter(filterNull)
-    ),
-    ...models.flatMap((model) =>
-      model.changeDataCaptureConfig
-        .map((cdcConfig) =>
-          cdcConfig.type === 'TRIGGER'
-            ? defineTriggerCdc(model, cdcConfig, config, {outputFile})
-            : null
-        )
-        .filter(filterNull)
-    )
-  );
+    );
 
-  const initialTemplate = getInitialTemplate(config);
+    const initialTemplate = getInitialTemplate(config);
 
-  const tpl = {
-    ...initialTemplate,
+    const tpl = {
+      ...initialTemplate,
 
-    Conditions: {
-      ...initialTemplate.Conditions,
-      ...allResources.conditions,
-    },
-    Globals: {
-      Function: {
-        Handler: 'index.handler',
-        MemorySize: 256,
-        Runtime: 'nodejs18.x',
-        Timeout: 30,
-        Tracing: 'Active',
-        ...initialTemplate?.Globals?.Function,
-        Environment: {
-          ...initialTemplate?.Globals?.Function?.Environment,
-          Variables: {
-            ...initialTemplate?.Globals?.Function?.Environment?.Variables,
-            ...allResources.env,
+      Conditions: {
+        ...initialTemplate.Conditions,
+        ...allResources.conditions,
+      },
+      Globals: {
+        Function: {
+          Handler: 'index.handler',
+          MemorySize: 256,
+          Runtime: 'nodejs18.x',
+          Timeout: 30,
+          Tracing: 'Active',
+          ...initialTemplate?.Globals?.Function,
+          Environment: {
+            ...initialTemplate?.Globals?.Function?.Environment,
+            Variables: {
+              ...initialTemplate?.Globals?.Function?.Environment?.Variables,
+              ...allResources.env,
+            },
           },
         },
       },
-    },
-    Outputs: {
-      ...initialTemplate.Outputs,
-      ...allResources.output,
-    },
-    Parameters: {
-      ...initialTemplate.Parameters,
-      ...allResources.parameters,
-      StageName: {
-        AllowedValues: ['development', 'production', 'test'],
-        Default: 'development',
-        Description: 'The name of the stage',
-        Type: 'String',
+      Outputs: {
+        ...initialTemplate.Outputs,
+        ...allResources.output,
       },
-    },
-    Resources: {
-      ...initialTemplate.Resources,
-      ...allResources.resources,
-    },
-  };
-  const format = config.outputConfig?.format ?? 'json';
-  if (format === 'json') {
-    return JSON.stringify(tpl, null, 2);
-  }
+      Parameters: {
+        ...initialTemplate.Parameters,
+        ...allResources.parameters,
+        StageName: {
+          AllowedValues: ['development', 'production', 'test'],
+          Default: 'development',
+          Description: 'The name of the stage',
+          Type: 'String',
+        },
+      },
+      Resources: {
+        ...initialTemplate.Resources,
+        ...allResources.resources,
+      },
+    };
+    const format = config.outputConfig?.format ?? 'json';
+    if (format === 'json') {
+      return JSON.stringify(tpl, null, 2);
+    }
 
-  return yml.dump(tpl, {
-    noRefs: true,
-    sortKeys: true,
-    ...config.outputConfig?.yamlConfig,
-  });
-};
+    return yml.dump(tpl, {
+      noRefs: true,
+      sortKeys: true,
+      ...config.outputConfig?.yamlConfig,
+    });
+  }
+);

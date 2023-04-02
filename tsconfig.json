@@ -56,6 +56,9 @@
       "path": "packages/@code-like-a-carpenter/foundation-runtime"
     },
     {
+      "path": "packages/@code-like-a-carpenter/graphql-codegen-helpers"
+    },
+    {
       "path": "packages/@code-like-a-carpenter/interact"
     },
     {

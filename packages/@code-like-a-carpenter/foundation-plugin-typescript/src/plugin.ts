@@ -8,6 +8,7 @@ import type {
 } from '@graphql-codegen/plugin-helpers';
 
 import {parse} from '@code-like-a-carpenter/foundation-parser';
+import {makePlugin} from '@code-like-a-carpenter/graphql-codegen-helpers';
 
 import {defaultDispatcherConfig, defaultHandlerConfig} from './config';
 import type {ActionPluginConfig} from './config';
@@ -36,30 +37,26 @@ export function addToSchema(): AddToSchemaResult {
 }
 
 /** @override */
-export const plugin: PluginFunction<ActionPluginConfig> = (
-  schema,
-  documents,
-  config,
-  info
-) => {
-  try {
-    const {additionalImports, dependenciesModuleId, tables, models} = parse(
-      schema,
-      documents,
-      {
-        ...config,
-        defaultDispatcherConfig: {
-          ...defaultDispatcherConfig,
-          ...config.defaultDispatcherConfig,
+export const plugin: PluginFunction<ActionPluginConfig> = makePlugin(
+  (schema, documents, config, info) => {
+    try {
+      const {additionalImports, dependenciesModuleId, tables, models} = parse(
+        schema,
+        documents,
+        {
+          ...config,
+          defaultDispatcherConfig: {
+            ...defaultDispatcherConfig,
+            ...config.defaultDispatcherConfig,
+          },
+          defaultHandlerConfig: {
+            ...defaultHandlerConfig,
+            ...config.defaultHandlerConfig,
+          },
         },
-        defaultHandlerConfig: {
-          ...defaultHandlerConfig,
-          ...config.defaultHandlerConfig,
-        },
-      },
-      info
-    );
-    const content = `
+        info
+      );
+      const content = `
 
 
 ${models
@@ -110,24 +107,24 @@ ${models
   })
   .join('\n')}`;
 
-    assert(info?.outputFile, 'info.outputFile is required');
+      assert(info?.outputFile, 'info.outputFile is required');
 
-    const runtimeModuleId = '@code-like-a-carpenter/foundation-runtime';
+      const runtimeModuleId = '@code-like-a-carpenter/foundation-runtime';
 
-    const hasPublicModels = tables.some((table) => table.hasPublicModels);
+      const hasPublicModels = tables.some((table) => table.hasPublicModels);
 
-    const importFromDependencies = [
-      'ddbDocClient',
-      hasPublicModels && 'idGenerator',
-    ]
-      .filter(filterNull)
-      .join(', ');
+      const importFromDependencies = [
+        'ddbDocClient',
+        hasPublicModels && 'idGenerator',
+      ]
+        .filter(filterNull)
+        .join(', ');
 
-    return {
-      content,
-      prepend: [
-        `import {ConditionalCheckFailedException, ConsumedCapacity, ItemCollectionMetrics} from '@aws-sdk/client-dynamodb';`,
-        `import {
+      return {
+        content,
+        prepend: [
+          `import {ConditionalCheckFailedException, ConsumedCapacity, ItemCollectionMetrics} from '@aws-sdk/client-dynamodb';`,
+          `import {
           DeleteCommand,
           DeleteCommandInput,
           GetCommand,
@@ -137,10 +134,10 @@ ${models
           UpdateCommand,
           UpdateCommandInput
         } from '@aws-sdk/lib-dynamodb';`,
-        `import {ServiceException} from '@aws-sdk/smithy-client';`,
-        `import {NativeAttributeValue} from '@aws-sdk/util-dynamodb';`,
-        `import Base64 from 'base64url';`,
-        `import {
+          `import {ServiceException} from '@aws-sdk/smithy-client';`,
+          `import {NativeAttributeValue} from '@aws-sdk/util-dynamodb';`,
+          `import Base64 from 'base64url';`,
+          `import {
           assert,
           makeSortKeyForQuery,
           unmarshallRequiredField,
@@ -157,16 +154,17 @@ ${models
           UnexpectedAwsError,
           UnexpectedError
         } from '${runtimeModuleId}';`,
-        `import {${importFromDependencies}} from "${dependenciesModuleId}";`,
-        ...additionalImports.map(
-          ({importName, importPath}) =>
-            `import {${importName}} from '${importPath}';`
-        ),
-      ],
-    };
-  } catch (err) {
-    // graphql-codegen suppresses stack traces, so we have to re-log here.
-    console.error(err);
-    throw err;
+          `import {${importFromDependencies}} from "${dependenciesModuleId}";`,
+          ...additionalImports.map(
+            ({importName, importPath}) =>
+              `import {${importName}} from '${importPath}';`
+          ),
+        ],
+      };
+    } catch (err) {
+      // graphql-codegen suppresses stack traces, so we have to re-log here.
+      console.error(err);
+      throw err;
+    }
   }
-};
+);

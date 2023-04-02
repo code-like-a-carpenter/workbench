@@ -11,6 +11,9 @@
     },
     {
       "path": "../foundation-parser"
+    },
+    {
+      "path": "../graphql-codegen-helpers"
     }
   ]
 }
