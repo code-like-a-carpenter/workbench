@@ -14,6 +14,7 @@
 -   [Examples](#examples)
 -   [Maintainer](#maintainer)
 -   [Contribute](#contribute)
+    -   [nx](#nx)
 -   [License](#license)
 
 <!-- tocstop -->
@@ -55,6 +56,22 @@ PRs welcome, but for anything beyond the most trivial of changes, please open a
 GitHub issue before doing a whole bunch of work. I'm happy to discuss the
 additions, but this is a personal project and I don't want you wasting your time
 if what you're proposing isn't a good fit.
+
+### nx
+
+This repo uses [nx](https://nx.dev/) to manage the monorepo.
+
+#### .nx-cache-buster
+
+It's sometimes possible to get into a state where the nx cloud cache has cached
+bad output and it's not clear what inputs are missing from the dependency graph.
+To fix this, run the following command before using `nx`:
+
+```sh
+date --iso-8601=seconds> .nx-cache-buster
+```
+
+Of course, remember to commit the updated file.
 
 ## License
 
