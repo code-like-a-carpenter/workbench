@@ -29,6 +29,7 @@
           "build",
           "build-cjs",
           "build-esm",
+          "build-json-schemas",
           "build-openapi",
           "build-package",
           "build-project-refs",

@@ -32,7 +32,8 @@ exports.registerProjectTargets = function registerProjectTargets(
 
   const packageName = projectRoot.split('/').slice(-2).join('/');
 
-  return {
+  /** @type Record<string, unknown> */
+  let targets = {
     build: {
       dependsOn: [
         'build-cjs',
@@ -104,6 +105,47 @@ exports.registerProjectTargets = function registerProjectTargets(
       outputs: ['{projectRoot}/dist/types'],
     },
   };
+
+  const jsonSchemas = glob.sync('*.json', {
+    cwd: path.join(projectRoot, 'json-schemas'),
+  });
+
+  if (jsonSchemas.length > 0) {
+    targets = {
+      ...targets,
+      'build-json-schemas': {
+        executor: 'nx:run-commands',
+        inputs: jsonSchemas.map(
+          (filePath) => `{projectRoot}/json-schemas/${filePath}`
+        ),
+        options: {
+          command: [
+            ...jsonSchemas.map(
+              (filepath) =>
+                `npx --no-install json2ts ${projectRoot}/json-schemas/${filepath} ${projectRoot}/src/__generated__/json-schemas/${filepath.replace(
+                  /.json$/,
+                  '.ts'
+                )}`
+            ),
+            `npx prettier --write ${projectRoot}/src/__generated__/json-schemas`,
+          ].join(' && \\\n'),
+        },
+        outputs: jsonSchemas.map(
+          (filePath) =>
+            `{projectRoot}/src/__generated__/json-schemas/${filePath}`
+        ),
+      },
+    };
+
+    assert(typeof targets.build === 'object');
+    assert(targets.build !== null);
+    assert('dependsOn' in targets.build);
+    assert(Array.isArray(targets.build.dependsOn));
+
+    targets.build.dependsOn.push('build-json-schemas');
+  }
+
+  return targets;
 };
 
 /** @param {string} projectFilePath */
