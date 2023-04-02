@@ -17,7 +17,7 @@ type Account implements Model & Versioned & Timestamped
   )
   @consistent
   @triggers(
-    event: "UPSERT"
+    event: UPSERT
     handler: "../src/react--account--upsert"
     readableModels: ["Account"]
     writableModels: ["PlanMetric"]

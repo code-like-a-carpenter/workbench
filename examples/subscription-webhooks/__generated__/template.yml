@@ -74,7 +74,7 @@ Resources:
           - '@aws-sdk/*'
         Minify: false
         Sourcemap: true
-        Target: es2020
+        Target: es2022
     Properties:
       CodeUri: enricher--subscription-event--upsert--account
       Events:
@@ -265,7 +265,7 @@ Resources:
           - '@aws-sdk/*'
         Minify: false
         Sourcemap: true
-        Target: es2020
+        Target: es2022
     Properties:
       CodeUri: trigger--account--upsert
       Events:
@@ -459,7 +459,7 @@ Resources:
           - '@aws-sdk/*'
         Minify: false
         Sourcemap: true
-        Target: es2020
+        Target: es2022
     Properties:
       CodeUri: trigger--plan-metric--upsert
       Events:
@@ -700,7 +700,7 @@ Resources:
           - '@aws-sdk/*'
         Minify: false
         Sourcemap: true
-        Target: es2020
+        Target: es2022
     Properties:
       CodeUri: dispatcher-table-account
       Events:
@@ -810,7 +810,7 @@ Resources:
           - '@aws-sdk/*'
         Minify: false
         Sourcemap: true
-        Target: es2020
+        Target: es2022
     Properties:
       CodeUri: dispatcher-table-plan-metric
       Events:
@@ -888,7 +888,7 @@ Resources:
           - '@aws-sdk/*'
         Minify: false
         Sourcemap: true
-        Target: es2020
+        Target: es2022
     Properties:
       CodeUri: dispatcher-table-subscription-event
       Events:

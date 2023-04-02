@@ -4,7 +4,7 @@ An event describing a change to a customer's subscription status.
 type SubscriptionEvent implements Model & Timestamped & Versioned
   @consistent
   @enriches(
-    event: "UPSERT"
+    event: UPSERT
     handler: "../src/enrich--subscription--upsert--account"
     targetModel: "Account"
   )

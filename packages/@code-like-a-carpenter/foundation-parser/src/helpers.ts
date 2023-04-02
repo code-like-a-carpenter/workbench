@@ -43,6 +43,24 @@ export function getArgStringValue(
 }
 
 /**
+ * Gets the enum value of the specified argument from the given directive as a
+ * string
+ */
+export function getArgEnumValue(
+  fieldName: string,
+  directive: ConstDirectiveNode
+): string {
+  const prefixArg = getArg(fieldName, directive);
+
+  assert(
+    prefixArg.value.kind === 'EnumValue',
+    `Expected @${directive.name.value} directive argument "${fieldName}" to be an enum, but got ${prefixArg.value.kind}`
+  );
+
+  return prefixArg.value.value;
+}
+
+/**
  * Given a field name that identifies a list argument, returns the typescript
  * types identified by those strings.
  */

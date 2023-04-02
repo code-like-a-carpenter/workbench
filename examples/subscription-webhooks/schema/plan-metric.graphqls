@@ -18,7 +18,7 @@ type PlanMetric implements Model & Timestamped & Versioned
     skPrefix: "PLAN"
   )
   @triggers(
-    event: "UPSERT"
+    event: UPSERT
     handler: "../src/react--plan-metric--upsert"
     readableModels: ["PlanMetric"]
     writableModels: ["Metric"]

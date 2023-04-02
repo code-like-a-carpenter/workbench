@@ -14,7 +14,12 @@ import type {
 } from '@code-like-a-carpenter/foundation-intermediate-representation';
 
 import type {Config} from '../config';
-import {filterNull, getArgStringValue, getOptionalArg} from '../helpers';
+import {
+  filterNull,
+  getArgEnumValue,
+  getArgStringValue,
+  getOptionalArg,
+} from '../helpers';
 import {extractTableName} from '../parser';
 
 import {extractDispatcherConfig, extractHandlerConfig} from './lambda-config';
@@ -134,7 +139,7 @@ function getEvent(
   type: GraphQLObjectType<unknown, unknown>,
   directive: ConstDirectiveNode
 ) {
-  const event = getArgStringValue('event', directive);
+  const event = getArgEnumValue('event', directive);
   assert(
     event === 'INSERT' ||
       event === 'MODIFY' ||

@@ -23,10 +23,7 @@ describe('@reacts', () => {
           skFields: ["onFreeTrial", "planName"]
           skPrefix: "PLAN"
         )
-        @triggers(
-          event: "UPSERT"
-          handler: "../src/react--plan-metric--upsert"
-        ) {
+        @triggers(event: UPSERT, handler: "../src/react--plan-metric--upsert") {
         createdAt: Date!
         id: ID!
         updatedAt: Date!
@@ -109,7 +106,7 @@ describe('@enriches', () => {
       """
       type SubscriptionEvent implements Model & Timestamped & Versioned
         @enriches(
-          event: "UPSERT"
+          event: UPSERT
           handler: "../src/enrich--subscription--upsert--account"
           targetModel: "Account"
         )
