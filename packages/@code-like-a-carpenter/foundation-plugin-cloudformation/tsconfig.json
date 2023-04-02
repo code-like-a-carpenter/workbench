@@ -5,5 +5,12 @@
   },
   "extends": "../../../tsconfig.references.json",
   "include": ["src"],
-  "references": []
+  "references": [
+    {
+      "path": "../foundation-intermediate-representation"
+    },
+    {
+      "path": "../foundation-parser"
+    }
+  ]
 }

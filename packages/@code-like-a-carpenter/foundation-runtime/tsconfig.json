@@ -5,5 +5,15 @@
   },
   "extends": "../../../tsconfig.references.json",
   "include": ["src"],
-  "references": []
+  "references": [
+    {
+      "path": "../exception"
+    },
+    {
+      "path": "../lambda-handlers"
+    },
+    {
+      "path": "../telemetry"
+    }
+  ]
 }

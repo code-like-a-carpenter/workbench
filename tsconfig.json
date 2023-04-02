@@ -56,9 +56,6 @@
       "path": "packages/@code-like-a-carpenter/foundation-runtime"
     },
     {
-      "path": "packages/@code-like-a-carpenter/foundation"
-    },
-    {
       "path": "packages/@code-like-a-carpenter/interact"
     },
     {

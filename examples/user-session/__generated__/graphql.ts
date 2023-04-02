@@ -155,7 +155,6 @@ export interface Timestamped {
 
 /** A user session object. */
 export type UserSession = Model &
-  Node &
   Timestamped &
   Versioned & {
     __typename?: 'UserSession';

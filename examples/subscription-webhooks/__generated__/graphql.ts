@@ -39,8 +39,8 @@ import {
   UnexpectedError,
 } from '@code-like-a-carpenter/foundation-runtime';
 
-import {computeIndexedPlanName} from '../../Users/ian/projects/code-like-a-carpenter/workbench/examples/subscription-webhooks/src/computed-fields';
 import {ddbDocClient} from '../../dependencies';
+import {computeIndexedPlanName} from '../src/computed-fields';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends {[key: string]: unknown}> = {[K in keyof T]: T[K]};
@@ -514,7 +514,7 @@ export async function readAccount(
   assert(tableName, 'TABLE_ACCOUNT is not set');
 
   const commandInput: GetCommandInput = {
-    ConsistentRead: false,
+    ConsistentRead: true,
     Key: {
       pk: ['ACCOUNT', input.externalId].join('#'),
       sk: ['ACCOUNT'].join('#'),
@@ -769,7 +769,7 @@ export async function queryAccount(
   const KeyConditionExpression = makeKceForQueryAccount(input, {operator});
 
   const commandInput: QueryCommandInput = {
-    ConsistentRead: false,
+    ConsistentRead: !('index' in input),
     ExpressionAttributeNames,
     ExpressionAttributeValues,
     ExclusiveStartKey: nextToken,
@@ -1293,7 +1293,7 @@ export async function readMetric(
   assert(tableName, 'TABLE_METRIC is not set');
 
   const commandInput: GetCommandInput = {
-    ConsistentRead: false,
+    ConsistentRead: true,
     Key: {
       pk: ['METRIC'].join('#'),
       sk: ['SUMMARY', input.onFreeTrial].join('#'),
@@ -1494,7 +1494,7 @@ export async function queryMetric(
   const KeyConditionExpression = makeKceForQueryMetric(input, {operator});
 
   const commandInput: QueryCommandInput = {
-    ConsistentRead: false,
+    ConsistentRead: !('index' in input),
     ExpressionAttributeNames,
     ExpressionAttributeValues,
     ExclusiveStartKey: nextToken,
@@ -1905,7 +1905,7 @@ export async function readPlanMetric(
   assert(tableName, 'TABLE_PLAN_METRIC is not set');
 
   const commandInput: GetCommandInput = {
-    ConsistentRead: false,
+    ConsistentRead: true,
     Key: {
       pk: ['PLAN_METRIC'].join('#'),
       sk: ['PLAN', input.onFreeTrial, input.planName].join('#'),
@@ -2119,7 +2119,7 @@ export async function queryPlanMetric(
   const KeyConditionExpression = makeKceForQueryPlanMetric(input, {operator});
 
   const commandInput: QueryCommandInput = {
-    ConsistentRead: false,
+    ConsistentRead: !('index' in input),
     ExpressionAttributeNames,
     ExpressionAttributeValues,
     ExclusiveStartKey: nextToken,
@@ -2429,7 +2429,7 @@ export async function readSubscriptionEvent(
   assert(tableName, 'TABLE_SUBSCRIPTION_EVENT is not set');
 
   const commandInput: GetCommandInput = {
-    ConsistentRead: false,
+    ConsistentRead: true,
     Key: {
       pk: ['ACCOUNT', input.externalId].join('#'),
       sk: [
@@ -2554,7 +2554,7 @@ export async function querySubscriptionEvent(
   });
 
   const commandInput: QueryCommandInput = {
-    ConsistentRead: false,
+    ConsistentRead: !('index' in input),
     ExpressionAttributeNames,
     ExpressionAttributeValues,
     ExclusiveStartKey: nextToken,

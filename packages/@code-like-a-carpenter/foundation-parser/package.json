@@ -20,5 +20,11 @@
   "types": "dist/types",
   "publishConfig": {
     "access": "public"
+  },
+  "dependencies": {
+    "@code-like-a-carpenter/foundation-intermediate-representation": "*",
+    "@graphql-codegen/plugin-helpers": "^4.0.0",
+    "graphql": "^16.6.0",
+    "lodash": "^4.17.21"
   }
 }
