@@ -18,11 +18,37 @@ const graphqlCodegenTypeScriptPluginConfig = {
   strictScalars: true,
 };
 
+/** @type {import("@code-like-a-carpenter/foundation-parser").InputConfig} */
 const foundationPluginsConfig = {
   dependenciesModuleId: './examples/dependencies',
+};
+
+/** @type {import("@code-like-a-carpenter/foundation-plugin-cloudformation").InputConfig} */
+const foundationPluginCloudformationConfig = {
+  ...foundationPluginsConfig,
+  actionsModuleId: 'PLACEHOLDER',
+  dispatcherDefaults: {
+    memorySize: 384,
+    timeout: 60,
+  },
+  handlerDefaults: {
+    memorySize: 256,
+    timeout: 90,
+  },
   outputConfig: {
     format: 'yaml',
+    yamlConfig: {
+      // This is turned off to minimize a diff while working on a migration. If
+      // you're seeing it, it's because I forgot to turn it back on. You
+      // probably don't want to turn this off.
+      forceQuotes: false,
+    },
   },
+};
+
+/** @type {import("@code-like-a-carpenter/foundation-plugin-typescript").InputConfig} */
+const foundationPluginTypescriptConfig = {
+  ...foundationPluginsConfig,
 };
 
 /** @type {import("graphql-config").IGraphQLConfig } */
@@ -35,7 +61,7 @@ const config = {
             [`examples/${example}/__generated__/graphql.ts`]: {
               config: {
                 ...graphqlCodegenTypeScriptPluginConfig,
-                ...foundationPluginsConfig,
+                ...foundationPluginTypescriptConfig,
                 actionsModuleId: `./examples/${example}/__generated__/graphql`,
               },
               plugins: [
@@ -45,7 +71,7 @@ const config = {
             },
             [`examples/${example}/__generated__/template.yml`]: {
               config: {
-                ...foundationPluginsConfig,
+                ...foundationPluginCloudformationConfig,
                 actionsModuleId: `./examples/${example}/__generated__/graphql`,
               },
               plugins: [

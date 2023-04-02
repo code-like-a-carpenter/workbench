@@ -3,6 +3,7 @@ import path from 'node:path';
 
 import {buildSchema} from 'graphql';
 
+import {ParserConfigSchema} from './config';
 import {parse} from './parser';
 
 export async function parseSchema(raw: string) {
@@ -16,17 +17,10 @@ export async function parseSchema(raw: string) {
   return parse(
     schema,
     [],
-    {
-      defaultDispatcherConfig: {
-        memorySize: 384,
-        timeout: 90,
-      },
-      defaultHandlerConfig: {
-        memorySize: 256,
-        timeout: 30,
-      },
-      dependenciesModuleId: 'PLACEHOLDER',
-    },
+    ParserConfigSchema.parse({
+      actionsModuleId: './placeholder/actions',
+      dependenciesModuleId: './placeholder/dependencies',
+    }),
     {
       outputFile: './placeholder/output',
     }

@@ -13,8 +13,8 @@ import {parse} from '@code-like-a-carpenter/foundation-parser';
 import {makePlugin} from '@code-like-a-carpenter/graphql-codegen-helpers';
 
 import {defineTableCdc, defineModelEnricher, defineTriggerCdc} from './cdc';
-import {defaultDispatcherConfig, defaultHandlerConfig} from './config';
-import type {CloudformationPluginConfig} from './config';
+import type {Config} from './config';
+import {ConfigSchema} from './config';
 import {combineFragments} from './fragments/combine-fragments';
 import {filterNull} from './helpers';
 import {defineTable} from './table';
@@ -33,7 +33,7 @@ export function addToSchema(): AddToSchemaResult {
  */
 function getInitialTemplate({
   sourceTemplate,
-}: CloudformationPluginConfig): ServerlessApplicationModel {
+}: Config): ServerlessApplicationModel {
   if (sourceTemplate) {
     const raw = fs.readFileSync(sourceTemplate, 'utf8');
     try {
@@ -53,27 +53,13 @@ function getInitialTemplate({
 }
 
 /** @override */
-export const plugin: PluginFunction<CloudformationPluginConfig> = makePlugin(
+export const plugin: PluginFunction<Config> = makePlugin(
+  ConfigSchema,
   (schema, documents, config, info) => {
     const outputFile = info?.outputFile;
     assert(outputFile, 'outputFile is required');
 
-    const {models, tables} = parse(
-      schema,
-      documents,
-      {
-        ...config,
-        defaultDispatcherConfig: {
-          ...defaultDispatcherConfig,
-          ...config.defaultDispatcherConfig,
-        },
-        defaultHandlerConfig: {
-          ...defaultHandlerConfig,
-          ...config.defaultHandlerConfig,
-        },
-      },
-      info
-    );
+    const {models, tables} = parse(schema, documents, config, info);
 
     const allResources = combineFragments(
       ...tables.map((table) =>
@@ -150,15 +136,12 @@ export const plugin: PluginFunction<CloudformationPluginConfig> = makePlugin(
         ...allResources.Resources,
       },
     };
-    const format = config.outputConfig?.format ?? 'json';
+
+    const {format} = config.outputConfig;
     if (format === 'json') {
       return JSON.stringify(tpl, null, 2);
     }
 
-    return yml.dump(tpl, {
-      noRefs: true,
-      sortKeys: true,
-      ...config.outputConfig?.yamlConfig,
-    });
+    return yml.dump(tpl, config.outputConfig.yamlConfig);
   }
 );

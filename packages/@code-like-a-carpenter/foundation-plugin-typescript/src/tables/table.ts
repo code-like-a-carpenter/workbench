@@ -3,7 +3,7 @@ import type {
   Model,
 } from '@code-like-a-carpenter/foundation-intermediate-representation';
 
-import type {ActionPluginConfig} from '../config';
+import type {Config} from '../config';
 
 import {blindWriteTpl} from './templates/blind-write';
 import {createItemTpl} from './templates/create-item';
@@ -16,7 +16,7 @@ import {updateItemTpl} from './templates/update-item';
 /**
  * Generates the createItem function for a table
  */
-export function createItemTemplate(model: Model, config: ActionPluginConfig) {
+export function createItemTemplate(model: Model, config: Config) {
   return createItemTpl({
     fields: model.fields,
     hasPublicId: model.isPublicModel,
@@ -31,7 +31,7 @@ export function createItemTemplate(model: Model, config: ActionPluginConfig) {
 /**
  * Generates the createItem function for a table
  */
-export function blindWriteTemplate(model: Model, config: ActionPluginConfig) {
+export function blindWriteTemplate(model: Model, config: Config) {
   return blindWriteTpl({
     fields: model.fields,
     hasPublicId: model.isPublicModel,
@@ -46,7 +46,7 @@ export function blindWriteTemplate(model: Model, config: ActionPluginConfig) {
 /**
  * Generates the deleteItem function for a table
  */
-export function deleteItemTemplate(model: Model, config: ActionPluginConfig) {
+export function deleteItemTemplate(model: Model, config: Config) {
   return deleteItemTpl({
     key: makeKeyForRead(model.primaryKey, config),
     tableName: model.tableName,
@@ -83,7 +83,7 @@ export function queryTemplate(model: Model) {
 /**
  * Generates the readItem function for a table
  */
-export function readItemTemplate(model: Model, config: ActionPluginConfig) {
+export function readItemTemplate(model: Model, config: Config) {
   return readItemTpl({
     consistent: model.consistent,
     key: makeKeyForRead(model.primaryKey, config),
@@ -95,7 +95,7 @@ export function readItemTemplate(model: Model, config: ActionPluginConfig) {
 /**
  * Generates the updateItem function for a table
  */
-export function updateItemTemplate(model: Model, config: ActionPluginConfig) {
+export function updateItemTemplate(model: Model, config: Config) {
   return updateItemTpl({
     fields: model.fields,
     hasPublicId: model.isPublicModel,
@@ -131,7 +131,7 @@ export function updateItemTemplate(model: Model, config: ActionPluginConfig) {
 /** helper */
 function makeKey(
   key: PrimaryKeyConfig,
-  config: ActionPluginConfig
+  config: Config
 ): Record<string, string> {
   if (key.isComposite) {
     const doLegacy =
@@ -160,7 +160,7 @@ function makeKey(
 /** helper */
 function makeKeyForBlind(
   key: PrimaryKeyConfig,
-  config: ActionPluginConfig
+  config: Config
 ): Record<string, string> {
   if (key.isComposite) {
     const doLegacy =
@@ -189,7 +189,7 @@ function makeKeyForBlind(
 /** helper */
 function makeKeyForRead(
   key: PrimaryKeyConfig,
-  config: ActionPluginConfig
+  config: Config
 ): Record<string, string> {
   if (key.isComposite) {
     const doLegacy =

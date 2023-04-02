@@ -3,12 +3,12 @@
 exports[`@enriches configures the handler to update one model when another changes 3`] = `
 {
   "additionalImports": [],
-  "dependenciesModuleId": "PLACEHOLDER",
+  "dependenciesModuleId": "dependencies",
   "models": [
     {
       "changeDataCaptureConfig": [],
       "consistent": false,
-      "dependenciesModuleId": "PLACEHOLDER",
+      "dependenciesModuleId": "dependencies",
       "enablePointInTimeRecovery": true,
       "enableStreaming": false,
       "fields": [
@@ -151,8 +151,10 @@ exports[`@enriches configures the handler to update one model when another chang
       "changeDataCaptureConfig": [
         {
           "dispatcherConfig": {
-            "memorySize": 384,
-            "timeout": 90,
+            "batchSize": 10,
+            "maximumRetryAttempts": 3,
+            "memorySize": 256,
+            "timeout": 30,
           },
           "event": "UPSERT",
           "handlerConfig": {
@@ -169,7 +171,7 @@ exports[`@enriches configures the handler to update one model when another chang
         },
       ],
       "consistent": false,
-      "dependenciesModuleId": "PLACEHOLDER",
+      "dependenciesModuleId": "dependencies",
       "enablePointInTimeRecovery": true,
       "enableStreaming": true,
       "fields": [
@@ -372,7 +374,7 @@ exports[`@enriches configures the handler to update one model when another chang
   ],
   "tables": [
     {
-      "dependenciesModuleId": "PLACEHOLDER",
+      "dependenciesModuleId": "dependencies",
       "enablePointInTimeRecovery": true,
       "enableStreaming": false,
       "hasCdc": false,
@@ -386,10 +388,12 @@ exports[`@enriches configures the handler to update one model when another chang
       "tableName": "TableAccount",
     },
     {
-      "dependenciesModuleId": "PLACEHOLDER",
+      "dependenciesModuleId": "dependencies",
       "dispatcherConfig": {
-        "memorySize": 384,
-        "timeout": 90,
+        "batchSize": 10,
+        "maximumRetryAttempts": 3,
+        "memorySize": 256,
+        "timeout": 30,
       },
       "enablePointInTimeRecovery": true,
       "enableStreaming": true,
@@ -410,14 +414,16 @@ exports[`@enriches configures the handler to update one model when another chang
 exports[`@reacts configures an event handler for the model 3`] = `
 {
   "additionalImports": [],
-  "dependenciesModuleId": "PLACEHOLDER",
+  "dependenciesModuleId": "dependencies",
   "models": [
     {
       "changeDataCaptureConfig": [
         {
           "dispatcherConfig": {
-            "memorySize": 384,
-            "timeout": 90,
+            "batchSize": 10,
+            "maximumRetryAttempts": 3,
+            "memorySize": 256,
+            "timeout": 30,
           },
           "event": "UPSERT",
           "handlerConfig": {
@@ -432,7 +438,7 @@ exports[`@reacts configures an event handler for the model 3`] = `
         },
       ],
       "consistent": false,
-      "dependenciesModuleId": "PLACEHOLDER",
+      "dependenciesModuleId": "dependencies",
       "enablePointInTimeRecovery": true,
       "enableStreaming": true,
       "fields": [
@@ -619,10 +625,12 @@ exports[`@reacts configures an event handler for the model 3`] = `
   ],
   "tables": [
     {
-      "dependenciesModuleId": "PLACEHOLDER",
+      "dependenciesModuleId": "dependencies",
       "dispatcherConfig": {
-        "memorySize": 384,
-        "timeout": 90,
+        "batchSize": 10,
+        "maximumRetryAttempts": 3,
+        "memorySize": 256,
+        "timeout": 30,
       },
       "enablePointInTimeRecovery": true,
       "enableStreaming": true,

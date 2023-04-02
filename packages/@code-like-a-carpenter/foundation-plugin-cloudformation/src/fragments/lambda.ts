@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 
-import type {CloudformationPluginConfig} from '../config';
+import type {Config} from '../config';
 
 export interface BuildProperties {
   readonly EntryPoints: readonly string[];
@@ -50,7 +50,7 @@ exports.handler = handler;
 
 /** helper */
 export function buildPropertiesWithDefaults(
-  buildProperties: CloudformationPluginConfig['buildProperties']
+  buildProperties: Config['buildProperties']
 ): BuildProperties {
   return {
     EntryPoints: ['./index'],

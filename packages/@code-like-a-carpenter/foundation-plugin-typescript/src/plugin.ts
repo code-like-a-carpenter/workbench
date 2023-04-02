@@ -10,8 +10,8 @@ import type {
 import {parse} from '@code-like-a-carpenter/foundation-parser';
 import {makePlugin} from '@code-like-a-carpenter/graphql-codegen-helpers';
 
-import {defaultDispatcherConfig, defaultHandlerConfig} from './config';
-import type {ActionPluginConfig} from './config';
+import {ConfigSchema} from './config';
+import type {Config} from './config';
 import {filterNull} from './helpers';
 import {
   blindWriteTemplate,
@@ -37,23 +37,14 @@ export function addToSchema(): AddToSchemaResult {
 }
 
 /** @override */
-export const plugin: PluginFunction<ActionPluginConfig> = makePlugin(
+export const plugin: PluginFunction<Config> = makePlugin(
+  ConfigSchema,
   (schema, documents, config, info) => {
     try {
       const {additionalImports, dependenciesModuleId, tables, models} = parse(
         schema,
         documents,
-        {
-          ...config,
-          defaultDispatcherConfig: {
-            ...defaultDispatcherConfig,
-            ...config.defaultDispatcherConfig,
-          },
-          defaultHandlerConfig: {
-            ...defaultHandlerConfig,
-            ...config.defaultHandlerConfig,
-          },
-        },
+        config,
         info
       );
       const content = `

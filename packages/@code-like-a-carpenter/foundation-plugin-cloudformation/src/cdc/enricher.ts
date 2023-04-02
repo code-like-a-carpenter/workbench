@@ -12,7 +12,7 @@ import {
   resolveActionsModule,
 } from '@code-like-a-carpenter/foundation-parser';
 
-import type {CloudformationPluginConfig} from '../config';
+import type {Config} from '../config';
 import {combineFragments} from '../fragments/combine-fragments';
 import {buildPropertiesWithDefaults} from '../fragments/lambda';
 import type {ServerlessApplicationModel} from '../types';
@@ -30,7 +30,7 @@ export function defineModelEnricher(
     targetModelName,
     writableTables,
   }: ChangeDataCaptureEnricherConfig,
-  config: CloudformationPluginConfig,
+  config: Config,
   {outputFile}: {outputFile: string}
 ): ServerlessApplicationModel {
   const {dependenciesModuleId, libImportPath, tableName} = model;

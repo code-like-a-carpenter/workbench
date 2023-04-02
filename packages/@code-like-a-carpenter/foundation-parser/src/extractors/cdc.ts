@@ -11,23 +11,17 @@ import type {
   ChangeDataCaptureConfig,
   ChangeDataCaptureEnricherConfig,
   ChangeDataCaptureTriggerConfig,
-  DispatcherConfig,
-  HandlerConfig,
 } from '@code-like-a-carpenter/foundation-intermediate-representation';
 
+import type {Config} from '../config';
 import {filterNull, getArgStringValue, getOptionalArg} from '../helpers';
 import {extractTableName} from '../parser';
 
 import {extractDispatcherConfig, extractHandlerConfig} from './lambda-config';
 
 /** Extracts CDC config for a type */
-export function extractChangeDataCaptureConfig<
-  CONFIG extends {
-    defaultDispatcherConfig: DispatcherConfig;
-    defaultHandlerConfig: HandlerConfig;
-  }
->(
-  config: CONFIG,
+export function extractChangeDataCaptureConfig(
+  config: Config,
   schema: GraphQLSchema,
   type: GraphQLObjectType<unknown, unknown>
 ): ChangeDataCaptureConfig[] {
@@ -87,13 +81,8 @@ export function getTargetTables(
 }
 
 /** helper */
-function extractEnricherConfig<
-  CONFIG extends {
-    defaultDispatcherConfig: DispatcherConfig;
-    defaultHandlerConfig: HandlerConfig;
-  }
->(
-  config: CONFIG,
+function extractEnricherConfig(
+  config: Config,
   schema: GraphQLSchema,
   type: GraphQLObjectType<unknown, unknown>,
   directive: ConstDirectiveNode
@@ -115,13 +104,8 @@ function extractEnricherConfig<
 }
 
 /** helper */
-function extractTriggersConfig<
-  CONFIG extends {
-    defaultDispatcherConfig: DispatcherConfig;
-    defaultHandlerConfig: HandlerConfig;
-  }
->(
-  config: CONFIG,
+function extractTriggersConfig(
+  config: Config,
   schema: GraphQLSchema,
   type: GraphQLObjectType<unknown, unknown>,
   directive: ConstDirectiveNode

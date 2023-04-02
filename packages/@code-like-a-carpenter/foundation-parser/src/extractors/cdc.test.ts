@@ -47,8 +47,10 @@ describe('@reacts', () => {
     assert(table.hasCdc);
     expect(table.dispatcherConfig).toMatchInlineSnapshot(`
       {
-        "memorySize": 384,
-        "timeout": 90,
+        "batchSize": 10,
+        "maximumRetryAttempts": 3,
+        "memorySize": 256,
+        "timeout": 30,
       }
     `);
 
@@ -59,8 +61,10 @@ describe('@reacts', () => {
       [
         {
           "dispatcherConfig": {
-            "memorySize": 384,
-            "timeout": 90,
+            "batchSize": 10,
+            "maximumRetryAttempts": 3,
+            "memorySize": 256,
+            "timeout": 30,
           },
           "event": "UPSERT",
           "handlerConfig": {
@@ -139,8 +143,10 @@ describe('@enriches', () => {
     assert(table.hasCdc);
     expect(table.dispatcherConfig).toMatchInlineSnapshot(`
       {
-        "memorySize": 384,
-        "timeout": 90,
+        "batchSize": 10,
+        "maximumRetryAttempts": 3,
+        "memorySize": 256,
+        "timeout": 30,
       }
     `);
 
@@ -153,8 +159,10 @@ describe('@enriches', () => {
       [
         {
           "dispatcherConfig": {
-            "memorySize": 384,
-            "timeout": 90,
+            "batchSize": 10,
+            "maximumRetryAttempts": 3,
+            "memorySize": 256,
+            "timeout": 30,
           },
           "event": "UPSERT",
           "handlerConfig": {

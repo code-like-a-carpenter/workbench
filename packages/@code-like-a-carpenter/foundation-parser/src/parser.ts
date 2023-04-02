@@ -20,7 +20,6 @@ import type {
   DispatcherConfig,
   Field,
   GSI,
-  HandlerConfig,
   IntermediateRepresentation,
   Model,
   PrimaryKeyConfig,
@@ -30,6 +29,7 @@ import type {
   TTLConfig,
 } from '@code-like-a-carpenter/foundation-intermediate-representation';
 
+import type {Config} from './config';
 import {extractChangeDataCaptureConfig} from './extractors/cdc';
 import {
   filterNull,
@@ -56,13 +56,8 @@ export interface Info {
 }
 
 /** helper */
-function extractModel<
-  CONFIG extends {
-    defaultDispatcherConfig: DispatcherConfig;
-    defaultHandlerConfig: HandlerConfig;
-  }
->(
-  config: CONFIG,
+function extractModel(
+  config: Config,
   schema: GraphQLSchema,
   dependenciesModuleId: string,
   typeName: string,
@@ -224,16 +219,10 @@ function extractTableFromModel(
  * Reads a set of GraphQL Schema files and produces an Intermediate
  * Representation.
  */
-export function parse<
-  T extends {
-    defaultDispatcherConfig: DispatcherConfig;
-    defaultHandlerConfig: HandlerConfig;
-    dependenciesModuleId: string;
-  }
->(
+export function parse(
   schema: GraphQLSchema,
   documents: Types.DocumentFile[],
-  config: T,
+  config: Config,
   info?: Info
 ): IntermediateRepresentation {
   const outputFile = info?.outputFile;
