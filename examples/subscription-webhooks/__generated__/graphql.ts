@@ -686,7 +686,6 @@ export type QueryAccountInput =
     };
 export type QueryAccountOutput = MultiResultType<Account>;
 
-/** helper */
 function makeEanForQueryAccount(
   input: QueryAccountInput
 ): Record<string, string> {
@@ -702,7 +701,6 @@ function makeEanForQueryAccount(
   }
 }
 
-/** helper */
 function makeEavForQueryAccount(input: QueryAccountInput): Record<string, any> {
   if ('index' in input) {
     if (input.index === 'gsi1') {
@@ -726,7 +724,6 @@ function makeEavForQueryAccount(input: QueryAccountInput): Record<string, any> {
   }
 }
 
-/** helper */
 function makeKceForQueryAccount(
   input: QueryAccountInput,
   {operator}: Pick<QueryOptions, 'operator'>
@@ -1431,7 +1428,6 @@ export async function updateMetric(
 export type QueryMetricInput = {} | {onFreeTrial: Scalars['Boolean']};
 export type QueryMetricOutput = MultiResultType<Metric>;
 
-/** helper */
 function makeEanForQueryMetric(
   input: QueryMetricInput
 ): Record<string, string> {
@@ -1444,7 +1440,6 @@ function makeEanForQueryMetric(
   }
 }
 
-/** helper */
 function makeEavForQueryMetric(input: QueryMetricInput): Record<string, any> {
   if ('index' in input) {
     throw new Error(
@@ -1458,7 +1453,6 @@ function makeEavForQueryMetric(input: QueryMetricInput): Record<string, any> {
   }
 }
 
-/** helper */
 function makeKceForQueryMetric(
   input: QueryMetricInput,
   {operator}: Pick<QueryOptions, 'operator'>
@@ -2054,7 +2048,6 @@ export type QueryPlanMetricInput =
   | {onFreeTrial: Scalars['Boolean']; planName?: Maybe<Scalars['String']>};
 export type QueryPlanMetricOutput = MultiResultType<PlanMetric>;
 
-/** helper */
 function makeEanForQueryPlanMetric(
   input: QueryPlanMetricInput
 ): Record<string, string> {
@@ -2067,7 +2060,6 @@ function makeEanForQueryPlanMetric(
   }
 }
 
-/** helper */
 function makeEavForQueryPlanMetric(
   input: QueryPlanMetricInput
 ): Record<string, any> {
@@ -2083,7 +2075,6 @@ function makeEavForQueryPlanMetric(
   }
 }
 
-/** helper */
 function makeKceForQueryPlanMetric(
   input: QueryPlanMetricInput,
   {operator}: Pick<QueryOptions, 'operator'>
@@ -2483,7 +2474,6 @@ export type QuerySubscriptionEventInput =
   | {effectiveDate: Scalars['Date']; externalId: Scalars['String']};
 export type QuerySubscriptionEventOutput = MultiResultType<SubscriptionEvent>;
 
-/** helper */
 function makeEanForQuerySubscriptionEvent(
   input: QuerySubscriptionEventInput
 ): Record<string, string> {
@@ -2496,7 +2486,6 @@ function makeEanForQuerySubscriptionEvent(
   }
 }
 
-/** helper */
 function makeEavForQuerySubscriptionEvent(
   input: QuerySubscriptionEventInput
 ): Record<string, any> {
@@ -2516,7 +2505,6 @@ function makeEavForQuerySubscriptionEvent(
   }
 }
 
-/** helper */
 function makeKceForQuerySubscriptionEvent(
   input: QuerySubscriptionEventInput,
   {operator}: Pick<QueryOptions, 'operator'>

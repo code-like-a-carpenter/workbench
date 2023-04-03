@@ -46,7 +46,6 @@ export function extractChangeDataCaptureConfig(
   );
 }
 
-/** helper */
 function getTargetTable(
   schema: GraphQLSchema,
   modelName: string,
@@ -60,7 +59,6 @@ function getTargetTable(
   return extractTableName(assertObjectType(targetModel));
 }
 
-/** helper */
 export function getTargetTables(
   fieldName: string,
   schema: GraphQLSchema,
@@ -85,7 +83,6 @@ export function getTargetTables(
   );
 }
 
-/** helper */
 function extractEnricherConfig(
   config: Config,
   schema: GraphQLSchema,
@@ -108,7 +105,6 @@ function extractEnricherConfig(
   };
 }
 
-/** helper */
 function extractTriggersConfig(
   config: Config,
   schema: GraphQLSchema,
@@ -134,7 +130,6 @@ function extractTriggersConfig(
   };
 }
 
-/** helper */
 function getEvent(
   type: GraphQLObjectType<unknown, unknown>,
   directive: ConstDirectiveNode

@@ -56,7 +56,6 @@ export interface Info {
   };
 }
 
-/** helper */
 function extractModel(
   config: Config,
   schema: GraphQLSchema,
@@ -91,7 +90,6 @@ function extractModel(
 }
 
 /* eslint-disable complexity */
-/** helper */
 function combineDispatcherConfig(table: Table, model: Model): DispatcherConfig {
   const [cfg] = [
     'dispatcherConfig' in table && table.dispatcherConfig,
@@ -117,7 +115,6 @@ function combineDispatcherConfig(table: Table, model: Model): DispatcherConfig {
 
 /* eslint-enable complexity */
 
-/** helper */
 function combineTableWithModel(
   acc: Table,
   model: Model,
@@ -167,7 +164,6 @@ function combineTableWithModel(
   };
 }
 
-/** helper */
 function extractTableFromModel(
   dependenciesModuleId: string,
   tableName: string,
@@ -282,7 +278,6 @@ export function parse(
   };
 }
 
-/** helper */
 function compareIndexes(
   tableName: string,
   tableIndexes: readonly TableSecondaryIndex[],
@@ -328,7 +323,6 @@ function compareIndexes(
   return Array.from(long.values());
 }
 
-/** helper */
 function extractFields(
   type: GraphQLObjectType<unknown, unknown>
 ): readonly Field[] {
@@ -362,7 +356,6 @@ function extractFields(
   });
 }
 
-/** helper */
 function getFieldFromFieldMap(
   fieldMap: Record<string, Field>,
   fieldName: string
@@ -372,7 +365,6 @@ function getFieldFromFieldMap(
   return field;
 }
 
-/** helper */
 function extractPrimaryKey(
   type: GraphQLObjectType<unknown, unknown>,
   fieldMap: Record<string, Field>
@@ -413,7 +405,6 @@ function extractPrimaryKey(
   );
 }
 
-/** helper */
 function getProjectionType(directive: ConstDirectiveNode): ProjectionType {
   const arg = getOptionalArg('projection', directive);
   if (!arg) {
@@ -433,7 +424,6 @@ function getProjectionType(directive: ConstDirectiveNode): ProjectionType {
   return type;
 }
 
-/** helper */
 function extractSecondaryIndexes(
   type: GraphQLObjectType<unknown, unknown>,
   fieldMap: Record<string, Field>
@@ -527,7 +517,6 @@ export function extractTableName(type: GraphQLObjectType): string {
   return `Table${type.name}`;
 }
 
-/** helper */
 function extractTableInfo(type: GraphQLObjectType<unknown, unknown>) {
   const tableDirective = getOptionalDirective('table', type);
 
@@ -597,7 +586,6 @@ function extractTTLConfig(
   }
 }
 
-/** helper */
 export function getAliasForField(
   field: GraphQLField<unknown, unknown>,
   type: GraphQLObjectType<unknown, unknown>,
@@ -632,7 +620,6 @@ export function getAliasForField(
   }
 }
 
-/** helper  */
 function getReadAliasesForField(
   field: GraphQLField<unknown, unknown>,
   type: GraphQLObjectType<unknown, unknown>,
@@ -667,7 +654,6 @@ function getReadAliasesForField(
   }
 }
 
-/** helper  */
 function getCaseType(
   type: GraphQLObjectType<unknown, unknown>
 ): 'CAMEL_CASE' | 'SNAKE_CASE' {

@@ -132,7 +132,6 @@ ${ensureTableTemplate(tableName)}
 `;
 }
 
-/** helper */
 export function makeKeyForBlind(
   config: Config,
   key: PrimaryKeyConfig

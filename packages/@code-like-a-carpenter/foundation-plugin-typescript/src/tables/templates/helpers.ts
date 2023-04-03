@@ -97,7 +97,6 @@ export function objectToString(obj: Record<string, string>): string {
   return `{${Object.entries(obj).map(([k, value]) => `${k}: ${value}`)}}`;
 }
 
-/** helper */
 function getTransformString(field: Field): string {
   if (field.columnName === 'ttl') {
     return '(v) => new Date(v * 1000)';
@@ -139,7 +138,6 @@ export function unmarshallField(field: Field) {
   return `${field.fieldName}: ${out}`;
 }
 
-/** helper */
 export function handleCommonErrors(): string {
   return `
     if (err instanceof AssertionError || err instanceof BaseDataLibraryError) {
@@ -152,7 +150,6 @@ export function handleCommonErrors(): string {
   `;
 }
 
-/** helper */
 export function makeKeyForRead(
   config: Config,
   key: PrimaryKeyConfig

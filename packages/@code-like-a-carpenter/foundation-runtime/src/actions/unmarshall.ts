@@ -6,7 +6,6 @@ function identity<T>(x: T): T {
   return x;
 }
 
-/** helper */
 function unmarshallRawRequiredValue<T, R>(
   value: T,
   columnName: string,

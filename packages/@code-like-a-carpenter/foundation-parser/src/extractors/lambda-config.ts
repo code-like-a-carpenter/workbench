@@ -1,7 +1,6 @@
 import assert from 'assert';
 
-import type {ConstArgumentNode} from 'graphql';
-import type {ConstDirectiveNode} from 'graphql/index';
+import type {ConstArgumentNode, ConstDirectiveNode} from 'graphql';
 
 import type {
   DispatcherConfig,
@@ -38,7 +37,6 @@ export function extractLambdaConfig(
   };
 }
 
-/** helper */
 export function extractDispatcherConfig(
   config: Config,
   directive: ConstDirectiveNode
@@ -56,7 +54,6 @@ export function extractDispatcherConfig(
   };
 }
 
-/** helper */
 export function extractHandlerConfig(
   config: Config,
   directive: ConstDirectiveNode

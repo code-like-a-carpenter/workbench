@@ -16,12 +16,10 @@ import {
   indexToUpdateExpressionPart,
 } from './indexes';
 
-/** helper */
 function wrapFieldNameWithQuotes({fieldName}: Field): string {
   return `'${fieldName}'`;
 }
 
-/** helper */
 function makeTypeDefinition(
   typeName: string,
   requiredFields: readonly Field[],

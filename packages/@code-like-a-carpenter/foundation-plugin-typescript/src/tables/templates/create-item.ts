@@ -134,7 +134,6 @@ ${ensureTableTemplate(tableName)}
 }`;
 }
 
-/** helper */
 export function makeKey(
   key: PrimaryKeyConfig,
   config: Config

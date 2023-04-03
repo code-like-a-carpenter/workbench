@@ -53,17 +53,17 @@ export type ${inputTypeName} = ${makeTypeSignature(
   )};
 export type ${outputTypeName} = MultiResultType<${typeName}>;
 
-/** helper */
+
 function makeEanForQuery${typeName}(input: ${inputTypeName}): Record<string, string> {
 ${eanForQuery(primaryKey, secondaryIndexes)}
 }
 
-/** helper */
+
 function makeEavForQuery${typeName}(input: ${inputTypeName}): Record<string, any> {
 ${eavForQuery(primaryKey, secondaryIndexes)}
 }
 
-/** helper */
+
 function makeKceForQuery${typeName}(input: ${inputTypeName}, {operator}: Pick<QueryOptions, 'operator'>): string {
 ${kceForQuery(primaryKey, secondaryIndexes)}
 }
@@ -168,7 +168,6 @@ export async function query${typeName}ByPublicId(publicId: Scalars['String']): P
 `;
 }
 
-/** helper */
 function makeTypeSignature(
   primaryKey: PrimaryKeyConfig,
   secondaryIndexes: readonly SecondaryIndex[]
@@ -218,7 +217,6 @@ function makeTypeSignature(
   );
 }
 
-/** helper */
 function fieldStringToFieldType(
   {isDateType, typeName}: Field,
   fragment: string
@@ -242,7 +240,6 @@ function fieldStringToFieldType(
   return `${fragment} as ${typeName}`;
 }
 
-/** helper */
 function eanForQuery(
   primaryKey: PrimaryKeyConfig,
   secondaryIndexes: readonly SecondaryIndex[]
@@ -265,7 +262,6 @@ ${secondaryIndexes
 `;
 }
 
-/** helper */
 function keyNames(key: PrimaryKeyConfig | SecondaryIndex) {
   if (key.type === 'primary') {
     return key.isComposite ? `{'#pk': 'pk', '#sk': 'sk'}` : `{'#pk': 'pk'}`;
@@ -286,7 +282,6 @@ function keyNames(key: PrimaryKeyConfig | SecondaryIndex) {
   return `{'#pk': 'pk', '#sk': '${key.name}sk'}`;
 }
 
-/** helper */
 function eavForQuery(
   primaryKey: PrimaryKeyConfig,
   secondaryIndexes: readonly SecondaryIndex[]
@@ -309,7 +304,6 @@ ${secondaryIndexes
 `;
 }
 
-/** helper */
 function compositeKeyValues({
   pkPrefix,
   pkFields,
@@ -331,7 +325,6 @@ function compositeKeyValues({
   }`;
 }
 
-/** helper */
 function simpleKeyValues(
   keyPrefix: string | undefined,
   keyFields: readonly Field[]
@@ -339,7 +332,6 @@ function simpleKeyValues(
   return `{':pk': ${makeKeyTemplate(keyPrefix, keyFields, 'read')}}`;
 }
 
-/** helper */
 function keyValues(
   primaryKey: PrimaryKeyConfig,
   key: PrimaryKeyConfig | SecondaryIndex
@@ -365,7 +357,6 @@ function keyValues(
   return simpleKeyValues(key.partitionKeyPrefix, key.partitionKeyFields);
 }
 
-/** helper */
 function kceForQuery(
   primaryKey: PrimaryKeyConfig,
   secondaryIndexes: readonly SecondaryIndex[]
@@ -387,7 +378,6 @@ ${secondaryIndexes
 `;
 }
 
-/** helper */
 function kce(key: PrimaryKeyConfig | SecondaryIndex) {
   if (key.isComposite) {
     // eslint-disable-next-line no-template-curly-in-string

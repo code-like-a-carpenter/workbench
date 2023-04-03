@@ -26,7 +26,6 @@ export interface LambdaDynamoDBEventInput {
   readonly tableName: string;
 }
 
-/** helper */
 export function writeLambda(directory: string, code: string): void {
   fs.mkdirSync(directory, {recursive: true});
   fs.writeFileSync(path.join(directory, 'handler.ts'), code);
@@ -48,7 +47,6 @@ exports.handler = handler;
   fs.writeFileSync(path.join(directory, 'index.ts'), index);
 }
 
-/** helper */
 export function buildPropertiesWithDefaults(
   buildProperties: Config['buildProperties']
 ): BuildProperties {

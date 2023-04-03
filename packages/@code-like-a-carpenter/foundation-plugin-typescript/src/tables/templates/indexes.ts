@@ -32,7 +32,6 @@ export function indexHasField(
   return index.partitionKeyFields.some((field) => field.fieldName === name);
 }
 
-/** helper */
 export function indexToUpdateExpressionPart({
   isSingleField,
   name,
@@ -45,7 +44,6 @@ export function indexToUpdateExpressionPart({
     : [`'#${name}sk = :${name}sk',`];
 }
 
-/** helper */
 export function indexToEAVPart(
   mode: 'blind' | 'create' | 'read',
   index: SecondaryIndex
@@ -79,7 +77,6 @@ export function indexToEAVPart(
   ];
 }
 
-/** helper */
 export function indexToEANPart({isSingleField, name, type}: SecondaryIndex) {
   return type === 'gsi'
     ? isSingleField
