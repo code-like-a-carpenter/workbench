@@ -1,8 +1,6 @@
 import fs from 'fs';
 import path from 'path';
 
-import type {Config} from '../config';
-
 export interface BuildProperties {
   readonly EntryPoints: readonly string[];
   readonly External?: readonly string[];
@@ -45,16 +43,4 @@ const {handler} = require('./handler');
 exports.handler = handler;
     `;
   fs.writeFileSync(path.join(directory, 'index.ts'), index);
-}
-
-export function buildPropertiesWithDefaults(
-  buildProperties: Config['buildProperties']
-): BuildProperties {
-  return {
-    EntryPoints: ['./index'],
-    External: buildProperties?.external ?? ['@aws-sdk/*'],
-    Minify: buildProperties?.minify ?? false,
-    Sourcemap: buildProperties?.sourcemap ?? true,
-    Target: buildProperties?.target ?? 'es2020',
-  };
 }

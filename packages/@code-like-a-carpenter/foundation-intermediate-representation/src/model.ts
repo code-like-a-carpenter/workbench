@@ -1,5 +1,4 @@
 import type {Field} from './field';
-import type {DispatcherConfig} from './table';
 import type {LambdaConfig, ProjectionType} from './types';
 
 export type ChangeDataCaptureEvent = 'INSERT' | 'MODIFY' | 'REMOVE' | 'UPSERT';
@@ -7,26 +6,25 @@ export type ChangeDataCaptureConfig =
   | ChangeDataCaptureEnricherConfig
   | ChangeDataCaptureTriggerConfig;
 
-export interface ChangeDataCaptureEnricherConfig {
-  readonly dispatcherConfig: DispatcherConfig;
+export interface BaseChangeDataCaptureConfig {
   readonly event: ChangeDataCaptureEvent;
   readonly handlerConfig: HandlerConfig;
   readonly handlerModuleId: string;
   readonly sourceModelName: string;
-  readonly targetModelName: string;
-  readonly writableTables: readonly string[];
-  readonly type: 'ENRICHER';
 }
 
-export interface ChangeDataCaptureTriggerConfig {
-  readonly dispatcherConfig: DispatcherConfig;
-  readonly event: ChangeDataCaptureEvent;
-  readonly handlerConfig: HandlerConfig;
-  readonly handlerModuleId: string;
-  readonly readableTables: readonly string[];
-  readonly sourceModelName: string;
+export interface ChangeDataCaptureEnricherConfig
+  extends BaseChangeDataCaptureConfig {
+  readonly targetModelName: string;
+  readonly type: 'ENRICHER';
   readonly writableTables: readonly string[];
+}
+
+export interface ChangeDataCaptureTriggerConfig
+  extends BaseChangeDataCaptureConfig {
+  readonly readableTables: readonly string[];
   readonly type: 'TRIGGER';
+  readonly writableTables: readonly string[];
 }
 
 export type HandlerConfig = LambdaConfig;
@@ -36,7 +34,6 @@ export interface Model {
   readonly consistent: boolean;
   readonly dependenciesModuleId: string;
   readonly enablePointInTimeRecovery: boolean;
-  readonly enableStreaming: boolean;
   readonly fields: readonly Field[];
   readonly isLedger: boolean;
   readonly isPublicModel: boolean;

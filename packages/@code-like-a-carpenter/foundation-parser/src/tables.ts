@@ -3,6 +3,7 @@ import type {GraphQLObjectType, GraphQLSchema} from 'graphql';
 import {assert} from '@code-like-a-carpenter/assert';
 import type {
   BaseTable,
+  Model,
   PrimaryKeyConfig,
   SecondaryIndex,
   Table,
@@ -13,6 +14,7 @@ import type {
 import type {Config} from './config';
 import {extractDispatcherConfig} from './extractors/cdc';
 import {
+  getOptionalArgBooleanValue,
   getOptionalArgStringValue,
   getOptionalDirective,
   hasInterface,
@@ -105,6 +107,21 @@ function combineSecondaryIndexes(
   }
 }
 
+function shouldEnableStreaming(
+  type: GraphQLObjectType,
+  model: Readonly<Model>
+) {
+  if (model.changeDataCaptureConfig.length > 0) {
+    return true;
+  }
+
+  const tableDirective = getOptionalDirective('table', type);
+
+  return tableDirective
+    ? getOptionalArgBooleanValue('enableStreaming', tableDirective) !== false
+    : false;
+}
+
 function defineNewTable(
   config: Config,
   type: GraphQLObjectType,
@@ -114,18 +131,14 @@ function defineNewTable(
   const model = getModel(type);
 
   // This needs to move to CDC config
-  const dependenciesModuleId = resolveDependenciesModuleId(
-    outputFile,
-    config.dependenciesModuleId
-  );
+  const dependenciesModuleId = resolveDependenciesModuleId(config, outputFile);
 
   const table: BaseTable = {
     dependenciesModuleId,
     enablePointInTimeRecovery: model.enablePointInTimeRecovery,
-    enableStreaming: model.changeDataCaptureConfig.length > 0,
+    enableStreaming: shouldEnableStreaming(type, model),
     hasPublicModels: hasInterface('PublicModel', type),
     hasTtl: !!model.ttlConfig,
-    libImportPath: '@code-like-a-carpenter/foundation-runtime',
     primaryKey: model.primaryKey,
     secondaryIndexes: model.secondaryIndexes.map(modelIndexToTableIndex),
     tableName,
@@ -134,7 +147,7 @@ function defineNewTable(
   if (model.changeDataCaptureConfig.length) {
     return {
       ...table,
-      dispatcherConfig: extractDispatcherConfig(config, type),
+      dispatcherConfig: extractDispatcherConfig(config, outputFile, type),
       hasCdc: true,
     };
   }
@@ -174,7 +187,7 @@ function updateExistingTable(
   existingTable.enablePointInTimeRecovery =
     existingTable.enablePointInTimeRecovery || model.enablePointInTimeRecovery;
   existingTable.enableStreaming =
-    existingTable.enableStreaming || model.changeDataCaptureConfig.length > 0;
+    existingTable.enableStreaming || shouldEnableStreaming(type, model);
 
   existingTable.hasPublicModels =
     existingTable.hasPublicModels || hasInterface('PublicModel', type);

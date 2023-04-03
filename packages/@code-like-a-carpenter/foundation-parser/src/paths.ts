@@ -1,5 +1,7 @@
 import path from 'path';
 
+import type {Config} from './config';
+
 /** It adds a level of directory depth to a path. */
 export function increasePathDepth(moduleId: string) {
   return moduleId.startsWith('.') ? path.join('..', moduleId) : moduleId;
@@ -19,14 +21,9 @@ export function resolveActionsModule(
  * Resolves the path from the graphql-codegen output file to the dependencies
  * module.
  */
-export function resolveDependenciesModuleId(
-  outputFile: string,
-  dependenciesModuleId: string
-) {
-  return dependenciesModuleId.startsWith('.')
-    ? path.relative(
-        path.resolve(process.cwd(), path.dirname(outputFile)),
-        path.resolve(process.cwd(), dependenciesModuleId)
-      )
-    : dependenciesModuleId;
+export function resolveDependenciesModuleId(config: Config, directory: string) {
+  if (config.dependenciesModuleId.startsWith('.')) {
+    return path.relative(directory, config.dependenciesModuleId);
+  }
+  return config.dependenciesModuleId;
 }

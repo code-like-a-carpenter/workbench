@@ -63,10 +63,7 @@ export const plugin: PluginFunction<Config> = makePlugin(
 
     const allResources = combineFragments(
       ...tables.map((table) =>
-        combineFragments(
-          defineTableCdc(table, config, {outputFile}),
-          defineTable(table)
-        )
+        combineFragments(defineTableCdc(table, config), defineTable(table))
       ),
       ...models.flatMap((model) =>
         model.changeDataCaptureConfig

@@ -14,7 +14,6 @@ import {
 
 import type {Config} from '../config';
 import {combineFragments} from '../fragments/combine-fragments';
-import {buildPropertiesWithDefaults} from '../fragments/lambda';
 import type {ServerlessApplicationModel} from '../types';
 
 import {makeHandler} from './lambdas';
@@ -97,7 +96,13 @@ Update${targetModelName}Input
 
   return combineFragments(
     makeHandler({
-      buildProperties: buildPropertiesWithDefaults(config.buildProperties),
+      buildProperties: {
+        EntryPoints: ['./index'],
+        External: config.buildProperties.external,
+        Minify: config.buildProperties.minify,
+        Sourcemap: config.buildProperties.sourcemap,
+        Target: config.buildProperties.target,
+      },
       codeUri: handlerFileName,
       dependenciesModuleId,
       event,

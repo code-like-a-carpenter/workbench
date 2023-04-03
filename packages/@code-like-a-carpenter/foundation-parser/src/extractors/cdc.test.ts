@@ -44,7 +44,14 @@ describe('@reacts', () => {
     assert(table.hasCdc);
     expect(table.dispatcherConfig).toMatchInlineSnapshot(`
       {
+        "batchSize": 10,
+        "dependenciesModuleId": "../dependencies",
+        "directory": "placeholder/dispatcher-table-plan-metric",
+        "filename": "dispatcher-table-plan-metric",
+        "functionName": "TablePlanMetricCDCDispatcher",
+        "maximumRetryAttempts": 3,
         "memorySize": 256,
+        "runtimeModuleId": "@code-like-a-carpenter/foundation-runtime",
         "timeout": 30,
       }
     `);
@@ -55,10 +62,6 @@ describe('@reacts', () => {
     expect(model.changeDataCaptureConfig).toMatchInlineSnapshot(`
       [
         {
-          "dispatcherConfig": {
-            "memorySize": 256,
-            "timeout": 30,
-          },
           "event": "UPSERT",
           "handlerConfig": {
             "memorySize": 256,
@@ -136,7 +139,14 @@ describe('@enriches', () => {
     assert(table.hasCdc);
     expect(table.dispatcherConfig).toMatchInlineSnapshot(`
       {
+        "batchSize": 10,
+        "dependenciesModuleId": "../dependencies",
+        "directory": "placeholder/dispatcher-table-subscription-event",
+        "filename": "dispatcher-table-subscription-event",
+        "functionName": "TableSubscriptionEventCDCDispatcher",
+        "maximumRetryAttempts": 3,
         "memorySize": 256,
+        "runtimeModuleId": "@code-like-a-carpenter/foundation-runtime",
         "timeout": 30,
       }
     `);
@@ -149,10 +159,6 @@ describe('@enriches', () => {
     expect(model.changeDataCaptureConfig).toMatchInlineSnapshot(`
       [
         {
-          "dispatcherConfig": {
-            "memorySize": 256,
-            "timeout": 30,
-          },
           "event": "UPSERT",
           "handlerConfig": {
             "memorySize": 256,

@@ -1,4 +1,5 @@
 import assert from 'assert';
+import path from 'path';
 
 import type {Types} from '@graphql-codegen/plugin-helpers/typings/types';
 import type {GraphQLSchema} from 'graphql';
@@ -13,7 +14,6 @@ import type {
 import type {Config} from './config';
 import {filterNull, hasInterface} from './helpers';
 import {extractModel} from './models';
-import {resolveDependenciesModuleId} from './paths';
 import {extractTable} from './tables';
 
 export interface Info {
@@ -38,10 +38,9 @@ export function parse(
   const outputFile = info?.outputFile;
   assert(outputFile, 'outputFile is required');
 
-  const dependenciesModuleId = resolveDependenciesModuleId(
+  const dependenciesModuleId = resolveDependenciesModuleId(config, {
     outputFile,
-    config.dependenciesModuleId
-  );
+  });
 
   const typesMap = schema.getTypeMap();
 
@@ -69,4 +68,20 @@ export function parse(
     models,
     tables,
   };
+}
+
+function resolveDependenciesModuleId(config: Config, info: Info | undefined) {
+  assert(
+    info?.outputFile,
+    'You appear to be using this plugin in a context that does not require an output file. This is not supported.'
+  );
+  const {dependenciesModuleId} = config;
+  const {outputFile} = info;
+
+  return dependenciesModuleId.startsWith('.')
+    ? path.relative(
+        path.resolve(process.cwd(), path.dirname(outputFile)),
+        path.resolve(process.cwd(), dependenciesModuleId)
+      )
+    : dependenciesModuleId;
 }

@@ -10,7 +10,6 @@ exports[`@enriches configures the handler to update one model when another chang
       "consistent": false,
       "dependenciesModuleId": "dependencies",
       "enablePointInTimeRecovery": true,
-      "enableStreaming": false,
       "fields": [
         {
           "columnName": "_ct",
@@ -150,10 +149,6 @@ exports[`@enriches configures the handler to update one model when another chang
     {
       "changeDataCaptureConfig": [
         {
-          "dispatcherConfig": {
-            "memorySize": 256,
-            "timeout": 30,
-          },
           "event": "UPSERT",
           "handlerConfig": {
             "memorySize": 256,
@@ -171,7 +166,6 @@ exports[`@enriches configures the handler to update one model when another chang
       "consistent": false,
       "dependenciesModuleId": "dependencies",
       "enablePointInTimeRecovery": true,
-      "enableStreaming": true,
       "fields": [
         {
           "columnName": "_ct",
@@ -372,13 +366,12 @@ exports[`@enriches configures the handler to update one model when another chang
   ],
   "tables": [
     {
-      "dependenciesModuleId": "dependencies",
+      "dependenciesModuleId": "../dependencies",
       "enablePointInTimeRecovery": true,
       "enableStreaming": false,
       "hasCdc": false,
       "hasPublicModels": false,
       "hasTtl": false,
-      "libImportPath": "@code-like-a-carpenter/foundation-runtime",
       "primaryKey": {
         "isComposite": true,
         "partitionKeyFields": [
@@ -407,9 +400,16 @@ exports[`@enriches configures the handler to update one model when another chang
       "tableName": "TableAccount",
     },
     {
-      "dependenciesModuleId": "dependencies",
+      "dependenciesModuleId": "../dependencies",
       "dispatcherConfig": {
+        "batchSize": 10,
+        "dependenciesModuleId": "../dependencies",
+        "directory": "placeholder/dispatcher-table-subscription-event",
+        "filename": "dispatcher-table-subscription-event",
+        "functionName": "TableSubscriptionEventCDCDispatcher",
+        "maximumRetryAttempts": 3,
         "memorySize": 256,
+        "runtimeModuleId": "@code-like-a-carpenter/foundation-runtime",
         "timeout": 30,
       },
       "enablePointInTimeRecovery": true,
@@ -417,7 +417,6 @@ exports[`@enriches configures the handler to update one model when another chang
       "hasCdc": true,
       "hasPublicModels": false,
       "hasTtl": false,
-      "libImportPath": "@code-like-a-carpenter/foundation-runtime",
       "primaryKey": {
         "isComposite": true,
         "partitionKeyFields": [
@@ -473,10 +472,6 @@ exports[`@reacts configures an event handler for the model 3`] = `
     {
       "changeDataCaptureConfig": [
         {
-          "dispatcherConfig": {
-            "memorySize": 256,
-            "timeout": 30,
-          },
           "event": "UPSERT",
           "handlerConfig": {
             "memorySize": 256,
@@ -492,7 +487,6 @@ exports[`@reacts configures an event handler for the model 3`] = `
       "consistent": false,
       "dependenciesModuleId": "dependencies",
       "enablePointInTimeRecovery": true,
-      "enableStreaming": true,
       "fields": [
         {
           "columnName": "_ct",
@@ -677,9 +671,16 @@ exports[`@reacts configures an event handler for the model 3`] = `
   ],
   "tables": [
     {
-      "dependenciesModuleId": "dependencies",
+      "dependenciesModuleId": "../dependencies",
       "dispatcherConfig": {
+        "batchSize": 10,
+        "dependenciesModuleId": "../dependencies",
+        "directory": "placeholder/dispatcher-table-plan-metric",
+        "filename": "dispatcher-table-plan-metric",
+        "functionName": "TablePlanMetricCDCDispatcher",
+        "maximumRetryAttempts": 3,
         "memorySize": 256,
+        "runtimeModuleId": "@code-like-a-carpenter/foundation-runtime",
         "timeout": 30,
       },
       "enablePointInTimeRecovery": true,
@@ -687,7 +688,6 @@ exports[`@reacts configures an event handler for the model 3`] = `
       "hasCdc": true,
       "hasPublicModels": false,
       "hasTtl": false,
-      "libImportPath": "@code-like-a-carpenter/foundation-runtime",
       "primaryKey": {
         "isComposite": true,
         "partitionKeyFields": [],

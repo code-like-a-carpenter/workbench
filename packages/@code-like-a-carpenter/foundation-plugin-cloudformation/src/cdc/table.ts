@@ -1,20 +1,14 @@
-import path from 'path';
-
-import {kebabCase} from 'lodash';
-
 import type {Table} from '@code-like-a-carpenter/foundation-intermediate-representation';
 
 import type {Config} from '../config';
 import {combineFragments} from '../fragments/combine-fragments';
-import {buildPropertiesWithDefaults} from '../fragments/lambda';
 import {makeTableDispatcher} from '../fragments/table-dispatcher';
 import type {ServerlessApplicationModel} from '../types';
 
 /** Generates CDC config for a table */
 export function defineTableCdc(
   table: Table,
-  config: Config,
-  {outputFile}: {outputFile: string}
+  config: Config
 ): ServerlessApplicationModel {
   if (!table.hasCdc) {
     return {
@@ -22,26 +16,38 @@ export function defineTableCdc(
     };
   }
 
-  const {dispatcherConfig, dependenciesModuleId, libImportPath, tableName} =
-    table;
+  const {dispatcherConfig, dependenciesModuleId, tableName} = table;
 
-  const dispatcherFileName = `dispatcher-${kebabCase(tableName)}`;
-  const dispatcherFunctionName = `${tableName}CDCDispatcher`;
-  const dispatcherOutputPath = path.join(
-    path.dirname(outputFile),
-    dispatcherFileName
-  );
+  const {
+    batchSize,
+    filename,
+    functionName,
+    directory,
+    maximumRetryAttempts,
+    memorySize,
+    runtimeModuleId,
+    timeout,
+  } = dispatcherConfig;
 
   return combineFragments(
     makeTableDispatcher({
-      buildProperties: buildPropertiesWithDefaults(config.buildProperties),
-      codeUri: dispatcherFileName,
+      batchSize,
+      buildProperties: {
+        EntryPoints: ['./index'],
+        External: config.buildProperties.external,
+        Minify: config.buildProperties.minify,
+        Sourcemap: config.buildProperties.sourcemap,
+        Target: config.buildProperties.target,
+      },
+      codeUri: filename,
       dependenciesModuleId,
-      dispatcherConfig,
-      functionName: dispatcherFunctionName,
-      libImportPath,
-      outputPath: dispatcherOutputPath,
+      functionName,
+      libImportPath: runtimeModuleId,
+      maximumRetryAttempts,
+      memorySize,
+      outputPath: directory,
       tableName,
+      timeout,
     })
   );
 }

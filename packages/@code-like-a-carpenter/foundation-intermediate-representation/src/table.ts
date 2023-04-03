@@ -6,13 +6,20 @@ export interface BaseTable {
   readonly enableStreaming: boolean;
   readonly hasPublicModels: boolean;
   readonly hasTtl: boolean;
-  readonly libImportPath: string;
   readonly primaryKey: TablePrimaryKeyConfig;
   readonly secondaryIndexes: readonly TableSecondaryIndex[];
   readonly tableName: string;
 }
 
-export type DispatcherConfig = LambdaConfig;
+export interface DispatcherConfig extends LambdaConfig {
+  readonly batchSize: number;
+  readonly dependenciesModuleId: string;
+  readonly directory: string;
+  readonly filename: string;
+  readonly functionName: string;
+  readonly maximumRetryAttempts: number;
+  readonly runtimeModuleId: string;
+}
 
 export interface TableWithCdc extends BaseTable {
   readonly dispatcherConfig: DispatcherConfig;

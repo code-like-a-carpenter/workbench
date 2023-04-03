@@ -1,4 +1,5 @@
 import assert from 'assert';
+import path from 'path';
 
 import type {
   ConstDirectiveNode,
@@ -6,6 +7,7 @@ import type {
   GraphQLSchema,
 } from 'graphql';
 import {assertObjectType} from 'graphql';
+import {kebabCase} from 'lodash';
 
 import type {
   ChangeDataCaptureConfig,
@@ -23,41 +25,56 @@ import {
   getOptionalArg,
   getOptionalArgObjectValue,
 } from '../helpers';
+import {resolveDependenciesModuleId} from '../paths';
 import {extractTableName} from '../tables';
 
 import {extractHandlerConfig} from './lambda-config';
 
 export function extractDispatcherConfig(
   config: Config,
+  outputFile: string,
   type: GraphQLObjectType
 ): DispatcherConfig {
+  const tableName = extractTableName(type);
+  const filename = `dispatcher-${kebabCase(tableName)}`;
+  const functionName = `${tableName}CDCDispatcher`;
+  const directory = path.join(path.dirname(outputFile), filename);
+
   assert(
     type?.astNode?.directives,
     `Expected to find at least one directive on type ${type.name}`
   );
 
-  const {memorySize, timeout} = type.astNode.directives
-    .filter((d) => d.name.value === 'reacts' || d.name.value === 'enriches')
-    .map((directive) =>
-      DispatcherConfigSchema.parse({
-        ...config.dispatcherDefaults,
-        ...getOptionalArgObjectValue('dispatcherConfig', directive),
-      })
-    )
-    .reduce((acc, next) => {
-      return {
-        batchSize: Math.max(acc.batchSize, next.batchSize),
-        maximumRetryAttempts: Math.max(
-          acc.maximumRetryAttempts,
-          next.maximumRetryAttempts
-        ),
-        memorySize: Math.max(acc.memorySize, next.memorySize),
-        timeout: Math.max(acc.timeout, next.timeout),
-      };
-    }, config.dispatcherDefaults);
+  const {batchSize, maximumRetryAttempts, memorySize, timeout} =
+    type.astNode.directives
+      .filter((d) => d.name.value === 'reacts' || d.name.value === 'enriches')
+      .map((directive) =>
+        DispatcherConfigSchema.parse({
+          ...config.dispatcherDefaults,
+          ...getOptionalArgObjectValue('dispatcherConfig', directive),
+        })
+      )
+      .reduce((acc, next) => {
+        return {
+          batchSize: Math.max(acc.batchSize, next.batchSize),
+          maximumRetryAttempts: Math.max(
+            acc.maximumRetryAttempts,
+            next.maximumRetryAttempts
+          ),
+          memorySize: Math.max(acc.memorySize, next.memorySize),
+          timeout: Math.max(acc.timeout, next.timeout),
+        };
+      }, config.dispatcherDefaults);
 
   return {
+    batchSize,
+    dependenciesModuleId: resolveDependenciesModuleId(config, directory),
+    directory,
+    filename,
+    functionName,
+    maximumRetryAttempts,
     memorySize,
+    runtimeModuleId: '@code-like-a-carpenter/foundation-runtime',
     timeout,
   };
 }
@@ -132,7 +149,6 @@ function extractEnricherConfig(
 
   const targetModelName = getArgStringValue('targetModel', directive);
   return {
-    dispatcherConfig: extractDispatcherConfig(config, type),
     event,
     handlerConfig: extractHandlerConfig(config, directive),
     handlerModuleId,
@@ -157,7 +173,6 @@ function extractTriggersConfig(
   const writableTables = getTargetTables('writableModels', schema, directive);
 
   return {
-    dispatcherConfig: extractDispatcherConfig(config, type),
     event,
     handlerConfig: extractHandlerConfig(config, directive),
     handlerModuleId,

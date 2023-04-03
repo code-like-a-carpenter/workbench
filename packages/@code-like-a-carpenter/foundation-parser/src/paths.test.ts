@@ -1,28 +1,4 @@
-import {
-  increasePathDepth,
-  resolveActionsModule,
-  resolveDependenciesModuleId,
-} from './paths';
-
-describe('resolveDependenciesModuleId()', () => {
-  it('resolves a relative dependencies path', () => {
-    expect(
-      resolveDependenciesModuleId(
-        'examples/change-data-capture/__generated__/graphql.ts',
-        './examples/dependencies'
-      )
-    ).toEqual('../../dependencies');
-  });
-
-  it('resolves an absolute dependencies path', () => {
-    expect(
-      resolveDependenciesModuleId(
-        'cloudformation/template.generated.yml',
-        '@check-run-reporter/schema-generated/src/dependencies'
-      )
-    ).toEqual('@check-run-reporter/schema-generated/src/dependencies');
-  });
-});
+import {increasePathDepth, resolveActionsModule} from './paths';
 
 describe('increasePathDepth()', () => {
   it('increases the directory depth for a relative path', () => {
