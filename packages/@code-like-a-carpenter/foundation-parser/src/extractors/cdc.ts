@@ -11,18 +11,56 @@ import type {
   ChangeDataCaptureConfig,
   ChangeDataCaptureEnricherConfig,
   ChangeDataCaptureTriggerConfig,
+  DispatcherConfig,
 } from '@code-like-a-carpenter/foundation-intermediate-representation';
 
 import type {Config} from '../config';
+import {DispatcherConfigSchema} from '../config';
 import {
   filterNull,
   getArgEnumValue,
   getArgStringValue,
   getOptionalArg,
+  getOptionalArgObjectValue,
 } from '../helpers';
-import {extractTableName} from '../parser';
+import {extractTableName} from '../tables';
 
-import {extractDispatcherConfig, extractHandlerConfig} from './lambda-config';
+import {extractHandlerConfig} from './lambda-config';
+
+export function extractDispatcherConfig(
+  config: Config,
+  type: GraphQLObjectType
+): DispatcherConfig {
+  assert(
+    type?.astNode?.directives,
+    `Expected to find at least one directive on type ${type.name}`
+  );
+
+  const {memorySize, timeout} = type.astNode.directives
+    .filter((d) => d.name.value === 'reacts' || d.name.value === 'enriches')
+    .map((directive) =>
+      DispatcherConfigSchema.parse({
+        ...config.dispatcherDefaults,
+        ...getOptionalArgObjectValue('dispatcherConfig', directive),
+      })
+    )
+    .reduce((acc, next) => {
+      return {
+        batchSize: Math.max(acc.batchSize, next.batchSize),
+        maximumRetryAttempts: Math.max(
+          acc.maximumRetryAttempts,
+          next.maximumRetryAttempts
+        ),
+        memorySize: Math.max(acc.memorySize, next.memorySize),
+        timeout: Math.max(acc.timeout, next.timeout),
+      };
+    }, config.dispatcherDefaults);
+
+  return {
+    memorySize,
+    timeout,
+  };
+}
 
 /** Extracts CDC config for a type */
 export function extractChangeDataCaptureConfig(
@@ -94,7 +132,7 @@ function extractEnricherConfig(
 
   const targetModelName = getArgStringValue('targetModel', directive);
   return {
-    dispatcherConfig: extractDispatcherConfig(config, directive),
+    dispatcherConfig: extractDispatcherConfig(config, type),
     event,
     handlerConfig: extractHandlerConfig(config, directive),
     handlerModuleId,
@@ -119,7 +157,7 @@ function extractTriggersConfig(
   const writableTables = getTargetTables('writableModels', schema, directive);
 
   return {
-    dispatcherConfig: extractDispatcherConfig(config, directive),
+    dispatcherConfig: extractDispatcherConfig(config, type),
     event,
     handlerConfig: extractHandlerConfig(config, directive),
     handlerModuleId,

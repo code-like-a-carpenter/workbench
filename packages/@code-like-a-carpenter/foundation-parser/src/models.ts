@@ -5,6 +5,7 @@ import type {
   GraphQLField,
   GraphQLObjectType,
   GraphQLSchema,
+  GraphQLType,
 } from 'graphql';
 import {isNonNullType, isScalarType} from 'graphql';
 import {camelCase, snakeCase} from 'lodash';
@@ -33,7 +34,15 @@ import {
   hasInterface,
   isType,
 } from './helpers';
-import {extractTableName} from './parser';
+import {extractTableName} from './tables';
+
+const models = new Map<GraphQLType, Model>();
+
+export function getModel(type: GraphQLType): Readonly<Model> {
+  const model = models.get(type);
+  assert(model, `Model for type ${type} not found`);
+  return model;
+}
 
 export function extractModel(
   config: Config,
@@ -42,12 +51,17 @@ export function extractModel(
   typeName: string,
   type: GraphQLObjectType
 ): Model {
+  const cachedModel = models.get(type);
+  if (cachedModel) {
+    return cachedModel;
+  }
+
   const fields = extractFields(type);
   const fieldMap: Record<string, Field> = Object.fromEntries(
     fields.map((field) => [field.fieldName, field] as const)
   );
 
-  return {
+  const model: Model = {
     changeDataCaptureConfig: extractChangeDataCaptureConfig(
       config,
       schema,
@@ -66,6 +80,10 @@ export function extractModel(
     typeName: type.name,
     ...extractTableInfo(type),
   };
+
+  models.set(type, model);
+
+  return model;
 }
 
 function getFieldFromFieldMap(

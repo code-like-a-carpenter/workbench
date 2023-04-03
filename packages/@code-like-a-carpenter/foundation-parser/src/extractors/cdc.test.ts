@@ -44,8 +44,6 @@ describe('@reacts', () => {
     assert(table.hasCdc);
     expect(table.dispatcherConfig).toMatchInlineSnapshot(`
       {
-        "batchSize": 10,
-        "maximumRetryAttempts": 3,
         "memorySize": 256,
         "timeout": 30,
       }
@@ -58,8 +56,6 @@ describe('@reacts', () => {
       [
         {
           "dispatcherConfig": {
-            "batchSize": 10,
-            "maximumRetryAttempts": 3,
             "memorySize": 256,
             "timeout": 30,
           },
@@ -140,8 +136,6 @@ describe('@enriches', () => {
     assert(table.hasCdc);
     expect(table.dispatcherConfig).toMatchInlineSnapshot(`
       {
-        "batchSize": 10,
-        "maximumRetryAttempts": 3,
         "memorySize": 256,
         "timeout": 30,
       }
@@ -156,8 +150,6 @@ describe('@enriches', () => {
       [
         {
           "dispatcherConfig": {
-            "batchSize": 10,
-            "maximumRetryAttempts": 3,
             "memorySize": 256,
             "timeout": 30,
           },

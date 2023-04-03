@@ -151,8 +151,6 @@ exports[`@enriches configures the handler to update one model when another chang
       "changeDataCaptureConfig": [
         {
           "dispatcherConfig": {
-            "batchSize": 10,
-            "maximumRetryAttempts": 3,
             "memorySize": 256,
             "timeout": 30,
           },
@@ -383,6 +381,27 @@ exports[`@enriches configures the handler to update one model when another chang
       "libImportPath": "@code-like-a-carpenter/foundation-runtime",
       "primaryKey": {
         "isComposite": true,
+        "partitionKeyFields": [
+          {
+            "columnName": "external_id",
+            "columnNamesForRead": [
+              "external_id",
+              "externalId",
+            ],
+            "computeFunction": undefined,
+            "ean": ":externalId",
+            "eav": "#externalId",
+            "fieldName": "externalId",
+            "isDateType": false,
+            "isRequired": true,
+            "isScalarType": true,
+            "typeName": "String",
+          },
+        ],
+        "partitionKeyPrefix": "ACCOUNT",
+        "sortKeyFields": [],
+        "sortKeyPrefix": "",
+        "type": "primary",
       },
       "secondaryIndexes": [],
       "tableName": "TableAccount",
@@ -390,8 +409,6 @@ exports[`@enriches configures the handler to update one model when another chang
     {
       "dependenciesModuleId": "dependencies",
       "dispatcherConfig": {
-        "batchSize": 10,
-        "maximumRetryAttempts": 3,
         "memorySize": 256,
         "timeout": 30,
       },
@@ -403,6 +420,43 @@ exports[`@enriches configures the handler to update one model when another chang
       "libImportPath": "@code-like-a-carpenter/foundation-runtime",
       "primaryKey": {
         "isComposite": true,
+        "partitionKeyFields": [
+          {
+            "columnName": "external_id",
+            "columnNamesForRead": [
+              "external_id",
+              "externalId",
+            ],
+            "computeFunction": undefined,
+            "ean": ":externalId",
+            "eav": "#externalId",
+            "fieldName": "externalId",
+            "isDateType": false,
+            "isRequired": true,
+            "isScalarType": true,
+            "typeName": "String",
+          },
+        ],
+        "partitionKeyPrefix": "ACCOUNT",
+        "sortKeyFields": [
+          {
+            "columnName": "effective_date",
+            "columnNamesForRead": [
+              "effective_date",
+              "effectiveDate",
+            ],
+            "computeFunction": undefined,
+            "ean": ":effectiveDate",
+            "eav": "#effectiveDate",
+            "fieldName": "effectiveDate",
+            "isDateType": true,
+            "isRequired": true,
+            "isScalarType": true,
+            "typeName": "Date",
+          },
+        ],
+        "sortKeyPrefix": "SUBSCRIPTION_EVENT",
+        "type": "primary",
       },
       "secondaryIndexes": [],
       "tableName": "TableSubscriptionEvent",
@@ -420,8 +474,6 @@ exports[`@reacts configures an event handler for the model 3`] = `
       "changeDataCaptureConfig": [
         {
           "dispatcherConfig": {
-            "batchSize": 10,
-            "maximumRetryAttempts": 3,
             "memorySize": 256,
             "timeout": 30,
           },
@@ -627,8 +679,6 @@ exports[`@reacts configures an event handler for the model 3`] = `
     {
       "dependenciesModuleId": "dependencies",
       "dispatcherConfig": {
-        "batchSize": 10,
-        "maximumRetryAttempts": 3,
         "memorySize": 256,
         "timeout": 30,
       },
@@ -640,6 +690,42 @@ exports[`@reacts configures an event handler for the model 3`] = `
       "libImportPath": "@code-like-a-carpenter/foundation-runtime",
       "primaryKey": {
         "isComposite": true,
+        "partitionKeyFields": [],
+        "partitionKeyPrefix": "BUSINESS_METRIC",
+        "sortKeyFields": [
+          {
+            "columnName": "on_free_trial",
+            "columnNamesForRead": [
+              "on_free_trial",
+              "onFreeTrial",
+            ],
+            "computeFunction": undefined,
+            "ean": ":onFreeTrial",
+            "eav": "#onFreeTrial",
+            "fieldName": "onFreeTrial",
+            "isDateType": false,
+            "isRequired": true,
+            "isScalarType": true,
+            "typeName": "Boolean",
+          },
+          {
+            "columnName": "plan_name",
+            "columnNamesForRead": [
+              "plan_name",
+              "planName",
+            ],
+            "computeFunction": undefined,
+            "ean": ":planName",
+            "eav": "#planName",
+            "fieldName": "planName",
+            "isDateType": false,
+            "isRequired": true,
+            "isScalarType": true,
+            "typeName": "String",
+          },
+        ],
+        "sortKeyPrefix": "PLAN",
+        "type": "primary",
       },
       "secondaryIndexes": [],
       "tableName": "TablePlanMetric",

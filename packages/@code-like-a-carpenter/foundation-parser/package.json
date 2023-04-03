@@ -22,6 +22,7 @@
     "access": "public"
   },
   "dependencies": {
+    "@code-like-a-carpenter/assert": "*",
     "@code-like-a-carpenter/foundation-intermediate-representation": "*",
     "@graphql-codegen/plugin-helpers": "^4.0.0",
     "graphql": "^16.6.0",

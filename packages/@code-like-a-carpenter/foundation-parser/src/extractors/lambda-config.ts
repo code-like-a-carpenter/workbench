@@ -3,7 +3,6 @@ import assert from 'assert';
 import type {ConstArgumentNode, ConstDirectiveNode} from 'graphql';
 
 import type {
-  DispatcherConfig,
   HandlerConfig,
   LambdaConfig,
 } from '@code-like-a-carpenter/foundation-intermediate-representation';
@@ -34,23 +33,6 @@ export function extractLambdaConfig(
   return {
     ...config.lambdaDefaults,
     ...values,
-  };
-}
-
-export function extractDispatcherConfig(
-  config: Config,
-  directive: ConstDirectiveNode
-): DispatcherConfig {
-  const arg = getOptionalArg('dispatcherConfig', directive);
-  if (!arg) {
-    return config.dispatcherDefaults;
-  }
-
-  assert(arg.value.kind === 'ObjectValue');
-  arg.value.fields.find((f) => f.name.value === 'lambdaConfig');
-  return {
-    ...config.dispatcherDefaults,
-    ...extractLambdaConfig(config, arg),
   };
 }
 

@@ -2,6 +2,7 @@ import assert from 'assert';
 
 import type {
   ConstDirectiveNode,
+  ConstValueNode,
   FieldDefinitionNode,
   GraphQLField,
   GraphQLObjectType,
@@ -196,4 +197,55 @@ export function isType(
 /** Typesafe function for .filter to remove undefined or null values */
 export function filterNull<T>(x: T | undefined | null): x is T {
   return Boolean(x);
+}
+
+/**
+ * Returns all the scalar arguments nested on the given directive's field.
+ */
+export function getOptionalArgObjectValue(
+  fieldName: string,
+  directive: ConstDirectiveNode
+) {
+  const arg = getOptionalArg(fieldName, directive);
+  if (!arg) {
+    return undefined;
+  }
+  assert(
+    arg.value.kind === 'ObjectValue',
+    `Expected @${directive.name.value} directive argument "${fieldName}" to be an object, but got ${arg.value.kind}`
+  );
+
+  return coerceObject(arg.value);
+}
+
+function coerceObject(value: ConstValueNode): Record<string, unknown> {
+  assert(value.kind === 'ObjectValue', 'Expected an ObjectValue');
+
+  return Object.fromEntries(
+    value.fields.map(({name: {value: name}, value: v}) => [
+      name,
+      coerceValue(v),
+    ])
+  );
+}
+
+function coerceValue(value: ConstValueNode): unknown {
+  switch (value.kind) {
+    case 'StringValue':
+      return value.value;
+    case 'BooleanValue':
+      return value.value;
+    case 'IntValue':
+      return parseInt(value.value, 10);
+    case 'FloatValue':
+      return parseFloat(value.value);
+    case 'EnumValue':
+      return value.value;
+    case 'ListValue':
+      return value.values.map(coerceValue);
+    case 'ObjectValue':
+      break;
+    case 'NullValue':
+      break;
+  }
 }

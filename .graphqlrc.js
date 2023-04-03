@@ -21,12 +21,8 @@ const graphqlCodegenTypeScriptPluginConfig = {
 /** @type {import("@code-like-a-carpenter/foundation-parser").InputConfig} */
 const foundationPluginsConfig = {
   dependenciesModuleId: './examples/dependencies',
-};
-
-/** @type {import("@code-like-a-carpenter/foundation-plugin-cloudformation").InputConfig} */
-const foundationPluginCloudformationConfig = {
-  ...foundationPluginsConfig,
-  actionsModuleId: 'PLACEHOLDER',
+  // Note that there's shared state between the CloudFormation and TypeScript
+  // plugins, so config that's read be the parser needs to be the same.
   dispatcherDefaults: {
     memorySize: 384,
     timeout: 60,
@@ -35,6 +31,12 @@ const foundationPluginCloudformationConfig = {
     memorySize: 256,
     timeout: 90,
   },
+};
+
+/** @type {import("@code-like-a-carpenter/foundation-plugin-cloudformation").InputConfig} */
+const foundationPluginCloudformationConfig = {
+  ...foundationPluginsConfig,
+  actionsModuleId: 'PLACEHOLDER',
   outputConfig: {
     format: 'yaml',
     yamlConfig: {
