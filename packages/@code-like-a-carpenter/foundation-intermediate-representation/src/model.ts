@@ -8,6 +8,7 @@ export type ChangeDataCaptureConfig =
 
 export interface BaseChangeDataCaptureConfig {
   readonly event: ChangeDataCaptureEvent;
+  readonly filename: string;
   readonly handlerConfig: HandlerConfig;
   readonly handlerModuleId: string;
   readonly sourceModelName: string;

@@ -1,11 +1,10 @@
 import path from 'path';
 
-import type {Config} from './config';
+import type {GraphQLObjectType} from 'graphql';
 
-/** It adds a level of directory depth to a path. */
-export function increasePathDepth(moduleId: string) {
-  return moduleId.startsWith('.') ? path.join('..', moduleId) : moduleId;
-}
+import {assert} from '@code-like-a-carpenter/assert';
+
+import type {Config} from './config';
 
 /** Resolves the path from the handler to the actions module. */
 export function resolveActionsModule(
@@ -26,4 +25,37 @@ export function resolveDependenciesModuleId(config: Config, directory: string) {
     return path.relative(directory, config.dependenciesModuleId);
   }
   return config.dependenciesModuleId;
+}
+
+export function resolveHandlerModuleId(
+  type: GraphQLObjectType,
+  directory: string,
+  handler: string
+) {
+  if (!handler.startsWith('.')) {
+    return handler;
+  }
+
+  assert(type.astNode, `Expected ${type.name} to have an AST node`);
+  assert(
+    type.astNode.description,
+    `Expected ${type.name} to have a description`
+  );
+  assert(
+    type.astNode.description.loc,
+    `Expected ${type.name} to have a location`
+  );
+  assert(
+    type.astNode.description.loc.source,
+    `Expected ${type.name} to have a source`
+  );
+  assert(
+    type.astNode.description.loc.source.name,
+    `Expected ${type.name} to have a name`
+  );
+  const schemaFile = type.astNode.description.loc.source.name;
+
+  const absolutePathToHandler = path.join(path.dirname(schemaFile), handler);
+  const absolutePathToDirectory = path.resolve(directory);
+  return path.relative(absolutePathToDirectory, absolutePathToHandler);
 }

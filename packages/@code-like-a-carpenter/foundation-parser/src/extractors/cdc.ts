@@ -25,7 +25,7 @@ import {
   getOptionalArg,
   getOptionalArgObjectValue,
 } from '../helpers';
-import {resolveDependenciesModuleId} from '../paths';
+import {resolveDependenciesModuleId, resolveHandlerModuleId} from '../paths';
 import {extractTableName} from '../tables';
 
 import {extractHandlerConfig} from './lambda-config';
@@ -83,16 +83,29 @@ export function extractDispatcherConfig(
 export function extractChangeDataCaptureConfig(
   config: Config,
   schema: GraphQLSchema,
-  type: GraphQLObjectType<unknown, unknown>
+  type: GraphQLObjectType<unknown, unknown>,
+  outputFile: string
 ): ChangeDataCaptureConfig[] {
   return (
     type.astNode?.directives
       ?.map((directive) => {
         if (directive.name.value === 'enriches') {
-          return extractEnricherConfig(config, schema, type, directive);
+          return extractEnricherConfig(
+            config,
+            schema,
+            type,
+            directive,
+            outputFile
+          );
         }
         if (directive.name.value === 'triggers') {
-          return extractTriggersConfig(config, schema, type, directive);
+          return extractTriggersConfig(
+            config,
+            schema,
+            type,
+            directive,
+            outputFile
+          );
         }
 
         return null;
@@ -142,16 +155,26 @@ function extractEnricherConfig(
   config: Config,
   schema: GraphQLSchema,
   type: GraphQLObjectType<unknown, unknown>,
-  directive: ConstDirectiveNode
+  directive: ConstDirectiveNode,
+  outputFile: string
 ): ChangeDataCaptureEnricherConfig {
   const event = getEvent(type, directive);
   const handlerModuleId = getArgStringValue('handler', directive);
 
+  const sourceModelName = type.name;
   const targetModelName = getArgStringValue('targetModel', directive);
+
+  const filename = `enricher--${kebabCase(
+    sourceModelName
+  )}--${event.toLowerCase()}--${kebabCase(targetModelName)}`;
+
+  const directory = path.join(path.dirname(outputFile), filename);
+
   return {
     event,
+    filename,
     handlerConfig: extractHandlerConfig(config, directive),
-    handlerModuleId,
+    handlerModuleId: resolveHandlerModuleId(type, directory, handlerModuleId),
     sourceModelName: type.name,
     targetModelName,
     type: 'ENRICHER',
@@ -163,19 +186,28 @@ function extractTriggersConfig(
   config: Config,
   schema: GraphQLSchema,
   type: GraphQLObjectType<unknown, unknown>,
-  directive: ConstDirectiveNode
+  directive: ConstDirectiveNode,
+  outputFile: string
 ): ChangeDataCaptureTriggerConfig {
   const event = getEvent(type, directive);
   const handlerModuleId = getArgStringValue('handler', directive);
 
   const readableTables = getTargetTables('readableModels', schema, directive);
-
   const writableTables = getTargetTables('writableModels', schema, directive);
+
+  const sourceModelName = type.name;
+
+  const filename = `trigger--${kebabCase(
+    sourceModelName
+  )}--${event.toLowerCase()}`;
+
+  const directory = path.join(path.dirname(outputFile), filename);
 
   return {
     event,
+    filename,
     handlerConfig: extractHandlerConfig(config, directive),
-    handlerModuleId,
+    handlerModuleId: resolveHandlerModuleId(type, directory, handlerModuleId),
     readableTables,
     sourceModelName: type.name,
     type: 'TRIGGER',

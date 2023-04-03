@@ -63,11 +63,12 @@ describe('@reacts', () => {
       [
         {
           "event": "UPSERT",
+          "filename": "trigger--plan-metric--upsert",
           "handlerConfig": {
             "memorySize": 256,
             "timeout": 30,
           },
-          "handlerModuleId": "../src/react--plan-metric--upsert",
+          "handlerModuleId": "../../../src/react--plan-metric--upsert",
           "readableTables": [],
           "sourceModelName": "PlanMetric",
           "type": "TRIGGER",
@@ -160,11 +161,12 @@ describe('@enriches', () => {
       [
         {
           "event": "UPSERT",
+          "filename": "enricher--subscription-event--upsert--account",
           "handlerConfig": {
             "memorySize": 256,
             "timeout": 30,
           },
-          "handlerModuleId": "../src/enrich--subscription--upsert--account",
+          "handlerModuleId": "../../../src/enrich--subscription--upsert--account",
           "sourceModelName": "SubscriptionEvent",
           "targetModelName": "Account",
           "type": "ENRICHER",

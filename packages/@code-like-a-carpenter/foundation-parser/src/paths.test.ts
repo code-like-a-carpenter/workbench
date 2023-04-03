@@ -1,18 +1,4 @@
-import {increasePathDepth, resolveActionsModule} from './paths';
-
-describe('increasePathDepth()', () => {
-  it('increases the directory depth for a relative path', () => {
-    expect(increasePathDepth('./foo')).toEqual('../foo');
-  });
-
-  it('does not change the path for an absolute path', () => {
-    expect(increasePathDepth('/foo')).toEqual('/foo');
-  });
-
-  it('does not change the path for a node_module', () => {
-    expect(increasePathDepth('foo')).toEqual('foo');
-  });
-});
+import {resolveActionsModule} from './paths';
 
 describe('resolveActionsModule()', () => {
   it('resolves the path from the handler to the relative actions module', () => {

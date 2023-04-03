@@ -49,7 +49,8 @@ export function extractModel(
   schema: GraphQLSchema,
   dependenciesModuleId: string,
   typeName: string,
-  type: GraphQLObjectType
+  type: GraphQLObjectType,
+  outputFile: string
 ): Model {
   const cachedModel = models.get(type);
   if (cachedModel) {
@@ -65,7 +66,8 @@ export function extractModel(
     changeDataCaptureConfig: extractChangeDataCaptureConfig(
       config,
       schema,
-      type
+      type,
+      outputFile
     ),
     consistent: hasDirective('consistent', type),
     dependenciesModuleId,

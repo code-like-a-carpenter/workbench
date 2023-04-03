@@ -2,16 +2,13 @@ import assert from 'assert';
 import crypto from 'crypto';
 import path from 'path';
 
-import {camelCase, kebabCase, snakeCase, upperFirst} from 'lodash';
+import {camelCase, snakeCase, upperFirst} from 'lodash';
 
 import type {
   ChangeDataCaptureTriggerConfig,
   Model,
 } from '@code-like-a-carpenter/foundation-intermediate-representation';
-import {
-  increasePathDepth,
-  resolveActionsModule,
-} from '@code-like-a-carpenter/foundation-parser';
+import {resolveActionsModule} from '@code-like-a-carpenter/foundation-parser';
 
 import type {Config} from '../config';
 import {combineFragments} from '../fragments/combine-fragments';
@@ -23,6 +20,7 @@ import {makeHandler} from './lambdas';
 export function defineTriggerCdc(
   model: Model,
   {
+    filename,
     handlerConfig,
     handlerModuleId,
     event,
@@ -35,9 +33,6 @@ export function defineTriggerCdc(
 ): ServerlessApplicationModel {
   const {dependenciesModuleId, libImportPath, tableName} = model;
 
-  const handlerFileName = `trigger--${kebabCase(
-    sourceModelName
-  )}--${event.toLowerCase()}`;
   const handlerFunctionName = `Fn${upperFirst(
     camelCase(
       `trigger--${snakeCase(sourceModelName)
@@ -54,23 +49,18 @@ export function defineTriggerCdc(
     handlerFunctionName.length <= 64,
     `Handler function name must be less than 64 characters: ${handlerFunctionName}`
   );
-  const handlerOutputPath = path.join(
-    path.dirname(outputFile),
-    handlerFileName
-  );
+  const handlerOutputPath = path.join(path.dirname(outputFile), filename);
 
   const actionsModuleId = resolveActionsModule(
     handlerOutputPath,
     config.actionsModuleId
   );
 
-  const resolvedHandlerModuleId = increasePathDepth(handlerModuleId);
-
   const template = `// This file is generated. Do not edit by hand.
 
 import {assert, makeTriggerHandler} from '${libImportPath}';
 
-import {handler as cdcHandler} from '${resolvedHandlerModuleId}';
+import {handler as cdcHandler} from '${handlerModuleId}';
 import {unmarshall${sourceModelName}} from '${actionsModuleId}';
 
 export const handler = makeTriggerHandler((record) => {
@@ -88,7 +78,7 @@ export const handler = makeTriggerHandler((record) => {
         Sourcemap: config.buildProperties.sourcemap,
         Target: config.buildProperties.target,
       },
-      codeUri: handlerFileName,
+      codeUri: filename,
       dependenciesModuleId,
       event,
       functionName: handlerFunctionName,

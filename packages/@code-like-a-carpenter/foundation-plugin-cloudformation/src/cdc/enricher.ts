@@ -1,16 +1,13 @@
 import crypto from 'crypto';
 import path from 'path';
 
-import {camelCase, kebabCase, snakeCase, upperFirst} from 'lodash';
+import {camelCase, snakeCase, upperFirst} from 'lodash';
 
 import type {
   ChangeDataCaptureEnricherConfig,
   Model,
 } from '@code-like-a-carpenter/foundation-intermediate-representation';
-import {
-  increasePathDepth,
-  resolveActionsModule,
-} from '@code-like-a-carpenter/foundation-parser';
+import {resolveActionsModule} from '@code-like-a-carpenter/foundation-parser';
 
 import type {Config} from '../config';
 import {combineFragments} from '../fragments/combine-fragments';
@@ -22,6 +19,7 @@ import {makeHandler} from './lambdas';
 export function defineModelEnricher(
   model: Model,
   {
+    filename,
     handlerConfig,
     handlerModuleId,
     event,
@@ -34,9 +32,6 @@ export function defineModelEnricher(
 ): ServerlessApplicationModel {
   const {dependenciesModuleId, libImportPath, tableName} = model;
 
-  const handlerFileName = `enricher--${kebabCase(
-    sourceModelName
-  )}--${event.toLowerCase()}--${kebabCase(targetModelName)}`;
   const handlerFunctionName = `Fn${upperFirst(
     camelCase(
       `handler--${snakeCase(sourceModelName)
@@ -52,23 +47,18 @@ export function defineModelEnricher(
     .update(sourceModelName + event + targetModelName)
     .digest('hex')
     .slice(0, 8)}`;
-  const handlerOutputPath = path.join(
-    path.dirname(outputFile),
-    handlerFileName
-  );
+  const handlerOutputPath = path.join(path.dirname(outputFile), filename);
 
   const actionsModuleId = resolveActionsModule(
     handlerOutputPath,
     config.actionsModuleId
   );
 
-  const resolvedHandlerModuleId = increasePathDepth(handlerModuleId);
-
   const template = `// This file is generated. Do not edit by hand.
 
 import {makeEnricher} from '${libImportPath}';
 
-import {create, load, update} from '${resolvedHandlerModuleId}';
+import {create, load, update} from '${handlerModuleId}';
 import {
   ${sourceModelName},
   ${targetModelName},
@@ -103,7 +93,7 @@ Update${targetModelName}Input
         Sourcemap: config.buildProperties.sourcemap,
         Target: config.buildProperties.target,
       },
-      codeUri: handlerFileName,
+      codeUri: filename,
       dependenciesModuleId,
       event,
       functionName: handlerFunctionName,
