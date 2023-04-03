@@ -13,6 +13,7 @@ export const DispatcherConfigSchema = LambdaConfigSchema.extend({
 export const HandlerConfigSchema = LambdaConfigSchema.extend({});
 
 export const ParserConfigSchema = z.object({
+  actionsModuleId: z.string(),
   dependenciesModuleId: z.string(),
   dispatcherDefaults: DispatcherConfigSchema.default({}),
   handlerDefaults: HandlerConfigSchema.default({}),

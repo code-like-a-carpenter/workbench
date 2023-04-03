@@ -149,6 +149,7 @@ exports[`@enriches configures the handler to update one model when another chang
     {
       "changeDataCaptureConfig": [
         {
+          "actionsModuleId": "../actions",
           "event": "UPSERT",
           "filename": "enricher--subscription-event--upsert--account",
           "handlerConfig": {
@@ -473,6 +474,7 @@ exports[`@reacts configures an event handler for the model 3`] = `
     {
       "changeDataCaptureConfig": [
         {
+          "actionsModuleId": "../actions",
           "event": "UPSERT",
           "filename": "trigger--plan-metric--upsert",
           "handlerConfig": {

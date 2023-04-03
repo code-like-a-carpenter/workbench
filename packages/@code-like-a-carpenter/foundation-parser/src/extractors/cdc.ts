@@ -25,7 +25,11 @@ import {
   getOptionalArg,
   getOptionalArgObjectValue,
 } from '../helpers';
-import {resolveDependenciesModuleId, resolveHandlerModuleId} from '../paths';
+import {
+  resolveActionsModuleId,
+  resolveDependenciesModuleId,
+  resolveHandlerModuleId,
+} from '../paths';
 import {extractTableName} from '../tables';
 
 import {extractHandlerConfig} from './lambda-config';
@@ -171,6 +175,7 @@ function extractEnricherConfig(
   const directory = path.join(path.dirname(outputFile), filename);
 
   return {
+    actionsModuleId: resolveActionsModuleId(config, directory),
     event,
     filename,
     handlerConfig: extractHandlerConfig(config, directive),
@@ -204,6 +209,7 @@ function extractTriggersConfig(
   const directory = path.join(path.dirname(outputFile), filename);
 
   return {
+    actionsModuleId: resolveActionsModuleId(config, directory),
     event,
     filename,
     handlerConfig: extractHandlerConfig(config, directive),

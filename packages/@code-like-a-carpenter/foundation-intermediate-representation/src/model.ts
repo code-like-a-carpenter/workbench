@@ -7,6 +7,7 @@ export type ChangeDataCaptureConfig =
   | ChangeDataCaptureTriggerConfig;
 
 export interface BaseChangeDataCaptureConfig {
+  readonly actionsModuleId: string;
   readonly event: ChangeDataCaptureEvent;
   readonly filename: string;
   readonly handlerConfig: HandlerConfig;

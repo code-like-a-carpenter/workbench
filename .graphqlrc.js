@@ -20,6 +20,7 @@ const graphqlCodegenTypeScriptPluginConfig = {
 
 /** @type {import("@code-like-a-carpenter/foundation-parser").InputConfig} */
 const foundationPluginsConfig = {
+  actionsModuleId: 'PLACEHOLDER',
   dependenciesModuleId: './examples/dependencies',
   // Note that there's shared state between the CloudFormation and TypeScript
   // plugins, so config that's read be the parser needs to be the same.

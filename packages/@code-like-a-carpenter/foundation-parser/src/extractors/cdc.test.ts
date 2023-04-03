@@ -62,6 +62,7 @@ describe('@reacts', () => {
     expect(model.changeDataCaptureConfig).toMatchInlineSnapshot(`
       [
         {
+          "actionsModuleId": "../actions",
           "event": "UPSERT",
           "filename": "trigger--plan-metric--upsert",
           "handlerConfig": {
@@ -160,6 +161,7 @@ describe('@enriches', () => {
     expect(model.changeDataCaptureConfig).toMatchInlineSnapshot(`
       [
         {
+          "actionsModuleId": "../actions",
           "event": "UPSERT",
           "filename": "enricher--subscription-event--upsert--account",
           "handlerConfig": {

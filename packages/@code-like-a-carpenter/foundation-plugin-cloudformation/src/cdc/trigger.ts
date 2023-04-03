@@ -8,7 +8,6 @@ import type {
   ChangeDataCaptureTriggerConfig,
   Model,
 } from '@code-like-a-carpenter/foundation-intermediate-representation';
-import {resolveActionsModule} from '@code-like-a-carpenter/foundation-parser';
 
 import type {Config} from '../config';
 import {combineFragments} from '../fragments/combine-fragments';
@@ -20,6 +19,7 @@ import {makeHandler} from './lambdas';
 export function defineTriggerCdc(
   model: Model,
   {
+    actionsModuleId,
     filename,
     handlerConfig,
     handlerModuleId,
@@ -50,11 +50,6 @@ export function defineTriggerCdc(
     `Handler function name must be less than 64 characters: ${handlerFunctionName}`
   );
   const handlerOutputPath = path.join(path.dirname(outputFile), filename);
-
-  const actionsModuleId = resolveActionsModule(
-    handlerOutputPath,
-    config.actionsModuleId
-  );
 
   const template = `// This file is generated. Do not edit by hand.
 

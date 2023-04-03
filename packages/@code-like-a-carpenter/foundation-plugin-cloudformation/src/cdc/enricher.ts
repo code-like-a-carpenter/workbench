@@ -7,7 +7,6 @@ import type {
   ChangeDataCaptureEnricherConfig,
   Model,
 } from '@code-like-a-carpenter/foundation-intermediate-representation';
-import {resolveActionsModule} from '@code-like-a-carpenter/foundation-parser';
 
 import type {Config} from '../config';
 import {combineFragments} from '../fragments/combine-fragments';
@@ -19,6 +18,7 @@ import {makeHandler} from './lambdas';
 export function defineModelEnricher(
   model: Model,
   {
+    actionsModuleId,
     filename,
     handlerConfig,
     handlerModuleId,
@@ -48,11 +48,6 @@ export function defineModelEnricher(
     .digest('hex')
     .slice(0, 8)}`;
   const handlerOutputPath = path.join(path.dirname(outputFile), filename);
-
-  const actionsModuleId = resolveActionsModule(
-    handlerOutputPath,
-    config.actionsModuleId
-  );
 
   const template = `// This file is generated. Do not edit by hand.
 

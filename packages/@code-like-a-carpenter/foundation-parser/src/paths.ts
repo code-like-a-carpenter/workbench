@@ -7,13 +7,12 @@ import {assert} from '@code-like-a-carpenter/assert';
 import type {Config} from './config';
 
 /** Resolves the path from the handler to the actions module. */
-export function resolveActionsModule(
-  handlerOutputPath: string,
-  actionsModuleId: string
-): string {
-  return actionsModuleId.startsWith('.')
-    ? path.relative(handlerOutputPath, actionsModuleId)
-    : actionsModuleId;
+export function resolveActionsModuleId(config: Config, directory: string) {
+  if (config.actionsModuleId.startsWith('.')) {
+    const resolved = path.relative(directory, config.actionsModuleId);
+    return resolved.replace(new RegExp(`${path.extname(resolved)}$`), '');
+  }
+  return config.actionsModuleId;
 }
 
 /**
