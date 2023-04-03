@@ -10,6 +10,7 @@ import {assertObjectType} from 'graphql';
 import {kebabCase} from 'lodash';
 
 import type {
+  BaseChangeDataCaptureConfig,
   ChangeDataCaptureConfig,
   ChangeDataCaptureEnricherConfig,
   ChangeDataCaptureTriggerConfig,
@@ -17,7 +18,7 @@ import type {
 } from '@code-like-a-carpenter/foundation-intermediate-representation';
 
 import type {Config} from '../config';
-import {DispatcherConfigSchema} from '../config';
+import {DispatcherConfigSchema, HandlerConfigSchema} from '../config';
 import {
   filterNull,
   getArgEnumValue,
@@ -31,8 +32,6 @@ import {
   resolveHandlerModuleId,
 } from '../paths';
 import {extractTableName} from '../tables';
-
-import {extractHandlerConfig} from './lambda-config';
 
 export function extractDispatcherConfig(
   config: Config,
@@ -155,6 +154,33 @@ export function getTargetTables(
   );
 }
 
+function extractCommonConfig(
+  config: Config,
+  schema: GraphQLSchema,
+  type: GraphQLObjectType,
+  directive: ConstDirectiveNode,
+  outputFile: string,
+  filename: string
+): Omit<BaseChangeDataCaptureConfig, 'event' | 'filename'> {
+  const sourceModelName = type.name;
+
+  const handler = getArgStringValue('handler', directive);
+
+  const directory = path.join(path.dirname(outputFile), filename);
+  const {memorySize, timeout} = HandlerConfigSchema.parse({
+    ...config.handlerDefaults,
+    ...getOptionalArgObjectValue('handlerConfig', directive),
+  });
+
+  return {
+    actionsModuleId: resolveActionsModuleId(config, directory),
+    handlerModuleId: resolveHandlerModuleId(type, directory, handler),
+    memorySize,
+    sourceModelName,
+    timeout,
+  };
+}
+
 function extractEnricherConfig(
   config: Config,
   schema: GraphQLSchema,
@@ -163,7 +189,6 @@ function extractEnricherConfig(
   outputFile: string
 ): ChangeDataCaptureEnricherConfig {
   const event = getEvent(type, directive);
-  const handlerModuleId = getArgStringValue('handler', directive);
 
   const sourceModelName = type.name;
   const targetModelName = getArgStringValue('targetModel', directive);
@@ -172,15 +197,17 @@ function extractEnricherConfig(
     sourceModelName
   )}--${event.toLowerCase()}--${kebabCase(targetModelName)}`;
 
-  const directory = path.join(path.dirname(outputFile), filename);
-
   return {
-    actionsModuleId: resolveActionsModuleId(config, directory),
+    ...extractCommonConfig(
+      config,
+      schema,
+      type,
+      directive,
+      outputFile,
+      filename
+    ),
     event,
     filename,
-    handlerConfig: extractHandlerConfig(config, directive),
-    handlerModuleId: resolveHandlerModuleId(type, directory, handlerModuleId),
-    sourceModelName: type.name,
     targetModelName,
     type: 'ENRICHER',
     writableTables: [getTargetTable(schema, type.name, targetModelName)],
@@ -209,10 +236,16 @@ function extractTriggersConfig(
   const directory = path.join(path.dirname(outputFile), filename);
 
   return {
-    actionsModuleId: resolveActionsModuleId(config, directory),
+    ...extractCommonConfig(
+      config,
+      schema,
+      type,
+      directive,
+      outputFile,
+      filename
+    ),
     event,
     filename,
-    handlerConfig: extractHandlerConfig(config, directive),
     handlerModuleId: resolveHandlerModuleId(type, directory, handlerModuleId),
     readableTables,
     sourceModelName: type.name,

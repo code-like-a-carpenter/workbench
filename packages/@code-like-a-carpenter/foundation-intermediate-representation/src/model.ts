@@ -6,11 +6,10 @@ export type ChangeDataCaptureConfig =
   | ChangeDataCaptureEnricherConfig
   | ChangeDataCaptureTriggerConfig;
 
-export interface BaseChangeDataCaptureConfig {
+export interface BaseChangeDataCaptureConfig extends LambdaConfig {
   readonly actionsModuleId: string;
   readonly event: ChangeDataCaptureEvent;
   readonly filename: string;
-  readonly handlerConfig: HandlerConfig;
   readonly handlerModuleId: string;
   readonly sourceModelName: string;
 }
@@ -28,8 +27,6 @@ export interface ChangeDataCaptureTriggerConfig
   readonly type: 'TRIGGER';
   readonly writableTables: readonly string[];
 }
-
-export type HandlerConfig = LambdaConfig;
 
 export interface Model {
   readonly changeDataCaptureConfig: readonly ChangeDataCaptureConfig[];

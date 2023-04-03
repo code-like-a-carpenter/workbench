@@ -21,10 +21,11 @@ export function defineTriggerCdc(
   {
     actionsModuleId,
     filename,
-    handlerConfig,
     handlerModuleId,
     event,
+    memorySize,
     sourceModelName,
+    timeout,
     readableTables,
     writableTables,
   }: ChangeDataCaptureTriggerConfig,
@@ -77,13 +78,14 @@ export const handler = makeTriggerHandler((record) => {
       dependenciesModuleId,
       event,
       functionName: handlerFunctionName,
-      handlerConfig,
       libImportPath,
+      memorySize,
       outputPath: handlerOutputPath,
       readableTables,
       sourceModelName,
       tableName,
       template,
+      timeout,
       writableTables,
     })
   );

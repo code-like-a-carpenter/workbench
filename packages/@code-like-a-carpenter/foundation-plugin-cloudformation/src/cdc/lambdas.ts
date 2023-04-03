@@ -1,7 +1,4 @@
-import type {
-  ChangeDataCaptureEvent,
-  HandlerConfig,
-} from '@code-like-a-carpenter/foundation-intermediate-representation';
+import type {ChangeDataCaptureEvent} from '@code-like-a-carpenter/foundation-intermediate-representation';
 
 import type {
   AWSEventsRule,
@@ -18,31 +15,31 @@ import {filterNull} from '../helpers';
 
 export interface MakeHandlerOptions extends LambdaInput {
   readonly event: ChangeDataCaptureEvent;
-  readonly handlerConfig: HandlerConfig;
+  readonly memorySize: number;
   readonly readableTables: readonly string[];
   readonly sourceModelName: string;
   readonly tableName: string;
   readonly template: string;
   readonly writableTables: readonly string[];
+  readonly timeout: number;
 }
 
 /** generate the dispatcher lambda function */
 export function makeHandler({
   buildProperties,
   codeUri,
-  handlerConfig,
   event,
   functionName,
+  memorySize,
   outputPath,
   readableTables,
   sourceModelName,
   tableName,
   template,
+  timeout,
   writableTables,
 }: MakeHandlerOptions) {
   writeLambda(outputPath, template);
-
-  const {timeout, memorySize} = handlerConfig;
 
   const queueName = `${functionName}Queue`;
 
