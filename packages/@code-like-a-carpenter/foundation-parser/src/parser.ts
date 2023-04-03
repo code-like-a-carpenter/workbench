@@ -23,6 +23,7 @@ import type {
   IntermediateRepresentation,
   Model,
   PrimaryKeyConfig,
+  ProjectionType,
   SecondaryIndex,
   Table,
   TableSecondaryIndex,
@@ -413,7 +414,7 @@ function extractPrimaryKey(
 }
 
 /** helper */
-function getProjectionType(directive: ConstDirectiveNode): 'all' | 'keys_only' {
+function getProjectionType(directive: ConstDirectiveNode): ProjectionType {
   const arg = getOptionalArg('projection', directive);
   if (!arg) {
     return 'all';
