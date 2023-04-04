@@ -18,6 +18,7 @@ export const ParserConfigSchema = z.object({
   dispatcherDefaults: DispatcherConfigSchema.default({}),
   handlerDefaults: HandlerConfigSchema.default({}),
   lambdaDefaults: LambdaConfigSchema.default({}),
+  useEfficientIndexes: z.boolean().default(true),
 });
 
 export type Config = z.infer<typeof ParserConfigSchema>;

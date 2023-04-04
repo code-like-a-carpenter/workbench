@@ -16,35 +16,12 @@ export function defineTable({
   secondaryIndexes,
 }: Table): ServerlessApplicationModel {
   const attributeDefinitions = isComposite
-    ? [
-        {
-          AttributeName: 'pk',
-          AttributeType: 'S',
-        },
-        {
-          AttributeName: 'sk',
-          AttributeType: 'S',
-        },
-      ]
-    : [{AttributeName: 'pk', AttributeType: 'S'}];
+    ? expandCompositeAttribute('pk', 'sk')
+    : expandSimpleAttribute('pk');
 
   const keySchema = isComposite
-    ? [
-        {
-          AttributeName: 'pk',
-          KeyType: 'HASH',
-        },
-        {
-          AttributeName: 'sk',
-          KeyType: 'RANGE',
-        },
-      ]
-    : [
-        {
-          AttributeName: 'pk',
-          KeyType: 'HASH',
-        },
-      ];
+    ? expandCompositeKey('pk', 'sk')
+    : expandSimpleKey('pk');
 
   const globalSecondaryIndexes = [];
   const localSecondaryIndexes = [];
@@ -53,44 +30,12 @@ export function defineTable({
     if (index.type === 'gsi') {
       attributeDefinitions.push(
         ...(index.isComposite
-          ? [
-              {
-                AttributeName: `${index.name}pk`,
-                AttributeType: 'S',
-              },
-              {
-                AttributeName: `${index.name}sk`,
-                AttributeType: 'S',
-              },
-            ]
-          : [
-              {
-                AttributeName: index.isSingleField
-                  ? index.name
-                  : `${index.name}pk`,
-                AttributeType: 'S',
-              },
-            ])
+          ? expandCompositeAttribute(index.partitionKeyName, index.sortKeyName)
+          : expandSimpleAttribute(index.partitionKeyName))
       );
       const gsiKeySchema = index.isComposite
-        ? [
-            {
-              AttributeName: `${index.name}pk`,
-              KeyType: 'HASH',
-            },
-            {
-              AttributeName: `${index.name}sk`,
-              KeyType: 'RANGE',
-            },
-          ]
-        : [
-            {
-              AttributeName: index.isSingleField
-                ? index.name
-                : `${index.name}pk`,
-              KeyType: 'HASH',
-            },
-          ];
+        ? expandCompositeKey(index.partitionKeyName, index.sortKeyName)
+        : expandSimpleKey(index.partitionKeyName);
       globalSecondaryIndexes.push({
         IndexName: index.name,
         KeySchema: gsiKeySchema,
@@ -99,20 +44,11 @@ export function defineTable({
         },
       });
     } else if (index.type === 'lsi') {
-      attributeDefinitions.push({
-        AttributeName: `${index.name}sk`,
-        AttributeType: 'S',
-      });
-      const lsiKeySchema = [
-        {
-          AttributeName: 'pk',
-          KeyType: 'HASH',
-        },
-        {
-          AttributeName: `${index.name}sk`,
-          KeyType: 'RANGE',
-        },
-      ];
+      attributeDefinitions.push(...expandSimpleAttribute(index.sortKeyName));
+      const lsiKeySchema = expandCompositeKey(
+        index.partitionKeyName,
+        index.sortKeyName
+      );
       localSecondaryIndexes.push({
         IndexName: index.name,
         KeySchema: lsiKeySchema,
@@ -202,3 +138,25 @@ export function defineTable({
 }
 
 /* eslint-enable complexity */
+
+function expandCompositeAttribute(pk: string, sk: string) {
+  return [
+    {AttributeName: pk, AttributeType: 'S'},
+    {AttributeName: sk, AttributeType: 'S'},
+  ];
+}
+
+function expandSimpleAttribute(pk: string) {
+  return [{AttributeName: pk, AttributeType: 'S'}];
+}
+
+function expandCompositeKey(pk: string, sk: string) {
+  return [
+    {AttributeName: pk, KeyType: 'HASH'},
+    {AttributeName: sk, KeyType: 'RANGE'},
+  ];
+}
+
+function expandSimpleKey(pk: string) {
+  return [{AttributeName: pk, KeyType: 'HASH'}];
+}

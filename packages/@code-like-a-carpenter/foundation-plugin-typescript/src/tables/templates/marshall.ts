@@ -6,6 +6,7 @@ import type {
   TTLConfig,
 } from '@code-like-a-carpenter/foundation-intermediate-representation';
 
+import type {Config} from '../../config';
 import {filterNull} from '../../helpers';
 
 import {marshallField} from './helpers';
@@ -36,13 +37,10 @@ function makeTypeDefinition(
 }
 
 /** Generates the marshall function for a table */
-export function marshallTpl({
-  fields,
-  primaryKey,
-  secondaryIndexes,
-  ttlConfig,
-  typeName,
-}: Model): string {
+export function marshallTpl(
+  config: Config,
+  {fields, primaryKey, secondaryIndexes, ttlConfig, typeName}: Model
+): string {
   const requiredFields = fields
     .filter((f) => f.isRequired && f.fieldName !== 'publicId')
     .filter(({fieldName}) => fieldName !== 'id');
@@ -119,7 +117,7 @@ ${requiredFields
 ${secondaryIndexes
   .filter(({name}) => name !== 'publicId')
   .filter((index) => !indexHasField('createdAt', primaryKey, index))
-  .map(indexToEANPart)
+  .map((index) => indexToEANPart(config, index))
   .flat()
   .join('\n')}
   };

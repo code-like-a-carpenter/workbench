@@ -44,44 +44,41 @@ export interface Model {
   readonly ttlConfig?: TTLConfig;
 }
 
-export type GSI = {
-  readonly isSingleField: boolean;
-  readonly name: string;
-  readonly projectionType: ProjectionType;
-  readonly type: 'gsi';
-} & (PartitionKey | CompositeKey);
-
-export interface LSI {
-  readonly isComposite: true;
-  readonly isSingleField: false;
-  readonly name: string;
-  readonly projectionType: ProjectionType;
-  readonly type: 'lsi';
-  readonly sortKeyFields: readonly Field[];
-  readonly sortKeyPrefix?: string;
-}
-
-export type SecondaryIndex = GSI | LSI;
-
-export interface PartitionKey {
+export interface SimpleKey {
   readonly isComposite: false;
   readonly isSingleField: boolean;
   readonly partitionKeyFields: readonly Field[];
   readonly partitionKeyPrefix?: string;
+  readonly partitionKeyName: string;
 }
 
 export interface CompositeKey {
   readonly isComposite: true;
+  readonly partitionKeyFields: readonly Field[];
+  readonly partitionKeyIsSingleField: boolean;
   readonly partitionKeyPrefix?: string;
-  readonly partitionKeyFields: Field[];
+  readonly partitionKeyName: string;
+  readonly sortKeyFields: readonly Field[];
+  readonly sortKeyIsSingleField: boolean;
   readonly sortKeyPrefix?: string;
-  readonly sortKeyFields: Field[];
+  readonly sortKeyName: string;
 }
 
-export type PrimaryKeyConfig = {type: 'primary'} & (
-  | PartitionKey
-  | CompositeKey
-);
+export type GSI = {
+  readonly name: string;
+  readonly projectionType: ProjectionType;
+  readonly type: 'gsi';
+} & (SimpleKey | CompositeKey);
+
+export interface LSI extends CompositeKey {
+  readonly name: string;
+  readonly projectionType: ProjectionType;
+  readonly type: 'lsi';
+}
+
+export type SecondaryIndex = GSI | LSI;
+
+export type PrimaryKeyConfig = {type: 'primary'} & (SimpleKey | CompositeKey);
 
 export interface TTLConfig {
   readonly fieldName: string;

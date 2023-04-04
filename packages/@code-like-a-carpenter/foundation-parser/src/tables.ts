@@ -23,7 +23,11 @@ import {getModel} from './models';
 import {resolveDependenciesModuleId} from './paths';
 import type {Writable} from './types';
 
-const tables = new Map<string, Table>();
+// Reminder: this is has an extra layer of nesting specifically for tests. It's
+// unlikely that there will ever be more than one schema during normal
+// operation, however a number of tests use in-line schemas the declare the same
+// models.
+const schemaTables = new WeakMap<GraphQLSchema, Map<string, Table>>();
 
 export function extractTable(
   config: Config,
@@ -31,6 +35,12 @@ export function extractTable(
   type: GraphQLObjectType,
   outputFile: string
 ): Table {
+  let tables = schemaTables.get(schema);
+  if (!tables) {
+    tables = new Map<string, Table>();
+    schemaTables.set(schema, tables);
+  }
+
   const tableName = extractTableName(type);
 
   const existingTable = tables.get(tableName);
@@ -158,19 +168,36 @@ function defineNewTable(
 function modelIndexToTableIndex(mi: SecondaryIndex): TableSecondaryIndex {
   if (mi.type === 'lsi') {
     return {
-      isComposite: true,
-      isSingleField: mi.sortKeyFields.length === 1,
+      isComposite: mi.isComposite,
       name: mi.name,
+      partitionKeyIsSingleField: mi.partitionKeyIsSingleField,
+      partitionKeyName: mi.partitionKeyName,
       projectionType: mi.projectionType,
+      sortKeyIsSingleField: mi.sortKeyIsSingleField,
+      sortKeyName: mi.sortKeyName,
       type: 'lsi',
     };
   }
 
+  if (mi.isComposite) {
+    return {
+      isComposite: mi.isComposite,
+      name: mi.name,
+      partitionKeyIsSingleField: mi.partitionKeyFields.length === 1,
+      partitionKeyName: mi.partitionKeyName,
+      projectionType: mi.projectionType,
+      sortKeyIsSingleField: mi.isComposite && mi.sortKeyFields.length === 1,
+      sortKeyName: mi.sortKeyName,
+      type: 'gsi',
+    };
+  }
+
   return {
-    isComposite: true,
-    // This is wrong, but I need to update the IR to fix it.
-    isSingleField: false,
+    isComposite: mi.isComposite,
     name: mi.name,
+    partitionKeyIsSingleField: mi.partitionKeyFields.length === 1,
+    partitionKeyName: mi.partitionKeyName,
+    partitionKeyPrefix: mi.partitionKeyPrefix,
     projectionType: mi.projectionType,
     type: 'gsi',
   };

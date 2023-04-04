@@ -88,7 +88,7 @@ ${models
       readItemTemplate(config, model),
       !model.isLedger && updateItemTemplate(config, model),
       queryTemplate(model),
-      marshallTpl(model),
+      marshallTpl(config, model),
       unmarshallTpl(model),
     ]
       .filter(filterNull)

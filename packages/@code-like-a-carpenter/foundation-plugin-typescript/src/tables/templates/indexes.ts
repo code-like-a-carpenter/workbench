@@ -3,6 +3,8 @@ import type {
   SecondaryIndex,
 } from '@code-like-a-carpenter/foundation-intermediate-representation';
 
+import type {Config} from '../../config';
+
 import {makeKeyTemplate} from './helpers';
 
 /** Indicates if an index contains a particular field name */
@@ -11,10 +13,6 @@ export function indexHasField(
   primaryKey: PrimaryKeyConfig,
   index: SecondaryIndex
 ) {
-  if (index.isSingleField) {
-    return index.name === name;
-  }
-
   if (index.type === 'lsi') {
     return (
       primaryKey.partitionKeyFields.some((field) => field.fieldName === name) ||
@@ -32,55 +30,88 @@ export function indexHasField(
   return index.partitionKeyFields.some((field) => field.fieldName === name);
 }
 
-export function indexToUpdateExpressionPart({
-  isSingleField,
-  name,
-  type,
-}: SecondaryIndex) {
-  return type === 'gsi'
-    ? isSingleField
-      ? []
-      : [`'#${name}pk = :${name}pk',`, `'#${name}sk = :${name}sk',`]
-    : [`'#${name}sk = :${name}sk',`];
+export function indexToUpdateExpressionPart(index: SecondaryIndex) {
+  const fields = [];
+  const {type} = index;
+  if (type === 'gsi') {
+    const {isComposite} = index;
+    if (index.name !== index.partitionKeyName) {
+      fields.push(index.partitionKeyName);
+    }
+    if (isComposite) {
+      if (index.name !== index.sortKeyName) {
+        fields.push(index.sortKeyName);
+      }
+    }
+  }
+  if (type === 'lsi') {
+    if (index.name !== index.sortKeyName) {
+      fields.push(index.sortKeyName);
+    }
+  }
+  return fields.map((field) => `'#${field} = :${field}',`);
 }
 
 export function indexToEAVPart(
   mode: 'blind' | 'create' | 'read',
   index: SecondaryIndex
 ) {
-  if (index.type === 'gsi') {
-    if (index.isSingleField) {
-      return [];
+  const fields = [];
+  const {type} = index;
+  if (type === 'gsi') {
+    const {isComposite} = index;
+    if (index.name !== index.partitionKeyName) {
+      fields.push(
+        `':${index.partitionKeyName}': ${makeKeyTemplate(
+          index.partitionKeyPrefix,
+          index.partitionKeyFields,
+          mode
+        )},`
+      );
     }
-    return [
-      `':${`${index.name}pk`}': ${makeKeyTemplate(
-        index.partitionKeyPrefix,
-        index.partitionKeyFields,
-        mode
-      )},`,
-      index.isComposite
-        ? `':${index.name}sk': ${makeKeyTemplate(
+    if (isComposite) {
+      if (index.name !== index.sortKeyName) {
+        fields.push(
+          `':${index.sortKeyName}': ${makeKeyTemplate(
             index.sortKeyPrefix,
             index.sortKeyFields,
             mode
           )},`
-        : undefined,
-    ];
+        );
+      }
+    }
   }
 
-  return [
-    `':${index.name}sk': ${makeKeyTemplate(
-      index.sortKeyPrefix,
-      index.sortKeyFields,
-      mode
-    )},`,
-  ];
+  if (type === 'lsi') {
+    fields.push(
+      `':${index.sortKeyName}': ${makeKeyTemplate(
+        index.sortKeyPrefix,
+        index.sortKeyFields,
+        mode
+      )},`
+    );
+  }
+  return fields;
 }
 
-export function indexToEANPart({isSingleField, name, type}: SecondaryIndex) {
-  return type === 'gsi'
-    ? isSingleField
-      ? []
-      : [`'#${name}pk': '${name}pk',`, `'#${name}sk': '${name}sk',`]
-    : [`'#${name}sk': '${name}sk',`];
+export function indexToEANPart(config: Config, index: SecondaryIndex) {
+  const fields = [];
+  const {type} = index;
+  if (type === 'gsi') {
+    const {isComposite} = index;
+    if (index.name !== index.partitionKeyName) {
+      fields.push(index.partitionKeyName);
+    }
+    if (isComposite) {
+      if (index.name !== index.sortKeyName) {
+        fields.push(index.sortKeyName);
+      }
+    }
+  }
+  if (type === 'lsi') {
+    if (index.name !== index.sortKeyName) {
+      fields.push(index.sortKeyName);
+    }
+  }
+  return fields.map((field) => `'#${field}': '${field}',`);
 }

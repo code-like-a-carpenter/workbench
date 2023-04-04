@@ -73,7 +73,7 @@ ${ensureTableTemplate(tableName)}
     ${hasPublicId ? "'#publicId': 'publicId'," : ''}
     ${model.secondaryIndexes
       .filter((index) => indexHasField('createdAt', model.primaryKey, index))
-      .map(indexToEANPart)
+      .map((index) => indexToEANPart(config, index))
       .flat()
       .join('\n')}
   }

@@ -263,23 +263,24 @@ ${secondaryIndexes
 }
 
 function keyNames(key: PrimaryKeyConfig | SecondaryIndex) {
-  if (key.type === 'primary') {
-    return key.isComposite ? `{'#pk': 'pk', '#sk': 'sk'}` : `{'#pk': 'pk'}`;
+  const {isComposite, type} = key;
+  if (type === 'primary') {
+    return isComposite ? `{'#pk': 'pk', '#sk': 'sk'}` : `{'#pk': 'pk'}`;
   }
 
-  if (key.type === 'gsi') {
-    if (key.isSingleField) {
-      return `{'#pk': '${key.name}'}`;
+  if (type === 'gsi') {
+    if (isComposite) {
+      return `{'#pk': '${key.partitionKeyName}', '#sk': '${key.sortKeyName}'}`;
     }
 
-    const pk = `${key.name}pk`;
-    const sk = `${key.name}sk`;
-    return key.isComposite
-      ? `{'#pk': '${pk}', '#sk': '${sk}'}`
-      : `{'#pk': '${pk}'}`;
+    return `{'#pk': '${key.partitionKeyName}'}`;
   }
 
-  return `{'#pk': 'pk', '#sk': '${key.name}sk'}`;
+  if (type === 'lsi') {
+    return `{'#pk': 'pk', '#sk': '${key.sortKeyName}'}`;
+  }
+
+  fail(`Unexpected index type: ${type}`);
 }
 
 function eavForQuery(

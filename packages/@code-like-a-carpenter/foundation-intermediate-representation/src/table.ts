@@ -36,10 +36,31 @@ export interface TablePrimaryKeyConfig {
   readonly isComposite: boolean;
 }
 
-export interface TableSecondaryIndex {
-  readonly isComposite: boolean;
-  readonly isSingleField: boolean;
+export interface TableCompositeKey {
+  readonly isComposite: true;
+  readonly partitionKeyIsSingleField: boolean;
+  readonly partitionKeyName: string;
+  readonly sortKeyIsSingleField: boolean;
+  readonly sortKeyName: string;
+}
+
+export interface TableSimpleKey {
+  readonly isComposite: false;
+  readonly partitionKeyIsSingleField: boolean;
+  readonly partitionKeyPrefix?: string;
+  readonly partitionKeyName: string;
+}
+
+export type TableGSI = {
   readonly name: string;
   readonly projectionType: ProjectionType;
-  readonly type: 'gsi' | 'lsi';
+  readonly type: 'gsi';
+} & (TableCompositeKey | TableSimpleKey);
+
+export interface TableLSI extends TableCompositeKey {
+  readonly name: string;
+  readonly projectionType: ProjectionType;
+  readonly type: 'lsi';
 }
+
+export type TableSecondaryIndex = TableGSI | TableLSI;

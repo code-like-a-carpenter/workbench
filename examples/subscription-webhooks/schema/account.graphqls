@@ -2,7 +2,7 @@
 A customer account.
 """
 type Account implements Model & Versioned & Timestamped
-  @compositeIndex(
+  @gsi(
     name: "gsi1"
     pkFields: ["hasEverSubscribed"]
     pkPrefix: "PLAN"
