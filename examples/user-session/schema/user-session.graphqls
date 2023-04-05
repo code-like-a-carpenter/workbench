@@ -5,7 +5,7 @@ type UserSession implements Model & Timestamped & Versioned
   @consistent
   @partitionKey(pkFields: ["sessionId"], pkPrefix: "USER_SESSION") {
   createdAt: Date!
-  expires: Date! @ttl(duration: "1d")
+  expires: Date! @ttl(duration: "1d", overridable: true)
   id: ID!
   """
   Since `id` is a reserved field, sessionId is the field we'll use to inject a

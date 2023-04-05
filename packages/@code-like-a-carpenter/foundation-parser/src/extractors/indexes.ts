@@ -1,6 +1,6 @@
 import assert from 'assert';
 
-import type {ConstDirectiveNode, GraphQLObjectType} from 'graphql/index';
+import type {ConstDirectiveNode, GraphQLObjectType} from 'graphql';
 
 import type {
   Field,

@@ -592,22 +592,21 @@ export function marshallUserSession(
     ':version': ('version' in input ? input.version ?? 0 : 0) + 1,
   };
 
-  if ('expires' in input && typeof input.expires !== 'undefined') {
+  ean['#expires'] = 'ttl';
+  if (
+    'expires' in input &&
+    typeof input.expires !== 'undefined' &&
+    input.expires !== null
+  ) {
     assert(
       !Number.isNaN(input.expires.getTime()),
       'expires was passed but is not a valid date'
     );
-    ean['#expires'] = 'ttl';
-    eav[':expires'] =
-      input.expires === null
-        ? null
-        : Math.floor(input.expires.getTime() / 1000);
-    updateExpression.push('#expires = :expires');
+    eav[':expires'] = Math.floor(input.expires.getTime() / 1000);
   } else {
-    ean['#expires'] = 'ttl';
-    eav[':expires'] = now.getTime() + 86400000;
-    updateExpression.push('#expires = :expires');
+    eav[':expires'] = Math.floor((now.getTime() + 86400000) / 1000);
   }
+  updateExpression.push('#expires = :expires');
 
   updateExpression.sort();
 

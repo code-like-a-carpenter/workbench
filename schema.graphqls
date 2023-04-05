@@ -244,11 +244,18 @@ directive @computed(
 ) on FIELD_DEFINITION
 
 """
-Indicates the field will be configured as the DynamoDB ttl field for this type.
-Always gets saved to a column named "ttl" to avoid conflicts in single-table
-entities that all might use different names
+Marks a field as the source for this model's ttl value. May only be declared once per model
 """
-directive @ttl(duration: String) on FIELD_DEFINITION
+directive @ttl(
+  """
+  An ISO 8601 duration string. If no value is specified for the field, the expiration date will be now + this duration
+  """
+  duration: String
+  """
+  If duration is specified, codegen will not allow user to specify a value for expiration unless this is set to true.
+  """
+  overridable: Boolean
+) on FIELD_DEFINITION
 
 """
 Allows configuring the ProjectionType for the publicId index of PublicModels

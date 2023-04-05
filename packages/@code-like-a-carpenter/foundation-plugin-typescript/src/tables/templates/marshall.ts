@@ -1,5 +1,4 @@
-import assert from 'assert';
-
+import {assert} from '@code-like-a-carpenter/assert';
 import type {
   Field,
   Model,
@@ -191,36 +190,42 @@ function renderTTL(
     return '';
   }
 
-  const {duration, fieldName} = ttlConfig;
+  const {argumentAllowed, argumentRequired, fieldName} = ttlConfig;
 
   const field = fields.find(({fieldName: f}) => f === fieldName);
   assert(field, `Field ${fieldName} not found`);
 
-  const out = `
-  if ('${fieldName}' in input && typeof input.${fieldName} !== 'undefined') {
-    assert(!Number.isNaN(input.${fieldName}${
-    field.isRequired ? '' : '?'
-  }.getTime()),'${fieldName} was passed but is not a valid date');
-    ean['#${fieldName}'] = 'ttl';
-    eav[':${fieldName}'] = input.${fieldName} === null
-      ? null
-      : ${marshallField(field)};
-    updateExpression.push('#${fieldName} = :${fieldName}');
-  }
-  `;
-
-  if (duration) {
-    return `${out} else {
+  if (argumentRequired) {
+    return `
+      assert(!Number.isNaN(input.${fieldName}.getTime()),'${fieldName} was passed but is not a valid date')
       ean['#${fieldName}'] = 'ttl';
-      eav[':${fieldName}'] = now.getTime() + ${duration};
+      eav[':${fieldName}'] = ${marshallField(field)};
       updateExpression.push('#${fieldName} = :${fieldName}');
-    }`;
+    `;
   }
 
-  assert(
-    !field.isRequired,
-    'TTL field must be optional if duration is not present'
-  );
+  const defaultValue =
+    'duration' in ttlConfig
+      ? `now.getTime() + ${ttlConfig.duration}`
+      : 'now.getTime()';
 
-  return out;
+  if (!argumentAllowed) {
+    return `
+      ean['#${fieldName}'] = 'ttl';
+      eav[':${fieldName}'] = Math.floor((${defaultValue})/1000);
+      updateExpression.push('#${fieldName} = :${fieldName}');
+    `;
+  }
+
+  return `
+    ean['#${fieldName}'] = 'ttl';
+    if ('${fieldName}' in input && typeof input.${fieldName} !== 'undefined' && input.${fieldName} !== null) {
+      assert(!Number.isNaN(input.${fieldName}.getTime()),'${fieldName} was passed but is not a valid date')
+      eav[':${fieldName}'] = ${marshallField(field)};
+    }
+    else {
+      eav[':${fieldName}'] = Math.floor((${defaultValue})/1000);
+    }
+    updateExpression.push('#${fieldName} = :${fieldName}');
+  `;
 }

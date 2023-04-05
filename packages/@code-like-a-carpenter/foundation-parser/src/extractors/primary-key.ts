@@ -1,6 +1,6 @@
 import assert from 'assert';
 
-import type {GraphQLObjectType} from 'graphql/index';
+import type {GraphQLObjectType} from 'graphql';
 
 import type {
   Field,

@@ -80,7 +80,15 @@ export type SecondaryIndex = GSI | LSI;
 
 export type PrimaryKeyConfig = {type: 'primary'} & (SimpleKey | CompositeKey);
 
-export interface TTLConfig {
-  readonly fieldName: string;
-  readonly duration?: number;
-}
+export type TTLConfig =
+  | {
+      readonly argumentAllowed: true;
+      readonly argumentRequired: boolean;
+      readonly fieldName: string;
+    }
+  | {
+      readonly argumentAllowed: boolean;
+      readonly argumentRequired: boolean;
+      readonly duration: number;
+      readonly fieldName: string;
+    };

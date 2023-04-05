@@ -12,19 +12,18 @@ import {camelCase, snakeCase} from 'lodash';
 import type {
   Field,
   Model,
-  TTLConfig,
 } from '@code-like-a-carpenter/foundation-intermediate-representation';
 
 import type {Config} from './config';
 import {extractChangeDataCaptureConfig} from './extractors/cdc';
 import {extractSecondaryIndexes} from './extractors/indexes';
 import {extractPrimaryKey} from './extractors/primary-key';
+import {extractTTLConfig} from './extractors/ttl';
 import {
   getArgStringValue,
   getDirective,
   getOptionalArg,
   getOptionalArgBooleanValue,
-  getOptionalArgStringValue,
   getOptionalDirective,
   hasDirective,
   hasInterface,
@@ -128,56 +127,6 @@ function extractTableInfo(type: GraphQLObjectType<unknown, unknown>) {
         ) !== false
       : true,
   };
-}
-
-/**
- * Determines TTL configuration for a particular Model.
- */
-function extractTTLConfig(
-  type: GraphQLObjectType<unknown, unknown>
-): TTLConfig | undefined {
-  const fields =
-    type.astNode?.fields?.filter((field) =>
-      field.directives?.map(({name}) => name.value).includes('ttl')
-    ) ?? [];
-  if (fields.length === 0) {
-    return undefined;
-  }
-  assert(fields.length === 1, 'Only one field can be marked with @ttl');
-  const [field] = fields;
-  const fieldName = field.name.value;
-  const directive = getDirective('ttl', field);
-  const duration = getOptionalArgStringValue('duration', directive);
-
-  if (!duration) {
-    assert(
-      !isNonNullType(field),
-      'TTL field must be nullable if duration is not specified'
-    );
-
-    return {fieldName};
-  }
-
-  const durationUnit = duration?.slice(-1);
-  const durationValue = duration?.slice(0, -1);
-
-  switch (durationUnit) {
-    case 's':
-      return {duration: Number(durationValue) * 1000, fieldName};
-    case 'm':
-      return {duration: Number(durationValue) * 1000 * 60, fieldName};
-    case 'h':
-      return {duration: Number(durationValue) * 1000 * 60 * 60, fieldName};
-    case 'd':
-      return {
-        duration: Number(durationValue) * 1000 * 60 * 60 * 24,
-        fieldName,
-      };
-    default:
-      throw new Error(
-        `Invalid ttl duration: ${duration}. Unit must be one of s, m, h, d`
-      );
-  }
 }
 
 function getAliasForField(
