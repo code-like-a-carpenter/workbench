@@ -1,8 +1,7 @@
 import type {Context, SQSHandler} from 'aws-lambda';
 
+import {assert} from '@code-like-a-carpenter/assert';
 import {handleSQSEvent} from '@code-like-a-carpenter/lambda-handlers';
-
-import {assert} from '../../assert';
 
 import {retry} from './retry';
 import type {UnmarshalledDynamoDBRecord} from './unmarshall-record';

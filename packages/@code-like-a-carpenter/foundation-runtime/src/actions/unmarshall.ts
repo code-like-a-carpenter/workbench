@@ -1,4 +1,5 @@
-import {assert} from '../assert';
+import {assert} from '@code-like-a-carpenter/assert';
+
 import {DataIntegrityError} from '../errors';
 
 /** identify function */

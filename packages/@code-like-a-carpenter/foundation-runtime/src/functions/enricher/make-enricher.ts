@@ -1,4 +1,4 @@
-import assert from 'assert';
+import {assert} from '@code-like-a-carpenter/assert';
 
 import {NotFoundError} from '../../errors';
 import type {ResultType} from '../../types';
@@ -44,9 +44,8 @@ export function makeEnricher<
   const {unmarshallSourceModel} = sdk;
 
   return makeSqsHandler(async (unmarshalledRecord) => {
-    assert(unmarshalledRecord.dynamodb?.NewImage);
+    assert(unmarshalledRecord.dynamodb?.NewImage, 'No new image');
     const source = unmarshallSourceModel(unmarshalledRecord.dynamodb?.NewImage);
-    assert(source);
 
     await enrich(enricher, sdk, source);
   });

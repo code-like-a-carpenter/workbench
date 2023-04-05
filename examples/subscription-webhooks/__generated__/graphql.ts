@@ -1,8 +1,6 @@
-import {
-  ConditionalCheckFailedException,
-  ConsumedCapacity,
-  ItemCollectionMetrics,
-} from '@aws-sdk/client-dynamodb';
+import {AssertionError} from 'node:assert';
+
+import {ConditionalCheckFailedException} from '@aws-sdk/client-dynamodb';
 import type {
   DeleteCommandInput,
   GetCommandInput,
@@ -19,18 +17,17 @@ import {ServiceException} from '@aws-sdk/smithy-client';
 import type {NativeAttributeValue} from '@aws-sdk/util-dynamodb';
 import Base64 from 'base64url';
 
+import {assert} from '@code-like-a-carpenter/assert';
 import type {
   MultiResultType,
   ResultType,
   QueryOptions,
 } from '@code-like-a-carpenter/foundation-runtime';
 import {
-  assert,
   makeSortKeyForQuery,
   unmarshallRequiredField,
   unmarshallOptionalField,
   AlreadyExistsError,
-  AssertionError,
   BaseDataLibraryError,
   DataIntegrityError,
   NotFoundError,
