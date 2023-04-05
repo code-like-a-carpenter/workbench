@@ -8,7 +8,6 @@ exports[`@compositeKey defines a composite primary key with no sort key fields 2
     {
       "changeDataCaptureConfig": [],
       "consistent": false,
-      "dependenciesModuleId": "dependencies",
       "enablePointInTimeRecovery": true,
       "fields": [
         {
@@ -71,7 +70,6 @@ exports[`@compositeKey defines a composite primary key with no sort key fields 2
       ],
       "isLedger": false,
       "isPublicModel": false,
-      "libImportPath": "@code-like-a-carpenter/foundation-runtime",
       "primaryKey": {
         "isComposite": true,
         "partitionKeyFields": [
@@ -157,7 +155,6 @@ exports[`@compositeKey defines composite primary keys 2`] = `
     {
       "changeDataCaptureConfig": [],
       "consistent": false,
-      "dependenciesModuleId": "dependencies",
       "enablePointInTimeRecovery": true,
       "fields": [
         {
@@ -250,7 +247,6 @@ exports[`@compositeKey defines composite primary keys 2`] = `
       ],
       "isLedger": false,
       "isPublicModel": false,
-      "libImportPath": "@code-like-a-carpenter/foundation-runtime",
       "primaryKey": {
         "isComposite": true,
         "partitionKeyFields": [
@@ -368,7 +364,6 @@ exports[`@compositeKey defines multi-field composite primary keys 2`] = `
     {
       "changeDataCaptureConfig": [],
       "consistent": false,
-      "dependenciesModuleId": "dependencies",
       "enablePointInTimeRecovery": true,
       "fields": [
         {
@@ -491,7 +486,6 @@ exports[`@compositeKey defines multi-field composite primary keys 2`] = `
       ],
       "isLedger": false,
       "isPublicModel": false,
-      "libImportPath": "@code-like-a-carpenter/foundation-runtime",
       "primaryKey": {
         "isComposite": true,
         "partitionKeyFields": [
@@ -669,7 +663,6 @@ exports[`@compositeKey defines multi-field composite primary keys with single-fi
     {
       "changeDataCaptureConfig": [],
       "consistent": false,
-      "dependenciesModuleId": "dependencies",
       "enablePointInTimeRecovery": true,
       "fields": [
         {
@@ -777,7 +770,6 @@ exports[`@compositeKey defines multi-field composite primary keys with single-fi
       ],
       "isLedger": false,
       "isPublicModel": false,
-      "libImportPath": "@code-like-a-carpenter/foundation-runtime",
       "primaryKey": {
         "isComposite": true,
         "partitionKeyFields": [
@@ -925,7 +917,6 @@ exports[`@compositeKey defines multi-field composite primary keys with single-fi
     {
       "changeDataCaptureConfig": [],
       "consistent": false,
-      "dependenciesModuleId": "dependencies",
       "enablePointInTimeRecovery": true,
       "fields": [
         {
@@ -1033,7 +1024,6 @@ exports[`@compositeKey defines multi-field composite primary keys with single-fi
       ],
       "isLedger": false,
       "isPublicModel": false,
-      "libImportPath": "@code-like-a-carpenter/foundation-runtime",
       "primaryKey": {
         "isComposite": true,
         "partitionKeyFields": [
@@ -1181,7 +1171,6 @@ exports[`@partitionKey defines multi-field simple primary keys 2`] = `
     {
       "changeDataCaptureConfig": [],
       "consistent": false,
-      "dependenciesModuleId": "dependencies",
       "enablePointInTimeRecovery": true,
       "fields": [
         {
@@ -1274,7 +1263,6 @@ exports[`@partitionKey defines multi-field simple primary keys 2`] = `
       ],
       "isLedger": false,
       "isPublicModel": false,
-      "libImportPath": "@code-like-a-carpenter/foundation-runtime",
       "primaryKey": {
         "isComposite": false,
         "isSingleField": false,
@@ -1382,7 +1370,6 @@ exports[`@partitionKey defines simple primary keys 2`] = `
     {
       "changeDataCaptureConfig": [],
       "consistent": false,
-      "dependenciesModuleId": "dependencies",
       "enablePointInTimeRecovery": true,
       "fields": [
         {
@@ -1445,7 +1432,6 @@ exports[`@partitionKey defines simple primary keys 2`] = `
       ],
       "isLedger": false,
       "isPublicModel": false,
-      "libImportPath": "@code-like-a-carpenter/foundation-runtime",
       "primaryKey": {
         "isComposite": false,
         "isSingleField": true,

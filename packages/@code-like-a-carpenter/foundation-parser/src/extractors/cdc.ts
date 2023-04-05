@@ -1,4 +1,5 @@
 import assert from 'assert';
+import crypto from 'crypto';
 import path from 'path';
 
 import type {
@@ -7,7 +8,7 @@ import type {
   GraphQLSchema,
 } from 'graphql';
 import {assertObjectType} from 'graphql';
-import {kebabCase} from 'lodash';
+import {camelCase, kebabCase, snakeCase, upperFirst} from 'lodash';
 
 import type {
   BaseChangeDataCaptureConfig,
@@ -161,7 +162,10 @@ function extractCommonConfig(
   directive: ConstDirectiveNode,
   outputFile: string,
   filename: string
-): Omit<BaseChangeDataCaptureConfig, 'event' | 'filename'> {
+): Omit<
+  BaseChangeDataCaptureConfig,
+  'event' | 'filename' | 'functionName' | 'readableTables' | 'writableTables'
+> {
   const sourceModelName = type.name;
 
   const handler = getArgStringValue('handler', directive);
@@ -174,8 +178,10 @@ function extractCommonConfig(
 
   return {
     actionsModuleId: resolveActionsModuleId(config, directory),
+    directory,
     handlerModuleId: resolveHandlerModuleId(type, directory, handler),
     memorySize,
+    runtimeModuleId: '@code-like-a-carpenter/foundation-runtime',
     sourceModelName,
     timeout,
   };
@@ -189,13 +195,27 @@ function extractEnricherConfig(
   outputFile: string
 ): ChangeDataCaptureEnricherConfig {
   const event = getEvent(type, directive);
-
   const sourceModelName = type.name;
   const targetModelName = getArgStringValue('targetModel', directive);
 
   const filename = `enricher--${kebabCase(
     sourceModelName
   )}--${event.toLowerCase()}--${kebabCase(targetModelName)}`;
+
+  const functionName = makeFunctionName(
+    'handler',
+    sourceModelName,
+    event,
+    targetModelName
+  );
+
+  const readableTables = getTargetTables('readableModels', schema, directive);
+  const writableTables = Array.from(
+    new Set([
+      ...getTargetTables('writableModels', schema, directive),
+      getTargetTable(schema, type.name, targetModelName),
+    ])
+  );
 
   return {
     ...extractCommonConfig(
@@ -208,9 +228,11 @@ function extractEnricherConfig(
     ),
     event,
     filename,
+    functionName,
+    readableTables,
     targetModelName,
     type: 'ENRICHER',
-    writableTables: [getTargetTable(schema, type.name, targetModelName)],
+    writableTables,
   };
 }
 
@@ -233,6 +255,8 @@ function extractTriggersConfig(
     sourceModelName
   )}--${event.toLowerCase()}`;
 
+  const functionName = makeFunctionName('trigger', sourceModelName, event);
+
   const directory = path.join(path.dirname(outputFile), filename);
 
   return {
@@ -246,6 +270,7 @@ function extractTriggersConfig(
     ),
     event,
     filename,
+    functionName,
     handlerModuleId: resolveHandlerModuleId(type, directory, handlerModuleId),
     readableTables,
     sourceModelName: type.name,
@@ -267,4 +292,40 @@ function getEvent(
     `Invalid event type ${event} for @${directive.name.value} on ${type.name}`
   );
   return event;
+}
+
+function makeFunctionName(
+  prefix: string,
+  sourceModelName: string,
+  event: string,
+  targetModelName = ''
+) {
+  const sourceAbbr = abbreviate(sourceModelName);
+  const targetAbbr = abbreviate(targetModelName);
+
+  const rand = crypto
+    .createHash('sha1')
+    .update(sourceModelName + event + targetModelName)
+    .digest('hex')
+    .slice(0, 8);
+
+  const functionName = `Fn${upperFirst(
+    camelCase(
+      [prefix, sourceAbbr, event, targetAbbr].filter(filterNull).join('--')
+    )
+  )}${rand}`;
+
+  assert(
+    functionName.length <= 64,
+    `Handler function name must be less than 64 characters: ${functionName}`
+  );
+
+  return functionName;
+}
+
+function abbreviate(str: string) {
+  return snakeCase(str)
+    .split('_')
+    .map((c) => c[0])
+    .join('-');
 }

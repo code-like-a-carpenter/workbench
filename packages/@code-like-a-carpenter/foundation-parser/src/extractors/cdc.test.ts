@@ -63,11 +63,14 @@ describe('@reacts', () => {
       [
         {
           "actionsModuleId": "../actions",
+          "directory": "placeholder/trigger--plan-metric--upsert",
           "event": "UPSERT",
           "filename": "trigger--plan-metric--upsert",
+          "functionName": "FnTriggerPMUpsert2b2e8d7d",
           "handlerModuleId": "../../../src/react--plan-metric--upsert",
           "memorySize": 256,
           "readableTables": [],
+          "runtimeModuleId": "@code-like-a-carpenter/foundation-runtime",
           "sourceModelName": "PlanMetric",
           "timeout": 30,
           "type": "TRIGGER",
@@ -160,10 +163,14 @@ describe('@enriches', () => {
       [
         {
           "actionsModuleId": "../actions",
+          "directory": "placeholder/enricher--subscription-event--upsert--account",
           "event": "UPSERT",
           "filename": "enricher--subscription-event--upsert--account",
+          "functionName": "FnHandlerSEUpsertA5b59364d",
           "handlerModuleId": "../../../src/enrich--subscription--upsert--account",
           "memorySize": 256,
+          "readableTables": [],
+          "runtimeModuleId": "@code-like-a-carpenter/foundation-runtime",
           "sourceModelName": "SubscriptionEvent",
           "targetModelName": "Account",
           "timeout": 30,

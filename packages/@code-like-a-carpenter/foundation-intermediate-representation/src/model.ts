@@ -9,34 +9,34 @@ export type ChangeDataCaptureConfig =
 export interface BaseChangeDataCaptureConfig extends LambdaConfig {
   readonly actionsModuleId: string;
   readonly event: ChangeDataCaptureEvent;
+  readonly directory: string;
   readonly filename: string;
+  readonly functionName: string;
   readonly handlerModuleId: string;
+  readonly readableTables: readonly string[];
+  readonly runtimeModuleId: string;
   readonly sourceModelName: string;
+  readonly writableTables: readonly string[];
 }
 
 export interface ChangeDataCaptureEnricherConfig
   extends BaseChangeDataCaptureConfig {
   readonly targetModelName: string;
   readonly type: 'ENRICHER';
-  readonly writableTables: readonly string[];
 }
 
 export interface ChangeDataCaptureTriggerConfig
   extends BaseChangeDataCaptureConfig {
-  readonly readableTables: readonly string[];
   readonly type: 'TRIGGER';
-  readonly writableTables: readonly string[];
 }
 
 export interface Model {
   readonly changeDataCaptureConfig: readonly ChangeDataCaptureConfig[];
   readonly consistent: boolean;
-  readonly dependenciesModuleId: string;
   readonly enablePointInTimeRecovery: boolean;
   readonly fields: readonly Field[];
   readonly isLedger: boolean;
   readonly isPublicModel: boolean;
-  readonly libImportPath: string;
   readonly tableName: string;
   readonly typeName: string;
   readonly primaryKey: PrimaryKeyConfig;

@@ -8,7 +8,6 @@ exports[`@ttl expires a record after a specified duration 2`] = `
     {
       "changeDataCaptureConfig": [],
       "consistent": false,
-      "dependenciesModuleId": "dependencies",
       "enablePointInTimeRecovery": true,
       "fields": [
         {
@@ -85,7 +84,6 @@ exports[`@ttl expires a record after a specified duration 2`] = `
       ],
       "isLedger": false,
       "isPublicModel": false,
-      "libImportPath": "@code-like-a-carpenter/foundation-runtime",
       "primaryKey": {
         "isComposite": false,
         "isSingleField": true,
@@ -168,7 +166,6 @@ exports[`@ttl marks a fields as the ttl field 2`] = `
     {
       "changeDataCaptureConfig": [],
       "consistent": false,
-      "dependenciesModuleId": "dependencies",
       "enablePointInTimeRecovery": true,
       "fields": [
         {
@@ -245,7 +242,6 @@ exports[`@ttl marks a fields as the ttl field 2`] = `
       ],
       "isLedger": false,
       "isPublicModel": false,
-      "libImportPath": "@code-like-a-carpenter/foundation-runtime",
       "primaryKey": {
         "isComposite": false,
         "isSingleField": true,
@@ -327,7 +323,6 @@ exports[`@ttl optionally allows the end-user to specify an alternative expiratio
     {
       "changeDataCaptureConfig": [],
       "consistent": false,
-      "dependenciesModuleId": "dependencies",
       "enablePointInTimeRecovery": true,
       "fields": [
         {
@@ -404,7 +399,6 @@ exports[`@ttl optionally allows the end-user to specify an alternative expiratio
       ],
       "isLedger": false,
       "isPublicModel": false,
-      "libImportPath": "@code-like-a-carpenter/foundation-runtime",
       "primaryKey": {
         "isComposite": false,
         "isSingleField": true,

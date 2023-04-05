@@ -8,7 +8,6 @@ exports[`@gsi defines a composite, multi-pk, multi-sk GSI 2`] = `
     {
       "changeDataCaptureConfig": [],
       "consistent": false,
-      "dependenciesModuleId": "dependencies",
       "enablePointInTimeRecovery": true,
       "fields": [
         {
@@ -131,7 +130,6 @@ exports[`@gsi defines a composite, multi-pk, multi-sk GSI 2`] = `
       ],
       "isLedger": false,
       "isPublicModel": false,
-      "libImportPath": "@code-like-a-carpenter/foundation-runtime",
       "primaryKey": {
         "isComposite": false,
         "isSingleField": true,
@@ -297,7 +295,6 @@ exports[`@gsi defines a composite, multi-pk, single-sk GSI 2`] = `
     {
       "changeDataCaptureConfig": [],
       "consistent": false,
-      "dependenciesModuleId": "dependencies",
       "enablePointInTimeRecovery": true,
       "fields": [
         {
@@ -420,7 +417,6 @@ exports[`@gsi defines a composite, multi-pk, single-sk GSI 2`] = `
       ],
       "isLedger": false,
       "isPublicModel": false,
-      "libImportPath": "@code-like-a-carpenter/foundation-runtime",
       "primaryKey": {
         "isComposite": false,
         "isSingleField": true,
@@ -571,7 +567,6 @@ exports[`@gsi defines a composite, single-pk, multi-sk GSI 2`] = `
     {
       "changeDataCaptureConfig": [],
       "consistent": false,
-      "dependenciesModuleId": "dependencies",
       "enablePointInTimeRecovery": true,
       "fields": [
         {
@@ -694,7 +689,6 @@ exports[`@gsi defines a composite, single-pk, multi-sk GSI 2`] = `
       ],
       "isLedger": false,
       "isPublicModel": false,
-      "libImportPath": "@code-like-a-carpenter/foundation-runtime",
       "primaryKey": {
         "isComposite": false,
         "isSingleField": true,
@@ -845,7 +839,6 @@ exports[`@gsi defines a composite, single-pk, single-sk GSI 2`] = `
     {
       "changeDataCaptureConfig": [],
       "consistent": false,
-      "dependenciesModuleId": "dependencies",
       "enablePointInTimeRecovery": true,
       "fields": [
         {
@@ -968,7 +961,6 @@ exports[`@gsi defines a composite, single-pk, single-sk GSI 2`] = `
       ],
       "isLedger": false,
       "isPublicModel": false,
-      "libImportPath": "@code-like-a-carpenter/foundation-runtime",
       "primaryKey": {
         "isComposite": false,
         "isSingleField": true,
@@ -1104,7 +1096,6 @@ exports[`@gsi defines a simple, multi-field GSI 2`] = `
     {
       "changeDataCaptureConfig": [],
       "consistent": false,
-      "dependenciesModuleId": "dependencies",
       "enablePointInTimeRecovery": true,
       "fields": [
         {
@@ -1227,7 +1218,6 @@ exports[`@gsi defines a simple, multi-field GSI 2`] = `
       ],
       "isLedger": false,
       "isPublicModel": false,
-      "libImportPath": "@code-like-a-carpenter/foundation-runtime",
       "primaryKey": {
         "isComposite": false,
         "isSingleField": true,
@@ -1357,7 +1347,6 @@ exports[`@gsi defines a simple, single-field GSI 2`] = `
     {
       "changeDataCaptureConfig": [],
       "consistent": false,
-      "dependenciesModuleId": "dependencies",
       "enablePointInTimeRecovery": true,
       "fields": [
         {
@@ -1480,7 +1469,6 @@ exports[`@gsi defines a simple, single-field GSI 2`] = `
       ],
       "isLedger": false,
       "isPublicModel": false,
-      "libImportPath": "@code-like-a-carpenter/foundation-runtime",
       "primaryKey": {
         "isComposite": false,
         "isSingleField": true,
@@ -1595,7 +1583,6 @@ exports[`@lsi adds a multi-field LSI to a multi-field primary key 2`] = `
     {
       "changeDataCaptureConfig": [],
       "consistent": false,
-      "dependenciesModuleId": "dependencies",
       "enablePointInTimeRecovery": true,
       "fields": [
         {
@@ -1718,7 +1705,6 @@ exports[`@lsi adds a multi-field LSI to a multi-field primary key 2`] = `
       ],
       "isLedger": false,
       "isPublicModel": false,
-      "libImportPath": "@code-like-a-carpenter/foundation-runtime",
       "primaryKey": {
         "isComposite": false,
         "isSingleField": false,
@@ -1914,7 +1900,6 @@ exports[`@lsi adds a multi-field LSI to a single-field primary key 2`] = `
     {
       "changeDataCaptureConfig": [],
       "consistent": false,
-      "dependenciesModuleId": "dependencies",
       "enablePointInTimeRecovery": true,
       "fields": [
         {
@@ -2037,7 +2022,6 @@ exports[`@lsi adds a multi-field LSI to a single-field primary key 2`] = `
       ],
       "isLedger": false,
       "isPublicModel": false,
-      "libImportPath": "@code-like-a-carpenter/foundation-runtime",
       "primaryKey": {
         "isComposite": false,
         "isSingleField": true,
@@ -2188,7 +2172,6 @@ exports[`@lsi adds a single-field LSI to a multi-field primary key 2`] = `
     {
       "changeDataCaptureConfig": [],
       "consistent": false,
-      "dependenciesModuleId": "dependencies",
       "enablePointInTimeRecovery": true,
       "fields": [
         {
@@ -2311,7 +2294,6 @@ exports[`@lsi adds a single-field LSI to a multi-field primary key 2`] = `
       ],
       "isLedger": false,
       "isPublicModel": false,
-      "libImportPath": "@code-like-a-carpenter/foundation-runtime",
       "primaryKey": {
         "isComposite": false,
         "isSingleField": false,
@@ -2492,7 +2474,6 @@ exports[`@lsi adds a single-field LSI to a single-field primary key 2`] = `
     {
       "changeDataCaptureConfig": [],
       "consistent": false,
-      "dependenciesModuleId": "dependencies",
       "enablePointInTimeRecovery": true,
       "fields": [
         {
@@ -2615,7 +2596,6 @@ exports[`@lsi adds a single-field LSI to a single-field primary key 2`] = `
       ],
       "isLedger": false,
       "isPublicModel": false,
-      "libImportPath": "@code-like-a-carpenter/foundation-runtime",
       "primaryKey": {
         "isComposite": false,
         "isSingleField": true,
@@ -2751,7 +2731,6 @@ exports[`@simpleIndex defines a simple, single-field GSI 2`] = `
     {
       "changeDataCaptureConfig": [],
       "consistent": false,
-      "dependenciesModuleId": "dependencies",
       "enablePointInTimeRecovery": true,
       "fields": [
         {
@@ -2874,7 +2853,6 @@ exports[`@simpleIndex defines a simple, single-field GSI 2`] = `
       ],
       "isLedger": false,
       "isPublicModel": false,
-      "libImportPath": "@code-like-a-carpenter/foundation-runtime",
       "primaryKey": {
         "isComposite": false,
         "isSingleField": true,
@@ -2988,7 +2966,6 @@ exports[`@simpleIndex is repeatable 2`] = `
     {
       "changeDataCaptureConfig": [],
       "consistent": false,
-      "dependenciesModuleId": "dependencies",
       "enablePointInTimeRecovery": true,
       "fields": [
         {
@@ -3111,7 +3088,6 @@ exports[`@simpleIndex is repeatable 2`] = `
       ],
       "isLedger": false,
       "isPublicModel": false,
-      "libImportPath": "@code-like-a-carpenter/foundation-runtime",
       "primaryKey": {
         "isComposite": false,
         "isSingleField": true,
@@ -3327,7 +3303,6 @@ exports[`PublicModel automatically indexes the publicId field 2`] = `
     {
       "changeDataCaptureConfig": [],
       "consistent": false,
-      "dependenciesModuleId": "dependencies",
       "enablePointInTimeRecovery": true,
       "fields": [
         {
@@ -3464,7 +3439,6 @@ exports[`PublicModel automatically indexes the publicId field 2`] = `
       ],
       "isLedger": false,
       "isPublicModel": true,
-      "libImportPath": "@code-like-a-carpenter/foundation-runtime",
       "primaryKey": {
         "isComposite": false,
         "isSingleField": true,

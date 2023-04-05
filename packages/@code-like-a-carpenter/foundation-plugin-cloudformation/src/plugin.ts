@@ -69,7 +69,7 @@ export const plugin: PluginFunction<Config> = makePlugin(
         model.changeDataCaptureConfig
           .map((cdcConfig) =>
             cdcConfig.type === 'ENRICHER'
-              ? defineModelEnricher(model, cdcConfig, config, {outputFile})
+              ? defineModelEnricher(config, model, cdcConfig)
               : null
           )
           .filter(filterNull)
@@ -78,7 +78,7 @@ export const plugin: PluginFunction<Config> = makePlugin(
         model.changeDataCaptureConfig
           .map((cdcConfig) =>
             cdcConfig.type === 'TRIGGER'
-              ? defineTriggerCdc(model, cdcConfig, config, {outputFile})
+              ? defineTriggerCdc(config, model, cdcConfig)
               : null
           )
           .filter(filterNull)

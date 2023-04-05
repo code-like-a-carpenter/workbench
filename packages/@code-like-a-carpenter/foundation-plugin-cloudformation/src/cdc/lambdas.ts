@@ -1,4 +1,7 @@
-import type {ChangeDataCaptureEvent} from '@code-like-a-carpenter/foundation-intermediate-representation';
+import type {
+  BaseChangeDataCaptureConfig,
+  Model,
+} from '@code-like-a-carpenter/foundation-intermediate-representation';
 
 import type {
   AWSEventsRule,
@@ -7,39 +10,34 @@ import type {
   AWSSQSQueuePolicy,
   Resource1,
 } from '../__generated__/json-schemas/serverless-application-model';
+import type {Config} from '../config';
 import {combineFragments} from '../fragments/combine-fragments';
-import type {LambdaInput} from '../fragments/lambda';
 import {writeLambda} from '../fragments/lambda';
 import {makeLogGroup} from '../fragments/log-group';
 import {filterNull} from '../helpers';
 
-export interface MakeHandlerOptions extends LambdaInput {
-  readonly event: ChangeDataCaptureEvent;
-  readonly memorySize: number;
-  readonly readableTables: readonly string[];
-  readonly sourceModelName: string;
-  readonly tableName: string;
-  readonly template: string;
-  readonly writableTables: readonly string[];
-  readonly timeout: number;
-}
-
 /** generate the dispatcher lambda function */
-export function makeHandler({
-  buildProperties,
-  codeUri,
-  event,
-  functionName,
-  memorySize,
-  outputPath,
-  readableTables,
-  sourceModelName,
-  tableName,
-  template,
-  timeout,
-  writableTables,
-}: MakeHandlerOptions) {
-  writeLambda(outputPath, template);
+export function makeHandler(
+  config: Config,
+  model: Model,
+  cdc: BaseChangeDataCaptureConfig,
+  template: string
+) {
+  const {tableName} = model;
+
+  const {
+    directory,
+    event,
+    filename,
+    functionName,
+    memorySize,
+    readableTables,
+    sourceModelName,
+    timeout,
+    writableTables,
+  } = cdc;
+
+  writeLambda(directory, template);
 
   const queueName = `${functionName}Queue`;
 
@@ -59,10 +57,16 @@ export function makeHandler({
   const fn: Resource1 = {
     Metadata: {
       BuildMethod: 'esbuild',
-      BuildProperties: buildProperties,
+      BuildProperties: {
+        EntryPoints: ['./index'],
+        External: config.buildProperties.external,
+        Minify: config.buildProperties.minify,
+        Sourcemap: config.buildProperties.sourcemap,
+        Target: config.buildProperties.target,
+      },
     },
     Properties: {
-      CodeUri: codeUri,
+      CodeUri: filename,
       Events: {
         Stream: {
           Properties: {

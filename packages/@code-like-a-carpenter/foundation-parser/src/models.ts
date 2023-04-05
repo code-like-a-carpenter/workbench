@@ -65,11 +65,9 @@ export function extractModel(
       outputFile
     ),
     consistent: hasDirective('consistent', type),
-    dependenciesModuleId,
     fields,
     isLedger: hasDirective('ledger', type),
     isPublicModel: hasInterface('PublicModel', type),
-    libImportPath: '@code-like-a-carpenter/foundation-runtime',
     primaryKey: extractPrimaryKey(type, fieldMap),
     secondaryIndexes: extractSecondaryIndexes(config, type, fieldMap),
     tableName: extractTableName(type),
