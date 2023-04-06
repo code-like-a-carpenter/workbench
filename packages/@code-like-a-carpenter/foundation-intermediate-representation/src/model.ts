@@ -13,6 +13,7 @@ export interface BaseChangeDataCaptureConfig extends LambdaConfig {
   readonly directory: string;
   readonly filename: string;
   readonly functionName: string;
+  readonly handlerImportName: string;
   readonly handlerModuleId: string;
   readonly readableTables: readonly string[];
   readonly runtimeModuleId: string;

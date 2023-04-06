@@ -23,7 +23,11 @@ describe('@reacts', () => {
           skFields: ["onFreeTrial", "planName"]
           skPrefix: "PLAN"
         )
-        @reacts(event: UPSERT, handler: "../src/react--plan-metric--upsert") {
+        @reacts(
+          event: UPSERT
+          importName: "Placeholder"
+          importPath: "../src/react--plan-metric--upsert"
+        ) {
         createdAt: Date!
         id: ID!
         updatedAt: Date!
@@ -67,6 +71,7 @@ describe('@reacts', () => {
           "event": "UPSERT",
           "filename": "react--plan-metric--upsert",
           "functionName": "FnReactPMUpsert2b2e8d7d",
+          "handlerImportName": "Placeholder",
           "handlerModuleId": "../../../src/react--plan-metric--upsert",
           "memorySize": 256,
           "readableTables": [],
@@ -109,7 +114,8 @@ describe('@enriches', () => {
       type SubscriptionEvent implements Model & Timestamped & Versioned
         @enriches(
           event: UPSERT
-          handler: "../src/enrich--subscription--upsert--account"
+          importName: "Placeholder"
+          importPath: "../src/enrich--subscription--upsert--account"
           targetModel: "Account"
         )
         @ledger
@@ -167,6 +173,7 @@ describe('@enriches', () => {
           "event": "UPSERT",
           "filename": "enricher--subscription-event--upsert--account",
           "functionName": "FnEnricherSEUpsertA5b59364d",
+          "handlerImportName": "Placeholder",
           "handlerModuleId": "../../../src/enrich--subscription--upsert--account",
           "memorySize": 256,
           "readableTables": [],

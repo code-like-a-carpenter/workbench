@@ -16,6 +16,7 @@ export function defineEnricher(
 ) {
   const {
     actionsModuleId,
+    handlerImportName,
     handlerModuleId,
     runtimeModuleId,
     sourceModelName,
@@ -23,10 +24,8 @@ export function defineEnricher(
   } = cdc;
 
   const template = `// This file is generated. Do not edit by hand.
-
 import {makeEnricher} from '${runtimeModuleId}';
-
-import {create, load, update} from '${handlerModuleId}';
+import {${handlerImportName}} from '${handlerModuleId}';
 import {
   ${sourceModelName},
   ${targetModelName},
@@ -36,14 +35,13 @@ import {
   Create${targetModelName}Input,
   Update${targetModelName}Input
 } from '${actionsModuleId}';
-
 export const handler = makeEnricher<
 ${sourceModelName},
 ${targetModelName},
 Create${targetModelName}Input,
 Update${targetModelName}Input
 >(
-  {create, load, update},
+  ${handlerImportName},
   {
     createTargetModel: create${targetModelName},
     unmarshallSourceModel: unmarshall${sourceModelName},

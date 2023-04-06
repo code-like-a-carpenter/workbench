@@ -168,7 +168,8 @@ function extractCommonConfig(
 > {
   const sourceModelName = type.name;
 
-  const handler = getArgStringValue('handler', directive);
+  const handlerImportName = getArgStringValue('importName', directive);
+  const handler = getArgStringValue('importPath', directive);
 
   const directory = path.join(path.dirname(outputFile), filename);
   const {memorySize, timeout} = HandlerConfigSchema.parse({
@@ -179,6 +180,7 @@ function extractCommonConfig(
   return {
     actionsModuleId: resolveActionsModuleId(config, directory),
     directory,
+    handlerImportName,
     handlerModuleId: resolveHandlerModuleId(type, directory, handler),
     memorySize,
     runtimeModuleId: '@code-like-a-carpenter/foundation-runtime',
@@ -244,7 +246,7 @@ function extractReactorConfig(
   outputFile: string
 ): ChangeDataCaptureReactorConfig {
   const event = getEvent(type, directive);
-  const handlerModuleId = getArgStringValue('handler', directive);
+  const handlerModuleId = getArgStringValue('importPath', directive);
 
   const readableTables = getTargetTables('readableModels', schema, directive);
   const writableTables = getTargetTables('writableModels', schema, directive);

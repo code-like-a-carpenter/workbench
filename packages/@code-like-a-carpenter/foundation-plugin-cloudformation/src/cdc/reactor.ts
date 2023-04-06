@@ -14,20 +14,19 @@ export function defineReactor(
   model: Model,
   cdc: ChangeDataCaptureReactorConfig
 ) {
-  const {actionsModuleId, handlerModuleId, runtimeModuleId, sourceModelName} =
-    cdc;
+  const {
+    actionsModuleId,
+    handlerImportName,
+    handlerModuleId,
+    runtimeModuleId,
+    sourceModelName,
+  } = cdc;
 
   const code = `// This file is generated. Do not edit by hand.
-
-import {assert, makeReactor} from '${runtimeModuleId}';
-
-import {handler as cdcHandler} from '${handlerModuleId}';
-import {unmarshall${sourceModelName}} from '${actionsModuleId}';
-
-export const handler = makeReactor((record) => {
-  assert(record.dynamodb.NewImage, 'Expected DynamoDB Record to have a NewImage');
-  return cdcHandler(unmarshall${sourceModelName}(record.dynamodb.NewImage));
-});
+import {makeReactor} from '${runtimeModuleId}';
+import {${handlerImportName}} from '${handlerModuleId}';
+import type {${sourceModelName}, unmarshall${sourceModelName}} from '${actionsModuleId}';
+export const handler = makeReactor<${sourceModelName}>(${handlerImportName}, {unmarshallSourceModel: unmarshall${sourceModelName}});
 `;
 
   return combineFragments(makeHandler(config, model, cdc, code));

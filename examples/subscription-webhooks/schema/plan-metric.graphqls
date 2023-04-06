@@ -19,7 +19,8 @@ type PlanMetric implements Model & Timestamped & Versioned
   )
   @reacts(
     event: UPSERT
-    handler: "../src/react--plan-metric--upsert"
+    importName: "PlanMetricUpsertReactor"
+    importPath: "../src/react--plan-metric--upsert"
     readableModels: ["PlanMetric"]
     writableModels: ["Metric"]
   ) {

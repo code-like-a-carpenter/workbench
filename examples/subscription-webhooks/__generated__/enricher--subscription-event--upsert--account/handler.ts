@@ -1,12 +1,7 @@
 // This file is generated. Do not edit by hand.
-
 import {makeEnricher} from '@code-like-a-carpenter/foundation-runtime';
 
-import {
-  create,
-  load,
-  update,
-} from '../../src/enrich--subscription--upsert--account';
+import {SubscriptionEventUpsertAccountEnricher} from '../../src/enrich--subscription--upsert--account';
 import type {
   SubscriptionEvent,
   Account,
@@ -18,17 +13,13 @@ import {
   unmarshallSubscriptionEvent,
   updateAccount,
 } from '../graphql';
-
 export const handler = makeEnricher<
   SubscriptionEvent,
   Account,
   CreateAccountInput,
   UpdateAccountInput
->(
-  {create, load, update},
-  {
-    createTargetModel: createAccount,
-    unmarshallSourceModel: unmarshallSubscriptionEvent,
-    updateTargetModel: updateAccount,
-  }
-);
+>(SubscriptionEventUpsertAccountEnricher, {
+  createTargetModel: createAccount,
+  unmarshallSourceModel: unmarshallSubscriptionEvent,
+  updateTargetModel: updateAccount,
+});

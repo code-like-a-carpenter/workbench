@@ -5,7 +5,8 @@ type SubscriptionEvent implements Model & Timestamped & Versioned
   @consistent
   @enriches(
     event: UPSERT
-    handler: "../src/enrich--subscription--upsert--account"
+    importName: "SubscriptionEventUpsertAccountEnricher"
+    importPath: "../src/enrich--subscription--upsert--account"
     targetModel: "Account"
   )
   @ledger

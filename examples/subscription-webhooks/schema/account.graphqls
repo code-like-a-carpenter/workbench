@@ -18,7 +18,8 @@ type Account implements Model & Versioned & Timestamped
   )
   @reacts(
     event: UPSERT
-    handler: "../src/react--account--upsert"
+    importName: "AccountUpsertReactor"
+    importPath: "../src/react--account--upsert"
     readableModels: ["Account"]
     writableModels: ["PlanMetric"]
   ) {
