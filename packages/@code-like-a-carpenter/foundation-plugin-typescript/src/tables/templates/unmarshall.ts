@@ -57,7 +57,7 @@ ${optionalFields
   })
   .join('\n')}
 
-  ${defineComputedOutputFields(fields, typeName)}
+  ${defineComputedOutputFields(fields)}
 
   return result;
 }

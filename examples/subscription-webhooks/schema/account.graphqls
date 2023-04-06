@@ -34,7 +34,7 @@ type Account implements Model & Versioned & Timestamped
   indexedPlanName: String
     @computed(
       importPath: "../src/computed-fields"
-      importName: "computeIndexedPlanName"
+      importName: "AccountIndexedPlanNameProvider"
       virtual: true
     )
   lastPlanName: String

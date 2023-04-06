@@ -37,7 +37,7 @@ import {
 } from '@code-like-a-carpenter/foundation-runtime';
 
 import {ddbDocClient} from '../../dependencies';
-import {computeIndexedPlanName} from '../src/computed-fields';
+import {AccountIndexedPlanNameProvider} from '../src/computed-fields';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends {[key: string]: unknown}> = {[K in keyof T]: T[K]};
@@ -250,18 +250,13 @@ export async function createAccount(
   // This has to be cast because we're adding computed fields on the next
   // lines.
   const input: MarshallAccountInput = {..._input} as MarshallAccountInput;
+  const indexedPlanNameProvider = new AccountIndexedPlanNameProvider();
 
-  let indexedPlanNameComputed = false;
-  let indexedPlanNameComputedValue: Account['indexedPlanName'];
   Object.defineProperty(input, 'indexedPlanName', {
     enumerable: true,
     /** getter */
     get() {
-      if (!indexedPlanNameComputed) {
-        indexedPlanNameComputed = true;
-        indexedPlanNameComputedValue = computeIndexedPlanName(this);
-      }
-      return indexedPlanNameComputedValue;
+      return indexedPlanNameProvider.compute(this);
     },
   });
 
@@ -359,18 +354,13 @@ export async function blindWriteAccount(
   // This has to be cast because we're adding computed fields on the next
   // lines.
   const input: MarshallAccountInput = {..._input} as MarshallAccountInput;
+  const indexedPlanNameProvider = new AccountIndexedPlanNameProvider();
 
-  let indexedPlanNameComputed = false;
-  let indexedPlanNameComputedValue: Account['indexedPlanName'];
   Object.defineProperty(input, 'indexedPlanName', {
     enumerable: true,
     /** getter */
     get() {
-      if (!indexedPlanNameComputed) {
-        indexedPlanNameComputed = true;
-        indexedPlanNameComputedValue = computeIndexedPlanName(this);
-      }
-      return indexedPlanNameComputedValue;
+      return indexedPlanNameProvider.compute(this);
     },
   });
 
@@ -573,18 +563,13 @@ export async function updateAccount(
   // This has to be cast because we're adding computed fields on the next
   // lines.
   const input: MarshallAccountInput = {..._input} as MarshallAccountInput;
+  const indexedPlanNameProvider = new AccountIndexedPlanNameProvider();
 
-  let indexedPlanNameComputed = false;
-  let indexedPlanNameComputedValue: Account['indexedPlanName'];
   Object.defineProperty(input, 'indexedPlanName', {
     enumerable: true,
     /** getter */
     get() {
-      if (!indexedPlanNameComputed) {
-        indexedPlanNameComputed = true;
-        indexedPlanNameComputedValue = computeIndexedPlanName(this);
-      }
-      return indexedPlanNameComputedValue;
+      return indexedPlanNameProvider.compute(this);
     },
   });
 
@@ -1015,26 +1000,13 @@ export function unmarshallAccount(item: Record<string, any>): Account {
     };
   }
 
-  let indexedPlanNameComputed = false;
-  const indexedPlanNameDatabaseValue = unmarshallOptionalField(
-    item,
-    'indexedPlanName',
-    ['indexed_plan_name', 'indexedPlanName']
-  );
-  let indexedPlanNameComputedValue: Account['indexedPlanName'];
+  const indexedPlanNameProvider = new AccountIndexedPlanNameProvider();
+
   Object.defineProperty(result, 'indexedPlanName', {
     enumerable: true,
     /** getter */
     get() {
-      if (!indexedPlanNameComputed) {
-        indexedPlanNameComputed = true;
-        if (typeof indexedPlanNameDatabaseValue !== 'undefined') {
-          indexedPlanNameComputedValue = indexedPlanNameDatabaseValue;
-        } else {
-          indexedPlanNameComputedValue = computeIndexedPlanName(this);
-        }
-      }
-      return indexedPlanNameComputedValue;
+      return indexedPlanNameProvider.compute(this);
     },
   });
 
