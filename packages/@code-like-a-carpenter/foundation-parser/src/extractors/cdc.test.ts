@@ -166,7 +166,7 @@ describe('@enriches', () => {
           "directory": "placeholder/enricher--subscription-event--upsert--account",
           "event": "UPSERT",
           "filename": "enricher--subscription-event--upsert--account",
-          "functionName": "FnHandlerSEUpsertA5b59364d",
+          "functionName": "FnEnricherSEUpsertA5b59364d",
           "handlerModuleId": "../../../src/enrich--subscription--upsert--account",
           "memorySize": 256,
           "readableTables": [],

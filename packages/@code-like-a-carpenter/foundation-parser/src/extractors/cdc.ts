@@ -203,7 +203,7 @@ function extractEnricherConfig(
   )}--${event.toLowerCase()}--${kebabCase(targetModelName)}`;
 
   const functionName = makeFunctionName(
-    'handler',
+    'enricher',
     sourceModelName,
     event,
     targetModelName

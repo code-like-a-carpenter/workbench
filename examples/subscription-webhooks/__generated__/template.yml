@@ -64,7 +64,7 @@ Parameters:
     Description: The name of the stage
     Type: String
 Resources:
-  FnHandlerSEUpsertA5b59364d:
+  FnEnricherSEUpsertA5b59364d:
     Metadata:
       BuildMethod: esbuild
       BuildProperties:
@@ -85,7 +85,7 @@ Resources:
               - ReportBatchItemFailures
             Queue:
               Fn::GetAtt:
-                - FnHandlerSEUpsertA5b59364dQueue
+                - FnEnricherSEUpsertA5b59364dQueue
                 - Arn
           Type: SQS
       MemorySize: 256
@@ -101,47 +101,47 @@ Resources:
         - SQSSendMessagePolicy:
             QueueName:
               Fn::GetAtt:
-                - FnHandlerSEUpsertA5b59364dDLQ
+                - FnEnricherSEUpsertA5b59364dDLQ
                 - QueueName
       Timeout: 90
     Type: AWS::Serverless::Function
-  FnHandlerSEUpsertA5b59364dDLQ:
+  FnEnricherSEUpsertA5b59364dDLQ:
     Properties:
       KmsMasterKeyId:
         Fn::If:
           - IsProd
-          - Ref: FnHandlerSEUpsertA5b59364dQueueKey
+          - Ref: FnEnricherSEUpsertA5b59364dQueueKey
           - AWS::NoValue
     Type: AWS::SQS::Queue
-  FnHandlerSEUpsertA5b59364dLogGroup:
+  FnEnricherSEUpsertA5b59364dLogGroup:
     Properties:
       LogGroupName:
-        Fn::Sub: /aws/lambda/${FnHandlerSEUpsertA5b59364d}
+        Fn::Sub: /aws/lambda/${FnEnricherSEUpsertA5b59364d}
       RetentionInDays:
         Ref: LogRetentionInDays
     Type: AWS::Logs::LogGroup
-  FnHandlerSEUpsertA5b59364dQueue:
+  FnEnricherSEUpsertA5b59364dQueue:
     Properties:
       Fn::If:
         - IsProd
         - KmsMasterKeyId:
-            Ref: FnHandlerSEUpsertA5b59364dQueueKey
+            Ref: FnEnricherSEUpsertA5b59364dQueueKey
           RedrivePolicy:
             deadLetterTargetArn:
               Fn::GetAtt:
-                - FnHandlerSEUpsertA5b59364dDLQ
+                - FnEnricherSEUpsertA5b59364dDLQ
                 - Arn
             maxReceiveCount: 3
           VisibilityTimeout: 320
         - RedrivePolicy:
             deadLetterTargetArn:
               Fn::GetAtt:
-                - FnHandlerSEUpsertA5b59364dDLQ
+                - FnEnricherSEUpsertA5b59364dDLQ
                 - Arn
             maxReceiveCount: 3
           VisibilityTimeout: 320
     Type: AWS::SQS::Queue
-  FnHandlerSEUpsertA5b59364dQueueKey:
+  FnEnricherSEUpsertA5b59364dQueueKey:
     Condition: IsProd
     Properties:
       KeyPolicy:
@@ -206,7 +206,7 @@ Resources:
         Version: '2012-10-17'
       PendingWindowInDays: 7
     Type: AWS::KMS::Key
-  FnHandlerSEUpsertA5b59364dQueuePolicy:
+  FnEnricherSEUpsertA5b59364dQueuePolicy:
     Properties:
       PolicyDocument:
         Statement:
@@ -216,20 +216,20 @@ Resources:
               ArnEquals:
                 aws:SourceArn:
                   Fn::GetAtt:
-                    - FnHandlerSEUpsertA5b59364dRule
+                    - FnEnricherSEUpsertA5b59364dRule
                     - Arn
             Effect: Allow
             Principal:
               Service: events.amazonaws.com
             Resource:
               Fn::GetAtt:
-                - FnHandlerSEUpsertA5b59364dQueue
+                - FnEnricherSEUpsertA5b59364dQueue
                 - Arn
             Sid: Allow EventBridge to send messages to the queue
       Queues:
-        - Ref: FnHandlerSEUpsertA5b59364dQueue
+        - Ref: FnEnricherSEUpsertA5b59364dQueue
     Type: AWS::SQS::QueuePolicy
-  FnHandlerSEUpsertA5b59364dRule:
+  FnEnricherSEUpsertA5b59364dRule:
     Properties:
       EventBusName: default
       EventPattern:
@@ -251,9 +251,9 @@ Resources:
       Targets:
         - Arn:
             Fn::GetAtt:
-              - FnHandlerSEUpsertA5b59364dQueue
+              - FnEnricherSEUpsertA5b59364dQueue
               - Arn
-          Id: FnHandlerSEUpsertA5b59364d
+          Id: FnEnricherSEUpsertA5b59364d
     Type: AWS::Events::Rule
   FnReactAUpsert7f5401fa:
     Metadata:
