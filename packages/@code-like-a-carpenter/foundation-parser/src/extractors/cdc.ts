@@ -14,7 +14,7 @@ import type {
   BaseChangeDataCaptureConfig,
   ChangeDataCaptureConfig,
   ChangeDataCaptureEnricherConfig,
-  ChangeDataCaptureTriggerConfig,
+  ChangeDataCaptureReactorConfig,
   DispatcherConfig,
 } from '@code-like-a-carpenter/foundation-intermediate-representation';
 
@@ -102,8 +102,8 @@ export function extractChangeDataCaptureConfig(
             outputFile
           );
         }
-        if (directive.name.value === 'triggers') {
-          return extractTriggersConfig(
+        if (directive.name.value === 'reacts') {
+          return extractReactorConfig(
             config,
             schema,
             type,
@@ -236,13 +236,13 @@ function extractEnricherConfig(
   };
 }
 
-function extractTriggersConfig(
+function extractReactorConfig(
   config: Config,
   schema: GraphQLSchema,
   type: GraphQLObjectType<unknown, unknown>,
   directive: ConstDirectiveNode,
   outputFile: string
-): ChangeDataCaptureTriggerConfig {
+): ChangeDataCaptureReactorConfig {
   const event = getEvent(type, directive);
   const handlerModuleId = getArgStringValue('handler', directive);
 
@@ -251,11 +251,11 @@ function extractTriggersConfig(
 
   const sourceModelName = type.name;
 
-  const filename = `trigger--${kebabCase(
+  const filename = `react--${kebabCase(
     sourceModelName
   )}--${event.toLowerCase()}`;
 
-  const functionName = makeFunctionName('trigger', sourceModelName, event);
+  const functionName = makeFunctionName('react', sourceModelName, event);
 
   const directory = path.join(path.dirname(outputFile), filename);
 
@@ -274,7 +274,7 @@ function extractTriggersConfig(
     handlerModuleId: resolveHandlerModuleId(type, directory, handlerModuleId),
     readableTables,
     sourceModelName: type.name,
-    type: 'TRIGGER',
+    type: 'REACTOR',
     writableTables,
   };
 }

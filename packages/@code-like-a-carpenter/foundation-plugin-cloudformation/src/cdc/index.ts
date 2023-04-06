@@ -1,3 +1,3 @@
-export {defineModelEnricher} from './enricher';
+export {defineEnricher} from './enricher';
 export {defineTableCdc} from './table';
-export {defineTriggerCdc} from './trigger';
+export {defineReactor} from './reactor';

@@ -2,6 +2,7 @@
 A customer account.
 """
 type Account implements Model & Versioned & Timestamped
+  @consistent
   @gsi(
     name: "gsi1"
     pkFields: ["hasEverSubscribed"]
@@ -15,8 +16,7 @@ type Account implements Model & Versioned & Timestamped
     skFields: []
     skPrefix: "ACCOUNT"
   )
-  @consistent
-  @triggers(
+  @reacts(
     event: UPSERT
     handler: "../src/react--account--upsert"
     readableModels: ["Account"]

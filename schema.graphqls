@@ -100,7 +100,7 @@ directive @enriches(
 """
 Triggers the specified handler whenever there's a change to this model.
 """
-directive @triggers(
+directive @reacts(
   """
   Optional config to define the lambda parameters for the dispatcher and related
   resources
@@ -209,7 +209,7 @@ directive @table(
   enablePointInTimeRecovery: Boolean
   """
   Defaults to false. If true, enables stream events for the table. Note that
-  you don't need to set this if you're using @enriches or @triggers. This is
+  you don't need to set this if you're using @enriches or @reacts. This is
   mostly here for incrementally adopting the library; you can define you schema
   with graphql and continue emitting stream events and follow up later with
   targeted cdc directives.

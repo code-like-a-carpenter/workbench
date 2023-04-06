@@ -23,7 +23,7 @@ describe('@reacts', () => {
           skFields: ["onFreeTrial", "planName"]
           skPrefix: "PLAN"
         )
-        @triggers(event: UPSERT, handler: "../src/react--plan-metric--upsert") {
+        @reacts(event: UPSERT, handler: "../src/react--plan-metric--upsert") {
         createdAt: Date!
         id: ID!
         updatedAt: Date!
@@ -63,17 +63,17 @@ describe('@reacts', () => {
       [
         {
           "actionsModuleId": "../actions",
-          "directory": "placeholder/trigger--plan-metric--upsert",
+          "directory": "placeholder/react--plan-metric--upsert",
           "event": "UPSERT",
-          "filename": "trigger--plan-metric--upsert",
-          "functionName": "FnTriggerPMUpsert2b2e8d7d",
+          "filename": "react--plan-metric--upsert",
+          "functionName": "FnReactPMUpsert2b2e8d7d",
           "handlerModuleId": "../../../src/react--plan-metric--upsert",
           "memorySize": 256,
           "readableTables": [],
           "runtimeModuleId": "@code-like-a-carpenter/foundation-runtime",
           "sourceModelName": "PlanMetric",
           "timeout": 30,
-          "type": "TRIGGER",
+          "type": "REACTOR",
           "writableTables": [],
         },
       ]

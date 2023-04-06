@@ -9,7 +9,7 @@ import {combineFragments} from '../fragments/combine-fragments';
 import {makeHandler} from './lambdas';
 
 /** Generates CDC Projector config for a model */
-export function defineModelEnricher(
+export function defineEnricher(
   config: Config,
   model: Model,
   cdc: ChangeDataCaptureEnricherConfig

@@ -17,7 +17,7 @@ type PlanMetric implements Model & Timestamped & Versioned
     skFields: ["onFreeTrial", "planName"]
     skPrefix: "PLAN"
   )
-  @triggers(
+  @reacts(
     event: UPSERT
     handler: "../src/react--plan-metric--upsert"
     readableModels: ["PlanMetric"]

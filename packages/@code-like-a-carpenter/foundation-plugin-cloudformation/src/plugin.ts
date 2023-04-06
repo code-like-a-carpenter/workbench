@@ -12,11 +12,10 @@ import {CLOUDFORMATION_SCHEMA} from 'js-yaml-cloudformation-schema';
 import {parse} from '@code-like-a-carpenter/foundation-parser';
 import {makePlugin} from '@code-like-a-carpenter/graphql-codegen-helpers';
 
-import {defineTableCdc, defineModelEnricher, defineTriggerCdc} from './cdc';
+import {defineEnricher, defineReactor, defineTableCdc} from './cdc';
 import type {Config} from './config';
 import {ConfigSchema} from './config';
 import {combineFragments} from './fragments/combine-fragments';
-import {filterNull} from './helpers';
 import {defineTable} from './table';
 import type {ServerlessApplicationModel} from './types';
 
@@ -66,22 +65,17 @@ export const plugin: PluginFunction<Config> = makePlugin(
         combineFragments(defineTableCdc(table, config), defineTable(table))
       ),
       ...models.flatMap((model) =>
-        model.changeDataCaptureConfig
-          .map((cdcConfig) =>
-            cdcConfig.type === 'ENRICHER'
-              ? defineModelEnricher(config, model, cdcConfig)
-              : null
-          )
-          .filter(filterNull)
-      ),
-      ...models.flatMap((model) =>
-        model.changeDataCaptureConfig
-          .map((cdcConfig) =>
-            cdcConfig.type === 'TRIGGER'
-              ? defineTriggerCdc(config, model, cdcConfig)
-              : null
-          )
-          .filter(filterNull)
+        model.changeDataCaptureConfig.map((cdc) => {
+          const {type} = cdc;
+          switch (type) {
+            case 'ENRICHER':
+              return defineEnricher(config, model, cdc);
+            case 'REACTOR':
+              return defineReactor(config, model, cdc);
+            default:
+              throw new Error(`Unexpected CDC type ${type}`);
+          }
+        })
       )
     );
 
