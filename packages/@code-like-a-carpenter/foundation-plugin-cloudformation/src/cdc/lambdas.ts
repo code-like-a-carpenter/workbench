@@ -23,7 +23,9 @@ export function makeHandler(
   cdc: BaseChangeDataCaptureConfig,
   template: string
 ) {
-  const {tableName} = model;
+  const {
+    table: {tableName},
+  } = model;
 
   const {
     directory,

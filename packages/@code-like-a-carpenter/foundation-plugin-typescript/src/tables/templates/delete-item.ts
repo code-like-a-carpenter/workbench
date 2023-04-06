@@ -9,7 +9,10 @@ import {handleCommonErrors, makeKeyForRead, objectToString} from './helpers';
  * Generates the deleteItem function for a table
  */
 export function deleteItemTemplate(config: Config, model: Model) {
-  const {tableName, typeName} = model;
+  const {
+    table: {tableName},
+    typeName,
+  } = model;
   const key = makeKeyForRead(config, model.primaryKey);
 
   const outputTypeName = `Delete${typeName}Output`;

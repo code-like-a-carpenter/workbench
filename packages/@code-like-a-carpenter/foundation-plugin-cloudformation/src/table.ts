@@ -78,8 +78,7 @@ export function defineTable({
           }
         : {}),
       SSESpecification: {
-        // @ts-expect-error typedef doesn't include intrinsic functions
-        SSEEnabled: {'Fn::If': ['IsProd', true, false]},
+        SSEEnabled: true,
       },
       StreamSpecification: enableStreaming
         ? {

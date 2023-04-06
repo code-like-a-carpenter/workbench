@@ -9,7 +9,12 @@ import {handleCommonErrors, makeKeyForRead, objectToString} from './helpers';
  * Generates the readItem function for a table
  */
 export function readItemTemplate(config: Config, model: Model) {
-  const {consistent, primaryKey, tableName, typeName} = model;
+  const {
+    consistent,
+    primaryKey,
+    table: {tableName},
+    typeName,
+  } = model;
   const key = makeKeyForRead(config, primaryKey);
 
   const outputTypeName = `Read${typeName}Output`;

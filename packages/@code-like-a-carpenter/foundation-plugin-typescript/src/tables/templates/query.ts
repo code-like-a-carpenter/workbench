@@ -19,10 +19,10 @@ import {
 export function queryTemplate(model: Model) {
   const {
     consistent,
-    isPublicModel,
+    isPublic,
     primaryKey,
     secondaryIndexes,
-    tableName,
+    table: {tableName},
     typeName,
   } = model;
 
@@ -151,7 +151,7 @@ export async function query${typeName}ByNodeId(id: Scalars['ID']): Promise<Reado
 }
 
 ${
-  isPublicModel
+  isPublic
     ? `
 /** queries the ${typeName} table by primary key using a node id */
 export async function query${typeName}ByPublicId(publicId: Scalars['String']): Promise<Readonly<Omit<ResultType<${typeName}>, 'metrics'>>> {

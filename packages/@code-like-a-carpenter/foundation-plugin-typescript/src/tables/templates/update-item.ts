@@ -13,9 +13,9 @@ import {handleCommonErrors, makeKeyForRead, objectToString} from './helpers';
 export function updateItemTemplate(config: Config, model: Model) {
   const {
     fields,
-    isPublicModel: hasPublicId,
+    isPublic: hasPublicId,
     primaryKey,
-    tableName,
+    table: {tableName},
     ttlConfig,
     typeName,
   } = model;

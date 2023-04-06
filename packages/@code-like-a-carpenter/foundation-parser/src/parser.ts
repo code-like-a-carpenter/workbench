@@ -49,16 +49,7 @@ export function parse(
     .filter((type) => isObjectType(type))
     .map((type) => assertObjectType(type))
     .filter((type) => hasInterface('Model', type))
-    .map((type) =>
-      extractModel(
-        config,
-        schema,
-        dependenciesModuleId,
-        type.name,
-        type,
-        outputFile
-      )
-    );
+    .map((type) => extractModel(config, schema, type, outputFile));
 
   const tables: Table[] = Object.keys(typesMap)
     .map((typeName) => schema.getTypeMap()[typeName])

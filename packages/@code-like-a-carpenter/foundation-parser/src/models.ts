@@ -29,7 +29,7 @@ import {
   hasInterface,
   isType,
 } from './helpers';
-import {extractTableName} from './tables';
+import {extractTable} from './tables';
 
 const models = new Map<GraphQLType, Model>();
 
@@ -42,10 +42,8 @@ export function getModel(type: GraphQLType): Readonly<Model> {
 export function extractModel(
   config: Config,
   schema: GraphQLSchema,
-  dependenciesModuleId: string,
-  typeName: string,
   type: GraphQLObjectType,
-  outputFile: string
+  outputPath: string
 ): Model {
   const cachedModel = models.get(type);
   if (cachedModel) {
@@ -57,28 +55,41 @@ export function extractModel(
     fields.map((field) => [field.fieldName, field] as const)
   );
 
-  const model: Model = {
+  // we can't attach the table until after the model is in the cache because
+  // extractTable needs to read the model from the cache.
+  const model: Omit<Model, 'table'> = {
     changeDataCaptureConfig: extractChangeDataCaptureConfig(
       config,
       schema,
       type,
-      outputFile
+      outputPath
     ),
     consistent: hasDirective('consistent', type),
     fields,
     isLedger: hasDirective('ledger', type),
-    isPublicModel: hasInterface('PublicModel', type),
+    isPublic: hasInterface('PublicModel', type),
     primaryKey: extractPrimaryKey(type, fieldMap),
     secondaryIndexes: extractSecondaryIndexes(config, type, fieldMap),
-    tableName: extractTableName(type),
     ttlConfig: extractTTLConfig(type),
     typeName: type.name,
     ...extractTableInfo(type),
   };
 
+  // @ts-expect-error - we know that the table is not undefined, it gets fixed
+  // shortly.
   models.set(type, model);
 
-  return model;
+  // @ts-expect-error - we know that the table is not undefined, it gets fixed
+  // on the next line.
+  const wholeModel: Model = model;
+  // extraction and assignment are on two different lines so the scope of the
+  // ts-expect-error is as small as possible.
+  const table = extractTable(config, schema, type, outputPath);
+
+  // @ts-expect-error - it's ok that we're assigning to a readonly property
+  wholeModel.table = table;
+
+  return wholeModel;
 }
 
 function extractFields(

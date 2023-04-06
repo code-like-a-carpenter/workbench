@@ -49,11 +49,7 @@ Resources:
             - true
             - false
       SSESpecification:
-        SSEEnabled:
-          Fn::If:
-            - IsProd
-            - true
-            - false
+        SSEEnabled: true
       Tags:
         - Key: StageName
           Value:

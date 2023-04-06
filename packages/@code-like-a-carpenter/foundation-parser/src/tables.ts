@@ -117,21 +117,6 @@ function combineSecondaryIndexes(
   }
 }
 
-function shouldEnableStreaming(
-  type: GraphQLObjectType,
-  model: Readonly<Model>
-) {
-  if (model.changeDataCaptureConfig.length > 0) {
-    return true;
-  }
-
-  const tableDirective = getOptionalDirective('table', type);
-
-  return tableDirective
-    ? getOptionalArgBooleanValue('enableStreaming', tableDirective) !== false
-    : false;
-}
-
 function defineNewTable(
   config: Config,
   type: GraphQLObjectType,
@@ -145,7 +130,7 @@ function defineNewTable(
 
   const table: BaseTable = {
     dependenciesModuleId,
-    enablePointInTimeRecovery: model.enablePointInTimeRecovery,
+    enablePointInTimeRecovery: shouldEnablePointInTimeRecovery(config, type),
     enableStreaming: shouldEnableStreaming(type, model),
     hasPublicModels: hasInterface('PublicModel', type),
     hasTtl: !!model.ttlConfig,
@@ -212,7 +197,8 @@ function updateExistingTable(
   const model = getModel(type);
 
   existingTable.enablePointInTimeRecovery =
-    existingTable.enablePointInTimeRecovery || model.enablePointInTimeRecovery;
+    existingTable.enablePointInTimeRecovery ||
+    shouldEnablePointInTimeRecovery(config, type);
   existingTable.enableStreaming =
     existingTable.enableStreaming || shouldEnableStreaming(type, model);
 
@@ -230,4 +216,33 @@ function updateExistingTable(
   );
 
   return existingTable;
+}
+
+function shouldEnablePointInTimeRecovery(
+  config: Config,
+  type: GraphQLObjectType
+) {
+  const tableDirective = getOptionalDirective('table', type);
+  if (!tableDirective) {
+    return config.tableDefaults.enablePointInTimeRecovery;
+  }
+  return (
+    getOptionalArgBooleanValue('enablePointInTimeRecovery', tableDirective) !==
+    false
+  );
+}
+
+function shouldEnableStreaming(
+  type: GraphQLObjectType,
+  model: Readonly<Model>
+) {
+  if (model.changeDataCaptureConfig.length > 0) {
+    return true;
+  }
+
+  const tableDirective = getOptionalDirective('table', type);
+
+  return tableDirective
+    ? getOptionalArgBooleanValue('enableStreaming', tableDirective) !== false
+    : false;
 }

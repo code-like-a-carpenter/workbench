@@ -1,4 +1,5 @@
 import type {Field} from './field';
+import type {Table} from './table';
 import type {LambdaConfig, ProjectionType} from './types';
 
 export type ChangeDataCaptureEvent = 'INSERT' | 'MODIFY' | 'REMOVE' | 'UPSERT';
@@ -33,11 +34,10 @@ export interface ChangeDataCaptureTriggerConfig
 export interface Model {
   readonly changeDataCaptureConfig: readonly ChangeDataCaptureConfig[];
   readonly consistent: boolean;
-  readonly enablePointInTimeRecovery: boolean;
   readonly fields: readonly Field[];
   readonly isLedger: boolean;
-  readonly isPublicModel: boolean;
-  readonly tableName: string;
+  readonly isPublic: boolean;
+  readonly table: Table;
   readonly typeName: string;
   readonly primaryKey: PrimaryKeyConfig;
   readonly secondaryIndexes: readonly SecondaryIndex[];
