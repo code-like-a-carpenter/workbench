@@ -44,19 +44,29 @@ export function parse(
 
   const typesMap = schema.getTypeMap();
 
-  const models: Model[] = Object.keys(typesMap)
-    .map((typeName) => schema.getTypeMap()[typeName])
-    .filter((type) => isObjectType(type))
-    .map((type) => assertObjectType(type))
-    .filter((type) => hasInterface('Model', type))
-    .map((type) => extractModel(config, schema, type, outputFile));
+  const models: Model[] = Array.from(
+    new Set(
+      Object.keys(typesMap)
+        .map((typeName) => schema.getTypeMap()[typeName])
+        .filter((type) => isObjectType(type))
+        .map((type) => assertObjectType(type))
+        .filter((type) => hasInterface('Model', type))
+        .map((type) => extractModel(config, schema, type, outputFile))
+        .sort()
+    )
+  );
 
-  const tables: Table[] = Object.keys(typesMap)
-    .map((typeName) => schema.getTypeMap()[typeName])
-    .filter((type) => isObjectType(type))
-    .map((type) => assertObjectType(type))
-    .filter((type) => hasInterface('Model', type))
-    .map((type) => extractTable(config, schema, type, outputFile));
+  const tables: Table[] = Array.from(
+    new Set(
+      Object.keys(typesMap)
+        .map((typeName) => schema.getTypeMap()[typeName])
+        .filter((type) => isObjectType(type))
+        .map((type) => assertObjectType(type))
+        .filter((type) => hasInterface('Model', type))
+        .map((type) => extractTable(config, schema, type, outputFile))
+        .sort()
+    )
+  );
 
   return {
     additionalImports: models
