@@ -70,21 +70,10 @@ export function defineTable({
       ...(localSecondaryIndexes.length
         ? {LocalSecondaryIndexes: localSecondaryIndexes}
         : {}),
-      ...(enablePointInTimeRecovery
-        ? {
-            PointInTimeRecoverySpecification: {
-              PointInTimeRecoveryEnabled: {'Fn::If': ['IsProd', true, false]},
-            },
-          }
-        : {}),
       SSESpecification: {
-        SSEEnabled: true,
+        // @ts-expect-error typedef doesn't include intrinsic functions
+        SSEEnabled: {'Fn::If': ['IsProd', true, false]},
       },
-      StreamSpecification: enableStreaming
-        ? {
-            StreamViewType: 'NEW_AND_OLD_IMAGES',
-          }
-        : undefined,
       Tags: [
         {
           Key: 'StageName',
@@ -96,14 +85,22 @@ export function defineTable({
           Value: tableName,
         },
       ],
-      ...(hasTtl
-        ? {
-            TimeToLiveSpecification: {
-              AttributeName: 'ttl',
-              Enabled: true,
-            },
-          }
-        : {}),
+      ...conditionalObject(enableStreaming, {
+        StreamSpecification: {
+          StreamViewType: 'NEW_AND_OLD_IMAGES',
+        },
+      }),
+      ...conditionalObject(enablePointInTimeRecovery, {
+        PointInTimeRecoverySpecification: {
+          PointInTimeRecoveryEnabled: {'Fn::If': ['IsProd', true, false]},
+        },
+      }),
+      ...conditionalObject(hasTtl, {
+        TimeToLiveSpecification: {
+          AttributeName: 'ttl',
+          Enabled: true,
+        },
+      }),
     },
     Type: 'AWS::DynamoDB::Table',
   };
@@ -158,4 +155,8 @@ function expandCompositeKey(pk: string, sk: string) {
 
 function expandSimpleKey(pk: string) {
   return [{AttributeName: pk, KeyType: 'HASH'}];
+}
+
+function conditionalObject(condition: boolean, object: object) {
+  return condition ? object : {};
 }

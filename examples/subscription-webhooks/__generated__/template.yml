@@ -676,7 +676,11 @@ Resources:
             - true
             - false
       SSESpecification:
-        SSEEnabled: true
+        SSEEnabled:
+          Fn::If:
+            - IsProd
+            - true
+            - false
       StreamSpecification:
         StreamViewType: NEW_AND_OLD_IMAGES
       Tags:
@@ -750,7 +754,11 @@ Resources:
             - true
             - false
       SSESpecification:
-        SSEEnabled: true
+        SSEEnabled:
+          Fn::If:
+            - IsProd
+            - true
+            - false
       Tags:
         - Key: StageName
           Value:
@@ -778,7 +786,11 @@ Resources:
             - true
             - false
       SSESpecification:
-        SSEEnabled: true
+        SSEEnabled:
+          Fn::If:
+            - IsProd
+            - true
+            - false
       StreamSpecification:
         StreamViewType: NEW_AND_OLD_IMAGES
       Tags:
@@ -852,7 +864,11 @@ Resources:
             - true
             - false
       SSESpecification:
-        SSEEnabled: true
+        SSEEnabled:
+          Fn::If:
+            - IsProd
+            - true
+            - false
       StreamSpecification:
         StreamViewType: NEW_AND_OLD_IMAGES
       Tags:

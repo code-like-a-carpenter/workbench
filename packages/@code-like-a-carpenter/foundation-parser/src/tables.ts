@@ -45,7 +45,13 @@ export function extractTable(
 
   const existingTable = tables.get(tableName);
   if (existingTable) {
-    return updateExistingTable(config, type, existingTable, tableName);
+    return updateExistingTable(
+      config,
+      type,
+      existingTable,
+      tableName,
+      outputFile
+    );
   }
 
   const newTable = defineNewTable(config, type, tableName, outputFile);
@@ -192,7 +198,8 @@ function updateExistingTable(
   config: Config,
   type: GraphQLObjectType,
   existingTable: Writable<Table>,
-  tableName: string
+  tableName: string,
+  outputFile: string
 ): Table {
   const model = getModel(type);
 
@@ -204,6 +211,16 @@ function updateExistingTable(
 
   existingTable.hasPublicModels =
     existingTable.hasPublicModels || hasInterface('PublicModel', type);
+
+  if (existingTable.hasCdc || model.changeDataCaptureConfig.length > 0) {
+    existingTable.hasCdc = true;
+    // @ts-expect-error - it's fine. we're change from TableWithoutCdc to TableWithCdc
+    existingTable.dispatcherConfig = extractDispatcherConfig(
+      config,
+      outputFile,
+      type
+    );
+  }
 
   existingTable.hasTtl = existingTable.hasTtl || !!model.ttlConfig;
 
@@ -241,8 +258,9 @@ function shouldEnableStreaming(
   }
 
   const tableDirective = getOptionalDirective('table', type);
+  if (!tableDirective) {
+    return false;
+  }
 
-  return tableDirective
-    ? getOptionalArgBooleanValue('enableStreaming', tableDirective) !== false
-    : false;
+  return getOptionalArgBooleanValue('enableStreaming', tableDirective) === true;
 }
