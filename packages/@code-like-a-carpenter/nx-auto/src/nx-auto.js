@@ -8,7 +8,10 @@ const glob = require('glob');
 
 exports.projectFilePatterns = ['package.json'];
 
-/** @param {string} projectFilePath */
+/**
+ * @param {string} projectFilePath
+ * @returns {Record<string, import("@nrwl/devkit").TargetConfiguration>}
+ */
 exports.registerProjectTargets = function registerProjectTargets(
   projectFilePath
 ) {
@@ -32,7 +35,9 @@ exports.registerProjectTargets = function registerProjectTargets(
 
   const packageName = projectRoot.split('/').slice(-2).join('/');
 
-  /** @type Record<string, unknown> */
+  const isCli = packageName.endsWith('-cli');
+
+  /** @type Record<string, import("@nrwl/devkit").TargetConfiguration>> */
   let targets = {
     build: {
       dependsOn: [
@@ -68,7 +73,9 @@ exports.registerProjectTargets = function registerProjectTargets(
         'sharedGlobals',
       ],
       options: {
-        command: `node ./packages/@code-like-a-carpenter/nx-auto/ package --package-name ${packageName}`,
+        command: `node ./packages/@code-like-a-carpenter/nx-auto/ package --package-name ${packageName} ${
+          isCli ? '--type="cli"' : ''
+        }`,
       },
       outputs: ['{projectRoot}/package.json'],
     },
@@ -155,7 +162,7 @@ function configureExample(projectFilePath) {
   const packageName = projectRoot.split('/').slice(-1).join('/');
   assert(packageName);
 
-  /** @type Record<string, unknown> */
+  /** @type Record<string, import("@nrwl/devkit").TargetConfiguration>> */
   let targets = {
     build: {
       dependsOn: ['build-package', '^build'],
