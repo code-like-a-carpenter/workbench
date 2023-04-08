@@ -11,8 +11,7 @@
     "@aws-sdk/smithy-client": "3.188.0",
     "@aws-sdk/util-dynamodb": "3.188.0",
     "@code-like-a-carpenter/assert": "*",
-    "@code-like-a-carpenter/foundation-plugin-cloudformation": "*",
-    "@code-like-a-carpenter/foundation-plugin-typescript": "*",
+    "@code-like-a-carpenter/foundation-cli": "*",
     "@code-like-a-carpenter/foundation-runtime": "*",
     "@faker-js/faker": "^7.6.0",
     "base64url": "^3.0.1"

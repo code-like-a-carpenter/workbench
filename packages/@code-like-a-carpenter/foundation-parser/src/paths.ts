@@ -1,4 +1,5 @@
-import path from 'path';
+import fs from 'node:fs';
+import path from 'node:path';
 
 import type {GraphQLObjectType} from 'graphql';
 
@@ -53,6 +54,10 @@ export function resolveHandlerModuleId(
     `Expected ${type.name} to have a name`
   );
   const schemaFile = type.astNode.description.loc.source.name;
+  // When jest loads from inside a test file, there won't be a file to load.
+  if (process.env.NODE_ENV !== 'test') {
+    assert(fs.statSync(schemaFile), `Expected ${schemaFile} to exist`);
+  }
 
   const absolutePathToHandler = path.join(path.dirname(schemaFile), handler);
   const absolutePathToDirectory = path.resolve(directory);

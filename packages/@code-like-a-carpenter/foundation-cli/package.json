@@ -1,0 +1,31 @@
+{
+  "name": "@code-like-a-carpenter/foundation-cli",
+  "description": "Wrapper around GraphQL Codegen so you don't have to think about it",
+  "author": "Ian Remmel <1182361+ianwremmel@users.noreply.github.com> (https://www.ianwremmel.com)",
+  "bugs": "https://www.github.com/code-like-a-carpenter/workbench/issues",
+  "engines": {
+    "node": "18.x",
+    "npm": "9.x"
+  },
+  "homepage": "https://www.github.com/code-like-a-carpenter/workbench/tree/main/packages/@code-like-a-carpenter/foundation-cli",
+  "license": "MIT",
+  "repository": "git@github.com:code-like-a-carpenter/workbench.git",
+  "types": "dist/types",
+  "publishConfig": {
+    "access": "public"
+  },
+  "main": "./dist/cjs/index.js",
+  "dependencies": {
+    "@code-like-a-carpenter/foundation-plugin-cloudformation": "*",
+    "@code-like-a-carpenter/foundation-plugin-typescript": "*",
+    "@code-like-a-carpenter/multiglob": "*",
+    "@graphql-codegen/core": "^3.1.0",
+    "@graphql-codegen/plugin-helpers": "^4.2.0",
+    "@graphql-codegen/typescript": "^3.0.3",
+    "@graphql-tools/schema": "^9.0.17",
+    "graphql": "^16.6.0",
+    "yargs": "^17.7.1",
+    "zod": "^3.21.4"
+  },
+  "bin": "./cli.js"
+}

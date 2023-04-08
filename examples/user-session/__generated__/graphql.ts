@@ -102,11 +102,6 @@ export interface Model {
   version: Scalars['Int'];
 }
 
-/** The Node interface */
-export interface Node {
-  id: Scalars['ID'];
-}
-
 /**
  * INCLUDE is omitted at this time because it drastically complicates the schema
  * DSL. If a use for it arises, it'll be revisited.
@@ -125,17 +120,6 @@ export interface PublicModel {
   publicId: Scalars['String'];
   updatedAt: Scalars['Date'];
   version: Scalars['Int'];
-}
-
-/** The Query type */
-export interface Query {
-  __typename?: 'Query';
-  node?: Maybe<Node>;
-}
-
-/** The Query type */
-export interface QueryNodeArgs {
-  id: Scalars['ID'];
 }
 
 /**

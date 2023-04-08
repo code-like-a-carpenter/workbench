@@ -211,10 +211,17 @@ function configureExample(projectFilePath) {
         executor: 'nx:run-commands',
         inputs: [
           '{projectRoot}/schema/**/*.graphqls',
+          '{projectRoot}/.foundationrc.js',
+          '{projectRoot}/../common.graphqls',
           '{workspaceRoot}/.graphqlrc.js',
+          '{workspaceRoot}/schema.graphqls',
         ],
         options: {
-          command: `npx --no-install graphql-codegen --debug --verbose --project ${packageName}`,
+          commands: [
+            `npx @code-like-a-carpenter/foundation-cli codegen --config ${projectRoot}/.foundationrc.js`,
+            `npm run eslint -- '${projectRoot}/__generated__/**/*.ts' --fix`,
+          ],
+          parallel: false,
         },
         outputs: [
           `${projectRoot}/src/__generated__/graphql.ts`,

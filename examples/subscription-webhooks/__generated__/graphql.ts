@@ -139,11 +139,6 @@ export interface Model {
   version: Scalars['Int'];
 }
 
-/** The Node interface */
-export interface Node {
-  id: Scalars['ID'];
-}
-
 /** A summary of all the accounts on a particular plan. */
 export type PlanMetric = Model &
   Timestamped &
@@ -178,17 +173,6 @@ export interface PublicModel {
   publicId: Scalars['String'];
   updatedAt: Scalars['Date'];
   version: Scalars['Int'];
-}
-
-/** The Query type */
-export interface Query {
-  __typename?: 'Query';
-  node?: Maybe<Node>;
-}
-
-/** The Query type */
-export interface QueryNodeArgs {
-  id: Scalars['ID'];
 }
 
 /** An event describing a change to a customer's subscription status. */

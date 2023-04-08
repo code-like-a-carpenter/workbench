@@ -41,6 +41,9 @@
       "path": "packages/@code-like-a-carpenter/exception"
     },
     {
+      "path": "packages/@code-like-a-carpenter/foundation-cli"
+    },
+    {
       "path": "packages/@code-like-a-carpenter/foundation-intermediate-representation"
     },
     {
@@ -66,6 +69,9 @@
     },
     {
       "path": "packages/@code-like-a-carpenter/logger"
+    },
+    {
+      "path": "packages/@code-like-a-carpenter/multiglob"
     },
     {
       "path": "packages/@code-like-a-carpenter/parallel"

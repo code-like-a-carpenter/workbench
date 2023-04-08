@@ -5,8 +5,7 @@
 //
 // If the foundation plugins aren't yet built and this file is affecting an
 // example for the first time, you'll still need to run `make build` once to
-// update package.json. Once that's done, the depenedency graph should be
+// update package.json. Once that's done, the dependency graph should be
 // correct moving forward.
 
-import '@code-like-a-carpenter/foundation-plugin-cloudformation';
-import '@code-like-a-carpenter/foundation-plugin-typescript';
+import '@code-like-a-carpenter/foundation-cli';
