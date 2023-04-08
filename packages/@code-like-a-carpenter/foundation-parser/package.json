@@ -24,7 +24,7 @@
   "dependencies": {
     "@code-like-a-carpenter/assert": "*",
     "@code-like-a-carpenter/foundation-intermediate-representation": "*",
-    "@graphql-codegen/plugin-helpers": "^4.0.0",
+    "@graphql-codegen/plugin-helpers": "^4.2.0",
     "graphql": "^16.6.0",
     "lodash": "^4.17.21",
     "zod": "^3.21.4"

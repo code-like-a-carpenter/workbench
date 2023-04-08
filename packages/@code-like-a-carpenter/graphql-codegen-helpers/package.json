@@ -2,7 +2,7 @@
   "name": "@code-like-a-carpenter/graphql-codegen-helpers",
   "description": "Smallish functions used by all workbench graphql-codegen plugins",
   "dependencies": {
-    "@graphql-codegen/plugin-helpers": "^4.0.0",
+    "@graphql-codegen/plugin-helpers": "^4.2.0",
     "zod": "^3.21.4"
   },
   "author": "Ian Remmel <1182361+ianwremmel@users.noreply.github.com> (https://www.ianwremmel.com)",
