@@ -8,9 +8,13 @@ const glob = require('glob');
 
 exports.projectFilePatterns = ['package.json'];
 
+// Note, there are a number of `unknown` types here. The correct type is
+// `import("@nrwl/devkit").TargetConfiguration>`, but @nrwl/devkit has a
+// dependency on webpack, which seems like a goofy thing to install just for a
+// typedef.
 /**
  * @param {string} projectFilePath
- * @returns {Record<string, import("@nrwl/devkit").TargetConfiguration>}
+ * @returns {Record<string, unknown>}
  */
 exports.registerProjectTargets = function registerProjectTargets(
   projectFilePath
@@ -37,7 +41,7 @@ exports.registerProjectTargets = function registerProjectTargets(
 
   const isCli = packageName.endsWith('-cli');
 
-  /** @type Record<string, import("@nrwl/devkit").TargetConfiguration>> */
+  /** @type Record<string, unknown> */
   let targets = {
     build: {
       dependsOn: [
@@ -162,7 +166,7 @@ function configureExample(projectFilePath) {
   const packageName = projectRoot.split('/').slice(-1).join('/');
   assert(packageName);
 
-  /** @type Record<string, import("@nrwl/devkit").TargetConfiguration>> */
+  /** @type Record<string, unknown> */
   let targets = {
     build: {
       dependsOn: ['build-package', '^build'],
