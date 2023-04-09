@@ -1,0 +1,5 @@
+rules:
+  '@typescript-eslint/ban-types': 'off'
+  # Webstorm sees this rule even though ESLint on the CLI doesn't. It causes a
+  # really annoying autofix behavior.
+  'workspaces/no-absolute-imports': 'off'

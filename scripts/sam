@@ -211,6 +211,10 @@ path_to_example () {
 
 path_to_template_file () {
   local example="$1"
+  if [ -f "$(path_to_example "$example")/__generated__/template.yml" ]; then
+    echo "$(path_to_example "$example")/__generated__/template.yml"
+    return 0
+  fi
   echo "$(path_to_example "$example")/template.yml"
   return 0
 }

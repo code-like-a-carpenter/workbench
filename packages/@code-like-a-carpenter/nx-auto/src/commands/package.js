@@ -21,7 +21,7 @@ const command = {
         type: 'string',
       },
       type: {
-        choices: ['package', 'example'],
+        choices: ['package', 'example', 'cli'],
         default: 'package',
         required: false,
       },
@@ -38,7 +38,7 @@ const command = {
     if (type === 'example') {
       await configExample(packageName);
     } else {
-      await config(packageName);
+      await config(packageName, type);
     }
   },
 };
@@ -60,8 +60,9 @@ async function configExample(packageName) {
 
 /**
  * @param {string} packageName
+ * @param {'cli'|'package'} type
  */
-async function config(packageName) {
+async function config(packageName, type) {
   const pkg = await readPackageJson(packageName);
   const rootPackageJson = await loadRootPackageJson();
 
@@ -70,13 +71,28 @@ async function config(packageName) {
   pkg.author = pkg.author ?? rootPackageJson.author;
   pkg.bugs = rootPackageJson.bugs;
   pkg.engines = rootPackageJson.engines;
-  pkg.exports = {
-    '.': {
-      import: './dist/esm/index.js',
-      require: './dist/cjs/index.js',
-    },
-    './package.json': './package.json',
-  };
+  if (type === 'package') {
+    delete pkg.bin;
+
+    pkg.exports = {
+      '.': {
+        import: './dist/esm/index.js',
+        require: './dist/cjs/index.js',
+      },
+      './package.json': './package.json',
+    };
+
+    // These are mostly for legacy fallbacks and, if `exports` is configured
+    // correctly, should not be needed on modern platforms. When `main` is
+    // present, esbuild seems to prefer it in some unpredictable cases.
+    delete pkg.main;
+    delete pkg.module;
+  } else {
+    pkg.bin = './cli.js';
+    pkg.main = './dist/cjs/index.js';
+
+    delete pkg.exports;
+  }
   assert(
     typeof rootPackageJson.homepage === 'string',
     'Missing homepage in top-level package.json'
@@ -101,12 +117,6 @@ async function config(packageName) {
       access: 'public',
     };
   }
-
-  // These are mostly for legacy fallbacks and, if `exports` is configured
-  // correctly, should not be needed on modern platforms. When `main` is
-  // present, esbuild seems to prefer it in some unpredictable cases.
-  delete pkg.main;
-  delete pkg.module;
 
   await writePackageJson(packageName, pkg);
 }

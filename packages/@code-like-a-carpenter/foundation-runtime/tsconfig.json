@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "outDir": "./dist/types",
+    "rootDir": "./src"
+  },
+  "extends": "../../../tsconfig.references.json",
+  "include": ["src"],
+  "references": [
+    {
+      "path": "../assert"
+    },
+    {
+      "path": "../exception"
+    },
+    {
+      "path": "../lambda-handlers"
+    },
+    {
+      "path": "../telemetry"
+    }
+  ]
+}

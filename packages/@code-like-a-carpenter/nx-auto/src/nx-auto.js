@@ -8,7 +8,14 @@ const glob = require('glob');
 
 exports.projectFilePatterns = ['package.json'];
 
-/** @param {string} projectFilePath */
+// Note, there are a number of `unknown` types here. The correct type is
+// `import("@nrwl/devkit").TargetConfiguration>`, but @nrwl/devkit has a
+// dependency on webpack, which seems like a goofy thing to install just for a
+// typedef.
+/**
+ * @param {string} projectFilePath
+ * @returns {Record<string, unknown>}
+ */
 exports.registerProjectTargets = function registerProjectTargets(
   projectFilePath
 ) {
@@ -32,7 +39,10 @@ exports.registerProjectTargets = function registerProjectTargets(
 
   const packageName = projectRoot.split('/').slice(-2).join('/');
 
-  return {
+  const isCli = packageName.endsWith('-cli');
+
+  /** @type Record<string, unknown> */
+  let targets = {
     build: {
       dependsOn: [
         'build-cjs',
@@ -67,7 +77,9 @@ exports.registerProjectTargets = function registerProjectTargets(
         'sharedGlobals',
       ],
       options: {
-        command: `node ./packages/@code-like-a-carpenter/nx-auto/ package --package-name ${packageName}`,
+        command: `node ./packages/@code-like-a-carpenter/nx-auto/ package --package-name ${packageName} ${
+          isCli ? '--type="cli"' : ''
+        }`,
       },
       outputs: ['{projectRoot}/package.json'],
     },
@@ -104,6 +116,47 @@ exports.registerProjectTargets = function registerProjectTargets(
       outputs: ['{projectRoot}/dist/types'],
     },
   };
+
+  const jsonSchemas = glob.sync('*.json', {
+    cwd: path.join(projectRoot, 'json-schemas'),
+  });
+
+  if (jsonSchemas.length > 0) {
+    targets = {
+      ...targets,
+      'build-json-schemas': {
+        executor: 'nx:run-commands',
+        inputs: jsonSchemas.map(
+          (filePath) => `{projectRoot}/json-schemas/${filePath}`
+        ),
+        options: {
+          command: [
+            ...jsonSchemas.map(
+              (filepath) =>
+                `npx --no-install json2ts ${projectRoot}/json-schemas/${filepath} ${projectRoot}/src/__generated__/json-schemas/${filepath.replace(
+                  /.json$/,
+                  '.ts'
+                )}`
+            ),
+            `npx prettier --write ${projectRoot}/src/__generated__/json-schemas`,
+          ].join(' && \\\n'),
+        },
+        outputs: jsonSchemas.map(
+          (filePath) =>
+            `{projectRoot}/src/__generated__/json-schemas/${filePath}`
+        ),
+      },
+    };
+
+    assert(typeof targets.build === 'object');
+    assert(targets.build !== null);
+    assert('dependsOn' in targets.build);
+    assert(Array.isArray(targets.build.dependsOn));
+
+    targets.build.dependsOn.push('build-json-schemas');
+  }
+
+  return targets;
 };
 
 /** @param {string} projectFilePath */
@@ -120,6 +173,7 @@ function configureExample(projectFilePath) {
       executor: 'nx:noop',
     },
     'build-package': {
+      dependsOn: ['build-graphql', '^build'],
       executor: 'nx:run-commands',
       inputs: [
         '{projectRoot}/src/**/*',
@@ -151,6 +205,41 @@ function configureExample(projectFilePath) {
     assert(Array.isArray(targets.build.dependsOn));
 
     targets.build.dependsOn.push('build-openapi');
+  }
+
+  if (fs.existsSync(path.join(projectRoot, '/schema'))) {
+    targets = {
+      ...targets,
+      'build-graphql': {
+        dependsOn: ['^build'],
+        executor: 'nx:run-commands',
+        inputs: [
+          '{projectRoot}/schema/**/*.graphqls',
+          '{projectRoot}/.foundationrc.js',
+          '{projectRoot}/../common.graphqls',
+          '{workspaceRoot}/.graphqlrc.js',
+          '{workspaceRoot}/schema.graphqls',
+        ],
+        options: {
+          commands: [
+            `npx @code-like-a-carpenter/foundation-cli codegen --config ${projectRoot}/.foundationrc.js`,
+            `npm run eslint -- '${projectRoot}/__generated__/**/*.ts' --fix`,
+          ],
+          parallel: false,
+        },
+        outputs: [
+          `${projectRoot}/src/__generated__/graphql.ts`,
+          `${projectRoot}/src/__generated__/template.yml`,
+          `${projectRoot}/src/__generated__/**/*`,
+        ],
+      },
+    };
+    assert(typeof targets.build === 'object');
+    assert(targets.build !== null);
+    assert('dependsOn' in targets.build);
+    assert(Array.isArray(targets.build.dependsOn));
+
+    targets.build.dependsOn.push('build-graphql');
   }
 
   return targets;

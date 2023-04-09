@@ -1,0 +1,33 @@
+{
+  "name": "@code-like-a-carpenter/foundation-plugin-typescript",
+  "description": "graphql-codegen plugin which generates Typescript data accessors using the Foundation parser",
+  "author": "Ian Remmel <1182361+ianwremmel@users.noreply.github.com> (https://www.ianwremmel.com)",
+  "bugs": "https://www.github.com/code-like-a-carpenter/workbench/issues",
+  "engines": {
+    "node": "18.x",
+    "npm": "9.x"
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/esm/index.js",
+      "require": "./dist/cjs/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "homepage": "https://www.github.com/code-like-a-carpenter/workbench/tree/main/packages/@code-like-a-carpenter/foundation-plugin-typescript",
+  "license": "MIT",
+  "repository": "git@github.com:code-like-a-carpenter/workbench.git",
+  "types": "dist/types",
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@code-like-a-carpenter/assert": "*",
+    "@code-like-a-carpenter/foundation-intermediate-representation": "*",
+    "@code-like-a-carpenter/foundation-parser": "*",
+    "@code-like-a-carpenter/graphql-codegen-helpers": "*",
+    "@graphql-codegen/plugin-helpers": "^4.2.0",
+    "lodash": "^4.17.21",
+    "zod": "^3.21.4"
+  }
+}

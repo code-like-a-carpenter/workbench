@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "outDir": "./dist/types",
+    "rootDir": "./src"
+  },
+  "extends": "../../../tsconfig.references.json",
+  "include": ["src"],
+  "references": [
+    {
+      "path": "../foundation-plugin-cloudformation"
+    },
+    {
+      "path": "../foundation-plugin-typescript"
+    },
+    {
+      "path": "../multiglob"
+    }
+  ]
+}
