@@ -15,15 +15,7 @@ const config = {
   cloudformationTemplate: './__generated__/template.yml',
   typescriptOutput: './__generated__/graphql.ts',
   actionsModuleId: './__generated__/graphql',
-  outputConfig: {
-    format: 'yaml',
-    yamlConfig: {
-      // This is turned off to minimize a diff while working on a migration. If
-      // you're seeing it, it's because I forgot to turn it back on. You
-      // probably don't want to turn this off.
-      forceQuotes: false,
-    },
-  },
+  outputConfig: {format: 'yaml'},
 };
 
 module.exports = config;

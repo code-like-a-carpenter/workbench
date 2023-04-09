@@ -2,924 +2,918 @@ AWSTemplateFormatVersion: '2010-09-09'
 Conditions:
   IsProd:
     Fn::Equals:
-      - Ref: StageName
-      - production
+      - Ref: 'StageName'
+      - 'production'
 Globals:
   Function:
     Environment:
       Variables:
         TABLE_ACCOUNT:
-          Ref: TableAccount
+          Ref: 'TableAccount'
         TABLE_METRIC:
-          Ref: TableMetric
+          Ref: 'TableMetric'
         TABLE_PLAN_METRIC:
-          Ref: TablePlanMetric
+          Ref: 'TablePlanMetric'
         TABLE_SUBSCRIPTION_EVENT:
-          Ref: TableSubscriptionEvent
-    Handler: index.handler
+          Ref: 'TableSubscriptionEvent'
+    Handler: 'index.handler'
     MemorySize: 256
-    Runtime: nodejs18.x
+    Runtime: 'nodejs18.x'
     Timeout: 30
-    Tracing: Active
+    Tracing: 'Active'
 Outputs:
   TableAccount:
-    Description: The name of the DynamoDB table for TableAccount
+    Description: 'The name of the DynamoDB table for TableAccount'
     Export:
       Name:
-        Fn::Sub: ${AWS::StackName}-TableAccount
+        Fn::Sub: '${AWS::StackName}-TableAccount'
     Value:
-      Ref: TableAccount
+      Ref: 'TableAccount'
   TableMetric:
-    Description: The name of the DynamoDB table for TableMetric
+    Description: 'The name of the DynamoDB table for TableMetric'
     Export:
       Name:
-        Fn::Sub: ${AWS::StackName}-TableMetric
+        Fn::Sub: '${AWS::StackName}-TableMetric'
     Value:
-      Ref: TableMetric
+      Ref: 'TableMetric'
   TablePlanMetric:
-    Description: The name of the DynamoDB table for TablePlanMetric
+    Description: 'The name of the DynamoDB table for TablePlanMetric'
     Export:
       Name:
-        Fn::Sub: ${AWS::StackName}-TablePlanMetric
+        Fn::Sub: '${AWS::StackName}-TablePlanMetric'
     Value:
-      Ref: TablePlanMetric
+      Ref: 'TablePlanMetric'
   TableSubscriptionEvent:
-    Description: The name of the DynamoDB table for TableSubscriptionEvent
+    Description: 'The name of the DynamoDB table for TableSubscriptionEvent'
     Export:
       Name:
-        Fn::Sub: ${AWS::StackName}-TableSubscriptionEvent
+        Fn::Sub: '${AWS::StackName}-TableSubscriptionEvent'
     Value:
-      Ref: TableSubscriptionEvent
+      Ref: 'TableSubscriptionEvent'
 Parameters:
   LogRetentionInDays:
     Default: '3'
-    Description: Log retention in days
-    Type: Number
+    Description: 'Log retention in days'
+    Type: 'Number'
   StageName:
     AllowedValues:
-      - development
-      - production
-      - test
-    Default: development
-    Description: The name of the stage
-    Type: String
+      - 'development'
+      - 'production'
+      - 'test'
+    Default: 'development'
+    Description: 'The name of the stage'
+    Type: 'String'
 Resources:
   FnEnricherSEUpsertA5b59364d:
     Metadata:
-      BuildMethod: esbuild
+      BuildMethod: 'esbuild'
       BuildProperties:
         EntryPoints:
-          - ./index
+          - './index'
         External:
           - '@aws-sdk/*'
         Minify: false
         Sourcemap: true
-        Target: es2022
+        Target: 'es2022'
     Properties:
-      CodeUri: enricher--subscription-event--upsert--account
+      CodeUri: 'enricher--subscription-event--upsert--account'
       Events:
         Stream:
           Properties:
             BatchSize: 10
             FunctionResponseTypes:
-              - ReportBatchItemFailures
+              - 'ReportBatchItemFailures'
             Queue:
               Fn::GetAtt:
-                - FnEnricherSEUpsertA5b59364dQueue
-                - Arn
-          Type: SQS
+                - 'FnEnricherSEUpsertA5b59364dQueue'
+                - 'Arn'
+          Type: 'SQS'
       MemorySize: 256
       Policies:
-        - AWSLambdaBasicExecutionRole
-        - AWSLambda_ReadOnlyAccess
-        - AWSXrayWriteOnlyAccess
-        - CloudWatchLambdaInsightsExecutionRolePolicy
+        - 'AWSLambdaBasicExecutionRole'
+        - 'AWSLambda_ReadOnlyAccess'
+        - 'AWSXrayWriteOnlyAccess'
+        - 'CloudWatchLambdaInsightsExecutionRolePolicy'
         - CloudWatchPutMetricPolicy: {}
         - DynamoDBCrudPolicy:
             TableName:
-              Ref: TableAccount
+              Ref: 'TableAccount'
         - SQSSendMessagePolicy:
             QueueName:
               Fn::GetAtt:
-                - FnEnricherSEUpsertA5b59364dDLQ
-                - QueueName
+                - 'FnEnricherSEUpsertA5b59364dDLQ'
+                - 'QueueName'
       Timeout: 90
-    Type: AWS::Serverless::Function
+    Type: 'AWS::Serverless::Function'
   FnEnricherSEUpsertA5b59364dDLQ:
     Properties:
       KmsMasterKeyId:
         Fn::If:
-          - IsProd
-          - Ref: FnEnricherSEUpsertA5b59364dQueueKey
-          - AWS::NoValue
-    Type: AWS::SQS::Queue
+          - 'IsProd'
+          - Ref: 'FnEnricherSEUpsertA5b59364dQueueKey'
+          - 'AWS::NoValue'
+    Type: 'AWS::SQS::Queue'
   FnEnricherSEUpsertA5b59364dLogGroup:
     Properties:
       LogGroupName:
-        Fn::Sub: /aws/lambda/${FnEnricherSEUpsertA5b59364d}
+        Fn::Sub: '/aws/lambda/${FnEnricherSEUpsertA5b59364d}'
       RetentionInDays:
-        Ref: LogRetentionInDays
-    Type: AWS::Logs::LogGroup
+        Ref: 'LogRetentionInDays'
+    Type: 'AWS::Logs::LogGroup'
   FnEnricherSEUpsertA5b59364dQueue:
     Properties:
       Fn::If:
-        - IsProd
+        - 'IsProd'
         - KmsMasterKeyId:
-            Ref: FnEnricherSEUpsertA5b59364dQueueKey
+            Ref: 'FnEnricherSEUpsertA5b59364dQueueKey'
           RedrivePolicy:
             deadLetterTargetArn:
               Fn::GetAtt:
-                - FnEnricherSEUpsertA5b59364dDLQ
-                - Arn
+                - 'FnEnricherSEUpsertA5b59364dDLQ'
+                - 'Arn'
             maxReceiveCount: 3
           VisibilityTimeout: 320
         - RedrivePolicy:
             deadLetterTargetArn:
               Fn::GetAtt:
-                - FnEnricherSEUpsertA5b59364dDLQ
-                - Arn
+                - 'FnEnricherSEUpsertA5b59364dDLQ'
+                - 'Arn'
             maxReceiveCount: 3
           VisibilityTimeout: 320
-    Type: AWS::SQS::Queue
+    Type: 'AWS::SQS::Queue'
   FnEnricherSEUpsertA5b59364dQueueKey:
-    Condition: IsProd
+    Condition: 'IsProd'
     Properties:
       KeyPolicy:
         Statement:
           - Action:
-              - kms:Decrypt
-              - kms:GenerateDataKey
-            Effect: Allow
+              - 'kms:Decrypt'
+              - 'kms:GenerateDataKey'
+            Effect: 'Allow'
             Principal:
-              Service: events.amazonaws.com
+              Service: 'events.amazonaws.com'
             Resource: '*'
-            Sid: Allow EventBridge to use the Key
+            Sid: 'Allow EventBridge to use the Key'
           - Action:
-              - kms:Create*
-              - kms:Describe*
-              - kms:Enable*
-              - kms:List*
-              - kms:Put*
-              - kms:Update*
-              - kms:Revoke*
-              - kms:Disable*
-              - kms:Get*
-              - kms:Delete*
-              - kms:ScheduleKeyDeletion
-              - kms:CancelKeyDeletion
-            Effect: Allow
+              - 'kms:Create*'
+              - 'kms:Describe*'
+              - 'kms:Enable*'
+              - 'kms:List*'
+              - 'kms:Put*'
+              - 'kms:Update*'
+              - 'kms:Revoke*'
+              - 'kms:Disable*'
+              - 'kms:Get*'
+              - 'kms:Delete*'
+              - 'kms:ScheduleKeyDeletion'
+              - 'kms:CancelKeyDeletion'
+            Effect: 'Allow'
             Principal:
               AWS:
-                Fn::Sub: arn:aws:iam::${AWS::AccountId}:root
+                Fn::Sub: 'arn:aws:iam::${AWS::AccountId}:root'
             Resource: '*'
-            Sid: Allow administration of the key
+            Sid: 'Allow administration of the key'
           - Action:
-              - kms:Encrypt
-              - kms:Decrypt
-              - kms:ReEncrypt*
-              - kms:GenerateDataKey*
-              - kms:CreateGrant
-              - kms:DescribeKey
+              - 'kms:Encrypt'
+              - 'kms:Decrypt'
+              - 'kms:ReEncrypt*'
+              - 'kms:GenerateDataKey*'
+              - 'kms:CreateGrant'
+              - 'kms:DescribeKey'
             Condition:
               StringEquals:
                 kms:CallerAccount:
-                  Fn::Sub: ${AWS::AccountId}
-                kms:ViaService: sqs.us-east-1.amazonaws.com
-            Effect: Allow
+                  Fn::Sub: '${AWS::AccountId}'
+                kms:ViaService: 'sqs.us-east-1.amazonaws.com'
+            Effect: 'Allow'
             Principal:
               AWS: '*'
             Resource: '*'
-            Sid: >-
-              Allow access through Simple Queue Service (SQS) for all principals
-              in the account that are authorized to use SQS
+            Sid: 'Allow access through Simple Queue Service (SQS) for all principals in the account that are authorized to use SQS'
           - Action:
-              - kms:Describe*
-              - kms:Get*
-              - kms:List*
-              - kms:RevokeGrant
-            Effect: Allow
+              - 'kms:Describe*'
+              - 'kms:Get*'
+              - 'kms:List*'
+              - 'kms:RevokeGrant'
+            Effect: 'Allow'
             Principal:
               AWS:
-                Fn::Sub: arn:aws:iam::${AWS::AccountId}:root
+                Fn::Sub: 'arn:aws:iam::${AWS::AccountId}:root'
             Resource: '*'
-            Sid: Allow direct access to key metadata to the account
+            Sid: 'Allow direct access to key metadata to the account'
         Version: '2012-10-17'
       PendingWindowInDays: 7
-    Type: AWS::KMS::Key
+    Type: 'AWS::KMS::Key'
   FnEnricherSEUpsertA5b59364dQueuePolicy:
     Properties:
       PolicyDocument:
         Statement:
           - Action:
-              - sqs:SendMessage
+              - 'sqs:SendMessage'
             Condition:
               ArnEquals:
                 aws:SourceArn:
                   Fn::GetAtt:
-                    - FnEnricherSEUpsertA5b59364dRule
-                    - Arn
-            Effect: Allow
+                    - 'FnEnricherSEUpsertA5b59364dRule'
+                    - 'Arn'
+            Effect: 'Allow'
             Principal:
-              Service: events.amazonaws.com
+              Service: 'events.amazonaws.com'
             Resource:
               Fn::GetAtt:
-                - FnEnricherSEUpsertA5b59364dQueue
-                - Arn
-            Sid: Allow EventBridge to send messages to the queue
+                - 'FnEnricherSEUpsertA5b59364dQueue'
+                - 'Arn'
+            Sid: 'Allow EventBridge to send messages to the queue'
       Queues:
-        - Ref: FnEnricherSEUpsertA5b59364dQueue
-    Type: AWS::SQS::QueuePolicy
+        - Ref: 'FnEnricherSEUpsertA5b59364dQueue'
+    Type: 'AWS::SQS::QueuePolicy'
   FnEnricherSEUpsertA5b59364dRule:
     Properties:
-      EventBusName: default
+      EventBusName: 'default'
       EventPattern:
         detail:
           dynamodb:
             NewImage:
               _et:
                 S:
-                  - SubscriptionEvent
+                  - 'SubscriptionEvent'
         detail-type:
-          - INSERT
-          - MODIFY
+          - 'INSERT'
+          - 'MODIFY'
         resources:
           - Fn::GetAtt:
-              - TableSubscriptionEvent
-              - Arn
+              - 'TableSubscriptionEvent'
+              - 'Arn'
         source:
-          - TableSubscriptionEvent.SubscriptionEvent
+          - 'TableSubscriptionEvent.SubscriptionEvent'
       Targets:
         - Arn:
             Fn::GetAtt:
-              - FnEnricherSEUpsertA5b59364dQueue
-              - Arn
-          Id: FnEnricherSEUpsertA5b59364d
-    Type: AWS::Events::Rule
+              - 'FnEnricherSEUpsertA5b59364dQueue'
+              - 'Arn'
+          Id: 'FnEnricherSEUpsertA5b59364d'
+    Type: 'AWS::Events::Rule'
   FnReactAUpsert7f5401fa:
     Metadata:
-      BuildMethod: esbuild
+      BuildMethod: 'esbuild'
       BuildProperties:
         EntryPoints:
-          - ./index
+          - './index'
         External:
           - '@aws-sdk/*'
         Minify: false
         Sourcemap: true
-        Target: es2022
+        Target: 'es2022'
     Properties:
-      CodeUri: react--account--upsert
+      CodeUri: 'react--account--upsert'
       Events:
         Stream:
           Properties:
             BatchSize: 10
             FunctionResponseTypes:
-              - ReportBatchItemFailures
+              - 'ReportBatchItemFailures'
             Queue:
               Fn::GetAtt:
-                - FnReactAUpsert7f5401faQueue
-                - Arn
-          Type: SQS
+                - 'FnReactAUpsert7f5401faQueue'
+                - 'Arn'
+          Type: 'SQS'
       MemorySize: 256
       Policies:
-        - AWSLambdaBasicExecutionRole
-        - AWSLambda_ReadOnlyAccess
-        - AWSXrayWriteOnlyAccess
-        - CloudWatchLambdaInsightsExecutionRolePolicy
+        - 'AWSLambdaBasicExecutionRole'
+        - 'AWSLambda_ReadOnlyAccess'
+        - 'AWSXrayWriteOnlyAccess'
+        - 'CloudWatchLambdaInsightsExecutionRolePolicy'
         - CloudWatchPutMetricPolicy: {}
         - DynamoDBReadPolicy:
             TableName:
-              Ref: TableAccount
+              Ref: 'TableAccount'
         - DynamoDBCrudPolicy:
             TableName:
-              Ref: TablePlanMetric
+              Ref: 'TablePlanMetric'
         - SQSSendMessagePolicy:
             QueueName:
               Fn::GetAtt:
-                - FnReactAUpsert7f5401faDLQ
-                - QueueName
+                - 'FnReactAUpsert7f5401faDLQ'
+                - 'QueueName'
       Timeout: 90
-    Type: AWS::Serverless::Function
+    Type: 'AWS::Serverless::Function'
   FnReactAUpsert7f5401faDLQ:
     Properties:
       KmsMasterKeyId:
         Fn::If:
-          - IsProd
-          - Ref: FnReactAUpsert7f5401faQueueKey
-          - AWS::NoValue
-    Type: AWS::SQS::Queue
+          - 'IsProd'
+          - Ref: 'FnReactAUpsert7f5401faQueueKey'
+          - 'AWS::NoValue'
+    Type: 'AWS::SQS::Queue'
   FnReactAUpsert7f5401faLogGroup:
     Properties:
       LogGroupName:
-        Fn::Sub: /aws/lambda/${FnReactAUpsert7f5401fa}
+        Fn::Sub: '/aws/lambda/${FnReactAUpsert7f5401fa}'
       RetentionInDays:
-        Ref: LogRetentionInDays
-    Type: AWS::Logs::LogGroup
+        Ref: 'LogRetentionInDays'
+    Type: 'AWS::Logs::LogGroup'
   FnReactAUpsert7f5401faQueue:
     Properties:
       Fn::If:
-        - IsProd
+        - 'IsProd'
         - KmsMasterKeyId:
-            Ref: FnReactAUpsert7f5401faQueueKey
+            Ref: 'FnReactAUpsert7f5401faQueueKey'
           RedrivePolicy:
             deadLetterTargetArn:
               Fn::GetAtt:
-                - FnReactAUpsert7f5401faDLQ
-                - Arn
+                - 'FnReactAUpsert7f5401faDLQ'
+                - 'Arn'
             maxReceiveCount: 3
           VisibilityTimeout: 320
         - RedrivePolicy:
             deadLetterTargetArn:
               Fn::GetAtt:
-                - FnReactAUpsert7f5401faDLQ
-                - Arn
+                - 'FnReactAUpsert7f5401faDLQ'
+                - 'Arn'
             maxReceiveCount: 3
           VisibilityTimeout: 320
-    Type: AWS::SQS::Queue
+    Type: 'AWS::SQS::Queue'
   FnReactAUpsert7f5401faQueueKey:
-    Condition: IsProd
+    Condition: 'IsProd'
     Properties:
       KeyPolicy:
         Statement:
           - Action:
-              - kms:Decrypt
-              - kms:GenerateDataKey
-            Effect: Allow
+              - 'kms:Decrypt'
+              - 'kms:GenerateDataKey'
+            Effect: 'Allow'
             Principal:
-              Service: events.amazonaws.com
+              Service: 'events.amazonaws.com'
             Resource: '*'
-            Sid: Allow EventBridge to use the Key
+            Sid: 'Allow EventBridge to use the Key'
           - Action:
-              - kms:Create*
-              - kms:Describe*
-              - kms:Enable*
-              - kms:List*
-              - kms:Put*
-              - kms:Update*
-              - kms:Revoke*
-              - kms:Disable*
-              - kms:Get*
-              - kms:Delete*
-              - kms:ScheduleKeyDeletion
-              - kms:CancelKeyDeletion
-            Effect: Allow
+              - 'kms:Create*'
+              - 'kms:Describe*'
+              - 'kms:Enable*'
+              - 'kms:List*'
+              - 'kms:Put*'
+              - 'kms:Update*'
+              - 'kms:Revoke*'
+              - 'kms:Disable*'
+              - 'kms:Get*'
+              - 'kms:Delete*'
+              - 'kms:ScheduleKeyDeletion'
+              - 'kms:CancelKeyDeletion'
+            Effect: 'Allow'
             Principal:
               AWS:
-                Fn::Sub: arn:aws:iam::${AWS::AccountId}:root
+                Fn::Sub: 'arn:aws:iam::${AWS::AccountId}:root'
             Resource: '*'
-            Sid: Allow administration of the key
+            Sid: 'Allow administration of the key'
           - Action:
-              - kms:Encrypt
-              - kms:Decrypt
-              - kms:ReEncrypt*
-              - kms:GenerateDataKey*
-              - kms:CreateGrant
-              - kms:DescribeKey
+              - 'kms:Encrypt'
+              - 'kms:Decrypt'
+              - 'kms:ReEncrypt*'
+              - 'kms:GenerateDataKey*'
+              - 'kms:CreateGrant'
+              - 'kms:DescribeKey'
             Condition:
               StringEquals:
                 kms:CallerAccount:
-                  Fn::Sub: ${AWS::AccountId}
-                kms:ViaService: sqs.us-east-1.amazonaws.com
-            Effect: Allow
+                  Fn::Sub: '${AWS::AccountId}'
+                kms:ViaService: 'sqs.us-east-1.amazonaws.com'
+            Effect: 'Allow'
             Principal:
               AWS: '*'
             Resource: '*'
-            Sid: >-
-              Allow access through Simple Queue Service (SQS) for all principals
-              in the account that are authorized to use SQS
+            Sid: 'Allow access through Simple Queue Service (SQS) for all principals in the account that are authorized to use SQS'
           - Action:
-              - kms:Describe*
-              - kms:Get*
-              - kms:List*
-              - kms:RevokeGrant
-            Effect: Allow
+              - 'kms:Describe*'
+              - 'kms:Get*'
+              - 'kms:List*'
+              - 'kms:RevokeGrant'
+            Effect: 'Allow'
             Principal:
               AWS:
-                Fn::Sub: arn:aws:iam::${AWS::AccountId}:root
+                Fn::Sub: 'arn:aws:iam::${AWS::AccountId}:root'
             Resource: '*'
-            Sid: Allow direct access to key metadata to the account
+            Sid: 'Allow direct access to key metadata to the account'
         Version: '2012-10-17'
       PendingWindowInDays: 7
-    Type: AWS::KMS::Key
+    Type: 'AWS::KMS::Key'
   FnReactAUpsert7f5401faQueuePolicy:
     Properties:
       PolicyDocument:
         Statement:
           - Action:
-              - sqs:SendMessage
+              - 'sqs:SendMessage'
             Condition:
               ArnEquals:
                 aws:SourceArn:
                   Fn::GetAtt:
-                    - FnReactAUpsert7f5401faRule
-                    - Arn
-            Effect: Allow
+                    - 'FnReactAUpsert7f5401faRule'
+                    - 'Arn'
+            Effect: 'Allow'
             Principal:
-              Service: events.amazonaws.com
+              Service: 'events.amazonaws.com'
             Resource:
               Fn::GetAtt:
-                - FnReactAUpsert7f5401faQueue
-                - Arn
-            Sid: Allow EventBridge to send messages to the queue
+                - 'FnReactAUpsert7f5401faQueue'
+                - 'Arn'
+            Sid: 'Allow EventBridge to send messages to the queue'
       Queues:
-        - Ref: FnReactAUpsert7f5401faQueue
-    Type: AWS::SQS::QueuePolicy
+        - Ref: 'FnReactAUpsert7f5401faQueue'
+    Type: 'AWS::SQS::QueuePolicy'
   FnReactAUpsert7f5401faRule:
     Properties:
-      EventBusName: default
+      EventBusName: 'default'
       EventPattern:
         detail:
           dynamodb:
             NewImage:
               _et:
                 S:
-                  - Account
+                  - 'Account'
         detail-type:
-          - INSERT
-          - MODIFY
+          - 'INSERT'
+          - 'MODIFY'
         resources:
           - Fn::GetAtt:
-              - TableAccount
-              - Arn
+              - 'TableAccount'
+              - 'Arn'
         source:
-          - TableAccount.Account
+          - 'TableAccount.Account'
       Targets:
         - Arn:
             Fn::GetAtt:
-              - FnReactAUpsert7f5401faQueue
-              - Arn
-          Id: FnReactAUpsert7f5401fa
-    Type: AWS::Events::Rule
+              - 'FnReactAUpsert7f5401faQueue'
+              - 'Arn'
+          Id: 'FnReactAUpsert7f5401fa'
+    Type: 'AWS::Events::Rule'
   FnReactPMUpsert2b2e8d7d:
     Metadata:
-      BuildMethod: esbuild
+      BuildMethod: 'esbuild'
       BuildProperties:
         EntryPoints:
-          - ./index
+          - './index'
         External:
           - '@aws-sdk/*'
         Minify: false
         Sourcemap: true
-        Target: es2022
+        Target: 'es2022'
     Properties:
-      CodeUri: react--plan-metric--upsert
+      CodeUri: 'react--plan-metric--upsert'
       Events:
         Stream:
           Properties:
             BatchSize: 10
             FunctionResponseTypes:
-              - ReportBatchItemFailures
+              - 'ReportBatchItemFailures'
             Queue:
               Fn::GetAtt:
-                - FnReactPMUpsert2b2e8d7dQueue
-                - Arn
-          Type: SQS
+                - 'FnReactPMUpsert2b2e8d7dQueue'
+                - 'Arn'
+          Type: 'SQS'
       MemorySize: 256
       Policies:
-        - AWSLambdaBasicExecutionRole
-        - AWSLambda_ReadOnlyAccess
-        - AWSXrayWriteOnlyAccess
-        - CloudWatchLambdaInsightsExecutionRolePolicy
+        - 'AWSLambdaBasicExecutionRole'
+        - 'AWSLambda_ReadOnlyAccess'
+        - 'AWSXrayWriteOnlyAccess'
+        - 'CloudWatchLambdaInsightsExecutionRolePolicy'
         - CloudWatchPutMetricPolicy: {}
         - DynamoDBReadPolicy:
             TableName:
-              Ref: TablePlanMetric
+              Ref: 'TablePlanMetric'
         - DynamoDBCrudPolicy:
             TableName:
-              Ref: TableMetric
+              Ref: 'TableMetric'
         - SQSSendMessagePolicy:
             QueueName:
               Fn::GetAtt:
-                - FnReactPMUpsert2b2e8d7dDLQ
-                - QueueName
+                - 'FnReactPMUpsert2b2e8d7dDLQ'
+                - 'QueueName'
       Timeout: 90
-    Type: AWS::Serverless::Function
+    Type: 'AWS::Serverless::Function'
   FnReactPMUpsert2b2e8d7dDLQ:
     Properties:
       KmsMasterKeyId:
         Fn::If:
-          - IsProd
-          - Ref: FnReactPMUpsert2b2e8d7dQueueKey
-          - AWS::NoValue
-    Type: AWS::SQS::Queue
+          - 'IsProd'
+          - Ref: 'FnReactPMUpsert2b2e8d7dQueueKey'
+          - 'AWS::NoValue'
+    Type: 'AWS::SQS::Queue'
   FnReactPMUpsert2b2e8d7dLogGroup:
     Properties:
       LogGroupName:
-        Fn::Sub: /aws/lambda/${FnReactPMUpsert2b2e8d7d}
+        Fn::Sub: '/aws/lambda/${FnReactPMUpsert2b2e8d7d}'
       RetentionInDays:
-        Ref: LogRetentionInDays
-    Type: AWS::Logs::LogGroup
+        Ref: 'LogRetentionInDays'
+    Type: 'AWS::Logs::LogGroup'
   FnReactPMUpsert2b2e8d7dQueue:
     Properties:
       Fn::If:
-        - IsProd
+        - 'IsProd'
         - KmsMasterKeyId:
-            Ref: FnReactPMUpsert2b2e8d7dQueueKey
+            Ref: 'FnReactPMUpsert2b2e8d7dQueueKey'
           RedrivePolicy:
             deadLetterTargetArn:
               Fn::GetAtt:
-                - FnReactPMUpsert2b2e8d7dDLQ
-                - Arn
+                - 'FnReactPMUpsert2b2e8d7dDLQ'
+                - 'Arn'
             maxReceiveCount: 3
           VisibilityTimeout: 320
         - RedrivePolicy:
             deadLetterTargetArn:
               Fn::GetAtt:
-                - FnReactPMUpsert2b2e8d7dDLQ
-                - Arn
+                - 'FnReactPMUpsert2b2e8d7dDLQ'
+                - 'Arn'
             maxReceiveCount: 3
           VisibilityTimeout: 320
-    Type: AWS::SQS::Queue
+    Type: 'AWS::SQS::Queue'
   FnReactPMUpsert2b2e8d7dQueueKey:
-    Condition: IsProd
+    Condition: 'IsProd'
     Properties:
       KeyPolicy:
         Statement:
           - Action:
-              - kms:Decrypt
-              - kms:GenerateDataKey
-            Effect: Allow
+              - 'kms:Decrypt'
+              - 'kms:GenerateDataKey'
+            Effect: 'Allow'
             Principal:
-              Service: events.amazonaws.com
+              Service: 'events.amazonaws.com'
             Resource: '*'
-            Sid: Allow EventBridge to use the Key
+            Sid: 'Allow EventBridge to use the Key'
           - Action:
-              - kms:Create*
-              - kms:Describe*
-              - kms:Enable*
-              - kms:List*
-              - kms:Put*
-              - kms:Update*
-              - kms:Revoke*
-              - kms:Disable*
-              - kms:Get*
-              - kms:Delete*
-              - kms:ScheduleKeyDeletion
-              - kms:CancelKeyDeletion
-            Effect: Allow
+              - 'kms:Create*'
+              - 'kms:Describe*'
+              - 'kms:Enable*'
+              - 'kms:List*'
+              - 'kms:Put*'
+              - 'kms:Update*'
+              - 'kms:Revoke*'
+              - 'kms:Disable*'
+              - 'kms:Get*'
+              - 'kms:Delete*'
+              - 'kms:ScheduleKeyDeletion'
+              - 'kms:CancelKeyDeletion'
+            Effect: 'Allow'
             Principal:
               AWS:
-                Fn::Sub: arn:aws:iam::${AWS::AccountId}:root
+                Fn::Sub: 'arn:aws:iam::${AWS::AccountId}:root'
             Resource: '*'
-            Sid: Allow administration of the key
+            Sid: 'Allow administration of the key'
           - Action:
-              - kms:Encrypt
-              - kms:Decrypt
-              - kms:ReEncrypt*
-              - kms:GenerateDataKey*
-              - kms:CreateGrant
-              - kms:DescribeKey
+              - 'kms:Encrypt'
+              - 'kms:Decrypt'
+              - 'kms:ReEncrypt*'
+              - 'kms:GenerateDataKey*'
+              - 'kms:CreateGrant'
+              - 'kms:DescribeKey'
             Condition:
               StringEquals:
                 kms:CallerAccount:
-                  Fn::Sub: ${AWS::AccountId}
-                kms:ViaService: sqs.us-east-1.amazonaws.com
-            Effect: Allow
+                  Fn::Sub: '${AWS::AccountId}'
+                kms:ViaService: 'sqs.us-east-1.amazonaws.com'
+            Effect: 'Allow'
             Principal:
               AWS: '*'
             Resource: '*'
-            Sid: >-
-              Allow access through Simple Queue Service (SQS) for all principals
-              in the account that are authorized to use SQS
+            Sid: 'Allow access through Simple Queue Service (SQS) for all principals in the account that are authorized to use SQS'
           - Action:
-              - kms:Describe*
-              - kms:Get*
-              - kms:List*
-              - kms:RevokeGrant
-            Effect: Allow
+              - 'kms:Describe*'
+              - 'kms:Get*'
+              - 'kms:List*'
+              - 'kms:RevokeGrant'
+            Effect: 'Allow'
             Principal:
               AWS:
-                Fn::Sub: arn:aws:iam::${AWS::AccountId}:root
+                Fn::Sub: 'arn:aws:iam::${AWS::AccountId}:root'
             Resource: '*'
-            Sid: Allow direct access to key metadata to the account
+            Sid: 'Allow direct access to key metadata to the account'
         Version: '2012-10-17'
       PendingWindowInDays: 7
-    Type: AWS::KMS::Key
+    Type: 'AWS::KMS::Key'
   FnReactPMUpsert2b2e8d7dQueuePolicy:
     Properties:
       PolicyDocument:
         Statement:
           - Action:
-              - sqs:SendMessage
+              - 'sqs:SendMessage'
             Condition:
               ArnEquals:
                 aws:SourceArn:
                   Fn::GetAtt:
-                    - FnReactPMUpsert2b2e8d7dRule
-                    - Arn
-            Effect: Allow
+                    - 'FnReactPMUpsert2b2e8d7dRule'
+                    - 'Arn'
+            Effect: 'Allow'
             Principal:
-              Service: events.amazonaws.com
+              Service: 'events.amazonaws.com'
             Resource:
               Fn::GetAtt:
-                - FnReactPMUpsert2b2e8d7dQueue
-                - Arn
-            Sid: Allow EventBridge to send messages to the queue
+                - 'FnReactPMUpsert2b2e8d7dQueue'
+                - 'Arn'
+            Sid: 'Allow EventBridge to send messages to the queue'
       Queues:
-        - Ref: FnReactPMUpsert2b2e8d7dQueue
-    Type: AWS::SQS::QueuePolicy
+        - Ref: 'FnReactPMUpsert2b2e8d7dQueue'
+    Type: 'AWS::SQS::QueuePolicy'
   FnReactPMUpsert2b2e8d7dRule:
     Properties:
-      EventBusName: default
+      EventBusName: 'default'
       EventPattern:
         detail:
           dynamodb:
             NewImage:
               _et:
                 S:
-                  - PlanMetric
+                  - 'PlanMetric'
         detail-type:
-          - INSERT
-          - MODIFY
+          - 'INSERT'
+          - 'MODIFY'
         resources:
           - Fn::GetAtt:
-              - TablePlanMetric
-              - Arn
+              - 'TablePlanMetric'
+              - 'Arn'
         source:
-          - TablePlanMetric.PlanMetric
+          - 'TablePlanMetric.PlanMetric'
       Targets:
         - Arn:
             Fn::GetAtt:
-              - FnReactPMUpsert2b2e8d7dQueue
-              - Arn
-          Id: FnReactPMUpsert2b2e8d7d
-    Type: AWS::Events::Rule
+              - 'FnReactPMUpsert2b2e8d7dQueue'
+              - 'Arn'
+          Id: 'FnReactPMUpsert2b2e8d7d'
+    Type: 'AWS::Events::Rule'
   TableAccount:
     Properties:
       AttributeDefinitions:
-        - AttributeName: pk
-          AttributeType: S
-        - AttributeName: sk
-          AttributeType: S
-        - AttributeName: gsi1pk
-          AttributeType: S
-        - AttributeName: gsi1sk
-          AttributeType: S
-      BillingMode: PAY_PER_REQUEST
+        - AttributeName: 'pk'
+          AttributeType: 'S'
+        - AttributeName: 'sk'
+          AttributeType: 'S'
+        - AttributeName: 'gsi1pk'
+          AttributeType: 'S'
+        - AttributeName: 'gsi1sk'
+          AttributeType: 'S'
+      BillingMode: 'PAY_PER_REQUEST'
       GlobalSecondaryIndexes:
-        - IndexName: gsi1
+        - IndexName: 'gsi1'
           KeySchema:
-            - AttributeName: gsi1pk
-              KeyType: HASH
-            - AttributeName: gsi1sk
-              KeyType: RANGE
+            - AttributeName: 'gsi1pk'
+              KeyType: 'HASH'
+            - AttributeName: 'gsi1sk'
+              KeyType: 'RANGE'
           Projection:
-            ProjectionType: ALL
+            ProjectionType: 'ALL'
       KeySchema:
-        - AttributeName: pk
-          KeyType: HASH
-        - AttributeName: sk
-          KeyType: RANGE
+        - AttributeName: 'pk'
+          KeyType: 'HASH'
+        - AttributeName: 'sk'
+          KeyType: 'RANGE'
       PointInTimeRecoverySpecification:
         PointInTimeRecoveryEnabled:
           Fn::If:
-            - IsProd
+            - 'IsProd'
             - true
             - false
       SSESpecification:
         SSEEnabled:
           Fn::If:
-            - IsProd
+            - 'IsProd'
             - true
             - false
       StreamSpecification:
-        StreamViewType: NEW_AND_OLD_IMAGES
+        StreamViewType: 'NEW_AND_OLD_IMAGES'
       Tags:
-        - Key: StageName
+        - Key: 'StageName'
           Value:
-            Ref: StageName
-        - Key: TableName
-          Value: TableAccount
-    Type: AWS::DynamoDB::Table
+            Ref: 'StageName'
+        - Key: 'TableName'
+          Value: 'TableAccount'
+    Type: 'AWS::DynamoDB::Table'
   TableAccountCDCDispatcher:
     Metadata:
-      BuildMethod: esbuild
+      BuildMethod: 'esbuild'
       BuildProperties:
         EntryPoints:
-          - ./index
+          - './index'
         External:
           - '@aws-sdk/*'
         Minify: false
         Sourcemap: true
-        Target: es2022
+        Target: 'es2022'
     Properties:
-      CodeUri: dispatcher-table-account
+      CodeUri: 'dispatcher-table-account'
       Events:
         Stream:
           Properties:
             BatchSize: 10
             FunctionResponseTypes:
-              - ReportBatchItemFailures
+              - 'ReportBatchItemFailures'
             MaximumRetryAttempts: 3
-            StartingPosition: TRIM_HORIZON
+            StartingPosition: 'TRIM_HORIZON'
             Stream:
               Fn::GetAtt:
-                - TableAccount
-                - StreamArn
-          Type: DynamoDB
+                - 'TableAccount'
+                - 'StreamArn'
+          Type: 'DynamoDB'
       MemorySize: 384
       Policies:
-        - AWSLambdaBasicExecutionRole
-        - AWSLambda_ReadOnlyAccess
-        - AWSXrayWriteOnlyAccess
-        - CloudWatchLambdaInsightsExecutionRolePolicy
+        - 'AWSLambdaBasicExecutionRole'
+        - 'AWSLambda_ReadOnlyAccess'
+        - 'AWSXrayWriteOnlyAccess'
+        - 'CloudWatchLambdaInsightsExecutionRolePolicy'
         - CloudWatchPutMetricPolicy: {}
         - EventBridgePutEventsPolicy:
-            EventBusName: default
+            EventBusName: 'default'
       Timeout: 60
-    Type: AWS::Serverless::Function
+    Type: 'AWS::Serverless::Function'
   TableAccountCDCDispatcherLogGroup:
     Properties:
       LogGroupName:
-        Fn::Sub: /aws/lambda/${TableAccountCDCDispatcher}
+        Fn::Sub: '/aws/lambda/${TableAccountCDCDispatcher}'
       RetentionInDays:
-        Ref: LogRetentionInDays
-    Type: AWS::Logs::LogGroup
+        Ref: 'LogRetentionInDays'
+    Type: 'AWS::Logs::LogGroup'
   TableMetric:
     Properties:
       AttributeDefinitions:
-        - AttributeName: pk
-          AttributeType: S
-        - AttributeName: sk
-          AttributeType: S
-      BillingMode: PAY_PER_REQUEST
+        - AttributeName: 'pk'
+          AttributeType: 'S'
+        - AttributeName: 'sk'
+          AttributeType: 'S'
+      BillingMode: 'PAY_PER_REQUEST'
       KeySchema:
-        - AttributeName: pk
-          KeyType: HASH
-        - AttributeName: sk
-          KeyType: RANGE
+        - AttributeName: 'pk'
+          KeyType: 'HASH'
+        - AttributeName: 'sk'
+          KeyType: 'RANGE'
       PointInTimeRecoverySpecification:
         PointInTimeRecoveryEnabled:
           Fn::If:
-            - IsProd
+            - 'IsProd'
             - true
             - false
       SSESpecification:
         SSEEnabled:
           Fn::If:
-            - IsProd
+            - 'IsProd'
             - true
             - false
       Tags:
-        - Key: StageName
+        - Key: 'StageName'
           Value:
-            Ref: StageName
-        - Key: TableName
-          Value: TableMetric
-    Type: AWS::DynamoDB::Table
+            Ref: 'StageName'
+        - Key: 'TableName'
+          Value: 'TableMetric'
+    Type: 'AWS::DynamoDB::Table'
   TablePlanMetric:
     Properties:
       AttributeDefinitions:
-        - AttributeName: pk
-          AttributeType: S
-        - AttributeName: sk
-          AttributeType: S
-      BillingMode: PAY_PER_REQUEST
+        - AttributeName: 'pk'
+          AttributeType: 'S'
+        - AttributeName: 'sk'
+          AttributeType: 'S'
+      BillingMode: 'PAY_PER_REQUEST'
       KeySchema:
-        - AttributeName: pk
-          KeyType: HASH
-        - AttributeName: sk
-          KeyType: RANGE
+        - AttributeName: 'pk'
+          KeyType: 'HASH'
+        - AttributeName: 'sk'
+          KeyType: 'RANGE'
       PointInTimeRecoverySpecification:
         PointInTimeRecoveryEnabled:
           Fn::If:
-            - IsProd
+            - 'IsProd'
             - true
             - false
       SSESpecification:
         SSEEnabled:
           Fn::If:
-            - IsProd
+            - 'IsProd'
             - true
             - false
       StreamSpecification:
-        StreamViewType: NEW_AND_OLD_IMAGES
+        StreamViewType: 'NEW_AND_OLD_IMAGES'
       Tags:
-        - Key: StageName
+        - Key: 'StageName'
           Value:
-            Ref: StageName
-        - Key: TableName
-          Value: TablePlanMetric
-    Type: AWS::DynamoDB::Table
+            Ref: 'StageName'
+        - Key: 'TableName'
+          Value: 'TablePlanMetric'
+    Type: 'AWS::DynamoDB::Table'
   TablePlanMetricCDCDispatcher:
     Metadata:
-      BuildMethod: esbuild
+      BuildMethod: 'esbuild'
       BuildProperties:
         EntryPoints:
-          - ./index
+          - './index'
         External:
           - '@aws-sdk/*'
         Minify: false
         Sourcemap: true
-        Target: es2022
+        Target: 'es2022'
     Properties:
-      CodeUri: dispatcher-table-plan-metric
+      CodeUri: 'dispatcher-table-plan-metric'
       Events:
         Stream:
           Properties:
             BatchSize: 10
             FunctionResponseTypes:
-              - ReportBatchItemFailures
+              - 'ReportBatchItemFailures'
             MaximumRetryAttempts: 3
-            StartingPosition: TRIM_HORIZON
+            StartingPosition: 'TRIM_HORIZON'
             Stream:
               Fn::GetAtt:
-                - TablePlanMetric
-                - StreamArn
-          Type: DynamoDB
+                - 'TablePlanMetric'
+                - 'StreamArn'
+          Type: 'DynamoDB'
       MemorySize: 384
       Policies:
-        - AWSLambdaBasicExecutionRole
-        - AWSLambda_ReadOnlyAccess
-        - AWSXrayWriteOnlyAccess
-        - CloudWatchLambdaInsightsExecutionRolePolicy
+        - 'AWSLambdaBasicExecutionRole'
+        - 'AWSLambda_ReadOnlyAccess'
+        - 'AWSXrayWriteOnlyAccess'
+        - 'CloudWatchLambdaInsightsExecutionRolePolicy'
         - CloudWatchPutMetricPolicy: {}
         - EventBridgePutEventsPolicy:
-            EventBusName: default
+            EventBusName: 'default'
       Timeout: 60
-    Type: AWS::Serverless::Function
+    Type: 'AWS::Serverless::Function'
   TablePlanMetricCDCDispatcherLogGroup:
     Properties:
       LogGroupName:
-        Fn::Sub: /aws/lambda/${TablePlanMetricCDCDispatcher}
+        Fn::Sub: '/aws/lambda/${TablePlanMetricCDCDispatcher}'
       RetentionInDays:
-        Ref: LogRetentionInDays
-    Type: AWS::Logs::LogGroup
+        Ref: 'LogRetentionInDays'
+    Type: 'AWS::Logs::LogGroup'
   TableSubscriptionEvent:
     Properties:
       AttributeDefinitions:
-        - AttributeName: pk
-          AttributeType: S
-        - AttributeName: sk
-          AttributeType: S
-      BillingMode: PAY_PER_REQUEST
+        - AttributeName: 'pk'
+          AttributeType: 'S'
+        - AttributeName: 'sk'
+          AttributeType: 'S'
+      BillingMode: 'PAY_PER_REQUEST'
       KeySchema:
-        - AttributeName: pk
-          KeyType: HASH
-        - AttributeName: sk
-          KeyType: RANGE
+        - AttributeName: 'pk'
+          KeyType: 'HASH'
+        - AttributeName: 'sk'
+          KeyType: 'RANGE'
       PointInTimeRecoverySpecification:
         PointInTimeRecoveryEnabled:
           Fn::If:
-            - IsProd
+            - 'IsProd'
             - true
             - false
       SSESpecification:
         SSEEnabled:
           Fn::If:
-            - IsProd
+            - 'IsProd'
             - true
             - false
       StreamSpecification:
-        StreamViewType: NEW_AND_OLD_IMAGES
+        StreamViewType: 'NEW_AND_OLD_IMAGES'
       Tags:
-        - Key: StageName
+        - Key: 'StageName'
           Value:
-            Ref: StageName
-        - Key: TableName
-          Value: TableSubscriptionEvent
-    Type: AWS::DynamoDB::Table
+            Ref: 'StageName'
+        - Key: 'TableName'
+          Value: 'TableSubscriptionEvent'
+    Type: 'AWS::DynamoDB::Table'
   TableSubscriptionEventCDCDispatcher:
     Metadata:
-      BuildMethod: esbuild
+      BuildMethod: 'esbuild'
       BuildProperties:
         EntryPoints:
-          - ./index
+          - './index'
         External:
           - '@aws-sdk/*'
         Minify: false
         Sourcemap: true
-        Target: es2022
+        Target: 'es2022'
     Properties:
-      CodeUri: dispatcher-table-subscription-event
+      CodeUri: 'dispatcher-table-subscription-event'
       Events:
         Stream:
           Properties:
             BatchSize: 10
             FunctionResponseTypes:
-              - ReportBatchItemFailures
+              - 'ReportBatchItemFailures'
             MaximumRetryAttempts: 3
-            StartingPosition: TRIM_HORIZON
+            StartingPosition: 'TRIM_HORIZON'
             Stream:
               Fn::GetAtt:
-                - TableSubscriptionEvent
-                - StreamArn
-          Type: DynamoDB
+                - 'TableSubscriptionEvent'
+                - 'StreamArn'
+          Type: 'DynamoDB'
       MemorySize: 384
       Policies:
-        - AWSLambdaBasicExecutionRole
-        - AWSLambda_ReadOnlyAccess
-        - AWSXrayWriteOnlyAccess
-        - CloudWatchLambdaInsightsExecutionRolePolicy
+        - 'AWSLambdaBasicExecutionRole'
+        - 'AWSLambda_ReadOnlyAccess'
+        - 'AWSXrayWriteOnlyAccess'
+        - 'CloudWatchLambdaInsightsExecutionRolePolicy'
         - CloudWatchPutMetricPolicy: {}
         - EventBridgePutEventsPolicy:
-            EventBusName: default
+            EventBusName: 'default'
       Timeout: 60
-    Type: AWS::Serverless::Function
+    Type: 'AWS::Serverless::Function'
   TableSubscriptionEventCDCDispatcherLogGroup:
     Properties:
       LogGroupName:
-        Fn::Sub: /aws/lambda/${TableSubscriptionEventCDCDispatcher}
+        Fn::Sub: '/aws/lambda/${TableSubscriptionEventCDCDispatcher}'
       RetentionInDays:
-        Ref: LogRetentionInDays
-    Type: AWS::Logs::LogGroup
-Transform: AWS::Serverless-2016-10-31
+        Ref: 'LogRetentionInDays'
+    Type: 'AWS::Logs::LogGroup'
+Transform: 'AWS::Serverless-2016-10-31'
