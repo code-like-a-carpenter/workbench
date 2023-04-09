@@ -1,11 +1,7 @@
 import assert from 'assert';
-import fs, {readFileSync} from 'fs';
-import path from 'path';
+import fs from 'fs';
 
-import type {
-  AddToSchemaResult,
-  PluginFunction,
-} from '@graphql-codegen/plugin-helpers';
+import type {PluginFunction} from '@graphql-codegen/plugin-helpers';
 import yml from 'js-yaml';
 import {CLOUDFORMATION_SCHEMA} from 'js-yaml-cloudformation-schema';
 
@@ -19,13 +15,7 @@ import {combineFragments} from './fragments/combine-fragments';
 import {defineTable} from './table';
 import type {ServerlessApplicationModel} from './types';
 
-/** @override */
-export function addToSchema(): AddToSchemaResult {
-  return readFileSync(
-    path.resolve(__dirname, '../../../../../schema.graphqls'),
-    'utf8'
-  );
-}
+export {schema as addToSchema} from '@code-like-a-carpenter/foundation-intermediate-representation';
 
 /**
  * Loads an existing consumer-generated CF template or returns a basic template

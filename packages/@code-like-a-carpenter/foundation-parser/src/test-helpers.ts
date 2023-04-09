@@ -1,17 +1,11 @@
-import {readFile} from 'node:fs/promises';
-import path from 'node:path';
-
 import {buildSchema} from 'graphql';
+
+import {schema as coreSchema} from '@code-like-a-carpenter/foundation-intermediate-representation';
 
 import {ParserConfigSchema} from './config';
 import {parse} from './parser';
 
 export async function parseSchema(raw: string) {
-  const coreSchema = await readFile(
-    path.resolve(__dirname, '..', '..', '..', '..', './schema.graphqls'),
-    'utf8'
-  );
-
   const schema = buildSchema(`${coreSchema}\n${raw}`);
 
   return parse(

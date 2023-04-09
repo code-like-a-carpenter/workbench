@@ -25,8 +25,8 @@ export async function generateCode({config}: {config: string}) {
   } = await loadConfig(config);
 
   const schema = await loadSchema(relativeRoot, schemaGlob, [
-    foundationCloudformationPlugin.addToSchema(),
-    foundationTypescriptPlugin.addToSchema(),
+    foundationCloudformationPlugin.addToSchema,
+    foundationTypescriptPlugin.addToSchema,
   ]);
 
   const cwd = process.cwd();

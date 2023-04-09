@@ -1,17 +1,12 @@
 import assert from 'assert';
-import {readFileSync} from 'fs';
-import path from 'path';
 
-import type {
-  AddToSchemaResult,
-  PluginFunction,
-} from '@graphql-codegen/plugin-helpers';
+import type {PluginFunction} from '@graphql-codegen/plugin-helpers';
 
 import {parse} from '@code-like-a-carpenter/foundation-parser';
 import {makePlugin} from '@code-like-a-carpenter/graphql-codegen-helpers';
 
-import {ConfigSchema} from './config';
 import type {Config} from './config';
+import {ConfigSchema} from './config';
 import {filterNull} from './helpers';
 import {blindWriteTemplate} from './tables/templates/blind-write';
 import {createItemTemplate} from './tables/templates/create-item';
@@ -26,13 +21,7 @@ import {readItemTemplate} from './tables/templates/read-item';
 import {unmarshallTpl} from './tables/templates/unmarshall';
 import {updateItemTemplate} from './tables/templates/update-item';
 
-/** @override */
-export function addToSchema(): AddToSchemaResult {
-  return readFileSync(
-    path.resolve(__dirname, '../../../../../schema.graphqls'),
-    'utf8'
-  );
-}
+export {schema as addToSchema} from '@code-like-a-carpenter/foundation-intermediate-representation';
 
 /** @override */
 export const plugin: PluginFunction<Config> = makePlugin(
