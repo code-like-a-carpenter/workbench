@@ -201,7 +201,7 @@ export function makeHandler(
               AWS: '*',
             },
             Resource: '*',
-            Sid: 'Allow access through Simple Queue Service (SQS) for all principals in the account that are authorized to use SQS',
+            Sid: 'Allow authorized SQS callers to access the key',
           },
           {
             Action: [
