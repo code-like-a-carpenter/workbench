@@ -14,7 +14,14 @@ import type {TypescriptPluginConfig} from './config';
 import {loadConfig} from './load-config';
 import {loadSchema} from './schema';
 
-export async function generateCode({config}: {config: string}) {
+export type Outputs = 'cloudformation' | 'typescript';
+
+export interface GenerateCodeOptions {
+  config: string;
+  outputs: Outputs[];
+}
+
+export async function generateCode({config, outputs}: GenerateCodeOptions) {
   const relativeRoot = path.dirname(path.resolve(process.cwd(), config));
 
   const {
@@ -31,19 +38,31 @@ export async function generateCode({config}: {config: string}) {
 
   const cwd = process.cwd();
   process.chdir(relativeRoot);
-  await Promise.all([
-    generateCloudformation(
-      cfg,
-      schema,
-      path.resolve(relativeRoot, cloudformationTemplate)
-    ),
-    generateTypescript(
-      cfg,
-      cfg.typescriptConfig,
-      schema,
-      path.resolve(relativeRoot, typescriptOutput)
-    ),
-  ]);
+
+  const promises = [];
+  if (outputs.includes('cloudformation')) {
+    promises.push(
+      generateCloudformation(
+        cfg,
+        schema,
+        path.resolve(relativeRoot, cloudformationTemplate)
+      )
+    );
+  }
+
+  if (outputs.includes('typescript')) {
+    promises.push(
+      generateTypescript(
+        cfg,
+        cfg.typescriptConfig,
+        schema,
+        path.resolve(relativeRoot, typescriptOutput)
+      )
+    );
+  }
+
+  await Promise.all(promises);
+
   process.chdir(cwd);
 }
 
