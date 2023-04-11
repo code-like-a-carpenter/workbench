@@ -29,7 +29,7 @@
     "@code-like-a-carpenter/exception": "*",
     "@opentelemetry/api": "1.4.0",
     "@opentelemetry/sdk-trace-base": "^1.9.1",
-    "@sentry/serverless": "^7.40.0",
+    "@sentry/serverless": "^7.47.0",
     "aws-lambda": "^1.0.7",
     "snake-case": "^3.0.4"
   },
