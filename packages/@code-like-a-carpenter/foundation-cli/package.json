@@ -16,6 +16,7 @@
   },
   "main": "./dist/cjs/index.js",
   "dependencies": {
+    "@code-like-a-carpenter/assert": "*",
     "@code-like-a-carpenter/foundation-plugin-cloudformation": "*",
     "@code-like-a-carpenter/foundation-plugin-typescript": "*",
     "@code-like-a-carpenter/multiglob": "*",

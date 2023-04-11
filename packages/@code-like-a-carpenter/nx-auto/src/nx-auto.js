@@ -222,7 +222,7 @@ function configureExample(projectFilePath) {
         ],
         options: {
           commands: [
-            `npx @code-like-a-carpenter/foundation-cli codegen --config ${projectRoot}/.foundationrc.js`,
+            `npx @code-like-a-carpenter/foundation-cli codegen --config ${projectRoot}/.foundationrc.js `,
             `npm run eslint -- '${projectRoot}/__generated__/**/*.ts' --fix`,
           ],
           parallel: false,
