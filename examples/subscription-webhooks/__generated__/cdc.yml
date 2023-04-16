@@ -1,0 +1,283 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Conditions:
+  IsProd:
+    Fn::Equals:
+      - Ref: 'StageName'
+      - 'production'
+Globals:
+  Function:
+    Environment:
+      Variables: {}
+    Handler: 'index.handler'
+    Runtime: 'nodejs18.x'
+    Tracing: 'Active'
+Outputs:
+  DeadLetterQueueArn:
+    Export:
+      Name:
+        Fn::Sub: '${AWS::StackName}-DeadLetterQueueArn'
+    Value:
+      Fn::GetAtt:
+        - 'DeadLetterQueue'
+        - 'Arn'
+  DeadLetterQueueName:
+    Export:
+      Name:
+        Fn::Sub: '${AWS::StackName}-DeadLetterQueueName'
+    Value:
+      Ref: 'DeadLetterQueue'
+  FunctionArn:
+    Export:
+      Name:
+        Fn::Sub: '${AWS::StackName}-FunctionArn'
+    Value:
+      Fn::GetAtt:
+        - 'Function'
+        - 'Arn'
+  FunctionName:
+    Export:
+      Name:
+        Fn::Sub: '${AWS::StackName}-FunctionName'
+    Value:
+      Ref: 'Function'
+  QueueArn:
+    Export:
+      Name:
+        Fn::Sub: '${AWS::StackName}-QueueArn'
+    Value:
+      Fn::GetAtt:
+        - 'Queue'
+        - 'Arn'
+  QueueName:
+    Export:
+      Name:
+        Fn::Sub: '${AWS::StackName}-QueueName'
+    Value:
+      Ref: 'Queue'
+  Role:
+    Export:
+      Name:
+        Fn::Sub: '${AWS::StackName}-Role'
+    Value:
+      Ref: 'FunctionRole'
+  RuleName:
+    Export:
+      Name:
+        Fn::Sub: '${AWS::StackName}-RuleName'
+    Value:
+      Ref: 'Rule'
+Parameters:
+  CodeUri:
+    Type: 'String'
+  DetailType:
+    Type: 'CommaDelimitedList'
+  LogRetentionInDays:
+    Default: '3'
+    Description: 'Log retention in days'
+    Type: 'Number'
+  MemorySize:
+    Type: 'Number'
+  SourceModelName:
+    Type: 'String'
+  StageName:
+    Type: 'String'
+  TableArn:
+    Type: 'String'
+  TableName:
+    Type: 'String'
+  TableNames:
+    Type: 'String'
+  Timeout:
+    Type: 'Number'
+Resources:
+  DeadLetterQueue:
+    Properties:
+      KmsMasterKeyId:
+        Fn::If:
+          - 'IsProd'
+          - Ref: 'QueueKey'
+          - 'AWS::NoValue'
+    Type: 'AWS::SQS::Queue'
+  Function:
+    Metadata:
+      BuildMethod: 'esbuild'
+      BuildProperties:
+        EntryPoints:
+          - './index'
+        External:
+          - '@aws-sdk/*'
+        Minify: false
+        Sourcemap: true
+        Target: 'es2022'
+    Properties:
+      CodeUri:
+        Ref: 'CodeUri'
+      Environment:
+        Variables:
+          FOUNDATION_TABLE_NAMES:
+            Ref: 'TableNames'
+      Events:
+        Stream:
+          Properties:
+            BatchSize: 10
+            FunctionResponseTypes:
+              - 'ReportBatchItemFailures'
+            Queue:
+              Fn::GetAtt:
+                - 'Queue'
+                - 'Arn'
+          Type: 'SQS'
+      MemorySize:
+        Ref: 'MemorySize'
+      Policies:
+        - 'AWSLambdaBasicExecutionRole'
+        - 'AWSLambda_ReadOnlyAccess'
+        - 'AWSXrayWriteOnlyAccess'
+        - 'CloudWatchLambdaInsightsExecutionRolePolicy'
+        - CloudWatchPutMetricPolicy: {}
+        - SQSSendMessagePolicy:
+            QueueName:
+              Fn::GetAtt:
+                - 'DeadLetterQueue'
+                - 'QueueName'
+      Timeout:
+        Ref: 'Timeout'
+    Type: 'AWS::Serverless::Function'
+  FunctionLogGroup:
+    Properties:
+      LogGroupName:
+        Fn::Sub: '/aws/lambda/${Function}'
+      RetentionInDays:
+        Ref: 'LogRetentionInDays'
+    Type: 'AWS::Logs::LogGroup'
+  Queue:
+    Properties:
+      Fn::If:
+        - 'IsProd'
+        - KmsMasterKeyId:
+            Ref: 'QueueKey'
+          RedrivePolicy:
+            deadLetterTargetArn:
+              Fn::GetAtt:
+                - 'DeadLetterQueue'
+                - 'Arn'
+            maxReceiveCount: 3
+          VisibilityTimeout: 320
+        - RedrivePolicy:
+            deadLetterTargetArn:
+              Fn::GetAtt:
+                - 'DeadLetterQueue'
+                - 'Arn'
+            maxReceiveCount: 3
+          VisibilityTimeout: 320
+    Type: 'AWS::SQS::Queue'
+  QueueKey:
+    Condition: 'IsProd'
+    Properties:
+      KeyPolicy:
+        Statement:
+          - Action:
+              - 'kms:Decrypt'
+              - 'kms:GenerateDataKey'
+            Effect: 'Allow'
+            Principal:
+              Service: 'events.amazonaws.com'
+            Resource: '*'
+            Sid: 'Allow EventBridge to use the Key'
+          - Action:
+              - 'kms:Create*'
+              - 'kms:Describe*'
+              - 'kms:Enable*'
+              - 'kms:List*'
+              - 'kms:Put*'
+              - 'kms:Update*'
+              - 'kms:Revoke*'
+              - 'kms:Disable*'
+              - 'kms:Get*'
+              - 'kms:Delete*'
+              - 'kms:ScheduleKeyDeletion'
+              - 'kms:CancelKeyDeletion'
+            Effect: 'Allow'
+            Principal:
+              AWS:
+                Fn::Sub: 'arn:aws:iam::${AWS::AccountId}:root'
+            Resource: '*'
+            Sid: 'Allow administration of the key'
+          - Action:
+              - 'kms:Encrypt'
+              - 'kms:Decrypt'
+              - 'kms:ReEncrypt*'
+              - 'kms:GenerateDataKey*'
+              - 'kms:CreateGrant'
+              - 'kms:DescribeKey'
+            Condition:
+              StringEquals:
+                kms:CallerAccount:
+                  Fn::Sub: '${AWS::AccountId}'
+                kms:ViaService: 'sqs.us-east-1.amazonaws.com'
+            Effect: 'Allow'
+            Principal:
+              AWS: '*'
+            Resource: '*'
+            Sid: 'Allow authorized SQS callers to access the key'
+          - Action:
+              - 'kms:Describe*'
+              - 'kms:Get*'
+              - 'kms:List*'
+              - 'kms:RevokeGrant'
+            Effect: 'Allow'
+            Principal:
+              AWS:
+                Fn::Sub: 'arn:aws:iam::${AWS::AccountId}:root'
+            Resource: '*'
+            Sid: 'Allow direct access to key metadata to the account'
+        Version: '2012-10-17'
+      PendingWindowInDays: 7
+    Type: 'AWS::KMS::Key'
+  QueuePolicy:
+    Properties:
+      PolicyDocument:
+        Statement:
+          - Action:
+              - 'sqs:SendMessage'
+            Condition:
+              ArnEquals:
+                aws:SourceArn:
+                  Fn::GetAtt:
+                    - 'Rule'
+                    - 'Arn'
+            Effect: 'Allow'
+            Principal:
+              Service: 'events.amazonaws.com'
+            Resource:
+              Fn::GetAtt:
+                - 'Queue'
+                - 'Arn'
+            Sid: 'Allow EventBridge to send messages to the queue'
+      Queues:
+        - Ref: 'Queue'
+    Type: 'AWS::SQS::QueuePolicy'
+  Rule:
+    Properties:
+      EventBusName: 'default'
+      EventPattern:
+        detail:
+          dynamodb:
+            NewImage:
+              _et:
+                S:
+                  - Ref: 'SourceModelName'
+        detail-type:
+          Ref: 'DetailType'
+        resources:
+          - Ref: 'TableArn'
+        source:
+          - Fn::Sub: '${TableName}.${SourceModelName}'
+      Targets:
+        - Arn:
+            Fn::GetAtt:
+              - 'Queue'
+              - 'Arn'
+          Id: 'Function'
+    Type: 'AWS::Events::Rule'
+Transform: 'AWS::Serverless-2016-10-31'

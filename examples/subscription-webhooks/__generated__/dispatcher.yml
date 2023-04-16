@@ -31,6 +31,8 @@ Parameters:
     Type: 'Number'
   StreamArn:
     Type: 'String'
+  TableNames:
+    Type: 'String'
   Timeout:
     Type: 'Number'
 Resources:
@@ -48,6 +50,10 @@ Resources:
     Properties:
       CodeUri:
         Ref: 'CodeUri'
+      Environment:
+        Variables:
+          FOUNDATION_TABLE_NAMES:
+            Ref: 'TableNames'
       Events:
         Stream:
           Properties:

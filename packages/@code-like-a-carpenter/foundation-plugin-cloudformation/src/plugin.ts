@@ -132,6 +132,21 @@ export const plugin: PluginFunction<Config> = makePlugin(
       variables.FOUNDATION_TABLE_NAMES = {'Fn::ToJsonString': tablesNames};
     }
 
+    Object.entries(tpl.Resources)
+      .filter(
+        ([, resource]) => resource.Type === 'AWS::Serverless::Application'
+      )
+      .forEach(([, resource]) => {
+        assert(resource.Type === 'AWS::Serverless::Application');
+        resource.Properties = {
+          ...resource.Properties,
+          Parameters: {
+            ...(resource.Properties?.Parameters ?? {}),
+            TableNames: {'Fn::ToJsonString': tablesNames},
+          },
+        };
+      });
+
     const {format} = config.outputConfig;
     if (format === 'json') {
       return JSON.stringify(tpl, null, 2);

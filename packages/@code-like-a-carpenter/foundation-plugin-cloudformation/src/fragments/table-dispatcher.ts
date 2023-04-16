@@ -49,8 +49,10 @@ export function makeTableDispatcher(
     outputPath,
     `// This file is generated. Do not edit by hand.
 
-import {makeDynamoDBStreamDispatcher} from '${libImportPath}';
+import {expandTableNames,makeDynamoDBStreamDispatcher} from '${libImportPath}';
 import * as dependencies from '${dependenciesModuleId}';
+
+expandTableNames();
 
 export const handler = makeDynamoDBStreamDispatcher({
   ...dependencies,
@@ -72,6 +74,7 @@ export const handler = makeDynamoDBStreamDispatcher({
           MaximumRetryAttempts: maximumRetryAttempts,
           MemorySize: memorySize,
           StreamArn: {'Fn::GetAtt': [tableName, 'StreamArn']},
+          TableNames: {Type: 'String'},
           Timeout: timeout,
         },
       },
@@ -143,6 +146,13 @@ function writeTemplate(config: Config, templatePath: string) {
     Properties: {
       // @ts-expect-error - typedef does not know about intrinsic functions
       CodeUri: {Ref: 'CodeUri'},
+      Environment: {
+        Variables: {
+          // TableNames will get set after-the-fact the the main plugin script
+          // before writing the template.
+          FOUNDATION_TABLE_NAMES: {Ref: 'TableNames'},
+        },
+      },
       Events: {
         Stream: {
           Properties: {
@@ -207,6 +217,9 @@ function writeTemplate(config: Config, templatePath: string) {
         Type: 'Number',
       },
       StreamArn: {
+        Type: 'String',
+      },
+      TableNames: {
         Type: 'String',
       },
       Timeout: {
