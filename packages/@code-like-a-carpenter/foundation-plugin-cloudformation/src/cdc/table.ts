@@ -25,12 +25,15 @@ export function defineTableCdc(
     directory,
     maximumRetryAttempts,
     memorySize,
+    nestStack,
+    nestedStackLocation,
+    nestedStackTemplatePath,
     runtimeModuleId,
     timeout,
   } = dispatcherConfig;
 
   return combineFragments(
-    makeTableDispatcher({
+    makeTableDispatcher(config, {
       batchSize,
       buildProperties: {
         EntryPoints: ['./index'],
@@ -45,6 +48,9 @@ export function defineTableCdc(
       libImportPath: runtimeModuleId,
       maximumRetryAttempts,
       memorySize,
+      nested: nestStack,
+      nestedStackLocation,
+      nestedStackTemplatePath,
       outputPath: directory,
       tableName,
       timeout,

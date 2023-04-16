@@ -639,6 +639,51 @@ Resources:
               - 'Arn'
           Id: 'FnReactPMUpsert2b2e8d7d'
     Type: 'AWS::Events::Rule'
+  NestedTableAccountCDCDispatcherStack:
+    Properties:
+      Location: './dispatcher.yml'
+      Parameters:
+        BatchSize: 10
+        CodeUri: 'dispatcher-table-account'
+        EventBus: 'default'
+        MaximumRetryAttempts: 3
+        MemorySize: 384
+        StreamArn:
+          Fn::GetAtt:
+            - 'TableAccount'
+            - 'StreamArn'
+        Timeout: 60
+    Type: 'AWS::Serverless::Application'
+  NestedTablePlanMetricCDCDispatcherStack:
+    Properties:
+      Location: './dispatcher.yml'
+      Parameters:
+        BatchSize: 10
+        CodeUri: 'dispatcher-table-plan-metric'
+        EventBus: 'default'
+        MaximumRetryAttempts: 3
+        MemorySize: 384
+        StreamArn:
+          Fn::GetAtt:
+            - 'TablePlanMetric'
+            - 'StreamArn'
+        Timeout: 60
+    Type: 'AWS::Serverless::Application'
+  NestedTableSubscriptionEventCDCDispatcherStack:
+    Properties:
+      Location: './dispatcher.yml'
+      Parameters:
+        BatchSize: 10
+        CodeUri: 'dispatcher-table-subscription-event'
+        EventBus: 'default'
+        MaximumRetryAttempts: 3
+        MemorySize: 384
+        StreamArn:
+          Fn::GetAtt:
+            - 'TableSubscriptionEvent'
+            - 'StreamArn'
+        Timeout: 60
+    Type: 'AWS::Serverless::Application'
   TableAccount:
     Properties:
       AttributeDefinitions:
@@ -686,50 +731,6 @@ Resources:
         - Key: 'TableName'
           Value: 'TableAccount'
     Type: 'AWS::DynamoDB::Table'
-  TableAccountCDCDispatcher:
-    Metadata:
-      BuildMethod: 'esbuild'
-      BuildProperties:
-        EntryPoints:
-          - './index'
-        External:
-          - '@aws-sdk/*'
-        Minify: false
-        Sourcemap: true
-        Target: 'es2022'
-    Properties:
-      CodeUri: 'dispatcher-table-account'
-      Events:
-        Stream:
-          Properties:
-            BatchSize: 10
-            FunctionResponseTypes:
-              - 'ReportBatchItemFailures'
-            MaximumRetryAttempts: 3
-            StartingPosition: 'TRIM_HORIZON'
-            Stream:
-              Fn::GetAtt:
-                - 'TableAccount'
-                - 'StreamArn'
-          Type: 'DynamoDB'
-      MemorySize: 384
-      Policies:
-        - 'AWSLambdaBasicExecutionRole'
-        - 'AWSLambda_ReadOnlyAccess'
-        - 'AWSXrayWriteOnlyAccess'
-        - 'CloudWatchLambdaInsightsExecutionRolePolicy'
-        - CloudWatchPutMetricPolicy: {}
-        - EventBridgePutEventsPolicy:
-            EventBusName: 'default'
-      Timeout: 60
-    Type: 'AWS::Serverless::Function'
-  TableAccountCDCDispatcherLogGroup:
-    Properties:
-      LogGroupName:
-        Fn::Sub: '/aws/lambda/${TableAccountCDCDispatcher}'
-      RetentionInDays:
-        Ref: 'LogRetentionInDays'
-    Type: 'AWS::Logs::LogGroup'
   TableMetric:
     Properties:
       AttributeDefinitions:
@@ -796,50 +797,6 @@ Resources:
         - Key: 'TableName'
           Value: 'TablePlanMetric'
     Type: 'AWS::DynamoDB::Table'
-  TablePlanMetricCDCDispatcher:
-    Metadata:
-      BuildMethod: 'esbuild'
-      BuildProperties:
-        EntryPoints:
-          - './index'
-        External:
-          - '@aws-sdk/*'
-        Minify: false
-        Sourcemap: true
-        Target: 'es2022'
-    Properties:
-      CodeUri: 'dispatcher-table-plan-metric'
-      Events:
-        Stream:
-          Properties:
-            BatchSize: 10
-            FunctionResponseTypes:
-              - 'ReportBatchItemFailures'
-            MaximumRetryAttempts: 3
-            StartingPosition: 'TRIM_HORIZON'
-            Stream:
-              Fn::GetAtt:
-                - 'TablePlanMetric'
-                - 'StreamArn'
-          Type: 'DynamoDB'
-      MemorySize: 384
-      Policies:
-        - 'AWSLambdaBasicExecutionRole'
-        - 'AWSLambda_ReadOnlyAccess'
-        - 'AWSXrayWriteOnlyAccess'
-        - 'CloudWatchLambdaInsightsExecutionRolePolicy'
-        - CloudWatchPutMetricPolicy: {}
-        - EventBridgePutEventsPolicy:
-            EventBusName: 'default'
-      Timeout: 60
-    Type: 'AWS::Serverless::Function'
-  TablePlanMetricCDCDispatcherLogGroup:
-    Properties:
-      LogGroupName:
-        Fn::Sub: '/aws/lambda/${TablePlanMetricCDCDispatcher}'
-      RetentionInDays:
-        Ref: 'LogRetentionInDays'
-    Type: 'AWS::Logs::LogGroup'
   TableSubscriptionEvent:
     Properties:
       AttributeDefinitions:
@@ -874,50 +831,6 @@ Resources:
         - Key: 'TableName'
           Value: 'TableSubscriptionEvent'
     Type: 'AWS::DynamoDB::Table'
-  TableSubscriptionEventCDCDispatcher:
-    Metadata:
-      BuildMethod: 'esbuild'
-      BuildProperties:
-        EntryPoints:
-          - './index'
-        External:
-          - '@aws-sdk/*'
-        Minify: false
-        Sourcemap: true
-        Target: 'es2022'
-    Properties:
-      CodeUri: 'dispatcher-table-subscription-event'
-      Events:
-        Stream:
-          Properties:
-            BatchSize: 10
-            FunctionResponseTypes:
-              - 'ReportBatchItemFailures'
-            MaximumRetryAttempts: 3
-            StartingPosition: 'TRIM_HORIZON'
-            Stream:
-              Fn::GetAtt:
-                - 'TableSubscriptionEvent'
-                - 'StreamArn'
-          Type: 'DynamoDB'
-      MemorySize: 384
-      Policies:
-        - 'AWSLambdaBasicExecutionRole'
-        - 'AWSLambda_ReadOnlyAccess'
-        - 'AWSXrayWriteOnlyAccess'
-        - 'CloudWatchLambdaInsightsExecutionRolePolicy'
-        - CloudWatchPutMetricPolicy: {}
-        - EventBridgePutEventsPolicy:
-            EventBusName: 'default'
-      Timeout: 60
-    Type: 'AWS::Serverless::Function'
-  TableSubscriptionEventCDCDispatcherLogGroup:
-    Properties:
-      LogGroupName:
-        Fn::Sub: '/aws/lambda/${TableSubscriptionEventCDCDispatcher}'
-      RetentionInDays:
-        Ref: 'LogRetentionInDays'
-    Type: 'AWS::Logs::LogGroup'
 Transform:
   - 'AWS::Serverless-2016-10-31'
   - 'AWS::LanguageExtensions'
