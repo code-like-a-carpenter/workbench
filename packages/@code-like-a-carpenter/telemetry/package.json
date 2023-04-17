@@ -27,6 +27,7 @@
     "@code-like-a-carpenter/env": "*",
     "@code-like-a-carpenter/errors": "*",
     "@code-like-a-carpenter/exception": "*",
+    "@code-like-a-carpenter/logger": "*",
     "@opentelemetry/api": "1.4.0",
     "@opentelemetry/sdk-trace-base": "^1.9.1",
     "@sentry/serverless": "^7.40.0",
