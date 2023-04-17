@@ -117,6 +117,13 @@ jobs:
   test:
     needs: build
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # There should be one node for each example, but at time of writing,
+        # two of the examples are disabled due to issues with localstack.
+        nodeCount: [3]
+        nodeIndex: [0, 1, 2]
     steps:
       - uses: actions/checkout@v3.5.0
         with:
@@ -131,7 +138,15 @@ jobs:
       # 100% cache hits; The nx cache seems to be much easier to use than the
       # GitHub artifact action.
       - run: npx nx run-many --target=build --parallel=4
-      - run: npm test
+      - uses: check-run-reporter/action@v2.11.2
+        id: split
+        with:
+          token: ${{ secrets.CHECK_RUN_REPORTER_TOKEN }}
+          label: Unit Tests
+          nodeCount: ${{ matrix.nodeCount }}
+          nodeIndex: ${{ matrix.nodeIndex }}
+      - run: npm test -- ${{ steps.split.outputs.tests }}
+          tests: '{examples,packages}/**/*.test.ts'
       - uses: check-run-reporter/action@v2.11.2
         if: ${{ always() }}
         with:
