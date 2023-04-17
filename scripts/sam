@@ -155,6 +155,12 @@ destroy_one () {
 }
 
 get_stack_name () {
+
+  if [ -n "${STACK_NAME}" ]; then
+    echo "$STACK_NAME"
+    return 0
+  fi
+
   local example="$1"
 
   local stackname
