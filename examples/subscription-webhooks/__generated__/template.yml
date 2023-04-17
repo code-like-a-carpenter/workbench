@@ -8,14 +8,16 @@ Globals:
   Function:
     Environment:
       Variables:
-        TABLE_ACCOUNT:
-          Ref: 'TableAccount'
-        TABLE_METRIC:
-          Ref: 'TableMetric'
-        TABLE_PLAN_METRIC:
-          Ref: 'TablePlanMetric'
-        TABLE_SUBSCRIPTION_EVENT:
-          Ref: 'TableSubscriptionEvent'
+        FOUNDATION_TABLE_NAMES:
+          Fn::ToJsonString:
+            TABLE_ACCOUNT:
+              Ref: 'TableAccount'
+            TABLE_METRIC:
+              Ref: 'TableMetric'
+            TABLE_PLAN_METRIC:
+              Ref: 'TablePlanMetric'
+            TABLE_SUBSCRIPTION_EVENT:
+              Ref: 'TableSubscriptionEvent'
     Handler: 'index.handler'
     MemorySize: 256
     Runtime: 'nodejs18.x'
@@ -916,4 +918,6 @@ Resources:
       RetentionInDays:
         Ref: 'LogRetentionInDays'
     Type: 'AWS::Logs::LogGroup'
-Transform: 'AWS::Serverless-2016-10-31'
+Transform:
+  - 'AWS::Serverless-2016-10-31'
+  - 'AWS::LanguageExtensions'
