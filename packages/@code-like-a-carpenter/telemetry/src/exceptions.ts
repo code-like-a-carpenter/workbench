@@ -11,6 +11,8 @@ import {
 import {snakeCase} from 'snake-case';
 
 import {Exception} from '@code-like-a-carpenter/exception';
+import type {Logger} from '@code-like-a-carpenter/logger';
+import {logger as rootLogger} from '@code-like-a-carpenter/logger';
 
 import {getCurrentSpan} from './run-with';
 
@@ -79,8 +81,14 @@ function addExceptionDetails(err: unknown, span?: Span, scope?: Scope) {
  * @param e - the exception to capture
  * @param escaped - Indicates if the error was unhandled. In general, this will
  * be true until the exception reaches a catch block and is not rethrown.
+ * @param logger - optional logger to use when OpenTelemetry is not in use. If
+ * not supplied, the default CLC logger will be used
  */
-export function captureException(e: unknown, escaped = true): Error {
+export function captureException(
+  e: unknown,
+  escaped = true,
+  logger: Logger = rootLogger
+): Error {
   const err = reformError(e);
   const span = getCurrentSpan();
 
@@ -88,6 +96,13 @@ export function captureException(e: unknown, escaped = true): Error {
     span.setStatus({code: SpanStatusCode.ERROR, message: err.message});
     span.recordException(err);
     span.setAttribute('exception.escaped', escaped);
+  } else {
+    // If we don't have a span, assume OpenTelemetry has not been configured, so
+    // we want to log instead of suppressing the error.
+    logger.error(
+      'Logging error message because OpenTelemetry does not appear to be in use',
+      {cause: e instanceof Error ? e.cause : undefined, err: e}
+    );
   }
 
   if (escaped) {

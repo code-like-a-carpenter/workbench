@@ -1,3 +1,4 @@
+export * from './expand-table-names';
 export * from './field-provider';
 export * from './functions/enricher';
 export * from './functions/reactor';

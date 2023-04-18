@@ -37,7 +37,7 @@ function getInitialTemplate({
   return {
     AWSTemplateFormatVersion: '2010-09-09',
     Resources: {},
-    Transform: 'AWS::Serverless-2016-10-31',
+    Transform: ['AWS::Serverless-2016-10-31', 'AWS::LanguageExtensions'],
   };
 }
 
@@ -117,6 +117,35 @@ export const plugin: PluginFunction<Config> = makePlugin(
         ...allResources.Resources,
       },
     };
+
+    const variables = tpl?.Globals?.Function?.Environment?.Variables ?? {};
+
+    const tablesNames = Object.keys(variables)
+      .filter((name) => name.startsWith('TABLE_'))
+      .reduce((acc, name) => {
+        acc[name] = variables[name];
+        delete variables[name];
+        return acc;
+      }, {} as Record<string, string>);
+
+    if (Object.keys(tablesNames).length) {
+      variables.FOUNDATION_TABLE_NAMES = {'Fn::ToJsonString': tablesNames};
+    }
+
+    Object.entries(tpl.Resources)
+      .filter(
+        ([, resource]) => resource.Type === 'AWS::Serverless::Application'
+      )
+      .forEach(([, resource]) => {
+        assert(resource.Type === 'AWS::Serverless::Application');
+        resource.Properties = {
+          ...resource.Properties,
+          Parameters: {
+            ...(resource.Properties?.Parameters ?? {}),
+            TableNames: {'Fn::ToJsonString': tablesNames},
+          },
+        };
+      });
 
     const {format} = config.outputConfig;
     if (format === 'json') {

@@ -2,6 +2,7 @@ import '@code-like-a-carpenter/aws-env-loader';
 
 import assert from 'node:assert';
 import {execSync} from 'node:child_process';
+import crypto from 'node:crypto';
 import path from 'node:path';
 
 import {
@@ -34,8 +35,18 @@ export default class ExampleEnvironment extends Environment {
       .split(`${path.sep}examples${path.sep}`)[1]
       .split(path.sep);
 
+    let suffix = '';
+    if (env('GITHUB_REF', '') !== '') {
+      suffix = `-${crypto
+        .createHash('sha256')
+        .update(env('GITHUB_REF'))
+        .digest('hex')
+        .slice(0, 8)}`;
+    }
+
     this.exampleName = exampleName;
-    this.stackName = upperFirst(camelCase(exampleName));
+    this.stackName = upperFirst(camelCase(exampleName)) + suffix;
+    process.env.STACK_NAME = this.stackName;
 
     const testEnv = env('TEST_ENV', 'localstack');
     assert(
@@ -59,15 +70,15 @@ export default class ExampleEnvironment extends Environment {
 
   async teardown() {
     await super.teardown();
-    // Localstack doesn't seem to teardown properly in CI, so we'll just let
-    // it disappear when the job exits.
-    if (!process.env.CI || env('TEST_ENV', 'localstack') !== 'localstack') {
+    // Localstack doesn't seem to teardown properly, so we'll just let it
+    // disappear when the job exits / rely on manual cleanup locally
+    if (env('TEST_ENV', 'localstack') !== 'localstack') {
       await this.destroyCloudFormationStack();
     }
   }
 
   private configureEnvironment() {
-    process.env.TEST_ENV = process.env.TEST_ENV ?? 'localstack';
+    process.env.TEST_ENV = process.env.TEST_ENV ?? 'aws';
     if (process.env.TEST_ENV === 'localstack') {
       // Set fake credentials for localstack
       process.env.AWS_ACCESS_KEY_ID = 'test';
@@ -77,9 +88,7 @@ export default class ExampleEnvironment extends Environment {
       process.env.AWS_ENDPOINT = 'http://127.0.0.1:4566';
       process.env.AWS_REGION = 'us-east-1';
     } else if (process.env.TEST_ENV === 'aws') {
-      if (process.env.CI) {
-        assert.fail('Testing on AWS in CI is not yet supported');
-      } else {
+      if (!process.env.CI) {
         process.env.AWS_REGION = process.env.AWS_REGION ?? 'us-east-1';
         process.env.AWS_PROFILE =
           process.env.AWS_PROFILE ?? 'webstorm_playground';

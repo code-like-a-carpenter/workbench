@@ -116,11 +116,26 @@ jobs:
 
   test:
     needs: build
+    permissions:
+      id-token: write
+      contents: read
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # There should be one node for each example, but at time of writing,
+        # two of the examples are disabled due to issues with localstack.
+        nodeCount: [1]
+        nodeIndex: [0]
     steps:
       - uses: actions/checkout@v3.5.0
         with:
           fetch-depth: 0
+      - name: Configure AWS credentials from Test account
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          aws-region: ${{ secrets.AWS_REGION }}
       - uses: actions/setup-node@v3
         with:
           node-version: 18
@@ -131,7 +146,15 @@ jobs:
       # 100% cache hits; The nx cache seems to be much easier to use than the
       # GitHub artifact action.
       - run: npx nx run-many --target=build --parallel=4
-      - run: npm test
+      - uses: check-run-reporter/action@v2.11.2
+        id: split
+        with:
+          token: ${{ secrets.CHECK_RUN_REPORTER_TOKEN }}
+          label: Unit Tests
+          nodeCount: ${{ matrix.nodeCount }}
+          nodeIndex: ${{ matrix.nodeIndex }}
+          tests: '{examples,packages}/**/*.test.ts'
+      - run: TEST_ENV=aws npm test -- ${{ steps.split.outputs.tests }}
       - uses: check-run-reporter/action@v2.11.2
         if: ${{ always() }}
         with:

@@ -1,0 +1,91 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Conditions: {}
+Globals:
+  Function:
+    Environment:
+      Variables: {}
+    Handler: 'index.handler'
+    Runtime: 'nodejs18.x'
+    Tracing: 'Active'
+Outputs:
+  FunctionName:
+    Export:
+      Name:
+        Fn::Sub: '${AWS::StackName}-FunctionName'
+    Value:
+      Ref: 'Function'
+Parameters:
+  BatchSize:
+    Type: 'Number'
+  CodeUri:
+    Type: 'String'
+  EventBus:
+    Type: 'String'
+  LogRetentionInDays:
+    Default: '3'
+    Description: 'Log retention in days'
+    Type: 'Number'
+  MaximumRetryAttempts:
+    Type: 'Number'
+  MemorySize:
+    Type: 'Number'
+  StreamArn:
+    Type: 'String'
+  TableNames:
+    Type: 'String'
+  Timeout:
+    Type: 'Number'
+Resources:
+  Function:
+    Metadata:
+      BuildMethod: 'esbuild'
+      buildProperties:
+        EntryPoints:
+          - './index'
+        External:
+          - '@aws-sdk/*'
+        Minify: false
+        Sourcemap: true
+        Target: 'es2022'
+    Properties:
+      CodeUri:
+        Ref: 'CodeUri'
+      Environment:
+        Variables:
+          FOUNDATION_TABLE_NAMES:
+            Ref: 'TableNames'
+      Events:
+        Stream:
+          Properties:
+            BatchSize:
+              Ref: 'BatchSize'
+            FunctionResponseTypes:
+              - 'ReportBatchItemFailures'
+            MaximumRetryAttempts:
+              Ref: 'MaximumRetryAttempts'
+            StartingPosition: 'TRIM_HORIZON'
+            Stream:
+              Ref: 'StreamArn'
+          Type: 'DynamoDB'
+      MemorySize:
+        Ref: 'MemorySize'
+      Policies:
+        - 'AWSLambdaBasicExecutionRole'
+        - 'AWSLambda_ReadOnlyAccess'
+        - 'AWSXrayWriteOnlyAccess'
+        - 'CloudWatchLambdaInsightsExecutionRolePolicy'
+        - CloudWatchPutMetricPolicy: {}
+        - EventBridgePutEventsPolicy:
+            EventBusName:
+              Ref: 'EventBus'
+      Timeout:
+        Ref: 'Timeout'
+    Type: 'AWS::Serverless::Function'
+  FunctionLogGroup:
+    Properties:
+      LogGroupName:
+        Fn::Sub: '/aws/lambda/${Function}'
+      RetentionInDays:
+        Ref: 'LogRetentionInDays'
+    Type: 'AWS::Logs::LogGroup'
+Transform: 'AWS::Serverless-2016-10-31'

@@ -18,6 +18,17 @@ export interface DispatcherConfig extends LambdaConfig {
   readonly filename: string;
   readonly functionName: string;
   readonly maximumRetryAttempts: number;
+  readonly nestStack: boolean;
+  /**
+   * Relative path from the main template to the dispatcher's nested stack
+   * template.
+   */
+  readonly nestedStackLocation: string;
+  /**
+   * Relative path from the current working directory to the dispatcher's nested
+   * stack template.
+   */
+  readonly nestedStackTemplatePath: string;
   readonly runtimeModuleId: string;
 }
 

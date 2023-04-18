@@ -8,14 +8,16 @@ Globals:
   Function:
     Environment:
       Variables:
-        TABLE_ACCOUNT:
-          Ref: 'TableAccount'
-        TABLE_METRIC:
-          Ref: 'TableMetric'
-        TABLE_PLAN_METRIC:
-          Ref: 'TablePlanMetric'
-        TABLE_SUBSCRIPTION_EVENT:
-          Ref: 'TableSubscriptionEvent'
+        FOUNDATION_TABLE_NAMES:
+          Fn::ToJsonString:
+            TABLE_ACCOUNT:
+              Ref: 'TableAccount'
+            TABLE_METRIC:
+              Ref: 'TableMetric'
+            TABLE_PLAN_METRIC:
+              Ref: 'TablePlanMetric'
+            TABLE_SUBSCRIPTION_EVENT:
+              Ref: 'TableSubscriptionEvent'
     Handler: 'index.handler'
     MemorySize: 256
     Runtime: 'nodejs18.x'
@@ -51,10 +53,6 @@ Outputs:
     Value:
       Ref: 'TableSubscriptionEvent'
 Parameters:
-  LogRetentionInDays:
-    Default: '3'
-    Description: 'Log retention in days'
-    Type: 'Number'
   StageName:
     AllowedValues:
       - 'development'
@@ -64,579 +62,295 @@ Parameters:
     Description: 'The name of the stage'
     Type: 'String'
 Resources:
-  FnEnricherSEUpsertA5b59364d:
-    Metadata:
-      BuildMethod: 'esbuild'
-      BuildProperties:
-        EntryPoints:
-          - './index'
-        External:
-          - '@aws-sdk/*'
-        Minify: false
-        Sourcemap: true
-        Target: 'es2022'
-    Properties:
-      CodeUri: 'enricher--subscription-event--upsert--account'
-      Events:
-        Stream:
-          Properties:
-            BatchSize: 10
-            FunctionResponseTypes:
-              - 'ReportBatchItemFailures'
-            Queue:
-              Fn::GetAtt:
-                - 'FnEnricherSEUpsertA5b59364dQueue'
-                - 'Arn'
-          Type: 'SQS'
-      MemorySize: 256
-      Policies:
-        - 'AWSLambdaBasicExecutionRole'
-        - 'AWSLambda_ReadOnlyAccess'
-        - 'AWSXrayWriteOnlyAccess'
-        - 'CloudWatchLambdaInsightsExecutionRolePolicy'
-        - CloudWatchPutMetricPolicy: {}
-        - DynamoDBCrudPolicy:
-            TableName:
-              Ref: 'TableAccount'
-        - SQSSendMessagePolicy:
-            QueueName:
-              Fn::GetAtt:
-                - 'FnEnricherSEUpsertA5b59364dDLQ'
-                - 'QueueName'
-      Timeout: 90
-    Type: 'AWS::Serverless::Function'
-  FnEnricherSEUpsertA5b59364dDLQ:
-    Properties:
-      KmsMasterKeyId:
-        Fn::If:
-          - 'IsProd'
-          - Ref: 'FnEnricherSEUpsertA5b59364dQueueKey'
-          - 'AWS::NoValue'
-    Type: 'AWS::SQS::Queue'
-  FnEnricherSEUpsertA5b59364dLogGroup:
-    Properties:
-      LogGroupName:
-        Fn::Sub: '/aws/lambda/${FnEnricherSEUpsertA5b59364d}'
-      RetentionInDays:
-        Ref: 'LogRetentionInDays'
-    Type: 'AWS::Logs::LogGroup'
-  FnEnricherSEUpsertA5b59364dQueue:
-    Properties:
-      Fn::If:
-        - 'IsProd'
-        - KmsMasterKeyId:
-            Ref: 'FnEnricherSEUpsertA5b59364dQueueKey'
-          RedrivePolicy:
-            deadLetterTargetArn:
-              Fn::GetAtt:
-                - 'FnEnricherSEUpsertA5b59364dDLQ'
-                - 'Arn'
-            maxReceiveCount: 3
-          VisibilityTimeout: 320
-        - RedrivePolicy:
-            deadLetterTargetArn:
-              Fn::GetAtt:
-                - 'FnEnricherSEUpsertA5b59364dDLQ'
-                - 'Arn'
-            maxReceiveCount: 3
-          VisibilityTimeout: 320
-    Type: 'AWS::SQS::Queue'
-  FnEnricherSEUpsertA5b59364dQueueKey:
-    Condition: 'IsProd'
-    Properties:
-      KeyPolicy:
-        Statement:
-          - Action:
-              - 'kms:Decrypt'
-              - 'kms:GenerateDataKey'
-            Effect: 'Allow'
-            Principal:
-              Service: 'events.amazonaws.com'
-            Resource: '*'
-            Sid: 'Allow EventBridge to use the Key'
-          - Action:
-              - 'kms:Create*'
-              - 'kms:Describe*'
-              - 'kms:Enable*'
-              - 'kms:List*'
-              - 'kms:Put*'
-              - 'kms:Update*'
-              - 'kms:Revoke*'
-              - 'kms:Disable*'
-              - 'kms:Get*'
-              - 'kms:Delete*'
-              - 'kms:ScheduleKeyDeletion'
-              - 'kms:CancelKeyDeletion'
-            Effect: 'Allow'
-            Principal:
-              AWS:
-                Fn::Sub: 'arn:aws:iam::${AWS::AccountId}:root'
-            Resource: '*'
-            Sid: 'Allow administration of the key'
-          - Action:
-              - 'kms:Encrypt'
-              - 'kms:Decrypt'
-              - 'kms:ReEncrypt*'
-              - 'kms:GenerateDataKey*'
-              - 'kms:CreateGrant'
-              - 'kms:DescribeKey'
-            Condition:
-              StringEquals:
-                kms:CallerAccount:
-                  Fn::Sub: '${AWS::AccountId}'
-                kms:ViaService: 'sqs.us-east-1.amazonaws.com'
-            Effect: 'Allow'
-            Principal:
-              AWS: '*'
-            Resource: '*'
-            Sid: 'Allow authorized SQS callers to access the key'
-          - Action:
-              - 'kms:Describe*'
-              - 'kms:Get*'
-              - 'kms:List*'
-              - 'kms:RevokeGrant'
-            Effect: 'Allow'
-            Principal:
-              AWS:
-                Fn::Sub: 'arn:aws:iam::${AWS::AccountId}:root'
-            Resource: '*'
-            Sid: 'Allow direct access to key metadata to the account'
-        Version: '2012-10-17'
-      PendingWindowInDays: 7
-    Type: 'AWS::KMS::Key'
-  FnEnricherSEUpsertA5b59364dQueuePolicy:
+  FnEnricherSEUpsertA5b59364dTableAccessPolicy:
     Properties:
       PolicyDocument:
         Statement:
           - Action:
-              - 'sqs:SendMessage'
-            Condition:
-              ArnEquals:
-                aws:SourceArn:
-                  Fn::GetAtt:
-                    - 'FnEnricherSEUpsertA5b59364dRule'
-                    - 'Arn'
+              - 'dynamodb:GetItem'
+              - 'dynamodb:DeleteItem'
+              - 'dynamodb:PutItem'
+              - 'dynamodb:Scan'
+              - 'dynamodb:Query'
+              - 'dynamodb:UpdateItem'
+              - 'dynamodb:BatchWriteItem'
+              - 'dynamodb:BatchGetItem'
+              - 'dynamodb:DescribeTable'
+              - 'dynamodb:ConditionCheckItem'
             Effect: 'Allow'
-            Principal:
-              Service: 'events.amazonaws.com'
             Resource:
-              Fn::GetAtt:
-                - 'FnEnricherSEUpsertA5b59364dQueue'
-                - 'Arn'
-            Sid: 'Allow EventBridge to send messages to the queue'
-      Queues:
-        - Ref: 'FnEnricherSEUpsertA5b59364dQueue'
-    Type: 'AWS::SQS::QueuePolicy'
-  FnEnricherSEUpsertA5b59364dRule:
-    Properties:
-      EventBusName: 'default'
-      EventPattern:
-        detail:
-          dynamodb:
-            NewImage:
-              _et:
-                S:
-                  - 'SubscriptionEvent'
-        detail-type:
-          - 'INSERT'
-          - 'MODIFY'
-        resources:
-          - Fn::GetAtt:
-              - 'TableSubscriptionEvent'
-              - 'Arn'
-        source:
-          - 'TableSubscriptionEvent.SubscriptionEvent'
-      Targets:
-        - Arn:
-            Fn::GetAtt:
-              - 'FnEnricherSEUpsertA5b59364dQueue'
-              - 'Arn'
-          Id: 'FnEnricherSEUpsertA5b59364d'
-    Type: 'AWS::Events::Rule'
-  FnReactAUpsert7f5401fa:
-    Metadata:
-      BuildMethod: 'esbuild'
-      BuildProperties:
-        EntryPoints:
-          - './index'
-        External:
-          - '@aws-sdk/*'
-        Minify: false
-        Sourcemap: true
-        Target: 'es2022'
-    Properties:
-      CodeUri: 'react--account--upsert'
-      Events:
-        Stream:
-          Properties:
-            BatchSize: 10
-            FunctionResponseTypes:
-              - 'ReportBatchItemFailures'
-            Queue:
-              Fn::GetAtt:
-                - 'FnReactAUpsert7f5401faQueue'
-                - 'Arn'
-          Type: 'SQS'
-      MemorySize: 256
-      Policies:
-        - 'AWSLambdaBasicExecutionRole'
-        - 'AWSLambda_ReadOnlyAccess'
-        - 'AWSXrayWriteOnlyAccess'
-        - 'CloudWatchLambdaInsightsExecutionRolePolicy'
-        - CloudWatchPutMetricPolicy: {}
-        - DynamoDBReadPolicy:
-            TableName:
-              Ref: 'TableAccount'
-        - DynamoDBCrudPolicy:
-            TableName:
-              Ref: 'TablePlanMetric'
-        - SQSSendMessagePolicy:
-            QueueName:
-              Fn::GetAtt:
-                - 'FnReactAUpsert7f5401faDLQ'
-                - 'QueueName'
-      Timeout: 90
-    Type: 'AWS::Serverless::Function'
-  FnReactAUpsert7f5401faDLQ:
-    Properties:
-      KmsMasterKeyId:
-        Fn::If:
-          - 'IsProd'
-          - Ref: 'FnReactAUpsert7f5401faQueueKey'
-          - 'AWS::NoValue'
-    Type: 'AWS::SQS::Queue'
-  FnReactAUpsert7f5401faLogGroup:
-    Properties:
-      LogGroupName:
-        Fn::Sub: '/aws/lambda/${FnReactAUpsert7f5401fa}'
-      RetentionInDays:
-        Ref: 'LogRetentionInDays'
-    Type: 'AWS::Logs::LogGroup'
-  FnReactAUpsert7f5401faQueue:
-    Properties:
-      Fn::If:
-        - 'IsProd'
-        - KmsMasterKeyId:
-            Ref: 'FnReactAUpsert7f5401faQueueKey'
-          RedrivePolicy:
-            deadLetterTargetArn:
-              Fn::GetAtt:
-                - 'FnReactAUpsert7f5401faDLQ'
-                - 'Arn'
-            maxReceiveCount: 3
-          VisibilityTimeout: 320
-        - RedrivePolicy:
-            deadLetterTargetArn:
-              Fn::GetAtt:
-                - 'FnReactAUpsert7f5401faDLQ'
-                - 'Arn'
-            maxReceiveCount: 3
-          VisibilityTimeout: 320
-    Type: 'AWS::SQS::Queue'
-  FnReactAUpsert7f5401faQueueKey:
-    Condition: 'IsProd'
-    Properties:
-      KeyPolicy:
-        Statement:
-          - Action:
-              - 'kms:Decrypt'
-              - 'kms:GenerateDataKey'
-            Effect: 'Allow'
-            Principal:
-              Service: 'events.amazonaws.com'
-            Resource: '*'
-            Sid: 'Allow EventBridge to use the Key'
-          - Action:
-              - 'kms:Create*'
-              - 'kms:Describe*'
-              - 'kms:Enable*'
-              - 'kms:List*'
-              - 'kms:Put*'
-              - 'kms:Update*'
-              - 'kms:Revoke*'
-              - 'kms:Disable*'
-              - 'kms:Get*'
-              - 'kms:Delete*'
-              - 'kms:ScheduleKeyDeletion'
-              - 'kms:CancelKeyDeletion'
-            Effect: 'Allow'
-            Principal:
-              AWS:
-                Fn::Sub: 'arn:aws:iam::${AWS::AccountId}:root'
-            Resource: '*'
-            Sid: 'Allow administration of the key'
-          - Action:
-              - 'kms:Encrypt'
-              - 'kms:Decrypt'
-              - 'kms:ReEncrypt*'
-              - 'kms:GenerateDataKey*'
-              - 'kms:CreateGrant'
-              - 'kms:DescribeKey'
-            Condition:
-              StringEquals:
-                kms:CallerAccount:
-                  Fn::Sub: '${AWS::AccountId}'
-                kms:ViaService: 'sqs.us-east-1.amazonaws.com'
-            Effect: 'Allow'
-            Principal:
-              AWS: '*'
-            Resource: '*'
-            Sid: 'Allow authorized SQS callers to access the key'
-          - Action:
-              - 'kms:Describe*'
-              - 'kms:Get*'
-              - 'kms:List*'
-              - 'kms:RevokeGrant'
-            Effect: 'Allow'
-            Principal:
-              AWS:
-                Fn::Sub: 'arn:aws:iam::${AWS::AccountId}:root'
-            Resource: '*'
-            Sid: 'Allow direct access to key metadata to the account'
+              - Fn::GetAtt:
+                  - 'TableAccount'
+                  - 'Arn'
+              - Fn::Sub:
+                  - '${tableArn}/index/*'
+                  - tableArn:
+                      Fn::GetAtt:
+                        - 'TableAccount'
+                        - 'Arn'
         Version: '2012-10-17'
-      PendingWindowInDays: 7
-    Type: 'AWS::KMS::Key'
-  FnReactAUpsert7f5401faQueuePolicy:
+      PolicyName: 'FnEnricherSEUpsertA5b59364dTableAccessPolicy'
+      Roles:
+        - Fn::GetAtt:
+            - 'NestedFnEnricherSEUpsertA5b59364dStack'
+            - 'Outputs.Role'
+    Type: 'AWS::IAM::Policy'
+  FnReactAUpsert7f5401faTableAccessPolicy:
     Properties:
       PolicyDocument:
         Statement:
           - Action:
-              - 'sqs:SendMessage'
-            Condition:
-              ArnEquals:
-                aws:SourceArn:
-                  Fn::GetAtt:
-                    - 'FnReactAUpsert7f5401faRule'
-                    - 'Arn'
+              - 'dynamodb:GetItem'
+              - 'dynamodb:Scan'
+              - 'dynamodb:Query'
+              - 'dynamodb:BatchGetItem'
+              - 'dynamodb:DescribeTable'
             Effect: 'Allow'
-            Principal:
-              Service: 'events.amazonaws.com'
             Resource:
-              Fn::GetAtt:
-                - 'FnReactAUpsert7f5401faQueue'
-                - 'Arn'
-            Sid: 'Allow EventBridge to send messages to the queue'
-      Queues:
-        - Ref: 'FnReactAUpsert7f5401faQueue'
-    Type: 'AWS::SQS::QueuePolicy'
-  FnReactAUpsert7f5401faRule:
+              - Fn::GetAtt:
+                  - 'TableAccount'
+                  - 'Arn'
+              - Fn::Sub:
+                  - '${tableArn}/index/*'
+                  - tableArn:
+                      Fn::GetAtt:
+                        - 'TableAccount'
+                        - 'Arn'
+          - Action:
+              - 'dynamodb:GetItem'
+              - 'dynamodb:DeleteItem'
+              - 'dynamodb:PutItem'
+              - 'dynamodb:Scan'
+              - 'dynamodb:Query'
+              - 'dynamodb:UpdateItem'
+              - 'dynamodb:BatchWriteItem'
+              - 'dynamodb:BatchGetItem'
+              - 'dynamodb:DescribeTable'
+              - 'dynamodb:ConditionCheckItem'
+            Effect: 'Allow'
+            Resource:
+              - Fn::GetAtt:
+                  - 'TablePlanMetric'
+                  - 'Arn'
+              - Fn::Sub:
+                  - '${tableArn}/index/*'
+                  - tableArn:
+                      Fn::GetAtt:
+                        - 'TablePlanMetric'
+                        - 'Arn'
+        Version: '2012-10-17'
+      PolicyName: 'FnReactAUpsert7f5401faTableAccessPolicy'
+      Roles:
+        - Fn::GetAtt:
+            - 'NestedFnReactAUpsert7f5401faStack'
+            - 'Outputs.Role'
+    Type: 'AWS::IAM::Policy'
+  FnReactPMUpsert2b2e8d7dTableAccessPolicy:
     Properties:
-      EventBusName: 'default'
-      EventPattern:
-        detail:
-          dynamodb:
-            NewImage:
-              _et:
-                S:
-                  - 'Account'
-        detail-type:
-          - 'INSERT'
-          - 'MODIFY'
-        resources:
-          - Fn::GetAtt:
-              - 'TableAccount'
-              - 'Arn'
-        source:
-          - 'TableAccount.Account'
-      Targets:
-        - Arn:
-            Fn::GetAtt:
-              - 'FnReactAUpsert7f5401faQueue'
-              - 'Arn'
-          Id: 'FnReactAUpsert7f5401fa'
-    Type: 'AWS::Events::Rule'
-  FnReactPMUpsert2b2e8d7d:
-    Metadata:
-      BuildMethod: 'esbuild'
-      BuildProperties:
-        EntryPoints:
-          - './index'
-        External:
-          - '@aws-sdk/*'
-        Minify: false
-        Sourcemap: true
-        Target: 'es2022'
+      PolicyDocument:
+        Statement:
+          - Action:
+              - 'dynamodb:GetItem'
+              - 'dynamodb:Scan'
+              - 'dynamodb:Query'
+              - 'dynamodb:BatchGetItem'
+              - 'dynamodb:DescribeTable'
+            Effect: 'Allow'
+            Resource:
+              - Fn::GetAtt:
+                  - 'TablePlanMetric'
+                  - 'Arn'
+              - Fn::Sub:
+                  - '${tableArn}/index/*'
+                  - tableArn:
+                      Fn::GetAtt:
+                        - 'TablePlanMetric'
+                        - 'Arn'
+          - Action:
+              - 'dynamodb:GetItem'
+              - 'dynamodb:DeleteItem'
+              - 'dynamodb:PutItem'
+              - 'dynamodb:Scan'
+              - 'dynamodb:Query'
+              - 'dynamodb:UpdateItem'
+              - 'dynamodb:BatchWriteItem'
+              - 'dynamodb:BatchGetItem'
+              - 'dynamodb:DescribeTable'
+              - 'dynamodb:ConditionCheckItem'
+            Effect: 'Allow'
+            Resource:
+              - Fn::GetAtt:
+                  - 'TableMetric'
+                  - 'Arn'
+              - Fn::Sub:
+                  - '${tableArn}/index/*'
+                  - tableArn:
+                      Fn::GetAtt:
+                        - 'TableMetric'
+                        - 'Arn'
+        Version: '2012-10-17'
+      PolicyName: 'FnReactPMUpsert2b2e8d7dTableAccessPolicy'
+      Roles:
+        - Fn::GetAtt:
+            - 'NestedFnReactPMUpsert2b2e8d7dStack'
+            - 'Outputs.Role'
+    Type: 'AWS::IAM::Policy'
+  NestedFnEnricherSEUpsertA5b59364dStack:
     Properties:
-      CodeUri: 'react--plan-metric--upsert'
-      Events:
-        Stream:
-          Properties:
-            BatchSize: 10
-            FunctionResponseTypes:
-              - 'ReportBatchItemFailures'
-            Queue:
-              Fn::GetAtt:
-                - 'FnReactPMUpsert2b2e8d7dQueue'
-                - 'Arn'
-          Type: 'SQS'
-      MemorySize: 256
-      Policies:
-        - 'AWSLambdaBasicExecutionRole'
-        - 'AWSLambda_ReadOnlyAccess'
-        - 'AWSXrayWriteOnlyAccess'
-        - 'CloudWatchLambdaInsightsExecutionRolePolicy'
-        - CloudWatchPutMetricPolicy: {}
-        - DynamoDBReadPolicy:
-            TableName:
-              Ref: 'TablePlanMetric'
-        - DynamoDBCrudPolicy:
-            TableName:
+      Location: './cdc.yml'
+      Parameters:
+        CodeUri: 'enricher--subscription-event--upsert--account'
+        DetailType: 'INSERT,MODIFY'
+        MemorySize: 256
+        SourceModelName: 'SubscriptionEvent'
+        StageName:
+          Ref: 'StageName'
+        TableArn:
+          Fn::GetAtt:
+            - 'TableSubscriptionEvent'
+            - 'Arn'
+        TableName: 'TableSubscriptionEvent'
+        TableNames:
+          Fn::ToJsonString:
+            TABLE_ACCOUNT:
+              Ref: 'TableAccount'
+            TABLE_METRIC:
               Ref: 'TableMetric'
-        - SQSSendMessagePolicy:
-            QueueName:
-              Fn::GetAtt:
-                - 'FnReactPMUpsert2b2e8d7dDLQ'
-                - 'QueueName'
-      Timeout: 90
-    Type: 'AWS::Serverless::Function'
-  FnReactPMUpsert2b2e8d7dDLQ:
+            TABLE_PLAN_METRIC:
+              Ref: 'TablePlanMetric'
+            TABLE_SUBSCRIPTION_EVENT:
+              Ref: 'TableSubscriptionEvent'
+        Timeout: 90
+    Type: 'AWS::Serverless::Application'
+  NestedFnReactAUpsert7f5401faStack:
     Properties:
-      KmsMasterKeyId:
-        Fn::If:
-          - 'IsProd'
-          - Ref: 'FnReactPMUpsert2b2e8d7dQueueKey'
-          - 'AWS::NoValue'
-    Type: 'AWS::SQS::Queue'
-  FnReactPMUpsert2b2e8d7dLogGroup:
+      Location: './cdc.yml'
+      Parameters:
+        CodeUri: 'react--account--upsert'
+        DetailType: 'INSERT,MODIFY'
+        MemorySize: 256
+        SourceModelName: 'Account'
+        StageName:
+          Ref: 'StageName'
+        TableArn:
+          Fn::GetAtt:
+            - 'TableAccount'
+            - 'Arn'
+        TableName: 'TableAccount'
+        TableNames:
+          Fn::ToJsonString:
+            TABLE_ACCOUNT:
+              Ref: 'TableAccount'
+            TABLE_METRIC:
+              Ref: 'TableMetric'
+            TABLE_PLAN_METRIC:
+              Ref: 'TablePlanMetric'
+            TABLE_SUBSCRIPTION_EVENT:
+              Ref: 'TableSubscriptionEvent'
+        Timeout: 90
+    Type: 'AWS::Serverless::Application'
+  NestedFnReactPMUpsert2b2e8d7dStack:
     Properties:
-      LogGroupName:
-        Fn::Sub: '/aws/lambda/${FnReactPMUpsert2b2e8d7d}'
-      RetentionInDays:
-        Ref: 'LogRetentionInDays'
-    Type: 'AWS::Logs::LogGroup'
-  FnReactPMUpsert2b2e8d7dQueue:
+      Location: './cdc.yml'
+      Parameters:
+        CodeUri: 'react--plan-metric--upsert'
+        DetailType: 'INSERT,MODIFY'
+        MemorySize: 256
+        SourceModelName: 'PlanMetric'
+        StageName:
+          Ref: 'StageName'
+        TableArn:
+          Fn::GetAtt:
+            - 'TablePlanMetric'
+            - 'Arn'
+        TableName: 'TablePlanMetric'
+        TableNames:
+          Fn::ToJsonString:
+            TABLE_ACCOUNT:
+              Ref: 'TableAccount'
+            TABLE_METRIC:
+              Ref: 'TableMetric'
+            TABLE_PLAN_METRIC:
+              Ref: 'TablePlanMetric'
+            TABLE_SUBSCRIPTION_EVENT:
+              Ref: 'TableSubscriptionEvent'
+        Timeout: 90
+    Type: 'AWS::Serverless::Application'
+  NestedTableAccountCDCDispatcherStack:
     Properties:
-      Fn::If:
-        - 'IsProd'
-        - KmsMasterKeyId:
-            Ref: 'FnReactPMUpsert2b2e8d7dQueueKey'
-          RedrivePolicy:
-            deadLetterTargetArn:
-              Fn::GetAtt:
-                - 'FnReactPMUpsert2b2e8d7dDLQ'
-                - 'Arn'
-            maxReceiveCount: 3
-          VisibilityTimeout: 320
-        - RedrivePolicy:
-            deadLetterTargetArn:
-              Fn::GetAtt:
-                - 'FnReactPMUpsert2b2e8d7dDLQ'
-                - 'Arn'
-            maxReceiveCount: 3
-          VisibilityTimeout: 320
-    Type: 'AWS::SQS::Queue'
-  FnReactPMUpsert2b2e8d7dQueueKey:
-    Condition: 'IsProd'
+      Location: './dispatcher.yml'
+      Parameters:
+        BatchSize: 10
+        CodeUri: 'dispatcher-table-account'
+        EventBus: 'default'
+        MaximumRetryAttempts: 3
+        MemorySize: 384
+        StreamArn:
+          Fn::GetAtt:
+            - 'TableAccount'
+            - 'StreamArn'
+        TableNames:
+          Fn::ToJsonString:
+            TABLE_ACCOUNT:
+              Ref: 'TableAccount'
+            TABLE_METRIC:
+              Ref: 'TableMetric'
+            TABLE_PLAN_METRIC:
+              Ref: 'TablePlanMetric'
+            TABLE_SUBSCRIPTION_EVENT:
+              Ref: 'TableSubscriptionEvent'
+        Timeout: 60
+    Type: 'AWS::Serverless::Application'
+  NestedTablePlanMetricCDCDispatcherStack:
     Properties:
-      KeyPolicy:
-        Statement:
-          - Action:
-              - 'kms:Decrypt'
-              - 'kms:GenerateDataKey'
-            Effect: 'Allow'
-            Principal:
-              Service: 'events.amazonaws.com'
-            Resource: '*'
-            Sid: 'Allow EventBridge to use the Key'
-          - Action:
-              - 'kms:Create*'
-              - 'kms:Describe*'
-              - 'kms:Enable*'
-              - 'kms:List*'
-              - 'kms:Put*'
-              - 'kms:Update*'
-              - 'kms:Revoke*'
-              - 'kms:Disable*'
-              - 'kms:Get*'
-              - 'kms:Delete*'
-              - 'kms:ScheduleKeyDeletion'
-              - 'kms:CancelKeyDeletion'
-            Effect: 'Allow'
-            Principal:
-              AWS:
-                Fn::Sub: 'arn:aws:iam::${AWS::AccountId}:root'
-            Resource: '*'
-            Sid: 'Allow administration of the key'
-          - Action:
-              - 'kms:Encrypt'
-              - 'kms:Decrypt'
-              - 'kms:ReEncrypt*'
-              - 'kms:GenerateDataKey*'
-              - 'kms:CreateGrant'
-              - 'kms:DescribeKey'
-            Condition:
-              StringEquals:
-                kms:CallerAccount:
-                  Fn::Sub: '${AWS::AccountId}'
-                kms:ViaService: 'sqs.us-east-1.amazonaws.com'
-            Effect: 'Allow'
-            Principal:
-              AWS: '*'
-            Resource: '*'
-            Sid: 'Allow authorized SQS callers to access the key'
-          - Action:
-              - 'kms:Describe*'
-              - 'kms:Get*'
-              - 'kms:List*'
-              - 'kms:RevokeGrant'
-            Effect: 'Allow'
-            Principal:
-              AWS:
-                Fn::Sub: 'arn:aws:iam::${AWS::AccountId}:root'
-            Resource: '*'
-            Sid: 'Allow direct access to key metadata to the account'
-        Version: '2012-10-17'
-      PendingWindowInDays: 7
-    Type: 'AWS::KMS::Key'
-  FnReactPMUpsert2b2e8d7dQueuePolicy:
+      Location: './dispatcher.yml'
+      Parameters:
+        BatchSize: 10
+        CodeUri: 'dispatcher-table-plan-metric'
+        EventBus: 'default'
+        MaximumRetryAttempts: 3
+        MemorySize: 384
+        StreamArn:
+          Fn::GetAtt:
+            - 'TablePlanMetric'
+            - 'StreamArn'
+        TableNames:
+          Fn::ToJsonString:
+            TABLE_ACCOUNT:
+              Ref: 'TableAccount'
+            TABLE_METRIC:
+              Ref: 'TableMetric'
+            TABLE_PLAN_METRIC:
+              Ref: 'TablePlanMetric'
+            TABLE_SUBSCRIPTION_EVENT:
+              Ref: 'TableSubscriptionEvent'
+        Timeout: 60
+    Type: 'AWS::Serverless::Application'
+  NestedTableSubscriptionEventCDCDispatcherStack:
     Properties:
-      PolicyDocument:
-        Statement:
-          - Action:
-              - 'sqs:SendMessage'
-            Condition:
-              ArnEquals:
-                aws:SourceArn:
-                  Fn::GetAtt:
-                    - 'FnReactPMUpsert2b2e8d7dRule'
-                    - 'Arn'
-            Effect: 'Allow'
-            Principal:
-              Service: 'events.amazonaws.com'
-            Resource:
-              Fn::GetAtt:
-                - 'FnReactPMUpsert2b2e8d7dQueue'
-                - 'Arn'
-            Sid: 'Allow EventBridge to send messages to the queue'
-      Queues:
-        - Ref: 'FnReactPMUpsert2b2e8d7dQueue'
-    Type: 'AWS::SQS::QueuePolicy'
-  FnReactPMUpsert2b2e8d7dRule:
-    Properties:
-      EventBusName: 'default'
-      EventPattern:
-        detail:
-          dynamodb:
-            NewImage:
-              _et:
-                S:
-                  - 'PlanMetric'
-        detail-type:
-          - 'INSERT'
-          - 'MODIFY'
-        resources:
-          - Fn::GetAtt:
-              - 'TablePlanMetric'
-              - 'Arn'
-        source:
-          - 'TablePlanMetric.PlanMetric'
-      Targets:
-        - Arn:
-            Fn::GetAtt:
-              - 'FnReactPMUpsert2b2e8d7dQueue'
-              - 'Arn'
-          Id: 'FnReactPMUpsert2b2e8d7d'
-    Type: 'AWS::Events::Rule'
+      Location: './dispatcher.yml'
+      Parameters:
+        BatchSize: 10
+        CodeUri: 'dispatcher-table-subscription-event'
+        EventBus: 'default'
+        MaximumRetryAttempts: 3
+        MemorySize: 384
+        StreamArn:
+          Fn::GetAtt:
+            - 'TableSubscriptionEvent'
+            - 'StreamArn'
+        TableNames:
+          Fn::ToJsonString:
+            TABLE_ACCOUNT:
+              Ref: 'TableAccount'
+            TABLE_METRIC:
+              Ref: 'TableMetric'
+            TABLE_PLAN_METRIC:
+              Ref: 'TablePlanMetric'
+            TABLE_SUBSCRIPTION_EVENT:
+              Ref: 'TableSubscriptionEvent'
+        Timeout: 60
+    Type: 'AWS::Serverless::Application'
   TableAccount:
     Properties:
       AttributeDefinitions:
@@ -684,50 +398,6 @@ Resources:
         - Key: 'TableName'
           Value: 'TableAccount'
     Type: 'AWS::DynamoDB::Table'
-  TableAccountCDCDispatcher:
-    Metadata:
-      BuildMethod: 'esbuild'
-      BuildProperties:
-        EntryPoints:
-          - './index'
-        External:
-          - '@aws-sdk/*'
-        Minify: false
-        Sourcemap: true
-        Target: 'es2022'
-    Properties:
-      CodeUri: 'dispatcher-table-account'
-      Events:
-        Stream:
-          Properties:
-            BatchSize: 10
-            FunctionResponseTypes:
-              - 'ReportBatchItemFailures'
-            MaximumRetryAttempts: 3
-            StartingPosition: 'TRIM_HORIZON'
-            Stream:
-              Fn::GetAtt:
-                - 'TableAccount'
-                - 'StreamArn'
-          Type: 'DynamoDB'
-      MemorySize: 384
-      Policies:
-        - 'AWSLambdaBasicExecutionRole'
-        - 'AWSLambda_ReadOnlyAccess'
-        - 'AWSXrayWriteOnlyAccess'
-        - 'CloudWatchLambdaInsightsExecutionRolePolicy'
-        - CloudWatchPutMetricPolicy: {}
-        - EventBridgePutEventsPolicy:
-            EventBusName: 'default'
-      Timeout: 60
-    Type: 'AWS::Serverless::Function'
-  TableAccountCDCDispatcherLogGroup:
-    Properties:
-      LogGroupName:
-        Fn::Sub: '/aws/lambda/${TableAccountCDCDispatcher}'
-      RetentionInDays:
-        Ref: 'LogRetentionInDays'
-    Type: 'AWS::Logs::LogGroup'
   TableMetric:
     Properties:
       AttributeDefinitions:
@@ -794,50 +464,6 @@ Resources:
         - Key: 'TableName'
           Value: 'TablePlanMetric'
     Type: 'AWS::DynamoDB::Table'
-  TablePlanMetricCDCDispatcher:
-    Metadata:
-      BuildMethod: 'esbuild'
-      BuildProperties:
-        EntryPoints:
-          - './index'
-        External:
-          - '@aws-sdk/*'
-        Minify: false
-        Sourcemap: true
-        Target: 'es2022'
-    Properties:
-      CodeUri: 'dispatcher-table-plan-metric'
-      Events:
-        Stream:
-          Properties:
-            BatchSize: 10
-            FunctionResponseTypes:
-              - 'ReportBatchItemFailures'
-            MaximumRetryAttempts: 3
-            StartingPosition: 'TRIM_HORIZON'
-            Stream:
-              Fn::GetAtt:
-                - 'TablePlanMetric'
-                - 'StreamArn'
-          Type: 'DynamoDB'
-      MemorySize: 384
-      Policies:
-        - 'AWSLambdaBasicExecutionRole'
-        - 'AWSLambda_ReadOnlyAccess'
-        - 'AWSXrayWriteOnlyAccess'
-        - 'CloudWatchLambdaInsightsExecutionRolePolicy'
-        - CloudWatchPutMetricPolicy: {}
-        - EventBridgePutEventsPolicy:
-            EventBusName: 'default'
-      Timeout: 60
-    Type: 'AWS::Serverless::Function'
-  TablePlanMetricCDCDispatcherLogGroup:
-    Properties:
-      LogGroupName:
-        Fn::Sub: '/aws/lambda/${TablePlanMetricCDCDispatcher}'
-      RetentionInDays:
-        Ref: 'LogRetentionInDays'
-    Type: 'AWS::Logs::LogGroup'
   TableSubscriptionEvent:
     Properties:
       AttributeDefinitions:
@@ -872,48 +498,6 @@ Resources:
         - Key: 'TableName'
           Value: 'TableSubscriptionEvent'
     Type: 'AWS::DynamoDB::Table'
-  TableSubscriptionEventCDCDispatcher:
-    Metadata:
-      BuildMethod: 'esbuild'
-      BuildProperties:
-        EntryPoints:
-          - './index'
-        External:
-          - '@aws-sdk/*'
-        Minify: false
-        Sourcemap: true
-        Target: 'es2022'
-    Properties:
-      CodeUri: 'dispatcher-table-subscription-event'
-      Events:
-        Stream:
-          Properties:
-            BatchSize: 10
-            FunctionResponseTypes:
-              - 'ReportBatchItemFailures'
-            MaximumRetryAttempts: 3
-            StartingPosition: 'TRIM_HORIZON'
-            Stream:
-              Fn::GetAtt:
-                - 'TableSubscriptionEvent'
-                - 'StreamArn'
-          Type: 'DynamoDB'
-      MemorySize: 384
-      Policies:
-        - 'AWSLambdaBasicExecutionRole'
-        - 'AWSLambda_ReadOnlyAccess'
-        - 'AWSXrayWriteOnlyAccess'
-        - 'CloudWatchLambdaInsightsExecutionRolePolicy'
-        - CloudWatchPutMetricPolicy: {}
-        - EventBridgePutEventsPolicy:
-            EventBusName: 'default'
-      Timeout: 60
-    Type: 'AWS::Serverless::Function'
-  TableSubscriptionEventCDCDispatcherLogGroup:
-    Properties:
-      LogGroupName:
-        Fn::Sub: '/aws/lambda/${TableSubscriptionEventCDCDispatcher}'
-      RetentionInDays:
-        Ref: 'LogRetentionInDays'
-    Type: 'AWS::Logs::LogGroup'
-Transform: 'AWS::Serverless-2016-10-31'
+Transform:
+  - 'AWS::Serverless-2016-10-31'
+  - 'AWS::LanguageExtensions'

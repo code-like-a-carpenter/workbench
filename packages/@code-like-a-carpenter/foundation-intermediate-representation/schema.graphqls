@@ -94,6 +94,11 @@ directive @enriches(
   """
   importPath: String!
   """
+  Indicates if this handler's resources should be defined in the main
+  CloudFormation template or in a nested stack
+  """
+  nestStack: Boolean
+  """
   The model type that will be updated by this stream.
   """
   targetModel: String!
@@ -125,6 +130,11 @@ directive @reacts(
   Path to the requireable package that handles a specific event.
   """
   importPath: String!
+  """
+  Indicates if this handler's resources should be defined in the main
+  CloudFormation template or in a nested stack
+  """
+  nestStack: Boolean
   """
   List of model names that this handler should be allowed to query. The
   CloudFormation resource will be updated accordingly.

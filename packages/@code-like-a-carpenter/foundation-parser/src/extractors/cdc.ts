@@ -25,6 +25,7 @@ import {
   getArgEnumValue,
   getArgStringValue,
   getOptionalArg,
+  getOptionalArgBooleanValue,
   getOptionalArgObjectValue,
 } from '../helpers';
 import {
@@ -70,6 +71,12 @@ export function extractDispatcherConfig(
         };
       }, config.dispatcherDefaults);
 
+  const nestedStackLocation = './dispatcher.yml';
+  const nestedStackTemplatePath = path.join(
+    path.dirname(outputFile),
+    nestedStackLocation
+  );
+
   return {
     batchSize,
     dependenciesModuleId: resolveDependenciesModuleId(config, directory),
@@ -78,6 +85,9 @@ export function extractDispatcherConfig(
     functionName,
     maximumRetryAttempts,
     memorySize,
+    nestStack: config.useNestedStacks,
+    nestedStackLocation,
+    nestedStackTemplatePath,
     runtimeModuleId: '@code-like-a-carpenter/foundation-runtime',
     timeout,
   };
@@ -177,12 +187,25 @@ function extractCommonConfig(
     ...getOptionalArgObjectValue('handlerConfig', directive),
   });
 
+  const nestStack =
+    getOptionalArgBooleanValue('nestStack', directive) ??
+    config.useNestedStacks;
+
+  const nestedStackLocation = './cdc.yml';
+  const nestedStackTemplatePath = path.join(
+    path.dirname(outputFile),
+    nestedStackLocation
+  );
+
   return {
     actionsModuleId: resolveActionsModuleId(config, directory),
     directory,
     handlerImportName,
     handlerModuleId: resolveHandlerModuleId(type, directory, handler),
     memorySize,
+    nestStack,
+    nestedStackLocation,
+    nestedStackTemplatePath,
     runtimeModuleId: '@code-like-a-carpenter/foundation-runtime',
     sourceModelName,
     timeout,

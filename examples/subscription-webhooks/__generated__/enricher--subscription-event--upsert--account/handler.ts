@@ -1,5 +1,8 @@
 // This file is generated. Do not edit by hand.
-import {makeEnricher} from '@code-like-a-carpenter/foundation-runtime';
+import {
+  expandTableNames,
+  makeEnricher,
+} from '@code-like-a-carpenter/foundation-runtime';
 
 import {SubscriptionEventUpsertAccountEnricher} from '../../src/enrich--subscription--upsert--account';
 import type {
@@ -13,6 +16,9 @@ import {
   unmarshallSubscriptionEvent,
   updateAccount,
 } from '../graphql';
+
+expandTableNames();
+
 export const handler = makeEnricher<
   SubscriptionEvent,
   Account,

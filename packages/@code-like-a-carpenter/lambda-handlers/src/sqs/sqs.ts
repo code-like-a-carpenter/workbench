@@ -20,7 +20,7 @@ export function handleSQSEvent(cb: SQSCallback): SQSHandler {
       } catch (err) {
         // It's not really escaping, we're just rethrowing it so that it ends up
         // in the Promise.allSettled() results.
-        captureException(err, false);
+        captureException(err, false, logger);
         throw err;
       }
     });
