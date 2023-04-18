@@ -10,6 +10,7 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v3.5.0
         with:
@@ -25,6 +26,7 @@ jobs:
   diff:
     needs: build
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@v3.5.0
         with:
@@ -44,6 +46,7 @@ jobs:
   lint:
     needs: build
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@v3.5.0
         with:
@@ -85,6 +88,9 @@ jobs:
       - lint
       - test
     runs-on: ubuntu-latest
+    # This job gets exponentially slower based on the number of packages that
+    # need to be release, so 60 is not unreasonable.
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v3.5.0
         with:
@@ -120,13 +126,14 @@ jobs:
       id-token: write
       contents: read
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     strategy:
       fail-fast: false
       matrix:
         # There should be one node for each example, but at time of writing,
         # two of the examples are disabled due to issues with localstack.
-        nodeCount: [1]
-        nodeIndex: [0]
+        nodeCount: [5]
+        nodeIndex: [0, 1, 2, 3, 4]
     steps:
       - uses: actions/checkout@v3.5.0
         with:
