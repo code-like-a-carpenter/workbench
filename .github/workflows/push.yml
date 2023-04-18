@@ -125,8 +125,8 @@ jobs:
       matrix:
         # There should be one node for each example, but at time of writing,
         # two of the examples are disabled due to issues with localstack.
-        nodeCount: [1]
-        nodeIndex: [0]
+        nodeCount: [3]
+        nodeIndex: [0, 1, 2]
     steps:
       - uses: actions/checkout@v3.5.0
         with:
