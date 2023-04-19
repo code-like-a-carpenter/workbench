@@ -40,6 +40,12 @@ Outputs:
         Fn::Sub: '${AWS::StackName}-FunctionName'
     Value:
       Ref: 'Function'
+  LogGroupName:
+    Export:
+      Name:
+        Fn::Sub: '${AWS::StackName}-LogGroupName'
+    Value:
+      Ref: 'FunctionLogGroup'
   QueueArn:
     Export:
       Name:

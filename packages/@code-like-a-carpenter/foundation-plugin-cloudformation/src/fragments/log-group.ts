@@ -21,6 +21,15 @@ export function makeLogGroup({
   };
 
   return {
+    Outputs: {
+      LogGroupName: {
+        Export: {
+          // eslint-disable-next-line no-template-curly-in-string
+          Name: {'Fn::Sub': '${AWS::StackName}-LogGroupName'},
+        },
+        Value: {Ref: `${functionName}LogGroup`},
+      },
+    },
     Parameters: {
       LogRetentionInDays: {
         Default: '3',
