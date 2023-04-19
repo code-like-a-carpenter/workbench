@@ -6,8 +6,7 @@
     "@code-like-a-carpenter/env": "*",
     "@code-like-a-carpenter/errors": "*",
     "@code-like-a-carpenter/logger": "*",
-    "@code-like-a-carpenter/telemetry": "*",
-    "aws-lambda": "^1.0.7"
+    "@code-like-a-carpenter/telemetry": "*"
   },
   "author": "Ian Remmel <1182361+ianwremmel@users.noreply.github.com> (https://www.ianwremmel.com)",
   "bugs": "https://www.github.com/code-like-a-carpenter/workbench/issues",
@@ -30,6 +29,7 @@
     "access": "public"
   },
   "devDependencies": {
+    "@types/aws-lambda": "^8.10.114",
     "openapi-typescript": "^6.2.0"
   }
 }

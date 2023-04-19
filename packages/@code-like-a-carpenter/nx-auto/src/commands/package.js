@@ -191,7 +191,10 @@ function addMissingNodeDependencies(packageName, dependencies) {
 
   const normalDeps = dependencies
     .filter((d) => !d.startsWith('@aws-sdk'))
+    .filter((d) => d !== 'aws-lambda')
     .map((d) => `${d}@latest`);
+
+  const needsLambda = dependencies.includes('aws-lambda');
 
   if (awsDeps.length) {
     spawnSync(
@@ -207,6 +210,20 @@ function addMissingNodeDependencies(packageName, dependencies) {
     spawnSync('npm', ['install', '--workspace', packageName, ...normalDeps], {
       stdio: 'inherit',
     });
+  }
+
+  if (needsLambda) {
+    spawnSync(
+      'npm',
+      [
+        'install',
+        '--save-dev',
+        '--workspace',
+        packageName,
+        '@types/aws-lambda',
+      ],
+      {stdio: 'inherit'}
+    );
   }
 }
 
