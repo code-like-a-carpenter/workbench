@@ -2,7 +2,6 @@ import '@code-like-a-carpenter/aws-env-loader';
 
 import assert from 'node:assert';
 import {execSync} from 'node:child_process';
-import crypto from 'node:crypto';
 import path from 'node:path';
 
 import {
@@ -14,7 +13,7 @@ import type {
   JestEnvironmentConfig,
 } from '@jest/environment';
 import Environment from 'jest-environment-node';
-import {camelCase, snakeCase, upperFirst} from 'lodash';
+import {snakeCase} from 'lodash';
 
 import {env} from '@code-like-a-carpenter/env';
 
@@ -36,16 +35,12 @@ export default class ExampleEnvironment extends Environment {
       .split(path.sep);
 
     let suffix = '';
-    if (env('GITHUB_REF', '') !== '') {
-      suffix = `-${crypto
-        .createHash('sha256')
-        .update(env('GITHUB_REF'))
-        .digest('hex')
-        .slice(0, 8)}`;
+    if (env('GITHUB_SHA', '') !== '') {
+      suffix = `-${env('GITHUB_SHA', '').slice(0, 7)}`;
     }
 
     this.exampleName = exampleName;
-    this.stackName = upperFirst(camelCase(exampleName)) + suffix;
+    this.stackName = exampleName + suffix;
     process.env.STACK_NAME = this.stackName;
 
     const testEnv = env('TEST_ENV', 'localstack');
