@@ -77,6 +77,9 @@ Parameters:
     Type: 'String'
   DetailType:
     Type: 'CommaDelimitedList'
+  EnvironmentVariables:
+    Default: ''
+    Type: 'String'
   LogRetentionInDays:
     Default: '3'
     Description: 'Log retention in days'
