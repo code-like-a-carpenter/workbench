@@ -161,7 +161,21 @@ jobs:
           nodeCount: ${{ matrix.nodeCount }}
           nodeIndex: ${{ matrix.nodeIndex }}
           tests: '{examples,packages}/**/*.test.ts'
-      - run: TEST_ENV=aws npm test -- ${{ steps.split.outputs.tests }}
+      # Deploy all the stacks. Assuming we tuned the matrix correctly, this
+      # _should_ be one stack per job, but we treat it as a list just in case.
+      - run: |
+          PATH=$PATH:$(pwd)/node_modules/.bin ./scripts/crr-sam deploy ${{ steps.split.outputs.tests }}
+        id: deploy
+      - run: npm test -- ${{ steps.split.outputs.tests }}
+        env:
+          # We set RETAIN=true so that the cleanup script can take remove the
+          # stack rather than doing it inside the jest lifecycle.
+          RETAIN: true
+          TEST_ENV: aws
+      # The script keeps track of each stack it deployed so we only attempt to
+      # cleanup stacks that actually exist.
+      - run: ./scripts/crr-sam destroy ${{ steps.deploy.outputs.deployed }}
+        if: ${{ always() }}
       - uses: check-run-reporter/action@v2.11.2
         if: ${{ always() }}
         with:
