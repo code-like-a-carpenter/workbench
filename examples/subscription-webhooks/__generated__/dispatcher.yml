@@ -25,6 +25,9 @@ Parameters:
     Type: 'Number'
   CodeUri:
     Type: 'String'
+  EnvironmentVariables:
+    Default: ''
+    Type: 'String'
   EventBus:
     Type: 'String'
   LogRetentionInDays:

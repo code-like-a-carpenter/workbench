@@ -49,10 +49,10 @@ export function makeTableDispatcher(
     outputPath,
     `// This file is generated. Do not edit by hand.
 
-import {expandTableNames,makeDynamoDBStreamDispatcher} from '${libImportPath}';
+import {expandEnvironmentVariables,makeDynamoDBStreamDispatcher} from '${libImportPath}';
 import * as dependencies from '${dependenciesModuleId}';
 
-expandTableNames();
+expandEnvironmentVariables();
 
 export const handler = makeDynamoDBStreamDispatcher({
   ...dependencies,
@@ -97,6 +97,11 @@ export const handler = makeDynamoDBStreamDispatcher({
         },
         Properties: {
           CodeUri: codeUri,
+          Environment: {
+            Variables: {
+              FOUNDATION_ENVIRONMENT_VARIABLES: {Ref: 'EnvironmentVariables'},
+            },
+          },
           Events: {
             Stream: {
               Properties: {
@@ -205,6 +210,10 @@ function writeTemplate(config: Config, templatePath: string) {
         Type: 'Number',
       },
       CodeUri: {
+        Type: 'String',
+      },
+      EnvironmentVariables: {
+        Default: '',
         Type: 'String',
       },
       EventBus: {

@@ -24,7 +24,7 @@ export function defineEnricher(
   } = cdc;
 
   const template = `// This file is generated. Do not edit by hand.
-import {expandTableNames,makeEnricher} from '${runtimeModuleId}';
+import {expandEnvironmentVariables,makeEnricher} from '${runtimeModuleId}';
 import {${handlerImportName}} from '${handlerModuleId}';
 import {
   ${sourceModelName},
@@ -36,7 +36,7 @@ import {
   Update${targetModelName}Input
 } from '${actionsModuleId}';
 
-expandTableNames();
+expandEnvironmentVariables();
 
 export const handler = makeEnricher<
 ${sourceModelName},

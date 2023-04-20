@@ -1,6 +1,6 @@
 // This file is generated. Do not edit by hand.
 import {
-  expandTableNames,
+  expandEnvironmentVariables,
   makeEnricher,
 } from '@code-like-a-carpenter/foundation-runtime';
 
@@ -17,7 +17,7 @@ import {
   updateAccount,
 } from '../graphql';
 
-expandTableNames();
+expandEnvironmentVariables();
 
 export const handler = makeEnricher<
   SubscriptionEvent,

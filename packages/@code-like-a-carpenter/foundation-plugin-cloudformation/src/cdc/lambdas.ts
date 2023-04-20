@@ -179,6 +179,11 @@ export function makeHandler(
     },
     Properties: {
       CodeUri: filename,
+      Environment: {
+        Variables: {
+          FOUNDATION_ENVIRONMENT_VARIABLES: {Ref: 'EnvironmentVariables'},
+        },
+      },
       Events: {
         Stream: {
           Properties: {
@@ -728,6 +733,7 @@ function writeTemplate(config: Config, templatePath: string) {
     Parameters: {
       CodeUri: {Type: 'String'},
       DetailType: {Type: 'CommaDelimitedList'},
+      EnvironmentVariables: {Default: '', Type: 'String'},
       MemorySize: {Type: 'Number'},
       SourceModelName: {Type: 'String'},
       StageName: {Type: 'String'},
