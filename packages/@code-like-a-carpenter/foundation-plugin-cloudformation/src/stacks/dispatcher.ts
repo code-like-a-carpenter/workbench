@@ -7,7 +7,8 @@ import {makeLogGroup} from '../fragments/log-group';
 import type {ServerlessApplicationModel} from '../types';
 
 export function makeDispatcherStackName(table: TableWithCdc): string {
-  return `Nested${table.dispatcherConfig.functionName}Stack`;
+  // Foundation Nested Stack Table Dispatcher
+  return `FNDNSTD${table.dispatcherConfig.functionName}`;
 }
 
 export function makeDispatcherStack(

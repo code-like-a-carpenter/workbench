@@ -20,7 +20,8 @@ export function makeHandlerStackName(
   model: Model,
   cdc: ChangeDataCaptureConfig
 ): string {
-  return `Nested${cdc.functionName}Stack`;
+  // Foundation Nested Stack CDC
+  return `FNDNSCDC${cdc.functionName}`;
 }
 
 export function makeHandlerStack(config: Config): ServerlessApplicationModel {
