@@ -4,9 +4,6 @@ Globals:
   Function:
     Environment:
       Variables: {}
-    Handler: 'index.handler'
-    Runtime: 'nodejs18.x'
-    Tracing: 'Active'
 Outputs:
   FunctionName:
     Export:
@@ -59,10 +56,6 @@ Resources:
     Properties:
       CodeUri:
         Ref: 'CodeUri'
-      Environment:
-        Variables:
-          FOUNDATION_TABLE_NAMES:
-            Ref: 'TableNames'
       Events:
         Stream:
           Properties:
@@ -76,6 +69,7 @@ Resources:
             Stream:
               Ref: 'StreamArn'
           Type: 'DynamoDB'
+      Handler: 'index.handler'
       MemorySize:
         Ref: 'MemorySize'
       Policies:
@@ -87,8 +81,10 @@ Resources:
         - EventBridgePutEventsPolicy:
             EventBusName:
               Ref: 'EventBus'
+      Runtime: 'nodejs18.x'
       Timeout:
         Ref: 'Timeout'
+      Tracing: 'Active'
     Type: 'AWS::Serverless::Function'
   FunctionLogGroup:
     Properties:

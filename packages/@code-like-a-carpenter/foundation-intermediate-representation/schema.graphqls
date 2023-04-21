@@ -94,11 +94,6 @@ directive @enriches(
   """
   importPath: String!
   """
-  Indicates if this handler's resources should be defined in the main
-  CloudFormation template or in a nested stack
-  """
-  nestStack: Boolean
-  """
   The model type that will be updated by this stream.
   """
   targetModel: String!

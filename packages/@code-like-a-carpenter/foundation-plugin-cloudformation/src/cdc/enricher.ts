@@ -5,15 +5,19 @@ import type {
 
 import type {Config} from '../config';
 import {combineFragments} from '../fragments/combine-fragments';
+import type {ServerlessApplicationModel} from '../types';
 
-import {makeHandler} from './lambdas';
+import {makeHandler} from './handler';
 
 /** Generates CDC Projector config for a model */
 export function defineEnricher(
   config: Config,
   model: Model,
   cdc: ChangeDataCaptureEnricherConfig
-) {
+): {
+  fragment: ServerlessApplicationModel;
+  stack: ServerlessApplicationModel;
+} {
   const {
     actionsModuleId,
     handlerImportName,
@@ -23,7 +27,7 @@ export function defineEnricher(
     targetModelName,
   } = cdc;
 
-  const template = `// This file is generated. Do not edit by hand.
+  const code = `// This file is generated. Do not edit by hand.
 import {expandEnvironmentVariables,makeEnricher} from '${runtimeModuleId}';
 import {${handlerImportName}} from '${handlerModuleId}';
 import {
@@ -53,5 +57,7 @@ Update${targetModelName}Input
 );
 `;
 
-  return combineFragments(makeHandler(config, model, cdc, template));
+  const {fragment, stack} = makeHandler(config, model, cdc, code);
+
+  return {fragment: combineFragments(fragment), stack};
 }

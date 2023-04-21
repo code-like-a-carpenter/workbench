@@ -1,59 +1,77 @@
-import type {Table} from '@code-like-a-carpenter/foundation-intermediate-representation';
+import type {TableWithCdc} from '@code-like-a-carpenter/foundation-intermediate-representation';
 
+import type {Resource7} from '../__generated__/json-schemas/serverless-application-model';
 import type {Config} from '../config';
 import {combineFragments} from '../fragments/combine-fragments';
-import {makeTableDispatcher} from '../fragments/table-dispatcher';
+import {writeLambda} from '../fragments/lambda';
+import {
+  makeDispatcherStack,
+  makeDispatcherStackName,
+} from '../stacks/dispatcher';
 import type {ServerlessApplicationModel} from '../types';
 
 /** Generates CDC config for a table */
 export function defineTableCdc(
-  table: Table,
+  table: TableWithCdc,
   config: Config
-): ServerlessApplicationModel {
-  if (!table.hasCdc) {
-    return {
-      Resources: {},
-    };
-  }
-
+): {
+  fragment: ServerlessApplicationModel;
+  stack: ServerlessApplicationModel;
+} {
   const {dispatcherConfig, dependenciesModuleId, tableName} = table;
 
   const {
     batchSize,
     filename,
-    functionName,
     directory,
     maximumRetryAttempts,
     memorySize,
-    nestStack,
     nestedStackLocation,
-    nestedStackTemplatePath,
     runtimeModuleId,
     timeout,
   } = dispatcherConfig;
 
-  return combineFragments(
-    makeTableDispatcher(config, {
-      batchSize,
-      buildProperties: {
-        EntryPoints: ['./index'],
-        External: config.buildProperties.external,
-        Minify: config.buildProperties.minify,
-        Sourcemap: config.buildProperties.sourcemap,
-        Target: config.buildProperties.target,
-      },
-      codeUri: filename,
-      dependenciesModuleId,
-      functionName,
-      libImportPath: runtimeModuleId,
-      maximumRetryAttempts,
-      memorySize,
-      nested: nestStack,
-      nestedStackLocation,
-      nestedStackTemplatePath,
-      outputPath: directory,
-      tableName,
-      timeout,
-    })
+  writeLambda(
+    directory,
+    `// This file is generated. Do not edit by hand.
+
+import {expandEnvironmentVariables,makeDynamoDBStreamDispatcher} from '${runtimeModuleId}';
+import * as dependencies from '${dependenciesModuleId}';
+
+expandEnvironmentVariables();
+
+export const handler = makeDynamoDBStreamDispatcher({
+  ...dependencies,
+  tableName: '${tableName}',
+});
+`
   );
+
+  const stack: Resource7 = {
+    Properties: {
+      Location: nestedStackLocation,
+      Parameters: {
+        BatchSize: batchSize,
+        CodeUri: filename,
+        EventBus: 'default',
+        MaximumRetryAttempts: maximumRetryAttempts,
+        MemorySize: memorySize,
+        StreamArn: {'Fn::GetAtt': [tableName, 'StreamArn']},
+        Timeout: timeout,
+      },
+    },
+    Type: 'AWS::Serverless::Application',
+  };
+
+  const stackName = makeDispatcherStackName(table);
+
+  const fragment = combineFragments({
+    Resources: {
+      [stackName]: stack,
+    },
+  });
+
+  const dispatcherStack = makeDispatcherStack(config);
+
+  return {fragment, stack: dispatcherStack};
 }

@@ -22,7 +22,6 @@ export const ParserConfigSchema = z.object({
     .object({enablePointInTimeRecovery: z.boolean().default(true)})
     .default({}),
   useEfficientIndexes: z.boolean().default(true),
-  useNestedStacks: z.boolean().default(true),
 });
 
 export type Config = z.infer<typeof ParserConfigSchema>;

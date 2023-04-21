@@ -5,15 +5,19 @@ import type {
 
 import type {Config} from '../config';
 import {combineFragments} from '../fragments/combine-fragments';
+import type {ServerlessApplicationModel} from '../types';
 
-import {makeHandler} from './lambdas';
+import {makeHandler} from './handler';
 
 /** Generates CDC config for a model */
 export function defineReactor(
   config: Config,
   model: Model,
   cdc: ChangeDataCaptureReactorConfig
-) {
+): {
+  fragment: ServerlessApplicationModel;
+  stack: ServerlessApplicationModel;
+} {
   const {
     actionsModuleId,
     handlerImportName,
@@ -32,5 +36,7 @@ expandEnvironmentVariables();
 export const handler = makeReactor<${sourceModelName}>(${handlerImportName}, {unmarshallSourceModel: unmarshall${sourceModelName}});
 `;
 
-  return combineFragments(makeHandler(config, model, cdc, code));
+  const {fragment, stack} = makeHandler(config, model, cdc, code);
+
+  return {fragment: combineFragments(fragment), stack};
 }

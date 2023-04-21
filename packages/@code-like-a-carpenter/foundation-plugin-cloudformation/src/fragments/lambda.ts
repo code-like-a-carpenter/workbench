@@ -1,29 +1,6 @@
 import fs from 'fs';
 import path from 'path';
 
-export interface BuildProperties {
-  readonly EntryPoints: readonly string[];
-  readonly External?: readonly string[];
-  readonly Minify: boolean;
-  readonly Sourcemap: boolean;
-  readonly Target: string;
-}
-
-export interface LambdaInput {
-  readonly buildProperties: BuildProperties;
-  readonly codeUri: string;
-  readonly dependenciesModuleId: string;
-  readonly functionName: string;
-  readonly libImportPath: string;
-  readonly outputPath: string;
-}
-
-export interface LambdaDynamoDBEventInput {
-  readonly batchSize?: number;
-  readonly maximumRetryAttempts?: number;
-  readonly tableName: string;
-}
-
 export function writeLambda(directory: string, code: string): void {
   fs.mkdirSync(directory, {recursive: true});
   fs.writeFileSync(path.join(directory, 'handler.ts'), code);
