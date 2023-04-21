@@ -30,7 +30,7 @@
     "@code-like-a-carpenter/logger": "*",
     "@opentelemetry/api": "1.4.0",
     "@opentelemetry/sdk-trace-base": "^1.9.1",
-    "@sentry/serverless": "^7.40.0",
+    "@sentry/serverless": "^7.49.0",
     "snake-case": "^3.0.4"
   },
   "devDependencies": {
