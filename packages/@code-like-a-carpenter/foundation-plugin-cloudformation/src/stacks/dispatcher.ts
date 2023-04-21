@@ -6,6 +6,10 @@ import {combineFragments} from '../fragments/combine-fragments';
 import {makeLogGroup} from '../fragments/log-group';
 import type {ServerlessApplicationModel} from '../types';
 
+export function isDispatcherStack(resourceName: string) {
+  return resourceName.startsWith('FNDNSTD');
+}
+
 export function makeDispatcherStackName(table: TableWithCdc): string {
   // Foundation Nested Stack Table Dispatcher
   return `FNDNSTD${table.dispatcherConfig.functionName}`;

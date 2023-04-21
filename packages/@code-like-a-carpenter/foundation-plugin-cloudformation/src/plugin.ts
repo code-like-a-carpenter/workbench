@@ -14,6 +14,7 @@ import type {Config} from './config';
 import {ConfigSchema} from './config';
 import {combineFragments} from './fragments/combine-fragments';
 import {defineTable} from './table';
+import {applyTransforms} from './transforms';
 import type {ServerlessApplicationModel} from './types';
 
 export {schema as addToSchema} from '@code-like-a-carpenter/foundation-intermediate-representation';
@@ -38,7 +39,7 @@ async function getInitialTemplate({
   return {
     AWSTemplateFormatVersion: '2010-09-09',
     Resources: {},
-    Transform: ['AWS::Serverless-2016-10-31', 'AWS::LanguageExtensions'],
+    Transform: 'AWS::Serverless-2016-10-31',
   };
 }
 
@@ -49,7 +50,8 @@ export const plugin: PluginFunction<Config> = makePlugin(
     const outputFile = info?.outputFile;
     assert(outputFile, 'outputFile is required');
 
-    const {models, tables} = parse(schema, documents, config, info);
+    const ir = parse(schema, documents, config, info);
+    const {models, tables} = ir;
 
     const stacks = new Map<string, ServerlessApplicationModel>();
 
@@ -128,35 +130,7 @@ export const plugin: PluginFunction<Config> = makePlugin(
       },
     };
 
-    // @ts-ignore
-    const variables = tpl?.Globals?.Function?.Environment?.Variables ?? {};
-
-    const tablesNames = Object.keys(variables)
-      .filter((name) => name.startsWith('TABLE_'))
-      .reduce((acc, name) => {
-        acc[name] = variables[name];
-        delete variables[name];
-        return acc;
-      }, {} as Record<string, string>);
-
-    if (Object.keys(tablesNames).length) {
-      variables.FOUNDATION_TABLE_NAMES = {'Fn::ToJsonString': tablesNames};
-    }
-
-    Object.entries(tpl.Resources)
-      .filter(
-        ([, resource]) => resource.Type === 'AWS::Serverless::Application'
-      )
-      .forEach(([, resource]) => {
-        assert(resource.Type === 'AWS::Serverless::Application');
-        resource.Properties = {
-          ...resource.Properties,
-          Parameters: {
-            ...(resource.Properties?.Parameters ?? {}),
-            TableNames: {'Fn::ToJsonString': tablesNames},
-          },
-        };
-      });
+    await applyTransforms(config, ir, tpl, stacks);
 
     const outDir = path.dirname(outputFile);
     for (const [filename, stack] of stacks) {

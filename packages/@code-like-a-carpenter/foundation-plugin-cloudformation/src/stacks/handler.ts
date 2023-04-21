@@ -16,6 +16,10 @@ import {makeLogGroup} from '../fragments/log-group';
 import {filterNull} from '../helpers';
 import type {ServerlessApplicationModel} from '../types';
 
+export function isHandlerStack(resourceName: string) {
+  return resourceName.startsWith('FNDNSCDC');
+}
+
 export function makeHandlerStackName(
   model: Model,
   cdc: ChangeDataCaptureConfig
@@ -56,13 +60,6 @@ export function makeHandlerStack(config: Config): ServerlessApplicationModel {
     Properties: {
       // @ts-expect-error - typedef doesn't include intrinsic functions
       CodeUri: {Ref: 'CodeUri'},
-      Environment: {
-        Variables: {
-          // TableNames will get set after-the-fact the the main plugin script
-          // before writing the template.
-          FOUNDATION_TABLE_NAMES: {Ref: 'TableNames'},
-        },
-      },
       Events: {
         Stream: {
           Properties: {

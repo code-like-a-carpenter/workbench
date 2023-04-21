@@ -26,6 +26,12 @@ const DumpOptions = z.object({
 export const ConfigSchema = ParserConfigSchema.extend({
   actionsModuleId: z.string(),
   buildProperties: BuildPropertiesSchema.default({}),
+  cloudformationTransforms: z
+    .array(z.string())
+    .default([
+      '@code-like-a-carpenter/foundation-transform-environment',
+      '@code-like-a-carpenter/foundation-transform-table-names',
+    ]),
   outputConfig: z
     .object({
       format: z.enum(['json', 'yaml']).default('json'),

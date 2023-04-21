@@ -10,13 +10,7 @@
       "path": "../assert"
     },
     {
-      "path": "../foundation-intermediate-representation"
-    },
-    {
-      "path": "../foundation-parser"
-    },
-    {
-      "path": "../graphql-codegen-helpers"
+      "path": "../foundation-plugin-cloudformation"
     }
   ]
 }

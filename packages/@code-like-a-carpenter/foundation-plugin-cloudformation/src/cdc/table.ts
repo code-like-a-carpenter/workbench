@@ -35,10 +35,8 @@ export function defineTableCdc(
     directory,
     `// This file is generated. Do not edit by hand.
 
-import {expandEnvironmentVariables,makeDynamoDBStreamDispatcher} from '${runtimeModuleId}';
+import {makeDynamoDBStreamDispatcher} from '${runtimeModuleId}';
 import * as dependencies from '${dependenciesModuleId}';
-
-expandEnvironmentVariables();
 
 export const handler = makeDynamoDBStreamDispatcher({
   ...dependencies,

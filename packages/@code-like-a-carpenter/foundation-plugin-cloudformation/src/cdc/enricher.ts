@@ -28,7 +28,7 @@ export function defineEnricher(
   } = cdc;
 
   const code = `// This file is generated. Do not edit by hand.
-import {expandEnvironmentVariables,makeEnricher} from '${runtimeModuleId}';
+import {makeEnricher} from '${runtimeModuleId}';
 import {${handlerImportName}} from '${handlerModuleId}';
 import {
   ${sourceModelName},
@@ -39,8 +39,6 @@ import {
   Create${targetModelName}Input,
   Update${targetModelName}Input
 } from '${actionsModuleId}';
-
-expandEnvironmentVariables();
 
 export const handler = makeEnricher<
 ${sourceModelName},

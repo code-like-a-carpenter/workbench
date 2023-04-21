@@ -27,11 +27,9 @@ export function defineReactor(
   } = cdc;
 
   const code = `// This file is generated. Do not edit by hand.
-import {expandEnvironmentVariables, makeReactor} from '${runtimeModuleId}';
+import {makeReactor} from '${runtimeModuleId}';
 import {${handlerImportName}} from '${handlerModuleId}';
 import type {${sourceModelName}, unmarshall${sourceModelName}} from '${actionsModuleId}';
-
-expandEnvironmentVariables();
 
 export const handler = makeReactor<${sourceModelName}>(${handlerImportName}, {unmarshallSourceModel: unmarshall${sourceModelName}});
 `;

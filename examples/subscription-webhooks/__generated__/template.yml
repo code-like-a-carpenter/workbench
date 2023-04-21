@@ -8,16 +8,14 @@ Globals:
   Function:
     Environment:
       Variables:
-        FOUNDATION_TABLE_NAMES:
-          Fn::ToJsonString:
-            TABLE_ACCOUNT:
-              Ref: 'TableAccount'
-            TABLE_METRIC:
-              Ref: 'TableMetric'
-            TABLE_PLAN_METRIC:
-              Ref: 'TablePlanMetric'
-            TABLE_SUBSCRIPTION_EVENT:
-              Ref: 'TableSubscriptionEvent'
+        TABLE_ACCOUNT:
+          Ref: 'TableAccount'
+        TABLE_METRIC:
+          Ref: 'TableMetric'
+        TABLE_PLAN_METRIC:
+          Ref: 'TablePlanMetric'
+        TABLE_SUBSCRIPTION_EVENT:
+          Ref: 'TableSubscriptionEvent'
     Handler: 'index.handler'
     MemorySize: 256
     Runtime: 'nodejs18.x'
@@ -72,21 +70,19 @@ Resources:
         SourceModelName: 'SubscriptionEvent'
         StageName:
           Ref: 'StageName'
+        TableAccount:
+          Ref: 'TableAccount'
         TableArn:
           Fn::GetAtt:
             - 'TableSubscriptionEvent'
             - 'Arn'
+        TableMetric:
+          Ref: 'TableMetric'
         TableName: 'TableSubscriptionEvent'
-        TableNames:
-          Fn::ToJsonString:
-            TABLE_ACCOUNT:
-              Ref: 'TableAccount'
-            TABLE_METRIC:
-              Ref: 'TableMetric'
-            TABLE_PLAN_METRIC:
-              Ref: 'TablePlanMetric'
-            TABLE_SUBSCRIPTION_EVENT:
-              Ref: 'TableSubscriptionEvent'
+        TablePlanMetric:
+          Ref: 'TablePlanMetric'
+        TableSubscriptionEvent:
+          Ref: 'TableSubscriptionEvent'
         Timeout: 90
     Type: 'AWS::Serverless::Application'
   FNDNSCDCFnReactAUpsert7f5401fa:
@@ -99,21 +95,19 @@ Resources:
         SourceModelName: 'Account'
         StageName:
           Ref: 'StageName'
+        TableAccount:
+          Ref: 'TableAccount'
         TableArn:
           Fn::GetAtt:
             - 'TableAccount'
             - 'Arn'
+        TableMetric:
+          Ref: 'TableMetric'
         TableName: 'TableAccount'
-        TableNames:
-          Fn::ToJsonString:
-            TABLE_ACCOUNT:
-              Ref: 'TableAccount'
-            TABLE_METRIC:
-              Ref: 'TableMetric'
-            TABLE_PLAN_METRIC:
-              Ref: 'TablePlanMetric'
-            TABLE_SUBSCRIPTION_EVENT:
-              Ref: 'TableSubscriptionEvent'
+        TablePlanMetric:
+          Ref: 'TablePlanMetric'
+        TableSubscriptionEvent:
+          Ref: 'TableSubscriptionEvent'
         Timeout: 90
     Type: 'AWS::Serverless::Application'
   FNDNSCDCFnReactPMUpsert2b2e8d7d:
@@ -126,21 +120,19 @@ Resources:
         SourceModelName: 'PlanMetric'
         StageName:
           Ref: 'StageName'
+        TableAccount:
+          Ref: 'TableAccount'
         TableArn:
           Fn::GetAtt:
             - 'TablePlanMetric'
             - 'Arn'
+        TableMetric:
+          Ref: 'TableMetric'
         TableName: 'TablePlanMetric'
-        TableNames:
-          Fn::ToJsonString:
-            TABLE_ACCOUNT:
-              Ref: 'TableAccount'
-            TABLE_METRIC:
-              Ref: 'TableMetric'
-            TABLE_PLAN_METRIC:
-              Ref: 'TablePlanMetric'
-            TABLE_SUBSCRIPTION_EVENT:
-              Ref: 'TableSubscriptionEvent'
+        TablePlanMetric:
+          Ref: 'TablePlanMetric'
+        TableSubscriptionEvent:
+          Ref: 'TableSubscriptionEvent'
         Timeout: 90
     Type: 'AWS::Serverless::Application'
   FNDNSTDTableAccountCDCDispatcher:
@@ -156,16 +148,14 @@ Resources:
           Fn::GetAtt:
             - 'TableAccount'
             - 'StreamArn'
-        TableNames:
-          Fn::ToJsonString:
-            TABLE_ACCOUNT:
-              Ref: 'TableAccount'
-            TABLE_METRIC:
-              Ref: 'TableMetric'
-            TABLE_PLAN_METRIC:
-              Ref: 'TablePlanMetric'
-            TABLE_SUBSCRIPTION_EVENT:
-              Ref: 'TableSubscriptionEvent'
+        TableAccount:
+          Ref: 'TableAccount'
+        TableMetric:
+          Ref: 'TableMetric'
+        TablePlanMetric:
+          Ref: 'TablePlanMetric'
+        TableSubscriptionEvent:
+          Ref: 'TableSubscriptionEvent'
         Timeout: 60
     Type: 'AWS::Serverless::Application'
   FNDNSTDTablePlanMetricCDCDispatcher:
@@ -181,16 +171,14 @@ Resources:
           Fn::GetAtt:
             - 'TablePlanMetric'
             - 'StreamArn'
-        TableNames:
-          Fn::ToJsonString:
-            TABLE_ACCOUNT:
-              Ref: 'TableAccount'
-            TABLE_METRIC:
-              Ref: 'TableMetric'
-            TABLE_PLAN_METRIC:
-              Ref: 'TablePlanMetric'
-            TABLE_SUBSCRIPTION_EVENT:
-              Ref: 'TableSubscriptionEvent'
+        TableAccount:
+          Ref: 'TableAccount'
+        TableMetric:
+          Ref: 'TableMetric'
+        TablePlanMetric:
+          Ref: 'TablePlanMetric'
+        TableSubscriptionEvent:
+          Ref: 'TableSubscriptionEvent'
         Timeout: 60
     Type: 'AWS::Serverless::Application'
   FNDNSTDTableSubscriptionEventCDCDispatcher:
@@ -206,16 +194,14 @@ Resources:
           Fn::GetAtt:
             - 'TableSubscriptionEvent'
             - 'StreamArn'
-        TableNames:
-          Fn::ToJsonString:
-            TABLE_ACCOUNT:
-              Ref: 'TableAccount'
-            TABLE_METRIC:
-              Ref: 'TableMetric'
-            TABLE_PLAN_METRIC:
-              Ref: 'TablePlanMetric'
-            TABLE_SUBSCRIPTION_EVENT:
-              Ref: 'TableSubscriptionEvent'
+        TableAccount:
+          Ref: 'TableAccount'
+        TableMetric:
+          Ref: 'TableMetric'
+        TablePlanMetric:
+          Ref: 'TablePlanMetric'
+        TableSubscriptionEvent:
+          Ref: 'TableSubscriptionEvent'
         Timeout: 60
     Type: 'AWS::Serverless::Application'
   FnEnricherSEUpsertA5b59364dTableAccessPolicy:
@@ -498,6 +484,4 @@ Resources:
         - Key: 'TableName'
           Value: 'TableSubscriptionEvent'
     Type: 'AWS::DynamoDB::Table'
-Transform:
-  - 'AWS::Serverless-2016-10-31'
-  - 'AWS::LanguageExtensions'
+Transform: 'AWS::Serverless-2016-10-31'

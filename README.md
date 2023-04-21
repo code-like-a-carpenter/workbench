@@ -12,6 +12,7 @@
 -   [Install](#install)
 -   [Usage](#usage)
 -   [Examples](#examples)
+-   [On Breaking Changes](#on-breaking-changes)
 -   [Maintainer](#maintainer)
 -   [Contribute](#contribute)
     -   [nx](#nx)
@@ -45,6 +46,13 @@ deployment:
 -   They do not include the
     [ADOT Open Telemetry layer](https://aws-otel.github.io/docs/getting-started/lambda).
 -   There are no contract tests for API Gateway request validations.
+
+## On Breaking Changes
+
+All packages in this repository follow
+[semantic versioning](https://semver.org/), however, changes that require
+rerunning codegen are not considered breaking if they require no other
+interventions.
 
 ## Maintainer
 
