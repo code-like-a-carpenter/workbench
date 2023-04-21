@@ -1,8 +1,5 @@
 // This file is generated. Do not edit by hand.
-import {
-  expandEnvironmentVariables,
-  makeEnricher,
-} from '@code-like-a-carpenter/foundation-runtime';
+import {makeEnricher} from '@code-like-a-carpenter/foundation-runtime';
 
 import {SubscriptionEventUpsertAccountEnricher} from '../../src/enrich--subscription--upsert--account';
 import type {
@@ -16,8 +13,6 @@ import {
   unmarshallSubscriptionEvent,
   updateAccount,
 } from '../graphql';
-
-expandEnvironmentVariables();
 
 export const handler = makeEnricher<
   SubscriptionEvent,

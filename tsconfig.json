@@ -59,6 +59,12 @@
       "path": "packages/@code-like-a-carpenter/foundation-runtime"
     },
     {
+      "path": "packages/@code-like-a-carpenter/foundation-transform-environment"
+    },
+    {
+      "path": "packages/@code-like-a-carpenter/foundation-transform-table-names"
+    },
+    {
       "path": "packages/@code-like-a-carpenter/graphql-codegen-helpers"
     },
     {

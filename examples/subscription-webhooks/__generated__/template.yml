@@ -8,16 +8,14 @@ Globals:
   Function:
     Environment:
       Variables:
-        FOUNDATION_TABLE_NAMES:
-          Fn::ToJsonString:
-            TABLE_ACCOUNT:
-              Ref: 'TableAccount'
-            TABLE_METRIC:
-              Ref: 'TableMetric'
-            TABLE_PLAN_METRIC:
-              Ref: 'TablePlanMetric'
-            TABLE_SUBSCRIPTION_EVENT:
-              Ref: 'TableSubscriptionEvent'
+        TABLE_ACCOUNT:
+          Ref: 'TableAccount'
+        TABLE_METRIC:
+          Ref: 'TableMetric'
+        TABLE_PLAN_METRIC:
+          Ref: 'TablePlanMetric'
+        TABLE_SUBSCRIPTION_EVENT:
+          Ref: 'TableSubscriptionEvent'
     Handler: 'index.handler'
     MemorySize: 256
     Runtime: 'nodejs18.x'
@@ -62,6 +60,150 @@ Parameters:
     Description: 'The name of the stage'
     Type: 'String'
 Resources:
+  FNDNSCDCFnEnricherSEUpsertA5b59364d:
+    Properties:
+      Location: './cdc.yml'
+      Parameters:
+        CodeUri: 'enricher--subscription-event--upsert--account'
+        DetailType: 'INSERT,MODIFY'
+        MemorySize: 256
+        SourceModelName: 'SubscriptionEvent'
+        StageName:
+          Ref: 'StageName'
+        TableAccount:
+          Ref: 'TableAccount'
+        TableArn:
+          Fn::GetAtt:
+            - 'TableSubscriptionEvent'
+            - 'Arn'
+        TableMetric:
+          Ref: 'TableMetric'
+        TableName: 'TableSubscriptionEvent'
+        TablePlanMetric:
+          Ref: 'TablePlanMetric'
+        TableSubscriptionEvent:
+          Ref: 'TableSubscriptionEvent'
+        Timeout: 90
+    Type: 'AWS::Serverless::Application'
+  FNDNSCDCFnReactAUpsert7f5401fa:
+    Properties:
+      Location: './cdc.yml'
+      Parameters:
+        CodeUri: 'react--account--upsert'
+        DetailType: 'INSERT,MODIFY'
+        MemorySize: 256
+        SourceModelName: 'Account'
+        StageName:
+          Ref: 'StageName'
+        TableAccount:
+          Ref: 'TableAccount'
+        TableArn:
+          Fn::GetAtt:
+            - 'TableAccount'
+            - 'Arn'
+        TableMetric:
+          Ref: 'TableMetric'
+        TableName: 'TableAccount'
+        TablePlanMetric:
+          Ref: 'TablePlanMetric'
+        TableSubscriptionEvent:
+          Ref: 'TableSubscriptionEvent'
+        Timeout: 90
+    Type: 'AWS::Serverless::Application'
+  FNDNSCDCFnReactPMUpsert2b2e8d7d:
+    Properties:
+      Location: './cdc.yml'
+      Parameters:
+        CodeUri: 'react--plan-metric--upsert'
+        DetailType: 'INSERT,MODIFY'
+        MemorySize: 256
+        SourceModelName: 'PlanMetric'
+        StageName:
+          Ref: 'StageName'
+        TableAccount:
+          Ref: 'TableAccount'
+        TableArn:
+          Fn::GetAtt:
+            - 'TablePlanMetric'
+            - 'Arn'
+        TableMetric:
+          Ref: 'TableMetric'
+        TableName: 'TablePlanMetric'
+        TablePlanMetric:
+          Ref: 'TablePlanMetric'
+        TableSubscriptionEvent:
+          Ref: 'TableSubscriptionEvent'
+        Timeout: 90
+    Type: 'AWS::Serverless::Application'
+  FNDNSTDTableAccountCDCDispatcher:
+    Properties:
+      Location: './dispatcher.yml'
+      Parameters:
+        BatchSize: 10
+        CodeUri: 'dispatcher-table-account'
+        EventBus: 'default'
+        MaximumRetryAttempts: 3
+        MemorySize: 384
+        StreamArn:
+          Fn::GetAtt:
+            - 'TableAccount'
+            - 'StreamArn'
+        TableAccount:
+          Ref: 'TableAccount'
+        TableMetric:
+          Ref: 'TableMetric'
+        TablePlanMetric:
+          Ref: 'TablePlanMetric'
+        TableSubscriptionEvent:
+          Ref: 'TableSubscriptionEvent'
+        Timeout: 60
+    Type: 'AWS::Serverless::Application'
+  FNDNSTDTablePlanMetricCDCDispatcher:
+    Properties:
+      Location: './dispatcher.yml'
+      Parameters:
+        BatchSize: 10
+        CodeUri: 'dispatcher-table-plan-metric'
+        EventBus: 'default'
+        MaximumRetryAttempts: 3
+        MemorySize: 384
+        StreamArn:
+          Fn::GetAtt:
+            - 'TablePlanMetric'
+            - 'StreamArn'
+        TableAccount:
+          Ref: 'TableAccount'
+        TableMetric:
+          Ref: 'TableMetric'
+        TablePlanMetric:
+          Ref: 'TablePlanMetric'
+        TableSubscriptionEvent:
+          Ref: 'TableSubscriptionEvent'
+        Timeout: 60
+    Type: 'AWS::Serverless::Application'
+  FNDNSTDTableSubscriptionEventCDCDispatcher:
+    Properties:
+      Location: './dispatcher.yml'
+      Parameters:
+        BatchSize: 10
+        CodeUri: 'dispatcher-table-subscription-event'
+        EventBus: 'default'
+        MaximumRetryAttempts: 3
+        MemorySize: 384
+        StreamArn:
+          Fn::GetAtt:
+            - 'TableSubscriptionEvent'
+            - 'StreamArn'
+        TableAccount:
+          Ref: 'TableAccount'
+        TableMetric:
+          Ref: 'TableMetric'
+        TablePlanMetric:
+          Ref: 'TablePlanMetric'
+        TableSubscriptionEvent:
+          Ref: 'TableSubscriptionEvent'
+        Timeout: 60
+    Type: 'AWS::Serverless::Application'
   FnEnricherSEUpsertA5b59364dTableAccessPolicy:
     Properties:
       PolicyDocument:
@@ -92,7 +234,7 @@ Resources:
       PolicyName: 'FnEnricherSEUpsertA5b59364dTableAccessPolicy'
       Roles:
         - Fn::GetAtt:
-            - 'NestedFnEnricherSEUpsertA5b59364dStack'
+            - 'FNDNSCDCFnEnricherSEUpsertA5b59364d'
             - 'Outputs.Role'
     Type: 'AWS::IAM::Policy'
   FnReactAUpsert7f5401faTableAccessPolicy:
@@ -142,7 +284,7 @@ Resources:
       PolicyName: 'FnReactAUpsert7f5401faTableAccessPolicy'
       Roles:
         - Fn::GetAtt:
-            - 'NestedFnReactAUpsert7f5401faStack'
+            - 'FNDNSCDCFnReactAUpsert7f5401fa'
             - 'Outputs.Role'
     Type: 'AWS::IAM::Policy'
   FnReactPMUpsert2b2e8d7dTableAccessPolicy:
@@ -192,165 +334,9 @@ Resources:
       PolicyName: 'FnReactPMUpsert2b2e8d7dTableAccessPolicy'
       Roles:
         - Fn::GetAtt:
-            - 'NestedFnReactPMUpsert2b2e8d7dStack'
+            - 'FNDNSCDCFnReactPMUpsert2b2e8d7d'
             - 'Outputs.Role'
     Type: 'AWS::IAM::Policy'
-  NestedFnEnricherSEUpsertA5b59364dStack:
-    Properties:
-      Location: './cdc.yml'
-      Parameters:
-        CodeUri: 'enricher--subscription-event--upsert--account'
-        DetailType: 'INSERT,MODIFY'
-        MemorySize: 256
-        SourceModelName: 'SubscriptionEvent'
-        StageName:
-          Ref: 'StageName'
-        TableArn:
-          Fn::GetAtt:
-            - 'TableSubscriptionEvent'
-            - 'Arn'
-        TableName: 'TableSubscriptionEvent'
-        TableNames:
-          Fn::ToJsonString:
-            TABLE_ACCOUNT:
-              Ref: 'TableAccount'
-            TABLE_METRIC:
-              Ref: 'TableMetric'
-            TABLE_PLAN_METRIC:
-              Ref: 'TablePlanMetric'
-            TABLE_SUBSCRIPTION_EVENT:
-              Ref: 'TableSubscriptionEvent'
-        Timeout: 90
-    Type: 'AWS::Serverless::Application'
-  NestedFnReactAUpsert7f5401faStack:
-    Properties:
-      Location: './cdc.yml'
-      Parameters:
-        CodeUri: 'react--account--upsert'
-        DetailType: 'INSERT,MODIFY'
-        MemorySize: 256
-        SourceModelName: 'Account'
-        StageName:
-          Ref: 'StageName'
-        TableArn:
-          Fn::GetAtt:
-            - 'TableAccount'
-            - 'Arn'
-        TableName: 'TableAccount'
-        TableNames:
-          Fn::ToJsonString:
-            TABLE_ACCOUNT:
-              Ref: 'TableAccount'
-            TABLE_METRIC:
-              Ref: 'TableMetric'
-            TABLE_PLAN_METRIC:
-              Ref: 'TablePlanMetric'
-            TABLE_SUBSCRIPTION_EVENT:
-              Ref: 'TableSubscriptionEvent'
-        Timeout: 90
-    Type: 'AWS::Serverless::Application'
-  NestedFnReactPMUpsert2b2e8d7dStack:
-    Properties:
-      Location: './cdc.yml'
-      Parameters:
-        CodeUri: 'react--plan-metric--upsert'
-        DetailType: 'INSERT,MODIFY'
-        MemorySize: 256
-        SourceModelName: 'PlanMetric'
-        StageName:
-          Ref: 'StageName'
-        TableArn:
-          Fn::GetAtt:
-            - 'TablePlanMetric'
-            - 'Arn'
-        TableName: 'TablePlanMetric'
-        TableNames:
-          Fn::ToJsonString:
-            TABLE_ACCOUNT:
-              Ref: 'TableAccount'
-            TABLE_METRIC:
-              Ref: 'TableMetric'
-            TABLE_PLAN_METRIC:
-              Ref: 'TablePlanMetric'
-            TABLE_SUBSCRIPTION_EVENT:
-              Ref: 'TableSubscriptionEvent'
-        Timeout: 90
-    Type: 'AWS::Serverless::Application'
-  NestedTableAccountCDCDispatcherStack:
-    Properties:
-      Location: './dispatcher.yml'
-      Parameters:
-        BatchSize: 10
-        CodeUri: 'dispatcher-table-account'
-        EventBus: 'default'
-        MaximumRetryAttempts: 3
-        MemorySize: 384
-        StreamArn:
-          Fn::GetAtt:
-            - 'TableAccount'
-            - 'StreamArn'
-        TableNames:
-          Fn::ToJsonString:
-            TABLE_ACCOUNT:
-              Ref: 'TableAccount'
-            TABLE_METRIC:
-              Ref: 'TableMetric'
-            TABLE_PLAN_METRIC:
-              Ref: 'TablePlanMetric'
-            TABLE_SUBSCRIPTION_EVENT:
-              Ref: 'TableSubscriptionEvent'
-        Timeout: 60
-    Type: 'AWS::Serverless::Application'
-  NestedTablePlanMetricCDCDispatcherStack:
-    Properties:
-      Location: './dispatcher.yml'
-      Parameters:
-        BatchSize: 10
-        CodeUri: 'dispatcher-table-plan-metric'
-        EventBus: 'default'
-        MaximumRetryAttempts: 3
-        MemorySize: 384
-        StreamArn:
-          Fn::GetAtt:
-            - 'TablePlanMetric'
-            - 'StreamArn'
-        TableNames:
-          Fn::ToJsonString:
-            TABLE_ACCOUNT:
-              Ref: 'TableAccount'
-            TABLE_METRIC:
-              Ref: 'TableMetric'
-            TABLE_PLAN_METRIC:
-              Ref: 'TablePlanMetric'
-            TABLE_SUBSCRIPTION_EVENT:
-              Ref: 'TableSubscriptionEvent'
-        Timeout: 60
-    Type: 'AWS::Serverless::Application'
-  NestedTableSubscriptionEventCDCDispatcherStack:
-    Properties:
-      Location: './dispatcher.yml'
-      Parameters:
-        BatchSize: 10
-        CodeUri: 'dispatcher-table-subscription-event'
-        EventBus: 'default'
-        MaximumRetryAttempts: 3
-        MemorySize: 384
-        StreamArn:
-          Fn::GetAtt:
-            - 'TableSubscriptionEvent'
-            - 'StreamArn'
-        TableNames:
-          Fn::ToJsonString:
-            TABLE_ACCOUNT:
-              Ref: 'TableAccount'
-            TABLE_METRIC:
-              Ref: 'TableMetric'
-            TABLE_PLAN_METRIC:
-              Ref: 'TablePlanMetric'
-            TABLE_SUBSCRIPTION_EVENT:
-              Ref: 'TableSubscriptionEvent'
-        Timeout: 60
-    Type: 'AWS::Serverless::Application'
   TableAccount:
     Properties:
       AttributeDefinitions:
@@ -498,6 +484,4 @@ Resources:
         - Key: 'TableName'
           Value: 'TableSubscriptionEvent'
     Type: 'AWS::DynamoDB::Table'
-Transform:
-  - 'AWS::Serverless-2016-10-31'
-  - 'AWS::LanguageExtensions'
+Transform: 'AWS::Serverless-2016-10-31'

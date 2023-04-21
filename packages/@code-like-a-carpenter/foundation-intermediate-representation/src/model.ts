@@ -15,17 +15,11 @@ export interface BaseChangeDataCaptureConfig extends LambdaConfig {
   readonly functionName: string;
   readonly handlerImportName: string;
   readonly handlerModuleId: string;
-  readonly nestStack: boolean;
   /**
    * Relative path from the main template to the dispatcher's nested stack
    * template.
    */
   readonly nestedStackLocation: string;
-  /**
-   * Relative path from the current working directory to the dispatcher's nested
-   * stack template.
-   */
-  readonly nestedStackTemplatePath: string;
   readonly readableTables: readonly string[];
   readonly runtimeModuleId: string;
   readonly sourceModelName: string;

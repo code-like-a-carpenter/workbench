@@ -8,10 +8,8 @@ Globals:
   Function:
     Environment:
       Variables:
-        FOUNDATION_TABLE_NAMES:
-          Fn::ToJsonString:
-            TABLE_USER_SESSION:
-              Ref: 'TableUserSession'
+        TABLE_USER_SESSION:
+          Ref: 'TableUserSession'
     Handler: 'index.handler'
     MemorySize: 256
     Runtime: 'nodejs18.x'
@@ -66,6 +64,4 @@ Resources:
         AttributeName: 'ttl'
         Enabled: true
     Type: 'AWS::DynamoDB::Table'
-Transform:
-  - 'AWS::Serverless-2016-10-31'
-  - 'AWS::LanguageExtensions'
+Transform: 'AWS::Serverless-2016-10-31'

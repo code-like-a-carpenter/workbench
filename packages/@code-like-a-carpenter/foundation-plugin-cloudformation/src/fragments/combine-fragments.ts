@@ -1,3 +1,4 @@
+import {filterNull} from '../helpers';
 import type {ServerlessApplicationModel} from '../types';
 
 /** Combines multiple fragments into a single fragment. */
@@ -11,6 +12,8 @@ export function combineFragments(
   }
 
   return fragments.reduce((acc, next) => ({
+    AWSTemplateFormatVersion:
+      acc.AWSTemplateFormatVersion ?? next.AWSTemplateFormatVersion,
     Conditions: {...acc.Conditions, ...next.Conditions},
     Globals: {
       ...acc.Globals,
@@ -35,5 +38,26 @@ export function combineFragments(
     Outputs: {...acc.Outputs, ...next.Outputs},
     Parameters: {...acc.Parameters, ...next.Parameters},
     Resources: {...acc.Resources, ...next.Resources},
+    Transform: combineTransforms(acc.Transform, next.Transform),
   }));
+}
+
+function combineTransforms(
+  left: string | readonly string[] | undefined,
+  right: string | readonly string[] | undefined
+): string | string[] | undefined {
+  left = Array.isArray(left) ? left : [left];
+  right = Array.isArray(right) ? right : [right];
+
+  const items = Array.from(new Set([...left, ...right])).filter(filterNull);
+
+  if (items.length === 0) {
+    return undefined;
+  }
+
+  if (items.length === 1) {
+    return items[0];
+  }
+
+  return items;
 }

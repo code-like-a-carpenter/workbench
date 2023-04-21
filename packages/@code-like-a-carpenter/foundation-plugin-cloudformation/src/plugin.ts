@@ -1,5 +1,6 @@
 import assert from 'assert';
-import fs from 'fs';
+import {readFile, mkdir, writeFile} from 'node:fs/promises';
+import path from 'node:path';
 
 import type {PluginFunction} from '@graphql-codegen/plugin-helpers';
 import yml from 'js-yaml';
@@ -13,6 +14,7 @@ import type {Config} from './config';
 import {ConfigSchema} from './config';
 import {combineFragments} from './fragments/combine-fragments';
 import {defineTable} from './table';
+import {applyTransforms} from './transforms';
 import type {ServerlessApplicationModel} from './types';
 
 export {schema as addToSchema} from '@code-like-a-carpenter/foundation-intermediate-representation';
@@ -20,11 +22,11 @@ export {schema as addToSchema} from '@code-like-a-carpenter/foundation-intermedi
 /**
  * Loads an existing consumer-generated CF template or returns a basic template
  */
-function getInitialTemplate({
+async function getInitialTemplate({
   sourceTemplate,
-}: Config): ServerlessApplicationModel {
+}: Config): Promise<ServerlessApplicationModel> {
   if (sourceTemplate) {
-    const raw = fs.readFileSync(sourceTemplate, 'utf8');
+    const raw = await readFile(sourceTemplate, 'utf8');
     try {
       return JSON.parse(raw);
     } catch {
@@ -37,41 +39,51 @@ function getInitialTemplate({
   return {
     AWSTemplateFormatVersion: '2010-09-09',
     Resources: {},
-    Transform: ['AWS::Serverless-2016-10-31', 'AWS::LanguageExtensions'],
+    Transform: 'AWS::Serverless-2016-10-31',
   };
 }
 
 /** @override */
 export const plugin: PluginFunction<Config> = makePlugin(
   ConfigSchema,
-  (schema, documents, config, info) => {
+  async (schema, documents, config, info) => {
     const outputFile = info?.outputFile;
     assert(outputFile, 'outputFile is required');
 
-    const {models, tables} = parse(schema, documents, config, info);
+    const ir = parse(schema, documents, config, info);
+    const {models, tables} = ir;
+
+    const stacks = new Map<string, ServerlessApplicationModel>();
 
     const allResources = combineFragments(
-      ...tables.map((table) =>
-        combineFragments(defineTableCdc(table, config), defineTable(table))
-      ),
+      ...tables.map((table) => {
+        if (table.hasCdc) {
+          const {fragment, stack} = defineTableCdc(table, config);
+          stacks.set('dispatcher.yml', stack);
+          return combineFragments(fragment, defineTable(table));
+        }
+        return defineTable(table);
+      }),
       ...models.flatMap((model) =>
         model.changeDataCaptureConfig.map((cdc) => {
           const {type} = cdc;
-          switch (type) {
-            case 'ENRICHER':
-              return defineEnricher(config, model, cdc);
-            case 'REACTOR':
-              return defineReactor(config, model, cdc);
-            default:
-              throw new Error(`Unexpected CDC type ${type}`);
+          if (type === 'ENRICHER') {
+            const {fragment, stack} = defineEnricher(config, model, cdc);
+            stacks.set('cdc.yml', stack);
+            return fragment;
+          } else if (type === 'REACTOR') {
+            const {fragment, stack} = defineReactor(config, model, cdc);
+            stacks.set('cdc.yml', stack);
+            return fragment;
           }
+          throw new Error(`Unexpected CDC type ${type}`);
         })
       )
     );
 
-    const initialTemplate = getInitialTemplate(config);
+    const initialTemplate = await getInitialTemplate(config);
 
-    const tpl = {
+    const tpl: ServerlessApplicationModel = {
       ...initialTemplate,
 
       Conditions: {
@@ -118,40 +130,31 @@ export const plugin: PluginFunction<Config> = makePlugin(
       },
     };
 
-    const variables = tpl?.Globals?.Function?.Environment?.Variables ?? {};
+    await applyTransforms(config, ir, tpl, stacks);
 
-    const tablesNames = Object.keys(variables)
-      .filter((name) => name.startsWith('TABLE_'))
-      .reduce((acc, name) => {
-        acc[name] = variables[name];
-        delete variables[name];
-        return acc;
-      }, {} as Record<string, string>);
-
-    if (Object.keys(tablesNames).length) {
-      variables.FOUNDATION_TABLE_NAMES = {'Fn::ToJsonString': tablesNames};
+    const outDir = path.dirname(outputFile);
+    for (const [filename, stack] of stacks) {
+      await writeNestedTemplate(config, path.join(outDir, filename), stack);
     }
 
-    Object.entries(tpl.Resources)
-      .filter(
-        ([, resource]) => resource.Type === 'AWS::Serverless::Application'
-      )
-      .forEach(([, resource]) => {
-        assert(resource.Type === 'AWS::Serverless::Application');
-        resource.Properties = {
-          ...resource.Properties,
-          Parameters: {
-            ...(resource.Properties?.Parameters ?? {}),
-            TableNames: {'Fn::ToJsonString': tablesNames},
-          },
-        };
-      });
-
-    const {format} = config.outputConfig;
-    if (format === 'json') {
-      return JSON.stringify(tpl, null, 2);
-    }
-
-    return yml.dump(tpl, config.outputConfig.yamlConfig);
+    return formatTemplate(config, tpl);
   }
 );
+
+function formatTemplate(config: Config, tpl: ServerlessApplicationModel) {
+  const {format} = config.outputConfig;
+  if (format === 'json') {
+    return JSON.stringify(tpl, null, 2);
+  }
+
+  return yml.dump(tpl, config.outputConfig.yamlConfig);
+}
+
+async function writeNestedTemplate(
+  config: Config,
+  outputFile: string,
+  tpl: ServerlessApplicationModel
+) {
+  await mkdir(path.dirname(outputFile), {recursive: true});
+  await writeFile(outputFile, formatTemplate(config, tpl));
+}
