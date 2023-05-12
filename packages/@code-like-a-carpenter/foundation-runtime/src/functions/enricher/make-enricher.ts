@@ -74,16 +74,19 @@ export abstract class Enricher<
       'NewImage missing from DynamoDB Stream Event. This should never happen.'
     );
     const source = unmarshallSourceModel(unmarshalledRecord.dynamodb?.NewImage);
+    const previous =
+      unmarshalledRecord.dynamodb?.OldImage &&
+      unmarshallSourceModel(unmarshalledRecord.dynamodb.OldImage);
     try {
-      const item = await this.load(source);
+      const target = await this.load(source, previous);
 
-      const modelToUpdate = await this.update(source, item);
+      const modelToUpdate = await this.update(source, target, previous);
       if (modelToUpdate) {
         return await updateTargetModel(modelToUpdate);
       }
     } catch (err) {
       if (err instanceof NotFoundError) {
-        const modelToCreate = await this.create(source);
+        const modelToCreate = await this.create(source, previous);
         if (modelToCreate) {
           return await createTargetModel(modelToCreate);
         }
@@ -92,10 +95,23 @@ export abstract class Enricher<
     }
   }
 
-  abstract load(record: SOURCE): Promise<TARGET>;
-  abstract create(record: SOURCE): Promise<CREATE_TARGET_INPUT | undefined>;
+  abstract load(
+    record: SOURCE,
+    // previous always comes last so that implementations can treat it as
+    // optional
+    previous: SOURCE | undefined
+  ): Promise<TARGET>;
+  abstract create(
+    record: SOURCE,
+    // previous always comes last so that implementations can treat it as
+    // optional
+    previous: SOURCE | undefined
+  ): Promise<CREATE_TARGET_INPUT | undefined>;
   abstract update(
     record: SOURCE,
-    target: TARGET
+    target: TARGET,
+    // previous always comes last so that implementations can treat it as
+    // optional
+    previous: SOURCE | undefined
   ): Promise<UPDATE_TARGET_INPUT | undefined>;
 }
