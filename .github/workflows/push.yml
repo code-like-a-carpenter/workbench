@@ -86,7 +86,8 @@ jobs:
       - build
       - diff
       - lint
-      - test
+      - test-integration
+      - test-unit
     runs-on: ubuntu-latest
     # This job gets exponentially slower based on the number of packages that
     # need to be release, so 60 is not unreasonable.
@@ -120,7 +121,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-  test:
+  test-integration:
     needs: build
     permissions:
       id-token: write
@@ -160,7 +161,7 @@ jobs:
           label: Unit Tests
           nodeCount: ${{ matrix.nodeCount }}
           nodeIndex: ${{ matrix.nodeIndex }}
-          tests: '{examples,packages}/**/*.test.ts'
+          tests: 'examples/**/*.test.ts'
       # Deploy all the stacks. Assuming we tuned the matrix correctly, this
       # _should_ be one stack per job, but we treat it as a list just in case.
       - run: |
@@ -176,6 +177,39 @@ jobs:
       # cleanup stacks that actually exist.
       - run: ./scripts/crr-sam destroy ${{ steps.deploy.outputs.deployed }}
         if: ${{ always() }}
+      - uses: check-run-reporter/action@v2.12.0
+        if: ${{ always() }}
+        with:
+          token: ${{ secrets.CHECK_RUN_REPORTER_TOKEN }}
+          label: Examples
+          nodeCount: ${{ matrix.nodeCount }}
+          nodeIndex: ${{ matrix.nodeIndex }}
+          report: 'reports/junit/**/*.xml'
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          directory: 'reports/coverage'
+
+  test-unit:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v3.5.0
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: 'npm'
+      - uses: nrwl/nx-set-shas@v3
+      - run: npm ci
+      # by making this job depend on the build job, the following line should be
+      # 100% cache hits; The nx cache seems to be much easier to use than the
+      # GitHub artifact action.
+      - run: npx nx run-many --target=build --parallel=4
+      - run: npm test -- --selectProjects 'Unit Tests'
       - uses: check-run-reporter/action@v2.12.0
         if: ${{ always() }}
         with:
