@@ -37,9 +37,16 @@ export abstract class Reactor<T> {
       unmarshalledRecord.dynamodb?.NewImage,
       'NewImage missing from DynamoDB Stream Event. This should never happen.'
     );
+    assert(
+      unmarshalledRecord.dynamodb?.OldImage,
+      'OldImage missing from DynamoDB Stream Event. This should never happen.'
+    );
     const source = unmarshallSourceModel(unmarshalledRecord.dynamodb?.NewImage);
-    return this.handle(source);
+    const previous = unmarshallSourceModel(
+      unmarshalledRecord.dynamodb?.OldImage
+    );
+    return this.handle(source, previous);
   }
 
-  protected abstract handle(source: T): Promise<void>;
+  protected abstract handle(source: T, previous: T): Promise<void>;
 }
