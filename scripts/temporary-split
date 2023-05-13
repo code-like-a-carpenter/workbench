@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+tests=$(find examples -name '*.test.ts')
+
+if (( $(echo $tests | wc -w) != $NODE_COUNT )); then
+  echo "::error title=CI Misconfiguration::Expected $NODE_COUNT tests, but found $(echo $tests | wc -w)"
+  exit 1
+fi
+
+if (( $NODE_COUNT <= $NODE_INDEX )); then
+  echo "::error title=CI Misconfiguration::Expected NODE_INDEX ($NODE_INDEX) to be less than NODE_COUNT ($NODE_COUNT)"
+fi
+
+index=$((NODE_INDEX+1))
+
+# word splitting is intentional
+# shellcheck disable=SC2086
+tests_for_this_node=$(echo $tests | cut -d ' ' -f "$index")
+
+echo "tests=${tests_for_this_node}" >> "$GITHUB_OUTPUT"
+echo "${tests_for_this_node} should be run on this node ($NODE_INDEX, $NODE_COUNT)" >> "$GITHUB_STEP_SUMMARY"
