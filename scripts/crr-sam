@@ -38,5 +38,9 @@ for testfile in "$@"; do
   deployed="$deployed $testfile"
 done
 
+if [ -z "$deployed" ]; then
+  echo "::error title=CI Misconfiguration::No stacks deployed"
+  exit 1
+fi
 
 echo "deployed=$deployed" >> "$GITHUB_OUTPUT"
