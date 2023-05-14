@@ -10,6 +10,7 @@ import {parse} from '@code-like-a-carpenter/foundation-parser';
 import {makePlugin} from '@code-like-a-carpenter/graphql-codegen-helpers';
 
 import {defineEnricher, defineReactor, defineTableCdc} from './cdc';
+import {defineReducer} from './cdc/reducer';
 import type {Config} from './config';
 import {ConfigSchema} from './config';
 import {combineFragments} from './fragments/combine-fragments';
@@ -73,6 +74,10 @@ export const plugin: PluginFunction<Config> = makePlugin(
             return fragment;
           } else if (type === 'REACTOR') {
             const {fragment, stack} = defineReactor(config, model, cdc);
+            stacks.set('cdc.yml', stack);
+            return fragment;
+          } else if (type === 'REDUCER') {
+            const {fragment, stack} = defineReducer(config, model, cdc);
             stacks.set('cdc.yml', stack);
             return fragment;
           }

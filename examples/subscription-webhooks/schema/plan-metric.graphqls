@@ -17,10 +17,10 @@ type PlanMetric implements Model & Timestamped & Versioned
     skFields: ["onFreeTrial", "planName"]
     skPrefix: "PLAN"
   )
-  @reacts(
+  @reduces(
     event: UPSERT
-    importName: "PlanMetricUpsertReactor"
-    importPath: "../src/react--plan-metric--upsert"
+    importName: "PlanMetricUpsertMetricReducer"
+    importPath: "../src/reduce--plan-metric--upsert--metric"
     readableModels: ["PlanMetric"]
     writableModels: ["Metric"]
   ) {

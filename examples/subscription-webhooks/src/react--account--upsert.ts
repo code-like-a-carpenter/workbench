@@ -3,6 +3,11 @@ import {Reactor} from '@code-like-a-carpenter/foundation-runtime';
 import {blindWritePlanMetric, queryAccount} from '../__generated__/graphql';
 import type {Account} from '../__generated__/graphql';
 
+/**
+ * This reactor cannot be a reducer because it updates two different metrics:
+ * when an account transitions from a free trial to a paying customer, this
+ * reactor updates both the active and trial metrics.
+ */
 export class AccountUpsertReactor extends Reactor<Account> {
   protected async handle(account: Account): Promise<void> {
     if (account.cancelled && account.lastPlanName) {

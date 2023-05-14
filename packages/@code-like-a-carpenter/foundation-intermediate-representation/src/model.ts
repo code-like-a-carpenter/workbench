@@ -5,7 +5,8 @@ import type {LambdaConfig, ProjectionType} from './types';
 export type ChangeDataCaptureEvent = 'INSERT' | 'MODIFY' | 'REMOVE' | 'UPSERT';
 export type ChangeDataCaptureConfig =
   | ChangeDataCaptureEnricherConfig
-  | ChangeDataCaptureReactorConfig;
+  | ChangeDataCaptureReactorConfig
+  | ChangeDataCaptureReducerConfig;
 
 export interface BaseChangeDataCaptureConfig extends LambdaConfig {
   readonly actionsModuleId: string;
@@ -35,6 +36,11 @@ export interface ChangeDataCaptureEnricherConfig
 export interface ChangeDataCaptureReactorConfig
   extends BaseChangeDataCaptureConfig {
   readonly type: 'REACTOR';
+}
+
+export interface ChangeDataCaptureReducerConfig
+  extends BaseChangeDataCaptureConfig {
+  readonly type: 'REDUCER';
 }
 
 export interface Model {

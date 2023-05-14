@@ -15,6 +15,7 @@ import type {
   ChangeDataCaptureConfig,
   ChangeDataCaptureEnricherConfig,
   ChangeDataCaptureReactorConfig,
+  ChangeDataCaptureReducerConfig,
   DispatcherConfig,
 } from '@code-like-a-carpenter/foundation-intermediate-representation';
 
@@ -107,6 +108,15 @@ export function extractChangeDataCaptureConfig(
         }
         if (directive.name.value === 'reacts') {
           return extractReactorConfig(
+            config,
+            schema,
+            type,
+            directive,
+            outputFile
+          );
+        }
+        if (directive.name.value === 'reduces') {
+          return extractReducerConfig(
             config,
             schema,
             type,
@@ -283,6 +293,49 @@ function extractReactorConfig(
     readableTables,
     sourceModelName: type.name,
     type: 'REACTOR',
+    writableTables,
+  };
+}
+
+function extractReducerConfig(
+  config: Config,
+  schema: GraphQLSchema,
+  type: GraphQLObjectType<unknown, unknown>,
+  directive: ConstDirectiveNode,
+  outputFile: string
+): ChangeDataCaptureReducerConfig {
+  const event = getEvent(type, directive);
+  const handlerModuleId = getArgStringValue('importPath', directive);
+
+  const readableTables = getTargetTables('readableModels', schema, directive);
+  const writableTables = getTargetTables('writableModels', schema, directive);
+
+  const sourceModelName = type.name;
+
+  const filename = `reduce--${kebabCase(
+    sourceModelName
+  )}--${event.toLowerCase()}`;
+
+  const functionName = makeFunctionName('reduce', sourceModelName, event);
+
+  const directory = path.join(path.dirname(outputFile), filename);
+
+  return {
+    ...extractCommonConfig(
+      config,
+      schema,
+      type,
+      directive,
+      outputFile,
+      filename
+    ),
+    event,
+    filename,
+    functionName,
+    handlerModuleId: resolveHandlerModuleId(type, directory, handlerModuleId),
+    readableTables,
+    sourceModelName: type.name,
+    type: 'REDUCER',
     writableTables,
   };
 }
