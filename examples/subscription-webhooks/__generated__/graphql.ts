@@ -1606,6 +1606,7 @@ export function unmarshallMetric(item: Record<string, any>): Metric {
 }
 
 export interface PlanMetricPrimaryKey {
+  cancelled: Scalars['Boolean'];
   onFreeTrial: Scalars['Boolean'];
   planName?: Maybe<Scalars['String']>;
 }
@@ -1645,7 +1646,9 @@ export async function createPlanMetric(
       },
       Key: {
         pk: ['PLAN_METRIC'].join('#'),
-        sk: ['PLAN', input.onFreeTrial, input.planName].join('#'),
+        sk: ['PLAN', input.cancelled, input.onFreeTrial, input.planName].join(
+          '#'
+        ),
       },
       ReturnConsumedCapacity: 'INDEXES',
       ReturnItemCollectionMetrics: 'SIZE',
@@ -1686,7 +1689,9 @@ export async function createPlanMetric(
     if (err instanceof ConditionalCheckFailedException) {
       throw new AlreadyExistsError('PlanMetric', {
         pk: ['PLAN_METRIC'].join('#'),
-        sk: ['PLAN', input.onFreeTrial, input.planName].join('#'),
+        sk: ['PLAN', input.cancelled, input.onFreeTrial, input.planName].join(
+          '#'
+        ),
       });
     }
 
@@ -1743,7 +1748,9 @@ export async function blindWritePlanMetric(
     ExpressionAttributeValues: eav,
     Key: {
       pk: ['PLAN_METRIC'].join('#'),
-      sk: ['PLAN', input.onFreeTrial, input.planName].join('#'),
+      sk: ['PLAN', input.cancelled, input.onFreeTrial, input.planName].join(
+        '#'
+      ),
     },
     ReturnConsumedCapacity: 'INDEXES',
     ReturnItemCollectionMetrics: 'SIZE',
@@ -1806,7 +1813,9 @@ export async function deletePlanMetric(
       },
       Key: {
         pk: ['PLAN_METRIC'].join('#'),
-        sk: ['PLAN', input.onFreeTrial, input.planName].join('#'),
+        sk: ['PLAN', input.cancelled, input.onFreeTrial, input.planName].join(
+          '#'
+        ),
       },
       ReturnConsumedCapacity: 'INDEXES',
       ReturnItemCollectionMetrics: 'SIZE',
@@ -1855,7 +1864,9 @@ export async function readPlanMetric(
     ConsistentRead: true,
     Key: {
       pk: ['PLAN_METRIC'].join('#'),
-      sk: ['PLAN', input.onFreeTrial, input.planName].join('#'),
+      sk: ['PLAN', input.cancelled, input.onFreeTrial, input.planName].join(
+        '#'
+      ),
     },
     ReturnConsumedCapacity: 'INDEXES',
     TableName: tableName,
@@ -1932,7 +1943,9 @@ export async function updatePlanMetric(
       },
       Key: {
         pk: ['PLAN_METRIC'].join('#'),
-        sk: ['PLAN', input.onFreeTrial, input.planName].join('#'),
+        sk: ['PLAN', input.cancelled, input.onFreeTrial, input.planName].join(
+          '#'
+        ),
       },
       ReturnConsumedCapacity: 'INDEXES',
       ReturnItemCollectionMetrics: 'SIZE',
@@ -1958,6 +1971,7 @@ export async function updatePlanMetric(
       () =>
         new DataIntegrityError(
           `Expected ${JSON.stringify({
+            cancelled: input.cancelled,
             onFreeTrial: input.onFreeTrial,
             planName: input.planName,
           })} to update a PlanMetric but updated ${item._et} instead`
@@ -1975,11 +1989,13 @@ export async function updatePlanMetric(
         await readPlanMetric(input);
       } catch {
         throw new NotFoundError('PlanMetric', {
+          cancelled: input.cancelled,
           onFreeTrial: input.onFreeTrial,
           planName: input.planName,
         });
       }
       throw new OptimisticLockingError('PlanMetric', {
+        cancelled: input.cancelled,
         onFreeTrial: input.onFreeTrial,
         planName: input.planName,
       });
@@ -1997,8 +2013,13 @@ export async function updatePlanMetric(
 
 export type QueryPlanMetricInput =
   | {}
-  | {onFreeTrial: Scalars['Boolean']}
-  | {onFreeTrial: Scalars['Boolean']; planName?: Maybe<Scalars['String']>};
+  | {cancelled: Scalars['Boolean']}
+  | {cancelled: Scalars['Boolean']; onFreeTrial: Scalars['Boolean']}
+  | {
+      cancelled: Scalars['Boolean'];
+      onFreeTrial: Scalars['Boolean'];
+      planName?: Maybe<Scalars['String']>;
+    };
 export type QueryPlanMetricOutput = MultiResultType<PlanMetric>;
 
 function makeEanForQueryPlanMetric(
@@ -2023,7 +2044,11 @@ function makeEavForQueryPlanMetric(
   } else {
     return {
       ':pk': ['PLAN_METRIC'].join('#'),
-      ':sk': makeSortKeyForQuery('PLAN', ['onFreeTrial', 'planName'], input),
+      ':sk': makeSortKeyForQuery(
+        'PLAN',
+        ['cancelled', 'onFreeTrial', 'planName'],
+        input
+      ),
     };
   }
 }
@@ -2128,13 +2153,19 @@ export async function queryPlanMetricByNodeId(
   if (typeof primaryKeyValues[2] !== 'undefined') {
     // @ts-ignore - TSC will usually see this as an error because it determined
     // that primaryKey is the no-sort-fields-specified version of the type.
-    primaryKey.onFreeTrial = Boolean(primaryKeyValues[3]);
+    primaryKey.cancelled = Boolean(primaryKeyValues[3]);
   }
 
   if (typeof primaryKeyValues[3] !== 'undefined') {
     // @ts-ignore - TSC will usually see this as an error because it determined
     // that primaryKey is the no-sort-fields-specified version of the type.
-    primaryKey.planName = primaryKeyValues[4];
+    primaryKey.onFreeTrial = Boolean(primaryKeyValues[4]);
+  }
+
+  if (typeof primaryKeyValues[4] !== 'undefined') {
+    // @ts-ignore - TSC will usually see this as an error because it determined
+    // that primaryKey is the no-sort-fields-specified version of the type.
+    primaryKey.planName = primaryKeyValues[5];
   }
 
   const {capacity, items} = await queryPlanMetric(primaryKey);

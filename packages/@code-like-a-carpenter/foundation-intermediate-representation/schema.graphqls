@@ -126,6 +126,10 @@ directive @reduces(
   """
   importPath: String!
   """
+  Indicates this reducer produces multiple output records
+  """
+  multiReduce: Boolean
+  """
   Indicates if this handler's resources should be defined in the main
   CloudFormation template or in a nested stack
   """

@@ -22,11 +22,20 @@ export function defineReducer(
     actionsModuleId,
     handlerImportName,
     handlerModuleId,
+    multiReduce,
     runtimeModuleId,
     sourceModelName,
   } = cdc;
 
-  const code = `// This file is generated. Do not edit by hand.
+  const code = multiReduce
+    ? `// This file is generated. Do not edit by hand.
+import {makeMultiReducer} from '${runtimeModuleId}';
+import {${handlerImportName}} from '${handlerModuleId}';
+import type {${sourceModelName}, unmarshall${sourceModelName}} from '${actionsModuleId}';
+
+export const handler = makeMultiReducer<${sourceModelName}>(${handlerImportName}, {unmarshallSourceModel: unmarshall${sourceModelName}});
+`
+    : `// This file is generated. Do not edit by hand.
 import {makeReducer} from '${runtimeModuleId}';
 import {${handlerImportName}} from '${handlerModuleId}';
 import type {${sourceModelName}, unmarshall${sourceModelName}} from '${actionsModuleId}';

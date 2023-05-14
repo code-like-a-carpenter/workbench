@@ -26,6 +26,7 @@ import {
   getArgEnumValue,
   getArgStringValue,
   getOptionalArg,
+  getOptionalArgBooleanValue,
   getOptionalArgObjectValue,
 } from '../helpers';
 import {
@@ -333,6 +334,7 @@ function extractReducerConfig(
     filename,
     functionName,
     handlerModuleId: resolveHandlerModuleId(type, directory, handlerModuleId),
+    multiReduce: getOptionalArgBooleanValue('multiReduce', directive) ?? false,
     readableTables,
     sourceModelName: type.name,
     type: 'REDUCER',

@@ -14,7 +14,7 @@ type PlanMetric implements Model & Timestamped & Versioned
   @compositeKey(
     pkFields: []
     pkPrefix: "PLAN_METRIC"
-    skFields: ["onFreeTrial", "planName"]
+    skFields: ["cancelled", "onFreeTrial", "planName"]
     skPrefix: "PLAN"
   )
   @reduces(
