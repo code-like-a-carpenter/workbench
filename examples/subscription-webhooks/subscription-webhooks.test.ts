@@ -311,7 +311,7 @@ describe('cdc', () => {
       expect(t.version).toBe(2);
 
       const {item: f} = await readMetric({onFreeTrial: false});
-      expect(f.version).toBe(4);
+      expect(f.version).toBe(5);
       return {f, t};
     }, 30000);
 
@@ -353,7 +353,7 @@ describe('cdc', () => {
           "monthlyRecurringRevenueInCents": 500,
           "onFreeTrial": false,
           "updatedAt": Any<Date>,
-          "version": 4,
+          "version": 5,
         },
         "t": {
           "count": 1,
