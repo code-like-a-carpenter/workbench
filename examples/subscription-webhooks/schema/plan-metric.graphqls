@@ -22,7 +22,7 @@ type PlanMetric implements Model & Timestamped & Versioned
     importName: "PlanMetricUpsertMetricReducer"
     importPath: "../src/reduce--plan-metric--upsert--metric"
     readableModels: ["PlanMetric"]
-    writableModels: ["Metric"]
+    targetModel: "Metric"
   ) {
   createdAt: Date!
   id: ID!

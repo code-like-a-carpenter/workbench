@@ -21,8 +21,7 @@ type Account implements Model & Versioned & Timestamped
     importName: "AccountUpsertPlanMetricReducer"
     importPath: "../src/reduce--account--upsert--plan-metric"
     multiReduce: true
-    readableModels: ["Account"]
-    writableModels: ["PlanMetric"]
+    targetModel: "PlanMetric"
   ) {
   createdAt: Date!
   id: ID!

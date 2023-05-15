@@ -85,11 +85,11 @@ Resources:
           Ref: 'TableSubscriptionEvent'
         Timeout: 90
     Type: 'AWS::Serverless::Application'
-  FNDNSCDCFnReduceAUpsert7f5401fa:
+  FNDNSCDCFnReduceAUpsertPMcefd632d:
     Properties:
       Location: './cdc.yml'
       Parameters:
-        CodeUri: 'reduce--account--upsert'
+        CodeUri: 'reduce--account--upsert--plan-metric'
         DetailType: 'INSERT,MODIFY'
         MemorySize: 256
         SourceModelName: 'Account'
@@ -110,11 +110,11 @@ Resources:
           Ref: 'TableSubscriptionEvent'
         Timeout: 90
     Type: 'AWS::Serverless::Application'
-  FNDNSCDCFnReducePMUpsert2b2e8d7d:
+  FNDNSCDCFnReducePMUpsertM675ec33d:
     Properties:
       Location: './cdc.yml'
       Parameters:
-        CodeUri: 'reduce--plan-metric--upsert'
+        CodeUri: 'reduce--plan-metric--upsert--metric'
         DetailType: 'INSERT,MODIFY'
         MemorySize: 256
         SourceModelName: 'PlanMetric'
@@ -237,7 +237,7 @@ Resources:
             - 'FNDNSCDCFnEnricherSEUpsertA5b59364d'
             - 'Outputs.Role'
     Type: 'AWS::IAM::Policy'
-  FnReduceAUpsert7f5401faTableAccessPolicy:
+  FnReduceAUpsertPMcefd632dTableAccessPolicy:
     Properties:
       PolicyDocument:
         Statement:
@@ -281,13 +281,13 @@ Resources:
                         - 'TablePlanMetric'
                         - 'Arn'
         Version: '2012-10-17'
-      PolicyName: 'FnReduceAUpsert7f5401faTableAccessPolicy'
+      PolicyName: 'FnReduceAUpsertPMcefd632dTableAccessPolicy'
       Roles:
         - Fn::GetAtt:
-            - 'FNDNSCDCFnReduceAUpsert7f5401fa'
+            - 'FNDNSCDCFnReduceAUpsertPMcefd632d'
             - 'Outputs.Role'
     Type: 'AWS::IAM::Policy'
-  FnReducePMUpsert2b2e8d7dTableAccessPolicy:
+  FnReducePMUpsertM675ec33dTableAccessPolicy:
     Properties:
       PolicyDocument:
         Statement:
@@ -331,10 +331,10 @@ Resources:
                         - 'TableMetric'
                         - 'Arn'
         Version: '2012-10-17'
-      PolicyName: 'FnReducePMUpsert2b2e8d7dTableAccessPolicy'
+      PolicyName: 'FnReducePMUpsertM675ec33dTableAccessPolicy'
       Roles:
         - Fn::GetAtt:
-            - 'FNDNSCDCFnReducePMUpsert2b2e8d7d'
+            - 'FNDNSCDCFnReducePMUpsertM675ec33d'
             - 'Outputs.Role'
     Type: 'AWS::IAM::Policy'
   TableAccount:

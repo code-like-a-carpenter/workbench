@@ -263,7 +263,6 @@ function extractReactorConfig(
   outputFile: string
 ): ChangeDataCaptureReactorConfig {
   const event = getEvent(type, directive);
-  const handlerModuleId = getArgStringValue('importPath', directive);
 
   const readableTables = getTargetTables('readableModels', schema, directive);
   const writableTables = getTargetTables('writableModels', schema, directive);
@@ -275,8 +274,6 @@ function extractReactorConfig(
   )}--${event.toLowerCase()}`;
 
   const functionName = makeFunctionName('react', sourceModelName, event);
-
-  const directory = path.join(path.dirname(outputFile), filename);
 
   return {
     ...extractCommonConfig(
@@ -290,7 +287,6 @@ function extractReactorConfig(
     event,
     filename,
     functionName,
-    handlerModuleId: resolveHandlerModuleId(type, directory, handlerModuleId),
     readableTables,
     sourceModelName: type.name,
     type: 'REACTOR',
@@ -306,20 +302,32 @@ function extractReducerConfig(
   outputFile: string
 ): ChangeDataCaptureReducerConfig {
   const event = getEvent(type, directive);
-  const handlerModuleId = getArgStringValue('importPath', directive);
-
-  const readableTables = getTargetTables('readableModels', schema, directive);
-  const writableTables = getTargetTables('writableModels', schema, directive);
-
   const sourceModelName = type.name;
+  const targetModelName = getArgStringValue('targetModel', directive);
 
   const filename = `reduce--${kebabCase(
     sourceModelName
-  )}--${event.toLowerCase()}`;
+  )}--${event.toLowerCase()}--${kebabCase(targetModelName)}`;
 
-  const functionName = makeFunctionName('reduce', sourceModelName, event);
+  const functionName = makeFunctionName(
+    'reduce',
+    sourceModelName,
+    event,
+    targetModelName
+  );
 
-  const directory = path.join(path.dirname(outputFile), filename);
+  const readableTables = Array.from(
+    new Set([
+      ...getTargetTables('readableModels', schema, directive),
+      extractTableName(assertObjectType(type)),
+    ])
+  );
+  const writableTables = Array.from(
+    new Set([
+      ...getTargetTables('writableModels', schema, directive),
+      getTargetTable(schema, type.name, targetModelName),
+    ])
+  );
 
   return {
     ...extractCommonConfig(
@@ -333,10 +341,10 @@ function extractReducerConfig(
     event,
     filename,
     functionName,
-    handlerModuleId: resolveHandlerModuleId(type, directory, handlerModuleId),
     multiReduce: getOptionalArgBooleanValue('multiReduce', directive) ?? false,
     readableTables,
     sourceModelName: type.name,
+    targetModelName,
     type: 'REDUCER',
     writableTables,
   };

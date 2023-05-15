@@ -141,6 +141,10 @@ directive @reduces(
   """
   readableModels: [String!]
   """
+  The model type that will be updated by this stream.
+  """
+  targetModel: String!
+  """
   List of model names that this handler should be allowed to write. The
   CloudFormation resource will be updated accordingly.
   @experimental

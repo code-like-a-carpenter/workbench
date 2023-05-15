@@ -25,22 +25,37 @@ export function defineReducer(
     multiReduce,
     runtimeModuleId,
     sourceModelName,
+    targetModelName,
   } = cdc;
 
-  const code = multiReduce
-    ? `// This file is generated. Do not edit by hand.
-import {makeMultiReducer} from '${runtimeModuleId}';
-import {${handlerImportName}} from '${handlerModuleId}';
-import type {${sourceModelName}, unmarshall${sourceModelName}} from '${actionsModuleId}';
+  const factoryName = multiReduce ? 'makeMultiReducer' : 'makeReducer';
 
-export const handler = makeMultiReducer<${sourceModelName}>(${handlerImportName}, {unmarshallSourceModel: unmarshall${sourceModelName}});
-`
-    : `// This file is generated. Do not edit by hand.
-import {makeReducer} from '${runtimeModuleId}';
+  const code = `// This file is generated. Do not edit by hand.
+import {${factoryName}} from '${runtimeModuleId}';
 import {${handlerImportName}} from '${handlerModuleId}';
-import type {${sourceModelName}, unmarshall${sourceModelName}} from '${actionsModuleId}';
+import {
+  ${sourceModelName},
+  ${targetModelName},
+  create${targetModelName},
+  unmarshall${sourceModelName},
+  update${targetModelName},
+  Create${targetModelName}Input,
+  Update${targetModelName}Input
+} from '${actionsModuleId}';
 
-export const handler = makeReducer<${sourceModelName}>(${handlerImportName}, {unmarshallSourceModel: unmarshall${sourceModelName}});
+export const handler = ${factoryName}<
+${sourceModelName},
+${targetModelName},
+Create${targetModelName}Input,
+Update${targetModelName}Input
+>(
+  ${handlerImportName},
+  {
+    createTargetModel: create${targetModelName},
+    unmarshallSourceModel: unmarshall${sourceModelName},
+    updateTargetModel: update${targetModelName}
+  }
+);
 `;
 
   const {fragment, stack} = makeHandler(config, model, cdc, code);

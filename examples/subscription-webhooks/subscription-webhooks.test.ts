@@ -14,6 +14,10 @@ import {
   deleteAccount,
   deleteMetric,
   deletePlanMetric,
+  queryAccount,
+  queryMetric,
+  queryPlanMetric,
+  querySubscriptionEvent,
   readAccount,
   readMetric,
 } from './__generated__/graphql';
@@ -42,140 +46,21 @@ export async function deleteSubscription(
   );
 }
 
-describe('@enriches', () => {
-  it(
-    'applies a custom mapper to update one model based on another',
-    async () => {
-      const externalId = String(faker.datatype.number());
+const matcher = {
+  createdAt: expect.any(Date),
+  id: expect.any(String),
+  updatedAt: expect.any(Date),
+};
 
-      // Confirm there is no record yet.
-      await expect(async () => await readAccount({externalId})).rejects.toThrow(
-        NotFoundError
-      );
+const subscriptionMatcher = {
+  ...matcher,
+  effectiveDate: expect.any(Date),
+};
 
-      const {item: subscription1} = await createSubscriptionEvent({
-        cancelled: false,
-        effectiveDate: faker.date.past(3),
-        externalId,
-        monthlyPriceInCents: 1000,
-        onFreeTrial: true,
-        planName: 'ENTERPRISE',
-      });
+describe('cdc', () => {
+  it('triggers lambda function when records is inserted into a table', async () => {
+    await cleanup();
 
-      let account = await waitFor(async () => {
-        const {item} = await readAccount({externalId});
-        expect(item).toBeDefined();
-        expect(item.version).toBe(1);
-        return item;
-      }, 30000);
-      expect(account.planName).toBe('ENTERPRISE');
-      expect(account.onFreeTrial).toBe(true);
-      expect(account.cancelled).not.toBe(true);
-
-      const {item: subscription2} = await createSubscriptionEvent({
-        cancelled: false,
-        effectiveDate: faker.date.future(0, account.effectiveDate),
-        externalId,
-        monthlyPriceInCents: 1000,
-        onFreeTrial: false,
-        planName: 'ENTERPRISE',
-      });
-
-      // eslint-disable-next-line require-atomic-updates
-      account = await waitFor(async () => {
-        const {item} = await readAccount({externalId});
-        expect(item).toBeDefined();
-        expect(item.version).toBe(2);
-        return item;
-      }, 30000);
-      expect(account.planName).toBe('ENTERPRISE');
-      expect(account.onFreeTrial).toBe(false);
-      expect(account.cancelled).not.toBe(true);
-
-      const {item: subscription3} = await createSubscriptionEvent({
-        cancelled: false,
-        effectiveDate: faker.date.future(0, account.effectiveDate),
-        externalId,
-        monthlyPriceInCents: 500,
-        onFreeTrial: false,
-        planName: 'SMALL_TEAM',
-      });
-
-      // eslint-disable-next-line require-atomic-updates
-      account = await waitFor(async () => {
-        const {item} = await readAccount({externalId});
-        expect(item).toBeDefined();
-        expect(item.version).toBe(3);
-        return item;
-      }, 30000);
-      expect(account.planName).toBe('SMALL_TEAM');
-      expect(account.onFreeTrial).toBe(false);
-      expect(account.cancelled).not.toBe(true);
-
-      const {item: subscription4} = await createSubscriptionEvent({
-        cancelled: true,
-        effectiveDate: faker.date.future(0, account.effectiveDate),
-        externalId,
-        monthlyPriceInCents: 0,
-        onFreeTrial: false,
-        planName: null,
-      });
-
-      // eslint-disable-next-line require-atomic-updates
-      account = await waitFor(async () => {
-        const {item} = await readAccount({externalId});
-        expect(item).toBeDefined();
-        expect(item.version).toBe(4);
-        return item;
-      }, 30000);
-      expect(account.planName).toBe(null);
-      expect(account.onFreeTrial).toBe(false);
-      expect(account.cancelled).toBe(true);
-
-      // Block cleanup until all CDC has completed.
-      await waitFor(async () => {
-        const {item: t} = await readMetric({onFreeTrial: true});
-        expect(t.version).toBe(8);
-
-        const {item: f} = await readMetric({onFreeTrial: false});
-        expect(f.version).toBe(8);
-      }, 30000);
-
-      const promises = [
-        waitFor(() => deleteMetric({onFreeTrial: false})),
-        waitFor(() => deleteMetric({onFreeTrial: true})),
-        waitFor(() =>
-          deletePlanMetric({onFreeTrial: false, planName: 'ENTERPRISE'})
-        ),
-        waitFor(() =>
-          deletePlanMetric({onFreeTrial: false, planName: 'SMALL_TEAM'})
-        ),
-        waitFor(() =>
-          deletePlanMetric({onFreeTrial: true, planName: 'ENTERPRISE'})
-        ),
-        waitFor(() =>
-          deletePlanMetric({onFreeTrial: true, planName: 'SMALL_TEAM'})
-        ),
-        waitFor(() => deleteAccount(account)),
-        waitFor(() => deleteSubscription(subscription1)),
-        waitFor(() => deleteSubscription(subscription2)),
-        waitFor(() => deleteSubscription(subscription3)),
-        waitFor(() => deleteSubscription(subscription4)),
-      ];
-      const results = await Promise.allSettled(promises);
-      results
-        .filter(({status}) => status === 'rejected')
-        .forEach((result) => {
-          assert(result.status === 'rejected');
-          throw result.reason;
-        });
-    },
-    5 * 60 * 1000
-  );
-});
-
-describe('@reacts', () => {
-  it('triggers a lambda function when a record is inserted into a table', async () => {
     const externalId = String(faker.datatype.number());
 
     // Confirm there is no record yet.
@@ -191,7 +76,10 @@ describe('@reacts', () => {
       async () => await readMetric({onFreeTrial: true})
     ).rejects.toThrow(NotFoundError);
 
-    const {item: subscription} = await createSubscriptionEvent({
+    /**************************************************************************\
+    | sign up on free trial
+    \**************************************************************************/
+    await createSubscriptionEvent({
       cancelled: false,
       effectiveDate: faker.date.past(3),
       externalId,
@@ -200,60 +88,322 @@ describe('@reacts', () => {
       planName: 'ENTERPRISE',
     });
 
-    // This should be at version 2 because a Metric is blind-written for each
-    // PlanMetric write. 2 PlanMetrics are written, one for each of
-    // onFreeTrial = true and onFreeTrial = false. In other words, all Metrics
-    // are overwritten each time any PlanMetric is written.
-    const metric = await waitFor(async () => {
-      const {item} = await readMetric({onFreeTrial: true});
-      expect(item).toBeDefined();
-      expect(item.version).toBe(2);
-      return item;
-    }, 60000);
+    // Block until all CDC has completed.
+    let metrics = await waitFor(async () => {
+      const {item: t} = await readMetric({onFreeTrial: true});
+      expect(t.version).toBe(1);
 
-    expect(metric).toMatchInlineSnapshot(
-      {
-        createdAt: expect.any(Date),
-        id: expect.any(String),
-        updatedAt: expect.any(Date),
-      },
-      `
-      {
-        "count": 1,
-        "createdAt": Any<Date>,
-        "id": Any<String>,
-        "monthlyRecurringRevenueInCents": 1000,
-        "onFreeTrial": true,
-        "updatedAt": Any<Date>,
-        "version": 2,
-      }
-    `
-    );
-    const account = await waitFor(async () => {
+      await expect(
+        async () => await readMetric({onFreeTrial: false})
+      ).rejects.toThrow(NotFoundError);
+
+      return {t};
+    }, 30000);
+
+    let account = await waitFor(async () => {
       const {item} = await readAccount({externalId});
       expect(item).toBeDefined();
       expect(item.version).toBe(1);
       return item;
     }, 30000);
+    expect(account).toMatchInlineSnapshot(
+      subscriptionMatcher,
+      `
+      {
+        "cancelled": false,
+        "createdAt": Any<Date>,
+        "effectiveDate": Any<Date>,
+        "externalId": "8943",
+        "hasEverSubscribed": true,
+        "id": Any<String>,
+        "indexedPlanName": "ENTERPRISE",
+        "monthlyPriceInCents": 1000,
+        "onFreeTrial": true,
+        "planName": "ENTERPRISE",
+        "updatedAt": Any<Date>,
+        "version": 1,
+      }
+    `
+    );
 
-    const promises = [
-      waitFor(() => deleteMetric({onFreeTrial: false})),
-      waitFor(() => deleteMetric({onFreeTrial: true})),
-      waitFor(() =>
-        deletePlanMetric({onFreeTrial: false, planName: 'ENTERPRISE'})
-      ),
-      waitFor(() =>
-        deletePlanMetric({onFreeTrial: true, planName: 'ENTERPRISE'})
-      ),
-      waitFor(() => deleteAccount(account)),
-      waitFor(() => deleteSubscription(subscription)),
-    ];
-    const results = await Promise.allSettled(promises);
-    results
-      .filter(({status}) => status === 'rejected')
-      .forEach((result) => {
-        assert(result.status === 'rejected');
-        throw result.reason;
-      });
+    expect(metrics).toMatchInlineSnapshot(
+      {t: matcher},
+      `
+      {
+        "t": {
+          "count": 1,
+          "createdAt": Any<Date>,
+          "id": Any<String>,
+          "monthlyRecurringRevenueInCents": 1000,
+          "onFreeTrial": true,
+          "updatedAt": Any<Date>,
+          "version": 1,
+        },
+      }
+    `
+    );
+
+    /**************************************************************************\
+    | transition to paid
+    \**************************************************************************/
+    await createSubscriptionEvent({
+      cancelled: false,
+      effectiveDate: faker.date.future(0, account.effectiveDate),
+      externalId,
+      monthlyPriceInCents: 1000,
+      onFreeTrial: false,
+      planName: 'ENTERPRISE',
+    });
+
+    // Block until all CDC has completed.
+    metrics = await waitFor(async () => {
+      const {item: t} = await readMetric({onFreeTrial: true});
+      expect(t.version).toBe(2);
+
+      const {item: f} = await readMetric({onFreeTrial: false});
+      expect(f.version).toBe(1);
+      return {f, t};
+    }, 30000);
+
+    account = await waitFor(async () => {
+      const {item} = await readAccount({externalId});
+      expect(item).toBeDefined();
+      expect(item.version).toBe(2);
+      return item;
+    }, 30000);
+    expect(account).toMatchInlineSnapshot(
+      subscriptionMatcher,
+      `
+      {
+        "cancelled": false,
+        "createdAt": Any<Date>,
+        "effectiveDate": Any<Date>,
+        "externalId": "8943",
+        "hasEverSubscribed": true,
+        "id": Any<String>,
+        "indexedPlanName": "ENTERPRISE",
+        "monthlyPriceInCents": 1000,
+        "onFreeTrial": false,
+        "planName": "ENTERPRISE",
+        "updatedAt": Any<Date>,
+        "version": 2,
+      }
+    `
+    );
+
+    expect(metrics).toMatchInlineSnapshot(
+      {f: matcher, t: matcher},
+      `
+      {
+        "f": {
+          "count": 1,
+          "createdAt": Any<Date>,
+          "id": Any<String>,
+          "monthlyRecurringRevenueInCents": 1000,
+          "onFreeTrial": false,
+          "updatedAt": Any<Date>,
+          "version": 1,
+        },
+        "t": {
+          "count": 1,
+          "createdAt": Any<Date>,
+          "id": Any<String>,
+          "monthlyRecurringRevenueInCents": 1000,
+          "onFreeTrial": true,
+          "updatedAt": Any<Date>,
+          "version": 2,
+        },
+      }
+    `
+    );
+
+    /**************************************************************************\
+    | downgrade to small team
+    \**************************************************************************/
+    await createSubscriptionEvent({
+      cancelled: false,
+      effectiveDate: faker.date.future(0, account.effectiveDate),
+      externalId,
+      monthlyPriceInCents: 500,
+      onFreeTrial: false,
+      planName: 'SMALL_TEAM',
+    });
+
+    // Block until all CDC has completed.
+    metrics = await waitFor(async () => {
+      const {item: t} = await readMetric({onFreeTrial: true});
+      expect(t.version).toBe(2);
+
+      const {item: f} = await readMetric({onFreeTrial: false});
+      // version increments twice because we update the ENTERPRISE plan metric
+      // and create a new SMALL_TEAM plan metric.
+      expect(f.version).toBe(3);
+      return {f, t};
+    }, 30000);
+
+    account = await waitFor(async () => {
+      const {item} = await readAccount({externalId});
+      expect(item).toBeDefined();
+      expect(item.version).toBe(3);
+      return item;
+    }, 30000);
+    expect(account).toMatchInlineSnapshot(
+      subscriptionMatcher,
+      `
+      {
+        "cancelled": false,
+        "createdAt": Any<Date>,
+        "effectiveDate": Any<Date>,
+        "externalId": "8943",
+        "hasEverSubscribed": true,
+        "id": Any<String>,
+        "indexedPlanName": "SMALL_TEAM",
+        "monthlyPriceInCents": 500,
+        "onFreeTrial": false,
+        "planName": "SMALL_TEAM",
+        "updatedAt": Any<Date>,
+        "version": 3,
+      }
+    `
+    );
+
+    expect(metrics).toMatchInlineSnapshot(
+      {f: matcher, t: matcher},
+      `
+      {
+        "f": {
+          "count": 1,
+          "createdAt": Any<Date>,
+          "id": Any<String>,
+          "monthlyRecurringRevenueInCents": 500,
+          "onFreeTrial": false,
+          "updatedAt": Any<Date>,
+          "version": 3,
+        },
+        "t": {
+          "count": 1,
+          "createdAt": Any<Date>,
+          "id": Any<String>,
+          "monthlyRecurringRevenueInCents": 1000,
+          "onFreeTrial": true,
+          "updatedAt": Any<Date>,
+          "version": 2,
+        },
+      }
+    `
+    );
+
+    /**************************************************************************\
+    | cancel subscription
+    \**************************************************************************/
+    await createSubscriptionEvent({
+      cancelled: true,
+      effectiveDate: faker.date.future(0, account.effectiveDate),
+      externalId,
+      monthlyPriceInCents: 0,
+      onFreeTrial: false,
+      planName: null,
+    });
+
+    // Block until all CDC has completed.
+    metrics = await waitFor(async () => {
+      const {item: t} = await readMetric({onFreeTrial: true});
+      expect(t.version).toBe(2);
+
+      const {item: f} = await readMetric({onFreeTrial: false});
+      expect(f.version).toBe(4);
+      return {f, t};
+    }, 30000);
+
+    account = await waitFor(async () => {
+      const {item} = await readAccount({externalId});
+      expect(item).toBeDefined();
+      expect(item.version).toBe(4);
+      return item;
+    }, 30000);
+    expect(account).toMatchInlineSnapshot(
+      subscriptionMatcher,
+      `
+      {
+        "cancelled": true,
+        "createdAt": Any<Date>,
+        "effectiveDate": Any<Date>,
+        "externalId": "8943",
+        "hasEverSubscribed": true,
+        "id": Any<String>,
+        "indexedPlanName": "SMALL_TEAM",
+        "lastPlanName": "SMALL_TEAM",
+        "monthlyPriceInCents": 500,
+        "onFreeTrial": false,
+        "planName": null,
+        "updatedAt": Any<Date>,
+        "version": 4,
+      }
+    `
+    );
+
+    expect(metrics).toMatchInlineSnapshot(
+      {f: matcher, t: matcher},
+      `
+      {
+        "f": {
+          "count": 1,
+          "createdAt": Any<Date>,
+          "id": Any<String>,
+          "monthlyRecurringRevenueInCents": 500,
+          "onFreeTrial": false,
+          "updatedAt": Any<Date>,
+          "version": 4,
+        },
+        "t": {
+          "count": 1,
+          "createdAt": Any<Date>,
+          "id": Any<String>,
+          "monthlyRecurringRevenueInCents": 1000,
+          "onFreeTrial": true,
+          "updatedAt": Any<Date>,
+          "version": 2,
+        },
+      }
+    `
+    );
+
+    await cleanup();
   }, 120000);
 });
+
+async function cleanup() {
+  const promises = [];
+  const {items: metrics} = await queryMetric({});
+  for (const item of metrics) {
+    promises.push(deleteMetric(item));
+  }
+
+  const {items: planMetrics} = await queryPlanMetric({});
+  for (const item of planMetrics) {
+    promises.push(deletePlanMetric(item));
+  }
+
+  const {items: accounts} = await queryAccount({
+    hasEverSubscribed: true,
+    index: 'gsi1',
+  });
+  for (const item of accounts) {
+    promises.push(deleteAccount(item));
+
+    const {items: subscriptions} = await querySubscriptionEvent({
+      externalId: item.externalId,
+    });
+    for (const sub of subscriptions) {
+      promises.push(deleteSubscription(sub));
+    }
+  }
+
+  const results = await Promise.allSettled(promises);
+  results
+    .filter(({status}) => status === 'rejected')
+    .forEach((result) => {
+      assert(result.status === 'rejected');
+      throw result.reason;
+    });
+}

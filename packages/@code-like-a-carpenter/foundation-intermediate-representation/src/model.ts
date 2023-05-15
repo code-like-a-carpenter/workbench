@@ -41,6 +41,7 @@ export interface ChangeDataCaptureReactorConfig
 export interface ChangeDataCaptureReducerConfig
   extends BaseChangeDataCaptureConfig {
   readonly multiReduce: boolean;
+  readonly targetModelName: string;
   readonly type: 'REDUCER';
 }
 
