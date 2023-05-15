@@ -16,12 +16,12 @@ type Account implements Model & Versioned & Timestamped
     skFields: []
     skPrefix: "ACCOUNT"
   )
-  @reacts(
+  @reduces(
     event: UPSERT
-    importName: "AccountUpsertReactor"
-    importPath: "../src/react--account--upsert"
-    readableModels: ["Account"]
-    writableModels: ["PlanMetric"]
+    importName: "AccountUpsertPlanMetricReducer"
+    importPath: "../src/reduce--account--upsert--plan-metric"
+    multiReduce: true
+    targetModel: "PlanMetric"
   ) {
   createdAt: Date!
   id: ID!

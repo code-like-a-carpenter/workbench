@@ -102,6 +102,59 @@ directive @enriches(
 """
 Triggers the specified handler whenever there's a change to this model.
 """
+directive @reduces(
+  """
+  Optional config to define the lambda parameters for the dispatcher and related
+  resources
+  """
+  dispatcherConfig: DispatcherConfig
+  """
+  The type of change events to subscribe to.
+  """
+  event: CdcEvent!
+  """
+  Optional config to define the lambda parameters for the handler and related
+  resources
+  """
+  handlerConfig: HandlerConfig
+  """
+  Name to import from the module at importPath.
+  """
+  importName: String!
+  """
+  Path to the requireable package that handles a specific event.
+  """
+  importPath: String!
+  """
+  Indicates this reducer produces multiple output records
+  """
+  multiReduce: Boolean
+  """
+  Indicates if this handler's resources should be defined in the main
+  CloudFormation template or in a nested stack
+  """
+  nestStack: Boolean
+  """
+  List of model names that this handler should be allowed to query. The
+  CloudFormation resource will be updated accordingly.
+  @experimental
+  """
+  readableModels: [String!]
+  """
+  The model type that will be updated by this stream.
+  """
+  targetModel: String!
+  """
+  List of model names that this handler should be allowed to write. The
+  CloudFormation resource will be updated accordingly.
+  @experimental
+  """
+  writableModels: [String!]
+) repeatable on OBJECT
+
+"""
+Triggers the specified handler whenever there's a change to this model.
+"""
 directive @reacts(
   """
   Optional config to define the lambda parameters for the dispatcher and related
