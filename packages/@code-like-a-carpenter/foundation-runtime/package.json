@@ -29,7 +29,8 @@
     "@code-like-a-carpenter/assert": "*",
     "@code-like-a-carpenter/exception": "*",
     "@code-like-a-carpenter/lambda-handlers": "*",
-    "@code-like-a-carpenter/telemetry": "*"
+    "@code-like-a-carpenter/telemetry": "*",
+    "@opentelemetry/api": "1.4.0"
   },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.114"

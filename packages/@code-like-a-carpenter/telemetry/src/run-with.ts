@@ -7,7 +7,7 @@ import {env} from '@code-like-a-carpenter/env';
 
 import {captureException} from './exceptions';
 
-type SpanHandler<T> = (span: Span) => T;
+export type SpanHandler<T> = (span: Span) => T;
 
 export function getCurrentSpan() {
   return trace.getActiveSpan();
