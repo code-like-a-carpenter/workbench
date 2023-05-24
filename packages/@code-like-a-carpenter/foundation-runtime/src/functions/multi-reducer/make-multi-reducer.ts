@@ -1,6 +1,8 @@
 import {assert} from '@code-like-a-carpenter/assert';
+import {getCurrentSpan} from '@code-like-a-carpenter/telemetry';
 
 import type {ResultType} from '../../types';
+import {CDCHandler} from '../common/cdc-handler';
 import type {Handler} from '../common/handlers';
 import {makeSqsHandler} from '../common/handlers';
 import type {UnmarshalledDynamoDBRecord} from '../common/unmarshall-record';
@@ -54,42 +56,87 @@ export abstract class MultiReducer<
   TARGET,
   CREATE_TARGET_INPUT extends object,
   UPDATE_TARGET_INPUT extends object
-> {
+> extends CDCHandler {
   sdk: SDK<SOURCE, TARGET, CREATE_TARGET_INPUT, UPDATE_TARGET_INPUT>;
 
   constructor(
     sdk: SDK<SOURCE, TARGET, CREATE_TARGET_INPUT, UPDATE_TARGET_INPUT>
   ) {
+    super();
     this.sdk = sdk;
   }
 
   async reduce(unmarshalledRecord: UnmarshalledDynamoDBRecord): Promise<void> {
-    const {createTargetModel, updateTargetModel, unmarshallSourceModel} =
-      this.sdk;
-    assert(
-      unmarshalledRecord.dynamodb?.NewImage,
-      'NewImage missing from DynamoDB Stream Event. This should never happen.'
-    );
+    return this.runWithNewSpan('multi-reduce', async () => {
+      const {createTargetModel, updateTargetModel, unmarshallSourceModel} =
+        this.sdk;
+      assert(
+        unmarshalledRecord.dynamodb?.NewImage,
+        'NewImage missing from DynamoDB Stream Event. This should never happen.'
+      );
 
-    const source = unmarshallSourceModel(unmarshalledRecord.dynamodb?.NewImage);
-    const previous =
-      unmarshalledRecord.dynamodb?.OldImage &&
-      unmarshallSourceModel(unmarshalledRecord.dynamodb.OldImage);
-    const sources = await this.loadSources(source, previous);
-    const target = await this.loadTargets(source, previous);
+      const source = unmarshallSourceModel(
+        unmarshalledRecord.dynamodb?.NewImage
+      );
+      const previous =
+        unmarshalledRecord.dynamodb?.OldImage &&
+        unmarshallSourceModel(unmarshalledRecord.dynamodb.OldImage);
 
-    const models = await this.createOrUpdate(source, sources, target, previous);
-    const modelsToCreate = models.filter(
-      (model): model is CREATE_TARGET_INPUT => !('version' in model)
-    );
-    const modelsToUpdate = models.filter(
-      (model): model is UPDATE_TARGET_INPUT => 'version' in model
-    );
+      getCurrentSpan()?.setAttributes({
+        'com.code-like-a-carpenter.foundation.previous.exists': !!previous,
+      });
 
-    await Promise.all([
-      Promise.all(modelsToCreate.map((model) => createTargetModel(model))),
-      Promise.all(modelsToUpdate.map((model) => updateTargetModel(model))),
-    ]);
+      const sources = await this.runWithNewSpan('loadSources', () =>
+        this.loadSources(source, previous)
+      );
+
+      getCurrentSpan()?.setAttributes({
+        'com.code-like-a-carpenter.foundation.sources.count': sources.length,
+      });
+
+      const targets = await this.runWithNewSpan('loadTargets', () =>
+        this.loadTargets(source, previous)
+      );
+
+      getCurrentSpan()?.setAttributes({
+        'com.code-like-a-carpenter.foundation.targets.count': targets.length,
+      });
+
+      const models = await this.runWithNewSpan('createOrUpdate', () =>
+        this.createOrUpdate(source, sources, targets, previous)
+      );
+
+      const modelsToCreate = models.filter(
+        (model): model is CREATE_TARGET_INPUT => !('version' in model)
+      );
+      const modelsToUpdate = models.filter(
+        (model): model is UPDATE_TARGET_INPUT => 'version' in model
+      );
+
+      getCurrentSpan()?.setAttributes({
+        'com.code-like-a-carpenter.foundation.targets-to-create.count':
+          modelsToCreate.length,
+        'com.code-like-a-carpenter.foundation.targets-to-update.count':
+          modelsToUpdate.length,
+      });
+
+      await Promise.all([
+        Promise.all(
+          modelsToCreate.map((model) =>
+            this.runWithNewSpan('createTargetModel', () =>
+              createTargetModel(model)
+            )
+          )
+        ),
+        Promise.all(
+          modelsToUpdate.map((model) =>
+            this.runWithNewSpan('updateTargetModel', () =>
+              updateTargetModel(model)
+            )
+          )
+        ),
+      ]);
+    });
   }
 
   protected abstract loadTargets(

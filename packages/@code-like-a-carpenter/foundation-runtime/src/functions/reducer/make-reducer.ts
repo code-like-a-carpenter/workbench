@@ -1,7 +1,9 @@
 import {assert} from '@code-like-a-carpenter/assert';
+import {getCurrentSpan} from '@code-like-a-carpenter/telemetry';
 
 import {NotFoundError} from '../../errors';
 import type {ResultType} from '../../types';
+import {CDCHandler} from '../common/cdc-handler';
 import type {Handler} from '../common/handlers';
 import {makeSqsHandler} from '../common/handlers';
 import type {UnmarshalledDynamoDBRecord} from '../common/unmarshall-record';
@@ -55,50 +57,87 @@ export abstract class Reducer<
   TARGET,
   CREATE_TARGET_INPUT,
   UPDATE_TARGET_INPUT
-> {
+> extends CDCHandler {
   sdk: SDK<SOURCE, TARGET, CREATE_TARGET_INPUT, UPDATE_TARGET_INPUT>;
   constructor(
     sdk: SDK<SOURCE, TARGET, CREATE_TARGET_INPUT, UPDATE_TARGET_INPUT>
   ) {
+    super();
     this.sdk = sdk;
   }
 
   async reduce(unmarshalledRecord: UnmarshalledDynamoDBRecord): Promise<void> {
-    const {createTargetModel, updateTargetModel, unmarshallSourceModel} =
-      this.sdk;
-    assert(
-      unmarshalledRecord.dynamodb?.NewImage,
-      'NewImage missing from DynamoDB Stream Event. This should never happen.'
-    );
-
-    const source = unmarshallSourceModel(unmarshalledRecord.dynamodb?.NewImage);
-    const previous =
-      unmarshalledRecord.dynamodb?.OldImage &&
-      unmarshallSourceModel(unmarshalledRecord.dynamodb.OldImage);
-    const sources = await this.loadSources(source, previous);
-    try {
-      const target = await this.loadTarget(source, previous);
-
-      const modelToUpdate = await this.update(
-        source,
-        sources,
-        target,
-        previous
+    return this.runWithNewSpan('reduce', async () => {
+      const {createTargetModel, updateTargetModel, unmarshallSourceModel} =
+        this.sdk;
+      assert(
+        unmarshalledRecord.dynamodb?.NewImage,
+        'NewImage missing from DynamoDB Stream Event. This should never happen.'
       );
-      if (modelToUpdate) {
-        await updateTargetModel(modelToUpdate);
-        return;
-      }
-    } catch (err) {
-      if (err instanceof NotFoundError) {
-        const modelToCreate = await this.create(source, sources, previous);
-        if (modelToCreate) {
-          await createTargetModel(modelToCreate);
+
+      const source = unmarshallSourceModel(
+        unmarshalledRecord.dynamodb?.NewImage
+      );
+      const previous =
+        unmarshalledRecord.dynamodb?.OldImage &&
+        unmarshallSourceModel(unmarshalledRecord.dynamodb.OldImage);
+
+      getCurrentSpan()?.setAttributes({
+        'com.code-like-a-carpenter.foundation.previous.exists': !!previous,
+      });
+
+      const sources = await this.runWithNewSpan('loadSources', () =>
+        this.loadSources(source, previous)
+      );
+
+      getCurrentSpan()?.setAttributes({
+        'com.code-like-a-carpenter.foundation.sources.count': sources.length,
+      });
+
+      try {
+        const target = await this.runWithNewSpan('loadTarget', () =>
+          this.loadTarget(source, previous)
+        );
+
+        getCurrentSpan()?.setAttributes({
+          'com.code-like-a-carpenter.foundation.target.exists': !!target,
+        });
+
+        const modelToUpdate = await this.runWithNewSpan('update', () =>
+          this.update(source, sources, target, previous)
+        );
+
+        getCurrentSpan()?.setAttributes({
+          'com.code-like-a-carpenter.foundation.should-update': !!modelToUpdate,
+        });
+
+        if (modelToUpdate) {
+          await this.runWithNewSpan('updateTargetModel', () =>
+            updateTargetModel(modelToUpdate)
+          );
           return;
         }
+      } catch (err) {
+        if (err instanceof NotFoundError) {
+          const modelToCreate = await this.runWithNewSpan('create', () =>
+            this.create(source, sources, previous)
+          );
+
+          getCurrentSpan()?.setAttributes({
+            'com.code-like-a-carpenter.foundation.should-create':
+              !!modelToCreate,
+          });
+
+          if (modelToCreate) {
+            await this.runWithNewSpan('createTargetModel', () =>
+              createTargetModel(modelToCreate)
+            );
+            return;
+          }
+        }
+        throw err;
       }
-      throw err;
-    }
+    });
   }
 
   protected abstract loadTarget(

@@ -7,3 +7,4 @@ export * from './functions/table-dispatcher';
 export * from './actions';
 export * from './errors';
 export * from './types';
+export {CDCHandler} from './functions/common/cdc-handler';

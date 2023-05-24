@@ -3,9 +3,13 @@
 set -euo pipefail
 
 if [ $(git diff --name-only | wc -l) -gt 0 ]; then
-  echo "::error::The CI build process altered tracked files. Please run build and commit the changes"
+  echo "::error::The CI build process altered $(git diff --name-only | wc -l) tracked files. Please run build and commit the changes"
   {
-    echo "The CI build process altered tracked files. Please build locally and commit the changes"
+    echo "The CI build process altered $(git diff --name-only | wc -l) tracked files. Please build locally and commit the following files"
+    echo ''
+    git diff --name-only
+    echo ''
+    echo 'The exact changes are'
     echo ''
     echo \`\`\`diff
     git diff
