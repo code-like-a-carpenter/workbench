@@ -7,9 +7,7 @@ Conditions:
 Globals:
   Function:
     Environment:
-      Variables:
-        TABLE_USER_SESSION:
-          Ref: 'TableUserSession'
+      Variables: {}
     Handler: 'index.handler'
     MemorySize: 256
     Runtime: 'nodejs18.x'

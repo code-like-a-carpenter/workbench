@@ -23,6 +23,7 @@ import {
   makeSortKeyForQuery,
   unmarshallRequiredField,
   unmarshallOptionalField,
+  unpackTableNames,
   AlreadyExistsError,
   BaseDataLibraryError,
   DataIntegrityError,
@@ -175,6 +176,7 @@ export type CreateUserSessionOutput = ResultType<UserSession>;
 export async function createUserSession(
   input: Readonly<CreateUserSessionInput>
 ): Promise<Readonly<CreateUserSessionOutput>> {
+  unpackTableNames();
   const tableName = process.env.TABLE_USER_SESSION;
   assert(tableName, 'TABLE_USER_SESSION is not set');
 
@@ -264,6 +266,7 @@ export type BlindWriteUserSessionOutput = ResultType<UserSession>;
 export async function blindWriteUserSession(
   input: Readonly<BlindWriteUserSessionInput>
 ): Promise<Readonly<BlindWriteUserSessionOutput>> {
+  unpackTableNames();
   const tableName = process.env.TABLE_USER_SESSION;
   assert(tableName, 'TABLE_USER_SESSION is not set');
   const now = new Date();
@@ -345,6 +348,7 @@ export type DeleteUserSessionOutput = ResultType<void>;
 export async function deleteUserSession(
   input: UserSessionPrimaryKey
 ): Promise<DeleteUserSessionOutput> {
+  unpackTableNames();
   const tableName = process.env.TABLE_USER_SESSION;
   assert(tableName, 'TABLE_USER_SESSION is not set');
 
@@ -395,6 +399,7 @@ export type ReadUserSessionOutput = ResultType<UserSession>;
 export async function readUserSession(
   input: UserSessionPrimaryKey
 ): Promise<Readonly<ReadUserSessionOutput>> {
+  unpackTableNames();
   const tableName = process.env.TABLE_USER_SESSION;
   assert(tableName, 'TABLE_USER_SESSION is not set');
 
@@ -453,6 +458,7 @@ export type UpdateUserSessionOutput = ResultType<UserSession>;
 export async function updateUserSession(
   input: Readonly<UpdateUserSessionInput>
 ): Promise<Readonly<UpdateUserSessionOutput>> {
+  unpackTableNames();
   const tableName = process.env.TABLE_USER_SESSION;
   assert(tableName, 'TABLE_USER_SESSION is not set');
 

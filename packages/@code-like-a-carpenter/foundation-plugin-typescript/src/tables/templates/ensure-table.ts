@@ -5,6 +5,7 @@ import {snakeCase} from 'lodash';
  * table's name has been set.
  */
 export function ensureTableTemplate(objType: string): string {
-  return `  const tableName = process.env.${snakeCase(objType).toUpperCase()};
+  return `  unpackTableNames();
+  const tableName = process.env.${snakeCase(objType).toUpperCase()};
   assert(tableName, '${snakeCase(objType).toUpperCase()} is not set');`;
 }

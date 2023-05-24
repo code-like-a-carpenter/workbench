@@ -20,7 +20,6 @@
     "@code-like-a-carpenter/foundation-plugin-cloudformation": "*",
     "@code-like-a-carpenter/foundation-plugin-typescript": "*",
     "@code-like-a-carpenter/foundation-transform-environment": "*",
-    "@code-like-a-carpenter/foundation-transform-table-names": "*",
     "@code-like-a-carpenter/multiglob": "*",
     "@graphql-codegen/core": "^3.1.0",
     "@graphql-codegen/plugin-helpers": "^4.2.0",

@@ -28,10 +28,7 @@ export const ConfigSchema = ParserConfigSchema.extend({
   buildProperties: BuildPropertiesSchema.default({}),
   cloudformationTransforms: z
     .array(z.string())
-    .default([
-      '@code-like-a-carpenter/foundation-transform-environment',
-      '@code-like-a-carpenter/foundation-transform-table-names',
-    ]),
+    .default(['@code-like-a-carpenter/foundation-transform-environment']),
   outputConfig: z
     .object({
       format: z.enum(['json', 'yaml']).default('json'),

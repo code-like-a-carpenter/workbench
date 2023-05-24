@@ -19,11 +19,6 @@ export const transform: Transform = (ir, template, nestedTemplates) => {
   const params: Record<string, unknown> = {};
 
   for (const [key, value] of Object.entries(globalVars)) {
-    if (key.startsWith('TABLE_')) {
-      // Handled by table-names-transform
-      continue;
-    }
-
     const constCase = key;
     const pascalCase = upperFirst(camelCase(key));
 

@@ -2,4 +2,3 @@
 // CLI so they're available as part of the default config.
 
 import '@code-like-a-carpenter/foundation-transform-environment';
-import '@code-like-a-carpenter/foundation-transform-table-names';

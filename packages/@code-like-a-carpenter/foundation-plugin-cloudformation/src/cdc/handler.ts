@@ -1,3 +1,5 @@
+import {snakeCase} from 'lodash';
+
 import type {
   ChangeDataCaptureConfig,
   Model,
@@ -57,6 +59,14 @@ export function makeHandler(
         TableArn: {'Fn::GetAtt': [tableName, 'Arn']},
         // This is the table logical name, not the table name
         TableName: tableName,
+        TableNames: {
+          'Fn::ToJsonString': Object.fromEntries(
+            [...readableTables, ...writableTables].map((t) => [
+              snakeCase(t).toUpperCase(),
+              {Ref: t},
+            ])
+          ),
+        },
         Timeout: timeout,
       },
     },
@@ -137,6 +147,7 @@ export function makeHandler(
         ? {[tableAccessPolicyName]: tableAccessPolicy}
         : {}),
     },
+    Transform: ['AWS::LanguageExtensions'],
   });
   const handlerStack = makeHandlerStack(config);
 

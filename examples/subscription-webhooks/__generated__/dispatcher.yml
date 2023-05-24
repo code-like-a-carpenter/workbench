@@ -3,15 +3,7 @@ Conditions: {}
 Globals:
   Function:
     Environment:
-      Variables:
-        TABLE_ACCOUNT:
-          Ref: 'TableAccount'
-        TABLE_METRIC:
-          Ref: 'TableMetric'
-        TABLE_PLAN_METRIC:
-          Ref: 'TablePlanMetric'
-        TABLE_SUBSCRIPTION_EVENT:
-          Ref: 'TableSubscriptionEvent'
+      Variables: {}
 Outputs:
   FunctionName:
     Export:
@@ -41,14 +33,6 @@ Parameters:
   MemorySize:
     Type: 'Number'
   StreamArn:
-    Type: 'String'
-  TableAccount:
-    Type: 'String'
-  TableMetric:
-    Type: 'String'
-  TablePlanMetric:
-    Type: 'String'
-  TableSubscriptionEvent:
     Type: 'String'
   Timeout:
     Type: 'Number'
