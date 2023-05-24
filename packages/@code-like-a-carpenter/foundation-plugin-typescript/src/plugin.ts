@@ -121,6 +121,7 @@ ${models
             makeSortKeyForQuery,
             unmarshallRequiredField,
             unmarshallOptionalField,
+            unpackTableNames,
             AlreadyExistsError,
             BaseDataLibraryError,
             DataIntegrityError,

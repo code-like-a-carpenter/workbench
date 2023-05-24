@@ -27,6 +27,7 @@ import {
   makeSortKeyForQuery,
   unmarshallRequiredField,
   unmarshallOptionalField,
+  unpackTableNames,
   AlreadyExistsError,
   BaseDataLibraryError,
   DataIntegrityError,
@@ -226,6 +227,7 @@ export type CreateAccountOutput = ResultType<Account>;
 export async function createAccount(
   _input: Readonly<CreateAccountInput>
 ): Promise<Readonly<CreateAccountOutput>> {
+  unpackTableNames();
   const tableName = process.env.TABLE_ACCOUNT;
   assert(tableName, 'TABLE_ACCOUNT is not set');
 
@@ -331,6 +333,7 @@ export type BlindWriteAccountOutput = ResultType<Account>;
 export async function blindWriteAccount(
   _input: Readonly<BlindWriteAccountInput>
 ): Promise<Readonly<BlindWriteAccountOutput>> {
+  unpackTableNames();
   const tableName = process.env.TABLE_ACCOUNT;
   assert(tableName, 'TABLE_ACCOUNT is not set');
   const now = new Date();
@@ -428,6 +431,7 @@ export type DeleteAccountOutput = ResultType<void>;
 export async function deleteAccount(
   input: AccountPrimaryKey
 ): Promise<DeleteAccountOutput> {
+  unpackTableNames();
   const tableName = process.env.TABLE_ACCOUNT;
   assert(tableName, 'TABLE_ACCOUNT is not set');
 
@@ -481,6 +485,7 @@ export type ReadAccountOutput = ResultType<Account>;
 export async function readAccount(
   input: AccountPrimaryKey
 ): Promise<Readonly<ReadAccountOutput>> {
+  unpackTableNames();
   const tableName = process.env.TABLE_ACCOUNT;
   assert(tableName, 'TABLE_ACCOUNT is not set');
 
@@ -541,6 +546,7 @@ export type UpdateAccountOutput = ResultType<Account>;
 export async function updateAccount(
   _input: Readonly<UpdateAccountInput>
 ): Promise<Readonly<UpdateAccountOutput>> {
+  unpackTableNames();
   const tableName = process.env.TABLE_ACCOUNT;
   assert(tableName, 'TABLE_ACCOUNT is not set');
 
@@ -724,6 +730,7 @@ export async function queryAccount(
     reverse = false,
   }: QueryOptions = {}
 ): Promise<Readonly<QueryAccountOutput>> {
+  unpackTableNames();
   const tableName = process.env.TABLE_ACCOUNT;
   assert(tableName, 'TABLE_ACCOUNT is not set');
 
@@ -1010,6 +1017,7 @@ export type CreateMetricOutput = ResultType<Metric>;
 export async function createMetric(
   input: Readonly<CreateMetricInput>
 ): Promise<Readonly<CreateMetricOutput>> {
+  unpackTableNames();
   const tableName = process.env.TABLE_METRIC;
   assert(tableName, 'TABLE_METRIC is not set');
 
@@ -1102,6 +1110,7 @@ export type BlindWriteMetricOutput = ResultType<Metric>;
 export async function blindWriteMetric(
   input: Readonly<BlindWriteMetricInput>
 ): Promise<Readonly<BlindWriteMetricOutput>> {
+  unpackTableNames();
   const tableName = process.env.TABLE_METRIC;
   assert(tableName, 'TABLE_METRIC is not set');
   const now = new Date();
@@ -1186,6 +1195,7 @@ export type DeleteMetricOutput = ResultType<void>;
 export async function deleteMetric(
   input: MetricPrimaryKey
 ): Promise<DeleteMetricOutput> {
+  unpackTableNames();
   const tableName = process.env.TABLE_METRIC;
   assert(tableName, 'TABLE_METRIC is not set');
 
@@ -1239,6 +1249,7 @@ export type ReadMetricOutput = ResultType<Metric>;
 export async function readMetric(
   input: MetricPrimaryKey
 ): Promise<Readonly<ReadMetricOutput>> {
+  unpackTableNames();
   const tableName = process.env.TABLE_METRIC;
   assert(tableName, 'TABLE_METRIC is not set');
 
@@ -1296,6 +1307,7 @@ export type UpdateMetricOutput = ResultType<Metric>;
 export async function updateMetric(
   input: Readonly<UpdateMetricInput>
 ): Promise<Readonly<UpdateMetricOutput>> {
+  unpackTableNames();
   const tableName = process.env.TABLE_METRIC;
   assert(tableName, 'TABLE_METRIC is not set');
 
@@ -1433,6 +1445,7 @@ export async function queryMetric(
     reverse = false,
   }: QueryOptions = {}
 ): Promise<Readonly<QueryMetricOutput>> {
+  unpackTableNames();
   const tableName = process.env.TABLE_METRIC;
   assert(tableName, 'TABLE_METRIC is not set');
 
@@ -1620,6 +1633,7 @@ export type CreatePlanMetricOutput = ResultType<PlanMetric>;
 export async function createPlanMetric(
   input: Readonly<CreatePlanMetricInput>
 ): Promise<Readonly<CreatePlanMetricOutput>> {
+  unpackTableNames();
   const tableName = process.env.TABLE_PLAN_METRIC;
   assert(tableName, 'TABLE_PLAN_METRIC is not set');
 
@@ -1716,6 +1730,7 @@ export type BlindWritePlanMetricOutput = ResultType<PlanMetric>;
 export async function blindWritePlanMetric(
   input: Readonly<BlindWritePlanMetricInput>
 ): Promise<Readonly<BlindWritePlanMetricOutput>> {
+  unpackTableNames();
   const tableName = process.env.TABLE_PLAN_METRIC;
   assert(tableName, 'TABLE_PLAN_METRIC is not set');
   const now = new Date();
@@ -1802,6 +1817,7 @@ export type DeletePlanMetricOutput = ResultType<void>;
 export async function deletePlanMetric(
   input: PlanMetricPrimaryKey
 ): Promise<DeletePlanMetricOutput> {
+  unpackTableNames();
   const tableName = process.env.TABLE_PLAN_METRIC;
   assert(tableName, 'TABLE_PLAN_METRIC is not set');
 
@@ -1857,6 +1873,7 @@ export type ReadPlanMetricOutput = ResultType<PlanMetric>;
 export async function readPlanMetric(
   input: PlanMetricPrimaryKey
 ): Promise<Readonly<ReadPlanMetricOutput>> {
+  unpackTableNames();
   const tableName = process.env.TABLE_PLAN_METRIC;
   assert(tableName, 'TABLE_PLAN_METRIC is not set');
 
@@ -1919,6 +1936,7 @@ export type UpdatePlanMetricOutput = ResultType<PlanMetric>;
 export async function updatePlanMetric(
   input: Readonly<UpdatePlanMetricInput>
 ): Promise<Readonly<UpdatePlanMetricOutput>> {
+  unpackTableNames();
   const tableName = process.env.TABLE_PLAN_METRIC;
   assert(tableName, 'TABLE_PLAN_METRIC is not set');
 
@@ -2080,6 +2098,7 @@ export async function queryPlanMetric(
     reverse = false,
   }: QueryOptions = {}
 ): Promise<Readonly<QueryPlanMetricOutput>> {
+  unpackTableNames();
   const tableName = process.env.TABLE_PLAN_METRIC;
   assert(tableName, 'TABLE_PLAN_METRIC is not set');
 
@@ -2303,6 +2322,7 @@ export type CreateSubscriptionEventOutput = ResultType<SubscriptionEvent>;
 export async function createSubscriptionEvent(
   input: Readonly<CreateSubscriptionEventInput>
 ): Promise<Readonly<CreateSubscriptionEventOutput>> {
+  unpackTableNames();
   const tableName = process.env.TABLE_SUBSCRIPTION_EVENT;
   assert(tableName, 'TABLE_SUBSCRIPTION_EVENT is not set');
 
@@ -2400,6 +2420,7 @@ export type ReadSubscriptionEventOutput = ResultType<SubscriptionEvent>;
 export async function readSubscriptionEvent(
   input: SubscriptionEventPrimaryKey
 ): Promise<Readonly<ReadSubscriptionEventOutput>> {
+  unpackTableNames();
   const tableName = process.env.TABLE_SUBSCRIPTION_EVENT;
   assert(tableName, 'TABLE_SUBSCRIPTION_EVENT is not set');
 
@@ -2516,6 +2537,7 @@ export async function querySubscriptionEvent(
     reverse = false,
   }: QueryOptions = {}
 ): Promise<Readonly<QuerySubscriptionEventOutput>> {
+  unpackTableNames();
   const tableName = process.env.TABLE_SUBSCRIPTION_EVENT;
   assert(tableName, 'TABLE_SUBSCRIPTION_EVENT is not set');
 

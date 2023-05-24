@@ -60,6 +60,13 @@ export function makeHandlerStack(config: Config): ServerlessApplicationModel {
     Properties: {
       // @ts-expect-error - typedef doesn't include intrinsic functions
       CodeUri: {Ref: 'CodeUri'},
+      Environment: {
+        Variables: {
+          TABLE_NAMES: {
+            Ref: 'TableNames',
+          },
+        },
+      },
       Events: {
         Stream: {
           Properties: {
@@ -348,6 +355,7 @@ export function makeHandlerStack(config: Config): ServerlessApplicationModel {
       StageName: {Type: 'String'},
       TableArn: {Type: 'String'},
       TableName: {Type: 'String'},
+      TableNames: {Type: 'String'},
       Timeout: {Type: 'Number'},
     },
     Resources: {

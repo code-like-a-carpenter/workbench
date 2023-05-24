@@ -1,5 +1,3 @@
-import {snakeCase} from 'lodash';
-
 import type {Table} from '@code-like-a-carpenter/foundation-intermediate-representation';
 
 import type {AWSDynamoDBTable} from './__generated__/json-schemas/serverless-application-model';
@@ -108,15 +106,6 @@ export function defineTable({
   return {
     Conditions: {
       IsProd: {'Fn::Equals': [{Ref: 'StageName'}, 'production']},
-    },
-    Globals: {
-      Function: {
-        Environment: {
-          Variables: {
-            [`${snakeCase(tableName).toUpperCase()}`]: {Ref: tableName},
-          },
-        },
-      },
     },
     Outputs: {
       [tableName]: {

@@ -88,52 +88,31 @@ export const plugin: PluginFunction<Config> = makePlugin(
 
     const initialTemplate = await getInitialTemplate(config);
 
-    const tpl: ServerlessApplicationModel = {
-      ...initialTemplate,
-
-      Conditions: {
-        ...initialTemplate.Conditions,
-        ...allResources.Conditions,
-      },
-      Globals: {
-        Function: {
-          Handler: 'index.handler',
-          MemorySize: 256,
-          Runtime: 'nodejs18.x',
-          Timeout: 30,
-          Tracing: 'Active',
-          ...initialTemplate?.Globals?.Function,
-          Environment: {
-            // @ts-expect-error - typedef treats `Environment` as `unknown`
-            ...initialTemplate?.Globals?.Function?.Environment,
-            Variables: {
-              // @ts-expect-error - typedef treats `Environment` as `unknown`
-              ...initialTemplate?.Globals?.Function?.Environment?.Variables,
-              // @ts-expect-error - typedef treats `Environment` as `unknown`
-              ...allResources?.Globals?.Function?.Environment?.Variables,
-            },
+    const tpl: ServerlessApplicationModel = combineFragments(
+      initialTemplate,
+      allResources,
+      {
+        Globals: {
+          Function: {
+            Handler: 'index.handler',
+            MemorySize: 256,
+            Runtime: 'nodejs18.x',
+            Timeout: 30,
+            Tracing: 'Active',
           },
         },
-      },
-      Outputs: {
-        ...initialTemplate.Outputs,
-        ...allResources.Outputs,
-      },
-      Parameters: {
-        ...initialTemplate.Parameters,
-        ...allResources.Parameters,
-        StageName: {
-          AllowedValues: ['development', 'production', 'test'],
-          Default: 'development',
-          Description: 'The name of the stage',
-          Type: 'String',
+        Parameters: {
+          StageName: {
+            AllowedValues: ['development', 'production', 'test'],
+            Default: 'development',
+            Description: 'The name of the stage',
+            Type: 'String',
+          },
         },
-      },
-      Resources: {
-        ...initialTemplate.Resources,
-        ...allResources.Resources,
-      },
-    };
+        Resources: {},
+        // Transform: 'AWS::LanguageExtensions',
+      }
+    );
 
     await applyTransforms(config, ir, tpl, stacks);
 

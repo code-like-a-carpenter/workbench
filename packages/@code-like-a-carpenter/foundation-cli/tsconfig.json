@@ -19,9 +19,6 @@
       "path": "../foundation-transform-environment"
     },
     {
-      "path": "../foundation-transform-table-names"
-    },
-    {
       "path": "../multiglob"
     }
   ]

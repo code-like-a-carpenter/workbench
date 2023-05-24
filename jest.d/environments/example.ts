@@ -181,6 +181,11 @@ export default class ExampleEnvironment extends Environment {
       this.global.process.env.API_URL = `http://127.0.0.1:4566/restapis/${apiId}/${stageName}/_user_request_/`;
       console.log({API_URL: this.global.process.env.API_URL});
     }
+
+    // tests will get their table names from stack outputs rather than the
+    // per-substack env var that the functions use, so we need to make sure
+    // unpackTableNames() doesn't throw.
+    this.global.process.env.TABLE_NAMES = '{}';
   }
 
   private async checkForStack(): Promise<boolean> {
