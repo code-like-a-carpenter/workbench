@@ -132,8 +132,8 @@ export abstract class Reducer<
             await this.runWithNewSpan('createTargetModel', () =>
               createTargetModel(modelToCreate)
             );
-            return;
           }
+          return;
         }
         throw err;
       }

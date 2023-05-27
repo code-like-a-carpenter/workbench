@@ -106,10 +106,11 @@ export abstract class Enricher<
         });
 
         if (modelToUpdate) {
-          return await this.runWithNewSpan('updateTargetModel', () =>
+          await this.runWithNewSpan('updateTargetModel', () =>
             updateTargetModel(modelToUpdate)
           );
         }
+        return;
       } catch (err) {
         if (err instanceof NotFoundError) {
           const modelToCreate = await this.runWithNewSpan('create', () =>
@@ -122,10 +123,11 @@ export abstract class Enricher<
           });
 
           if (modelToCreate) {
-            return await this.runWithNewSpan('createTargetModel', () =>
+            await this.runWithNewSpan('createTargetModel', () =>
               createTargetModel(modelToCreate)
             );
           }
+          return;
         }
         throw err;
       }
