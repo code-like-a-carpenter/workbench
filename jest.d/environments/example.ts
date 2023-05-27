@@ -38,6 +38,17 @@ export default class ExampleEnvironment extends Environment {
     if (env('GITHUB_SHA', '') !== '') {
       suffix = `-${env('GITHUB_SHA', '').slice(0, 7)}`;
     }
+    if (env('GITHUB_HEAD_REF', '') !== '') {
+      suffix = `-${env('GITHUB_HEAD_REF').replace('/', '_').substring(0, 20)}`;
+    } else if (env('GITHUB_REF', '') !== '') {
+      const branchName = env('GITHUB_REF', '')
+        .split('/')
+        .slice(2)
+        .join('/')
+        .replace(/\/|_/g, '-')
+        .substring(0, 20);
+      suffix = `-${branchName}`;
+    }
 
     this.exampleName = exampleName;
     this.stackName = exampleName + suffix;
