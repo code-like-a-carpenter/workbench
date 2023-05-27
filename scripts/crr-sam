@@ -33,7 +33,9 @@ for testfile in "$@"; do
   suffix="${GITHUB_SHA:0:7}"
   stack_name="$example-$suffix"
 
+  echo "::info title=Deployment Status::${action^}ing $example to $stack_name for $testfile"
   STACK_NAME="$stack_name" ./scripts/sam "$action" aws "$example"
+  echo "::info title=Deployment Status::${action^}ed $example to $stack_name for $testfile"
 
   deployed="$deployed $testfile"
 done
