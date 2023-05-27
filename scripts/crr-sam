@@ -31,9 +31,17 @@ for testfile in "$@"; do
   example=$(echo "$testfile" | awk -F/ '{print $2}')
 
   suffix="${GITHUB_SHA:0:7}"
+  if [ -n "$GITHUB_HEAD_REF" ]; then
+    suffix="$suffix-$(echo "$GITHUB_HEAD_REF" | sed -e 's#/|_#-#g' | head -c 20)"
+  elif [ -n "$GITHUB_REF" ]; then
+    branch_name=$(echo "$GITHUB_REF" | cut -d '/' -f 3- | sed -e 's#/|_#-#g' | head -c 20)
+    suffix="$suffix-$branch_name"
+  fi
   stack_name="$example-$suffix"
 
+  echo "::notice title=Deployment Status::${action^}ing $example to $stack_name for $testfile"
   STACK_NAME="$stack_name" ./scripts/sam "$action" aws "$example"
+  echo "::notice title=Deployment Status::${action^}ed $example to $stack_name for $testfile"
 
   deployed="$deployed $testfile"
 done
