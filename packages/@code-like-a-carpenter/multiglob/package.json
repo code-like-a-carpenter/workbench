@@ -3,7 +3,7 @@
   "description": "This is a wrapper around an older version of glob that accepts arrays. You almost certainl should not use this.",
   "dependencies": {
     "@code-like-a-carpenter/assert": "*",
-    "glob": "^8.1.0"
+    "glob": "^10.3.3"
   },
   "author": "Ian Remmel <1182361+ianwremmel@users.noreply.github.com> (https://www.ianwremmel.com)",
   "bugs": "https://www.github.com/code-like-a-carpenter/workbench/issues",
