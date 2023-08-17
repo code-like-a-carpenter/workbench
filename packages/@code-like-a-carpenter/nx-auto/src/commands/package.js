@@ -78,6 +78,7 @@ async function config(packageName, type) {
       '.': {
         import: './dist/esm/index.js',
         require: './dist/cjs/index.js',
+        types: './dist/types/index.d.ts',
       },
       './package.json': './package.json',
     };
