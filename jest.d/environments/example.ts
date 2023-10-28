@@ -13,11 +13,35 @@ import type {
   JestEnvironmentConfig,
 } from '@jest/environment';
 import Environment from 'jest-environment-node';
-import {snakeCase} from 'lodash';
+import {camelCase, snakeCase, upperFirst} from 'lodash';
 
 import {env} from '@code-like-a-carpenter/env';
 
 type TestEnv = 'aws' | 'localstack';
+
+function getStackName(projectName: string): string {
+  const stackName = upperFirst(camelCase(projectName));
+  let suffix = '';
+  if (env('GITHUB_SHA', '') !== '') {
+    suffix = `${env('GITHUB_SHA', '').slice(0, 7)}`;
+  }
+
+  if (env('GITHUB_HEAD_REF', '') !== '') {
+    suffix = `${suffix}-${env('GITHUB_HEAD_REF')
+      .replace(/[/_]/g, '-')
+      .substring(0, 20)}`;
+  } else if (env('GITHUB_REF', '') !== '') {
+    const branchName = env('GITHUB_REF', '')
+      .split('/')
+      .slice(2)
+      .join('/')
+      .replace(/[/_]/g, '-')
+      .substring(0, 20);
+    suffix = `${suffix}-${branchName}`;
+  }
+
+  return suffix ? `${stackName}-${suffix}` : stackName;
+}
 
 export default class ExampleEnvironment extends Environment {
   private readonly exampleName: string;
@@ -34,24 +58,8 @@ export default class ExampleEnvironment extends Environment {
       .split(`${path.sep}examples${path.sep}`)[1]
       .split(path.sep);
 
-    let suffix = '';
-    if (env('GITHUB_SHA', '') !== '') {
-      suffix = `-${env('GITHUB_SHA', '').slice(0, 7)}`;
-    }
-    if (env('GITHUB_HEAD_REF', '') !== '') {
-      suffix = `-${env('GITHUB_HEAD_REF').replace('/', '_').substring(0, 20)}`;
-    } else if (env('GITHUB_REF', '') !== '') {
-      const branchName = env('GITHUB_REF', '')
-        .split('/')
-        .slice(2)
-        .join('/')
-        .replace(/\/|_/g, '-')
-        .substring(0, 20);
-      suffix = `-${branchName}`;
-    }
-
     this.exampleName = exampleName;
-    this.stackName = exampleName + suffix;
+    this.stackName = getStackName(exampleName);
     process.env.STACK_NAME = this.stackName;
 
     const testEnv = env('TEST_ENV', 'localstack');
