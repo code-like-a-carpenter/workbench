@@ -30,7 +30,7 @@
     "access": "public"
   },
   "devDependencies": {
-    "@types/aws-lambda": "^8.10.119",
+    "@types/aws-lambda": "^8.10.125",
     "openapi-typescript": "^6.2.0"
   }
 }

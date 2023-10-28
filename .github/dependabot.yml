@@ -5,6 +5,31 @@ updates:
       prefix: 'chore'
       include: 'scope'
     directory: '/'
+    groups:
+      '@code-like-a-carpenter':
+        patterns:
+          - '*@code-like-a-carpenter*'
+      '@opentelemetry':
+        patterns:
+          - '*@opentelemetry*'
+      babel:
+        patterns:
+          - '*babel*'
+      eslint:
+        patterns:
+          - '*eslint*'
+      jest:
+        patterns:
+          - '*jest*'
+      graphql:
+        patterns:
+          - '*graphql*'
+      remix:
+        patterns:
+          - '*remix*'
+      storybook:
+        patterns:
+          - '*storybook*'
     ignore:
       # Ignore Node major version updates until we're ready to actually update
       # Node.
