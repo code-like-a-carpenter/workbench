@@ -27,6 +27,9 @@ updates:
       remix:
         patterns:
           - '*remix*'
+      sentry:
+        patterns:
+          - '*sentry*'
       storybook:
         patterns:
           - '*storybook*'
