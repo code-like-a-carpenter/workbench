@@ -3,25 +3,28 @@
 set -euo pipefail
 
 build () {
-  local example="$1"
-  local buildDir="$(path_to_build_dir "$example")"
-  local templateFile="$(path_to_template_file "$example")"
+  local app="$1"
+  local build_dir
+  build_dir="$(path_to_build_dir "$app")"
+  local template_file
+  template_file="$(path_to_template_file "$app")"
 
-  log "Building $example in $buildDir"
+  log "Building $app in $build_dir"
 
   sam build \
-    --build-dir "$buildDir" \
+    --build-dir "$build_dir" \
     --beta-features \
-    --template-file "$templateFile"
+    --template-file "$template_file"
 
-  for dir in $(path_to_build_dir "$example")/*/; do
-    local example_dir="$(path_to_example "$example")"
-    if [ -f  "$example_dir/collector.yml" ]; then
-      cp "$example_dir/collector.yml" "$dir/collector.yml"
+  for dir in $(path_to_build_dir "$app")/*/; do
+    local app_dir
+    app_dir="$(path_to_example "$app")"
+    if [ -f  "$app_dir/collector.yml" ]; then
+      cp "$app_dir/collector.yml" "$dir/collector.yml"
     fi
 
-    if [ -f "$example_dir/otel-handler" ]; then
-      cp "$example_dir/otel-handler" "$dir/otel-handler"
+    if [ -f "$app_dir/otel-handler" ]; then
+      cp "$app_dir/otel-handler" "$dir/otel-handler"
     fi
   done
 }
@@ -45,15 +48,18 @@ deploy () {
 
 deploy_one () {
   local provider="$1"
-  local example="$2"
+  local app="$2"
 
-  log "Deploying $example to $provider"
+  log "Deploying $app to $provider"
 
-  build "$example"
+  build "$app"
 
   local stackname
-  stackname="$(get_stack_name "$example")"
-  stagename="development"
+  stackname="$(get_stack_name "$app")"
+  stagename="${STAGE_NAME:-development}"
+  if [ -n "${CI:-}" ]; then
+    stagename="test"
+  fi
 
   local cmd
   case "$provider" in
@@ -77,6 +83,13 @@ deploy_one () {
   parameter_overrides+="ParameterKey=StageName,ParameterValue=$stagename"
   parameter_overrides+=" ParameterKey=RepoUrl,ParameterValue=$(git remote get-url origin)"
   parameter_overrides+=" ParameterKey=SHA,ParameterValue=${GITHUB_SHA:-$(git rev-parse head)}"
+  local branch_name
+  if [ -n "${GITHUB_REF:-}" ]; then
+    branch_name="$(echo "$GITHUB_REF" | cut -d '/' -f 3-)"
+  else
+    branch_name="$(git rev-parse --abbrev-ref HEAD)"
+  fi
+  parameter_overrides+=" ParameterKey=BranchName,ParameterValue=$branch_name"
 
   # doesn't need a template because it will use the one in .aws-sam that was
   # just created by sam build
@@ -87,18 +100,14 @@ deploy_one () {
     --region "${AWS_REGION:-us-east-1}" \
     --resolve-s3 \
     --stack-name "$stackname" \
-    --template-file "$(path_to_build_dir "$example")/template.yaml"
+    --template-file "$(path_to_build_dir "$app")/template.yaml"
 }
 
 deploy_all () {
   local provider="$1"
   shift
 
-  for file in $(find examples -mindepth 1 -maxdepth 1 -type d); do
-    local example
-    example="$(basename "$file")"
-    deploy_one "$provider" "$example"
-  done
+  list_all_apps | xargs -n 1 -P 4 /usr/bin/env bash -euo pipefail -c 'deploy_one "$@"' _ "$provider"
 }
 
 destroy () {
@@ -116,21 +125,17 @@ destroy_all () {
   local provider="$1"
   shift
 
-  for file in $(find examples -mindepth 1 -maxdepth 1 -type d); do
-    local example
-    example="$(basename "$file")"
-    destroy_one "$provider" "$example"
-  done
+  list_all_apps | xargs -n 1 -P 4 /usr/bin/env bash -euo pipefail -c 'destroy_one "$@"' _ "$provider"
 }
 
 destroy_one () {
   local provider="$1"
-  local example="$2"
+  local app="$2"
 
-  log "Destroying $example at $provider"
+  log "Destroying $app at $provider"
 
   local stackname
-  stackname="$(get_stack_name "$example")"
+  stackname="$(get_stack_name "$app")"
 
   local cmd
   case "$provider" in
@@ -161,11 +166,35 @@ get_stack_name () {
     return 0
   fi
 
-  local example="$1"
+  local app="$1"
 
   local stackname
-  stackname=$(echo "$example" | awk -F/ '{print $NF}' | sed -r 's/(^|[-_ ]+)([0-9a-z])/\U\2/g')
-  echo "$stackname"
+  # This PascalCases the last item in the path.
+  project_name=$(echo "$app" | awk -F/ '{print $NF}')
+  stackname=$(echo "$project_name" | sed -r 's/(^|[-_ ]+)([0-9a-z])/\U\2/g')
+
+  local suffix=''
+  if [ -n "${GITHUB_SHA:-}" ]; then
+    suffix="${GITHUB_SHA:0:7}"
+  fi
+
+  if [ -n "${GITHUB_HEAD_REF:-}" ]; then
+    # If we have a GITHUB_HEAD_REF, replace its slashes and underscores with
+    # hyphens and take the first 20 characters
+    suffix="$suffix-$(echo "$GITHUB_HEAD_REF" | sed -e 's#[/_]#-#g' | head -c 20)"
+  elif [ -n "${GITHUB_REF:-}" ]; then
+    # If we have a GITHUB_REF, remove the refs/heads/ prefix, replace its
+    # slashes and underscores with hyphens and take the first 20 characters
+    branch_name=$(echo "$GITHUB_REF" | cut -d '/' -f 3- | sed -e 's#[/_]#-#g' | head -c 20)
+    suffix="$suffix-$branch_name"
+  fi
+
+  if [ -z "$suffix" ]; then
+    echo "$stackname"
+  else
+    echo "$stackname-$suffix"
+  fi
+
   return 0
 }
 
@@ -178,7 +207,7 @@ initialize_localstack () {
   docker pull localstack/localstack:latest
 
   log "Starting LocalStack"
-  # --wait doesn't appear to be available with the docker-compose version on
+  # --wait doesn't app to be available with the docker-compose version on
   # GitHub Actions runners...
   docker-compose up --detach
 
@@ -190,6 +219,12 @@ initialize_localstack () {
   return 0
 }
 
+list_all_apps () {
+  find ./packages/apps/@clc -mindepth 1 -maxdepth 1 -type d | xargs -n 1 basename
+
+  return 0
+}
+
 log () {
   echo "$@" 1>&2
 
@@ -197,17 +232,17 @@ log () {
 }
 
 path_to_build_dir () {
-  local example="$1"
-  echo "$(path_to_example "$example")/.aws-sam/build"
+  local app="$1"
+  echo "$(path_to_example "$app")/.aws-sam/build"
   return 0
 }
 
 path_to_example () {
-  local example="$1"
-  local dir="examples/$example"
+  local app="$1"
+  local dir="examples/$app"
 
   if [ ! -d "$dir" ]; then
-    log "Example $example does not exist at $dir"
+    log "Example $app does not exist at $dir"
     return 1
   fi
 
@@ -216,14 +251,20 @@ path_to_example () {
 }
 
 path_to_template_file () {
-  local example="$1"
-  if [ -f "$(path_to_example "$example")/__generated__/template.yml" ]; then
-    echo "$(path_to_example "$example")/__generated__/template.yml"
+  local app="$1"
+  if [ -f "$(path_to_example "$app")/__generated__/template.yml" ]; then
+    echo "$(path_to_example "$app")/__generated__/template.yml"
     return 0
   fi
-  echo "$(path_to_example "$example")/template.yml"
+  echo "$(path_to_example "$app")/template.yml"
   return 0
 }
+
+# export all functions so they can be called with bash -c
+for func in $(declare -F | cut -d ' ' -f 3); do
+  # shellcheck disable=SC2163
+  export -f "$func"
+done
 
 main () {
   local action="$1"

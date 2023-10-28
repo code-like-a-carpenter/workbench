@@ -20,7 +20,7 @@ esac
 # This script accepts a list of tests names from Check Run Reporter, filters
 # them down to just examples, and then deploys those stacks
 
-deployed=''
+projects=''
 
 for testfile in "$@"; do
   if [[ ! "$testfile" =~ ^examples/ ]]; then
@@ -28,20 +28,20 @@ for testfile in "$@"; do
     continue
   fi
 
-  example=$(echo "$testfile" | awk -F/ '{print $2}')
-
-  suffix="${GITHUB_SHA:0:7}"
-  if [ -n "$GITHUB_HEAD_REF" ]; then
-    suffix="$suffix-$(echo "$GITHUB_HEAD_REF" | sed -e 's#/|_#-#g' | head -c 20)"
-  elif [ -n "$GITHUB_REF" ]; then
-    branch_name=$(echo "$GITHUB_REF" | cut -d '/' -f 3- | sed -e 's#/|_#-#g' | head -c 20)
-    suffix="$suffix-$branch_name"
+  projectName=$(echo "$testfile" | awk -F/ '{print $2}')
+  if [[ "$projects" != *"$projectName"* ]]; then
+    projects="$projects $projectName"
   fi
-  stack_name="$example-$suffix"
+done
 
-  echo "::notice title=Deployment Status::${action^}ing $example to $stack_name for $testfile"
-  STACK_NAME="$stack_name" ./scripts/sam "$action" aws "$example"
-  echo "::notice title=Deployment Status::${action^}ed $example to $stack_name for $testfile"
+
+
+deployed=''
+
+for projectName in $projects; do
+  echo "::notice title=Deployment Status::${action^}ing $projectName for $testfile"
+  ./scripts/sam "$action" aws "$projectName"
+  echo "::notice title=Deployment Status::${action^}ed $projectName for $testfile"
 
   deployed="$deployed $testfile"
 done
