@@ -12,35 +12,20 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v3.5.0
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 18
-          cache: 'npm'
-      - uses: nrwl/nx-set-shas@v3
-      - run: npm ci
-      - run: npx nx run-many --target=build --parallel=4
+      - uses: './.github/actions/setup'
 
   diff:
     needs: build
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v3.5.0
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 18
-          cache: 'npm'
-      - uses: nrwl/nx-set-shas@v3
-      - run: npm ci
-      # by making this job depend on the build job, the following line should be
-      # 100% cache hits; The nx cache seems to be much easier to use than the
-      # GitHub artifact action.
-      - run: npx nx run-many --target=build --parallel=4
+      - uses: './.github/actions/setup'
       - run: ./scripts/diff-lint
 
   lint:
@@ -48,19 +33,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v3.5.0
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 18
-          cache: 'npm'
-      - uses: nrwl/nx-set-shas@v3
-      - run: npm ci
-      # by making this job depend on the build job, the following line should be
-      # 100% cache hits; The nx cache seems to be much easier to use than the
-      # GitHub artifact action.
-      - run: npx nx run-many --target=build --parallel=4
+      - uses: './.github/actions/setup'
       - run: npx nx workspace-lint
       - run: npx nx format:check
       - run: npm run lint
@@ -93,19 +69,10 @@ jobs:
     # need to be release, so 60 is not unreasonable.
     timeout-minutes: 60
     steps:
-      - uses: actions/checkout@v3.5.0
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 18
-          cache: 'npm'
-      - uses: nrwl/nx-set-shas@v3
-      - run: npm ci
-      # by making this job depend on the build job, the following line should be
-      # 100% cache hits; The nx cache seems to be much easier to use than the
-      # GitHub artifact action.
-      - run: npx nx run-many --target=build --parallel=4
+      - uses: './.github/actions/setup'
       - run: |
           npm config set workspaces-update false
           npx multi-semantic-release \
@@ -136,7 +103,7 @@ jobs:
         nodeCount: [5]
         nodeIndex: [0, 1, 2, 3, 4]
     steps:
-      - uses: actions/checkout@v3.5.0
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: Configure AWS credentials from Test account
@@ -144,16 +111,7 @@ jobs:
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
           aws-region: ${{ secrets.AWS_REGION }}
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 18
-          cache: 'npm'
-      - uses: nrwl/nx-set-shas@v3
-      - run: npm ci
-      # by making this job depend on the build job, the following line should be
-      # 100% cache hits; The nx cache seems to be much easier to use than the
-      # GitHub artifact action.
-      - run: npx nx run-many --target=build --parallel=4
+      - uses: './.github/actions/setup'
       - uses: check-run-reporter/action@v2.12.0
         id: split
         with:
@@ -196,19 +154,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v3.5.0
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 18
-          cache: 'npm'
-      - uses: nrwl/nx-set-shas@v3
-      - run: npm ci
-      # by making this job depend on the build job, the following line should be
-      # 100% cache hits; The nx cache seems to be much easier to use than the
-      # GitHub artifact action.
-      - run: npx nx run-many --target=build --parallel=4
+      - uses: './.github/actions/setup'
       - run: npm test -- --selectProjects 'Unit Tests'
       - uses: check-run-reporter/action@v2.12.0
         if: ${{ always() }}
