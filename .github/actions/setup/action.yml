@@ -1,0 +1,14 @@
+name: 'Setup'
+description: 'Common setup steps for all jobs'
+runs:
+  using: 'composite'
+  steps:
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 18
+        cache: 'npm'
+    - uses: nrwl/nx-set-shas@v4
+    - run: npm ci
+      shell: bash
+    - run: npx --no-install nx run-many --target=build --parallel=4
+      shell: bash
