@@ -3,7 +3,7 @@ import {BaseDataLibraryError} from './base-error';
 /** Thrown when the requested item cannot be found */
 export class NotFoundError<
   PK extends object,
-  TYPENAME extends string
+  TYPENAME extends string,
 > extends BaseDataLibraryError<{primaryKey: PK; typename: TYPENAME}> {
   readonly primaryKey: PK;
   readonly typeName: TYPENAME;

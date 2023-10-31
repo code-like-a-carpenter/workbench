@@ -7,7 +7,7 @@ import type {
 import type {Context} from '../types';
 
 export type RestTokenAuthorizerResult<
-  TAuthorizerContext extends APIGatewayAuthorizerResultContext
+  TAuthorizerContext extends APIGatewayAuthorizerResultContext,
 > = Omit<
   APIGatewayAuthorizerWithContextResult<TAuthorizerContext>,
   'policyDocument'
@@ -20,7 +20,7 @@ export type RestTokenAuthorizerResult<
   >;
 
 export type RestTokenAuthorizerCallback<
-  TAuthorizerContext extends APIGatewayAuthorizerResultContext
+  TAuthorizerContext extends APIGatewayAuthorizerResultContext,
 > = (
   event: APIGatewayTokenAuthorizerEvent,
   context: Context

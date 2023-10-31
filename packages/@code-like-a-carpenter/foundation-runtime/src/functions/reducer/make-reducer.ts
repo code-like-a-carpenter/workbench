@@ -25,7 +25,7 @@ export function makeReducer<
   SOURCE,
   TARGET,
   CREATE_TARGET_INPUT,
-  UPDATE_TARGET_INPUT
+  UPDATE_TARGET_INPUT,
 >(
   constructor: ReducerConstructor<
     SOURCE,
@@ -45,7 +45,7 @@ export interface ReducerConstructor<
   SOURCE,
   TARGET,
   CREATE_TARGET_INPUT,
-  UPDATE_TARGET_INPUT
+  UPDATE_TARGET_INPUT,
 > {
   new (
     sdk: SDK<SOURCE, TARGET, CREATE_TARGET_INPUT, UPDATE_TARGET_INPUT>
@@ -56,7 +56,7 @@ export abstract class Reducer<
   SOURCE,
   TARGET,
   CREATE_TARGET_INPUT,
-  UPDATE_TARGET_INPUT
+  UPDATE_TARGET_INPUT,
 > extends CDCHandler {
   sdk: SDK<SOURCE, TARGET, CREATE_TARGET_INPUT, UPDATE_TARGET_INPUT>;
   constructor(

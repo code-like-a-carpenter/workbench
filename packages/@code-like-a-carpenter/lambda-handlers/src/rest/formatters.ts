@@ -116,7 +116,7 @@ export function formatEvent<O extends SimplifiedOperationObject>(
 export function formatSuccessResult<
   O extends SimplifiedOperationObject,
   S extends number & keyof O['responses'],
-  R extends RestResponseBody<O, S>
+  R extends RestResponseBody<O, S>,
 >(result: RestCallbackResult<O, S, R>): APIGatewayProxyResult {
   let body = '';
   if ('body' in result) {

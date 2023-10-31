@@ -157,8 +157,8 @@ ${secondaryIndexes
     .map(
       (field) => `
   if ('${field.fieldName}' in input && typeof input.${
-        field.fieldName
-      } !== 'undefined') {
+    field.fieldName
+  } !== 'undefined') {
     ean['#${field.fieldName}'] = '${field.columnName}';
     eav[':${field.fieldName}'] = ${marshallField(field)};
     updateExpression.push('#${field.fieldName} = :${field.fieldName}');

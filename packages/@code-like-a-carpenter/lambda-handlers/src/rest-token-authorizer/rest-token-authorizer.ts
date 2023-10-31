@@ -8,7 +8,7 @@ import {instrumentRestTokenAuthorizer} from '@code-like-a-carpenter/telemetry';
 import type {RestTokenAuthorizerCallback} from './types';
 
 export function handleRestTokenAuthorizerEvent<
-  TAuthorizerContext extends APIGatewayAuthorizerResultContext
+  TAuthorizerContext extends APIGatewayAuthorizerResultContext,
 >(
   callback: RestTokenAuthorizerCallback<TAuthorizerContext>
 ): APIGatewayTokenAuthorizerWithContextHandler<
@@ -41,7 +41,7 @@ export function handleRestTokenAuthorizerEvent<
 /* Helper function to generate an IAM policy */
 export function generatePolicy<
   E extends 'Allow' | 'Deny',
-  TAuthorizerContext extends APIGatewayAuthorizerResultContext
+  TAuthorizerContext extends APIGatewayAuthorizerResultContext,
 >(
   effect: E,
   resource: string,

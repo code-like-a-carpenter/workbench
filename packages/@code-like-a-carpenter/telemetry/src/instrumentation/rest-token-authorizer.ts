@@ -16,14 +16,14 @@ import {runWithNewSpan} from '../run-with';
 import type {NoVoidHandler} from './types';
 
 type NoVoidAPIGatewayAuthorizerWithContextResult<
-  TAuthorizerContext extends APIGatewayAuthorizerResultContext
+  TAuthorizerContext extends APIGatewayAuthorizerResultContext,
 > = NoVoidHandler<
   APIGatewayTokenAuthorizerEvent,
   APIGatewayAuthorizerWithContextResult<TAuthorizerContext>
 >;
 
 export function instrumentRestTokenAuthorizer<
-  TAuthorizerContext extends APIGatewayAuthorizerResultContext
+  TAuthorizerContext extends APIGatewayAuthorizerResultContext,
 >(
   handler: NoVoidAPIGatewayAuthorizerWithContextResult<TAuthorizerContext>
 ): NoVoidAPIGatewayAuthorizerWithContextResult<TAuthorizerContext> {

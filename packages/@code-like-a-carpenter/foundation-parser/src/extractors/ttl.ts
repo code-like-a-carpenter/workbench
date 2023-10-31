@@ -44,8 +44,8 @@ export function extractTTLConfig(
   type: GraphQLObjectType
 ): TTLConfig | undefined {
   const fields =
-    type.astNode?.fields?.filter((field) =>
-      field.directives?.map(({name}) => name.value).includes('ttl')
+    type.astNode?.fields?.filter(
+      (field) => field.directives?.map(({name}) => name.value).includes('ttl')
     ) ?? [];
   if (fields.length === 0) {
     return undefined;

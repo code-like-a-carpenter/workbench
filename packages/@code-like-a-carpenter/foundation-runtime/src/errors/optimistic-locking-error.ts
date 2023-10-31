@@ -6,7 +6,7 @@ import {BaseDataLibraryError} from './base-error';
  */
 export class OptimisticLockingError<
   PK extends object,
-  TYPENAME extends string
+  TYPENAME extends string,
 > extends BaseDataLibraryError<{primaryKey: PK; typename: TYPENAME}> {
   readonly primaryKey: PK;
   readonly typeName: TYPENAME;

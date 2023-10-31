@@ -69,7 +69,7 @@ export class NotAcceptable<T extends object> extends ClientError<T> {
 
 /** Proxy Authentication Required */
 export class ProxyAuthenticationRequired<
-  T extends object
+  T extends object,
 > extends ClientError<T> {
   code = 407;
 }
@@ -171,14 +171,14 @@ export class TooManyRequests<T extends object> extends ClientError<T> {
 
 /** Request Header Fields Too Large */
 export class RequestHeaderFieldsTooLarge<
-  T extends object
+  T extends object,
 > extends ClientError<T> {
   code = 431;
 }
 
 /** Unavailable For Legal Reasons */
 export class UnavailableForLegalReasons<
-  T extends object
+  T extends object,
 > extends ClientError<T> {
   code = 451;
 }
@@ -235,7 +235,7 @@ export class NotExtended<T extends object> extends ServerError<T> {
 
 /** Network Authentication Required */
 export class NetworkAuthenticationRequired<
-  T extends object
+  T extends object,
 > extends ServerError<T> {
   code = 511;
 }

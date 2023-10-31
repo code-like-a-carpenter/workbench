@@ -74,7 +74,7 @@ exports.writePackageJson = writePackageJson;
  */
 async function writePrettierFile(filename, content) {
   const config = await prettier.resolveConfig(filename);
-  const formatted = prettier.format(content, {
+  const formatted = await prettier.format(content, {
     ...config,
     filepath: filename,
   });
