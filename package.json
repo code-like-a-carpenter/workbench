@@ -30,7 +30,7 @@
     "@commitlint/config-conventional": "^17.4.3",
     "@faker-js/faker": "^7.6.0",
     "@graphql-eslint/eslint-plugin": "^3.20.1",
-    "@graphql-tools/apollo-engine-loader": "^7.3.26",
+    "@graphql-tools/apollo-engine-loader": "^8.0.0",
     "@ianwremmel/eslint-plugin-ianwremmel": "^6.2.2",
     "@jest/types": "^29.4.2",
     "@nrwl/nx-cloud": "^15.3.5",
