@@ -52,14 +52,14 @@ export interface RestCallbackEvent<O extends SimplifiedOperationObject>
 export type RestCallbackResult<
   O extends SimplifiedOperationObject,
   S extends keyof O['responses'],
-  R extends RestResponseBody<O, S>
+  R extends RestResponseBody<O, S>,
 > = Omit<APIGatewayProxyResult, 'body' | 'statusCode'> & R extends never
   ? {statusCode: S}
   : {body: R; statusCode: S};
 
 export type RestResponseBody<
   O extends SimplifiedOperationObject,
-  S extends keyof O['responses'] = keyof O['responses']
+  S extends keyof O['responses'] = keyof O['responses'],
 > = O['responses'][S] extends ContentTypeJson
   ? O['responses'][S]['content']['application/json']
   : never;
@@ -67,7 +67,7 @@ export type RestResponseBody<
 export type RestCallback<
   O extends SimplifiedOperationObject,
   S extends number & keyof O['responses'] = number & keyof O['responses'],
-  R extends RestResponseBody<O, S> = RestResponseBody<O, S>
+  R extends RestResponseBody<O, S> = RestResponseBody<O, S>,
 > = (
   event: RestCallbackEvent<O>,
   context: Context

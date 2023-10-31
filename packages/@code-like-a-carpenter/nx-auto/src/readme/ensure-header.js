@@ -45,9 +45,8 @@ function ensureHeader({pkg}) {
       );
     }
 
-    const {badges, shortDescription} = await getBadgesAndShortDescription(
-      header
-    );
+    const {badges, shortDescription} =
+      await getBadgesAndShortDescription(header);
 
     assert(pkg.description, 'Package description is required');
     shortDescription.children = [

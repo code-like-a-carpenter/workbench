@@ -26,7 +26,7 @@ export function makeEnricher<
   SOURCE,
   TARGET,
   CREATE_TARGET_INPUT,
-  UPDATE_TARGET_INPUT
+  UPDATE_TARGET_INPUT,
 >(
   constructor: EnricherConstructor<
     SOURCE,
@@ -47,7 +47,7 @@ export interface EnricherConstructor<
   SOURCE,
   TARGET,
   CREATE_TARGET_INPUT,
-  UPDATE_TARGET_INPUT
+  UPDATE_TARGET_INPUT,
 > {
   new (
     sdk: SDK<SOURCE, TARGET, CREATE_TARGET_INPUT, UPDATE_TARGET_INPUT>
@@ -58,7 +58,7 @@ export abstract class Enricher<
   SOURCE,
   TARGET,
   CREATE_TARGET_INPUT,
-  UPDATE_TARGET_INPUT
+  UPDATE_TARGET_INPUT,
 > extends CDCHandler {
   sdk: SDK<SOURCE, TARGET, CREATE_TARGET_INPUT, UPDATE_TARGET_INPUT>;
 

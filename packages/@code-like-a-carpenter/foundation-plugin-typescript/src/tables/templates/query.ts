@@ -134,9 +134,9 @@ export async function query${typeName}ByNodeId(id: Scalars['ID']): Promise<Reado
     // @ts-ignore - TSC will usually see this as an error because it determined
     // that primaryKey is the no-sort-fields-specified version of the type.
     primaryKey.${field.fieldName} = ${fieldStringToFieldType(
-        field,
-        `primaryKeyValues[${primaryKey.partitionKeyFields.length + index + 3}]`
-      )};
+      field,
+      `primaryKeyValues[${primaryKey.partitionKeyFields.length + index + 3}]`
+    )};
   }
  `
     )
@@ -321,8 +321,8 @@ function compositeKeyValues({
   return `{
     ':pk': ${pkFragment},
     ':sk': makeSortKeyForQuery('${skPrefix}', [${skFields.map(
-    ({fieldName}) => `'${fieldName}'`
-  )}], input)
+      ({fieldName}) => `'${fieldName}'`
+    )}], input)
   }`;
 }
 

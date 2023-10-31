@@ -29,7 +29,7 @@ export function withTelemetry<
     | APIGatewayProxyResult
     | APIGatewayAuthorizerResult
     | DynamoDBStreamHandlerResult
-    | void
+    | void,
 >(
   name: string,
   options: SpanOptions,

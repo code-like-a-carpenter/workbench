@@ -4,7 +4,7 @@ export abstract class FieldProvider<MODEL, FIELD_NAME extends keyof MODEL> {
 
 export interface FieldProviderConstructor<
   MODEL,
-  FIELD_NAME extends keyof MODEL
+  FIELD_NAME extends keyof MODEL,
 > {
   new (): FieldProvider<MODEL, FIELD_NAME>;
 }

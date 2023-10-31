@@ -24,7 +24,7 @@ export function makeMultiReducer<
   SOURCE,
   TARGET,
   CREATE_TARGET_INPUT extends object,
-  UPDATE_TARGET_INPUT extends object
+  UPDATE_TARGET_INPUT extends object,
 >(
   constructor: MultiReducerConstructor<
     SOURCE,
@@ -44,7 +44,7 @@ export interface MultiReducerConstructor<
   SOURCE,
   TARGET,
   CREATE_TARGET_INPUT extends object,
-  UPDATE_TARGET_INPUT extends object
+  UPDATE_TARGET_INPUT extends object,
 > {
   new (
     sdk: SDK<SOURCE, TARGET, CREATE_TARGET_INPUT, UPDATE_TARGET_INPUT>
@@ -55,7 +55,7 @@ export abstract class MultiReducer<
   SOURCE,
   TARGET,
   CREATE_TARGET_INPUT extends object,
-  UPDATE_TARGET_INPUT extends object
+  UPDATE_TARGET_INPUT extends object,
 > extends CDCHandler {
   sdk: SDK<SOURCE, TARGET, CREATE_TARGET_INPUT, UPDATE_TARGET_INPUT>;
 

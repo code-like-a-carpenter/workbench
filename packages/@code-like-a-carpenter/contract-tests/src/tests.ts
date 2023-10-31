@@ -74,10 +74,13 @@ async function runAssertions(
 export function unwrapHeaders(headers: Headers) {
   // @ts-expect-error - Docs says entries exists, even if node types don't.
   const entries = headers.entries();
-  return [...entries].reduce((acc, [name, value]) => {
-    acc[name] = value;
-    return acc;
-  }, {} as Record<string, string>);
+  return [...entries].reduce(
+    (acc, [name, value]) => {
+      acc[name] = value;
+      return acc;
+    },
+    {} as Record<string, string>
+  );
 }
 
 async function buildHeaders(request: TransactionRequest): Promise<Headers> {
@@ -100,10 +103,13 @@ function transactionResponseToHTTPMessage({
   return {
     body: response.body,
     bodySchema: response.schema ? JSON.parse(response.schema) : undefined,
-    headers: response.headers.reduce((acc, {name: headerName, value}) => {
-      acc[headerName] = value;
-      return acc;
-    }, {} as Record<string, string>),
+    headers: response.headers.reduce(
+      (acc, {name: headerName, value}) => {
+        acc[headerName] = value;
+        return acc;
+      },
+      {} as Record<string, string>
+    ),
     statusCode: Number(response.status),
   };
 }
