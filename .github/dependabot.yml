@@ -15,15 +15,17 @@ updates:
       babel:
         patterns:
           - '*babel*'
-      eslint:
-        patterns:
-          - '*eslint*'
       jest:
         patterns:
           - '*jest*'
       graphql:
         patterns:
           - '*graphql*'
+      linters:
+        patterns:
+          - '*eslint*'
+          - '*prettier*'
+          - '*typescript*'
       remix:
         patterns:
           - '*remix*'
