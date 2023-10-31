@@ -4,7 +4,6 @@
   "dependencies": {
     "depcheck": "^1.4.3",
     "glob": "^8.1.0",
-    "prettier": "^2.8.4",
     "remark": "^14.0.2",
     "remark-stringify": "^10.0.2",
     "remark-toc": "^8.0.1",
@@ -16,7 +15,8 @@
     "@schemastore/tsconfig": "^0.0.10",
     "@types/glob": "^8.0.1",
     "@types/prettier": "^2.7.2",
-    "@types/yargs": "^17.0.22"
+    "@types/yargs": "^17.0.22",
+    "prettier": "^3.0.3"
   },
   "private": true
 }
