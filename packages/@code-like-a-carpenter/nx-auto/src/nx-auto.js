@@ -228,9 +228,9 @@ function configureExample(projectFilePath) {
           parallel: false,
         },
         outputs: [
-          `${projectRoot}/src/__generated__/graphql.ts`,
-          `${projectRoot}/src/__generated__/template.yml`,
-          `${projectRoot}/src/__generated__/**/*`,
+          '{projectRoot}/src/__generated__/graphql.ts',
+          '{projectRoot}/src/__generated__/template.yml',
+          '{projectRoot}/src/__generated__/**/*',
         ],
       },
     };
