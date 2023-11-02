@@ -27,7 +27,7 @@
     "@code-like-a-carpenter/foundation-intermediate-representation": "*",
     "@code-like-a-carpenter/foundation-parser": "*",
     "@code-like-a-carpenter/graphql-codegen-helpers": "*",
-    "@graphql-codegen/plugin-helpers": "^4.2.0",
+    "@graphql-codegen/plugin-helpers": "^5.0.1",
     "js-yaml": "^4.1.0",
     "js-yaml-cloudformation-schema": "^1.0.0",
     "lodash": "^4.17.21",
