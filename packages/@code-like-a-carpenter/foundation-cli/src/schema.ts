@@ -4,6 +4,7 @@ import path from 'node:path';
 import type {AddToSchemaResult} from '@graphql-codegen/plugin-helpers';
 import {getCachedDocumentNodeFromSchema} from '@graphql-codegen/plugin-helpers';
 import {mergeSchemas} from '@graphql-tools/schema';
+import {globSync} from 'glob';
 import type {DocumentNode, GraphQLSchema} from 'graphql';
 import {
   buildASTSchema,
@@ -12,8 +13,6 @@ import {
   parse,
   Source,
 } from 'graphql';
-
-import {multiglob} from '@code-like-a-carpenter/multiglob';
 
 function getDocumentNodeFromAddToSchemaResult(
   a: AddToSchemaResult
@@ -48,7 +47,7 @@ export async function loadSchema(
   const initialSchema = makeInitialSchema(addToSchemaResults);
 
   const patterns = Array.isArray(schemaGlob) ? schemaGlob : [schemaGlob];
-  const files = multiglob(patterns, {cwd});
+  const files = globSync(patterns, {cwd});
 
   const sources = files.map(
     (file) => new Source(readFileSync(path.resolve(cwd, file), 'utf8'), file)

@@ -1,7 +1,7 @@
 import assert from 'node:assert';
 
 import type {Config} from '@jest/types';
-import glob from 'glob';
+import {globSync} from 'glob';
 // For a detailed explanation regarding each configuration property, visit:
 // https://jestjs.io/docs/en/configuration.html
 
@@ -43,7 +43,7 @@ const config: Config.GlobalConfig = {
       ...commonProjectConfig,
       displayName: 'Unit Tests',
       testMatch: workspaces
-        .flatMap((ws) => glob.sync(ws))
+        .flatMap((ws) => globSync(ws))
         .filter((packagePath) => !packagePath.includes('example'))
         .flatMap((packagePath) => [
           `<rootDir>/${packagePath}/**/?(*.)+(test).[tj]s?(x)`,
@@ -55,7 +55,7 @@ const config: Config.GlobalConfig = {
       displayName: 'Examples',
       testEnvironment: './jest.d/environments/example.ts',
       testMatch: workspaces
-        .flatMap((ws) => glob.sync(ws))
+        .flatMap((ws) => globSync(ws))
         .filter((packagePath) => packagePath.includes('example'))
         .filter(
           (packagePath) =>

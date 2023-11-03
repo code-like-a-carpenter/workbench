@@ -13,7 +13,6 @@
   "devDependencies": {
     "@schemastore/package": "^0.0.8",
     "@schemastore/tsconfig": "^0.0.10",
-    "@types/glob": "^8.0.1",
     "@types/prettier": "^2.7.2",
     "@types/yargs": "^17.0.22",
     "prettier": "^3.0.3"

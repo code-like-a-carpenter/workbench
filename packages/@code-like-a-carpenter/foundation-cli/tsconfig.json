@@ -17,9 +17,6 @@
     },
     {
       "path": "../foundation-transform-environment"
-    },
-    {
-      "path": "../multiglob"
     }
   ]
 }
