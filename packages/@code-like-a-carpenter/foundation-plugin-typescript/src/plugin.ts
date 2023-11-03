@@ -11,10 +11,6 @@ import {filterNull} from './helpers';
 import {blindWriteTemplate} from './tables/templates/blind-write';
 import {createItemTemplate} from './tables/templates/create-item';
 import {deleteItemTemplate} from './tables/templates/delete-item';
-import {
-  getTypeScriptTypeForField,
-  objectToString,
-} from './tables/templates/helpers';
 import {marshallTpl} from './tables/templates/marshall';
 import {queryTemplate} from './tables/templates/query';
 import {readItemTemplate} from './tables/templates/read-item';
@@ -56,19 +52,18 @@ ${models
     }
 
     return [
-      `export interface ${model.typeName}PrimaryKey ${objectToString(
-        Object.fromEntries(
-          (model.primaryKey.isComposite
-            ? [
-                ...model.primaryKey.partitionKeyFields,
-                ...model.primaryKey.sortKeyFields,
-              ]
-            : model.primaryKey.partitionKeyFields
-          )
-            .map(getTypeScriptTypeForField)
-            .sort()
-        )
-      )}`,
+      `export type ${model.typeName}PrimaryKey = Pick<${
+        model.typeName
+      }, ${(model.primaryKey.isComposite
+        ? [
+            ...model.primaryKey.partitionKeyFields,
+            ...model.primaryKey.sortKeyFields,
+          ]
+        : model.primaryKey.partitionKeyFields
+      )
+        .map((f) => `'${f.fieldName}'`)
+        .sort()
+        .join('|')}>`,
       createItemTemplate(config, model),
       !model.isLedger &&
         !hasPublicIdInPrimaryKey &&
