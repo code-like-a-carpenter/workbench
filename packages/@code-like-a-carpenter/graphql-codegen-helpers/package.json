@@ -3,7 +3,7 @@
   "description": "Smallish functions used by all workbench graphql-codegen plugins",
   "dependencies": {
     "@graphql-codegen/plugin-helpers": "^5.0.1",
-    "zod": "^3.21.4"
+    "zod": "^3.22.4"
   },
   "author": "Ian Remmel <1182361+ianwremmel@users.noreply.github.com> (https://www.ianwremmel.com)",
   "bugs": "https://www.github.com/code-like-a-carpenter/workbench/issues",
