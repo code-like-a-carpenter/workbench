@@ -3,7 +3,7 @@
   "main": "./src/index.js",
   "dependencies": {
     "depcheck": "^1.4.3",
-    "glob": "^8.1.0",
+    "glob": "^10.3.10",
     "remark": "^14.0.2",
     "remark-stringify": "^10.0.2",
     "remark-toc": "^8.0.1",
