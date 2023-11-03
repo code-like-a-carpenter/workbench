@@ -10,5 +10,5 @@ runs:
     - uses: nrwl/nx-set-shas@v4
     - run: npm ci
       shell: bash
-    - run: npx --no-install nx run-many --target=build --parallel=4
+    - run: make
       shell: bash

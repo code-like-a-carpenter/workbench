@@ -17,13 +17,13 @@ export function getTypeScriptTypeForField({
 }: Field): [string, string] {
   if (isRequired) {
     if (isScalar) {
-      return [fieldName, `Scalars["${typeName}"]`];
+      return [fieldName, `Scalars["${typeName}"]['input']`];
     }
     return [fieldName, typeName];
   }
 
   if (isScalar) {
-    return [`${fieldName}?`, `Maybe<Scalars["${typeName}"]>`];
+    return [`${fieldName}?`, `Maybe<Scalars["${typeName}"]['input']>`];
   }
 
   return [`${fieldName}?`, `Maybe<${typeName}>`];

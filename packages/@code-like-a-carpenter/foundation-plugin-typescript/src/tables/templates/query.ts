@@ -112,7 +112,7 @@ export async function query${typeName}(input: Readonly<Query${typeName}Input>, {
 }
 
 /** queries the ${typeName} table by primary key using a node id */
-export async function query${typeName}ByNodeId(id: Scalars['ID']): Promise<Readonly<Omit<ResultType<${typeName}>, 'metrics'>>> {
+export async function query${typeName}ByNodeId(id: Scalars['ID']['input']): Promise<Readonly<Omit<ResultType<${typeName}>, 'metrics'>>> {
   const primaryKeyValues = Base64.decode(id).split(':').slice(1).join(':').split('#');
 
   const primaryKey: Query${typeName}Input = {
@@ -154,7 +154,7 @@ ${
   isPublic
     ? `
 /** queries the ${typeName} table by primary key using a node id */
-export async function query${typeName}ByPublicId(publicId: Scalars['String']): Promise<Readonly<Omit<ResultType<${typeName}>, 'metrics'>>> {
+export async function query${typeName}ByPublicId(publicId: Scalars['String']['input']): Promise<Readonly<Omit<ResultType<${typeName}>, 'metrics'>>> {
   const {capacity, items} = await query${typeName}({index: 'publicId', publicId});
 
   assert(items.length > 0, () => new NotFoundError('${typeName}', {publicId}));

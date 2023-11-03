@@ -48,17 +48,23 @@ export type MakeOptional<T, K extends keyof T> = Omit<T, K> & {
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & {
   [SubKey in K]: Maybe<T[SubKey]>;
 };
+export type MakeEmpty<T extends {[key: string]: unknown}, K extends keyof T> = {
+  [_ in K]?: never;
+};
+export type Incremental<T> =
+  | T
+  | {[P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never};
 /** All built-in and custom scalars, mapped to their actual values */
 export interface Scalars {
-  ID: string;
-  String: string;
-  Boolean: boolean;
-  Int: number;
-  Float: number;
+  ID: {input: string; output: string};
+  String: {input: string; output: string};
+  Boolean: {input: boolean; output: boolean};
+  Int: {input: number; output: number};
+  Float: {input: number; output: number};
   /** JavaScript Date stored as a Number in DynamoDB */
-  Date: Date;
+  Date: {input: Date; output: Date};
   /** Arbitrary JSON stored as a Map in DynamoDB */
-  JSONObject: Record<string, unknown>;
+  JSONObject: {input: Record<string, unknown>; output: Record<string, unknown>};
 }
 
 /** A customer account. */
@@ -66,19 +72,19 @@ export type Account = Model &
   Timestamped &
   Versioned & {
     __typename?: 'Account';
-    cancelled: Scalars['Boolean'];
-    createdAt: Scalars['Date'];
-    effectiveDate: Scalars['Date'];
-    externalId: Scalars['String'];
-    hasEverSubscribed?: Maybe<Scalars['Boolean']>;
-    id: Scalars['ID'];
-    indexedPlanName?: Maybe<Scalars['String']>;
-    lastPlanName?: Maybe<Scalars['String']>;
-    monthlyPriceInCents?: Maybe<Scalars['Int']>;
-    onFreeTrial: Scalars['Boolean'];
-    planName?: Maybe<Scalars['String']>;
-    updatedAt: Scalars['Date'];
-    version: Scalars['Int'];
+    cancelled: Scalars['Boolean']['output'];
+    createdAt: Scalars['Date']['output'];
+    effectiveDate: Scalars['Date']['output'];
+    externalId: Scalars['String']['output'];
+    hasEverSubscribed?: Maybe<Scalars['Boolean']['output']>;
+    id: Scalars['ID']['output'];
+    indexedPlanName?: Maybe<Scalars['String']['output']>;
+    lastPlanName?: Maybe<Scalars['String']['output']>;
+    monthlyPriceInCents?: Maybe<Scalars['Int']['output']>;
+    onFreeTrial: Scalars['Boolean']['output'];
+    planName?: Maybe<Scalars['String']['output']>;
+    updatedAt: Scalars['Date']['output'];
+    version: Scalars['Int']['output'];
   };
 
 /** CDC Event Types */
@@ -100,14 +106,14 @@ export interface HandlerConfig {
 /** Reusable options for all generated lambdas */
 export interface LambdaConfig {
   /** Measured in megabytes. */
-  memory?: InputMaybe<Scalars['Int']>;
+  memory?: InputMaybe<Scalars['Int']['input']>;
   /**
    * Measured in seconds. Reminder that handlers may need to do retries in-band, so
    * consider making this a relatively high number and using alarms to catch
    * timeouts rather than terminating the function. In order to make space for up
    * to 5 retries, please add sixty seconds to your intended timeout.
    */
-  timeout?: InputMaybe<Scalars['Int']>;
+  timeout?: InputMaybe<Scalars['Int']['input']>;
 }
 
 /** A summary of all accounts. */
@@ -115,13 +121,13 @@ export type Metric = Model &
   Timestamped &
   Versioned & {
     __typename?: 'Metric';
-    count: Scalars['Int'];
-    createdAt: Scalars['Date'];
-    id: Scalars['ID'];
-    monthlyRecurringRevenueInCents: Scalars['Int'];
-    onFreeTrial: Scalars['Boolean'];
-    updatedAt: Scalars['Date'];
-    version: Scalars['Int'];
+    count: Scalars['Int']['output'];
+    createdAt: Scalars['Date']['output'];
+    id: Scalars['ID']['output'];
+    monthlyRecurringRevenueInCents: Scalars['Int']['output'];
+    onFreeTrial: Scalars['Boolean']['output'];
+    updatedAt: Scalars['Date']['output'];
+    version: Scalars['Int']['output'];
   };
 
 /**
@@ -134,10 +140,10 @@ export type Metric = Model &
  * differently.
  */
 export interface Model {
-  createdAt: Scalars['Date'];
-  id: Scalars['ID'];
-  updatedAt: Scalars['Date'];
-  version: Scalars['Int'];
+  createdAt: Scalars['Date']['output'];
+  id: Scalars['ID']['output'];
+  updatedAt: Scalars['Date']['output'];
+  version: Scalars['Int']['output'];
 }
 
 /** A summary of all the accounts on a particular plan. */
@@ -145,15 +151,15 @@ export type PlanMetric = Model &
   Timestamped &
   Versioned & {
     __typename?: 'PlanMetric';
-    cancelled: Scalars['Boolean'];
-    count: Scalars['Int'];
-    createdAt: Scalars['Date'];
-    id: Scalars['ID'];
-    monthlyRecurringRevenueInCents: Scalars['Int'];
-    onFreeTrial: Scalars['Boolean'];
-    planName?: Maybe<Scalars['String']>;
-    updatedAt: Scalars['Date'];
-    version: Scalars['Int'];
+    cancelled: Scalars['Boolean']['output'];
+    count: Scalars['Int']['output'];
+    createdAt: Scalars['Date']['output'];
+    id: Scalars['ID']['output'];
+    monthlyRecurringRevenueInCents: Scalars['Int']['output'];
+    onFreeTrial: Scalars['Boolean']['output'];
+    planName?: Maybe<Scalars['String']['output']>;
+    updatedAt: Scalars['Date']['output'];
+    version: Scalars['Int']['output'];
   };
 
 /**
@@ -169,11 +175,11 @@ export type ProjectionType = 'ALL' | 'KEYS_ONLY';
  * the dependencies module must include an `idGenerator()`.
  */
 export interface PublicModel {
-  createdAt: Scalars['Date'];
-  id: Scalars['ID'];
-  publicId: Scalars['String'];
-  updatedAt: Scalars['Date'];
-  version: Scalars['Int'];
+  createdAt: Scalars['Date']['output'];
+  id: Scalars['ID']['output'];
+  publicId: Scalars['String']['output'];
+  updatedAt: Scalars['Date']['output'];
+  version: Scalars['Int']['output'];
 }
 
 /** An event describing a change to a customer's subscription status. */
@@ -181,16 +187,16 @@ export type SubscriptionEvent = Model &
   Timestamped &
   Versioned & {
     __typename?: 'SubscriptionEvent';
-    cancelled: Scalars['Boolean'];
-    createdAt: Scalars['Date'];
-    effectiveDate: Scalars['Date'];
-    externalId: Scalars['String'];
-    id: Scalars['ID'];
-    monthlyPriceInCents: Scalars['Int'];
-    onFreeTrial: Scalars['Boolean'];
-    planName?: Maybe<Scalars['String']>;
-    updatedAt: Scalars['Date'];
-    version: Scalars['Int'];
+    cancelled: Scalars['Boolean']['output'];
+    createdAt: Scalars['Date']['output'];
+    effectiveDate: Scalars['Date']['output'];
+    externalId: Scalars['String']['output'];
+    id: Scalars['ID']['output'];
+    monthlyPriceInCents: Scalars['Int']['output'];
+    onFreeTrial: Scalars['Boolean']['output'];
+    planName?: Maybe<Scalars['String']['output']>;
+    updatedAt: Scalars['Date']['output'];
+    version: Scalars['Int']['output'];
   };
 
 /**
@@ -200,9 +206,9 @@ export type SubscriptionEvent = Model &
  */
 export interface Timestamped {
   /** Set automatically when the item is first written */
-  createdAt: Scalars['Date'];
+  createdAt: Scalars['Date']['output'];
   /** Set automatically when the item is updated */
-  updatedAt: Scalars['Date'];
+  updatedAt: Scalars['Date']['output'];
 }
 
 /**
@@ -211,12 +217,10 @@ export interface Timestamped {
  * order to make updates.
  */
 export interface Versioned {
-  version: Scalars['Int'];
+  version: Scalars['Int']['output'];
 }
 
-export interface AccountPrimaryKey {
-  externalId: Scalars['String'];
-}
+export type AccountPrimaryKey = Pick<Account, 'externalId'>;
 
 export type CreateAccountInput = Omit<
   Account,
@@ -643,18 +647,18 @@ export async function updateAccount(
 }
 
 export type QueryAccountInput =
-  | {externalId: Scalars['String']}
-  | {index: 'gsi1'; hasEverSubscribed?: Maybe<Scalars['Boolean']>}
+  | {externalId: Scalars['String']['input']}
+  | {index: 'gsi1'; hasEverSubscribed?: Maybe<Scalars['Boolean']['input']>}
   | {
       index: 'gsi1';
-      cancelled: Scalars['Boolean'];
-      hasEverSubscribed?: Maybe<Scalars['Boolean']>;
+      cancelled: Scalars['Boolean']['input'];
+      hasEverSubscribed?: Maybe<Scalars['Boolean']['input']>;
     }
   | {
       index: 'gsi1';
-      cancelled: Scalars['Boolean'];
-      hasEverSubscribed?: Maybe<Scalars['Boolean']>;
-      indexedPlanName?: Maybe<Scalars['String']>;
+      cancelled: Scalars['Boolean']['input'];
+      hasEverSubscribed?: Maybe<Scalars['Boolean']['input']>;
+      indexedPlanName?: Maybe<Scalars['String']['input']>;
     };
 export type QueryAccountOutput = MultiResultType<Account>;
 
@@ -791,7 +795,7 @@ export async function queryAccount(
 
 /** queries the Account table by primary key using a node id */
 export async function queryAccountByNodeId(
-  id: Scalars['ID']
+  id: Scalars['ID']['input']
 ): Promise<Readonly<Omit<ResultType<Account>, 'metrics'>>> {
   const primaryKeyValues = Base64.decode(id)
     .split(':')
@@ -1004,9 +1008,7 @@ export function unmarshallAccount(item: Record<string, any>): Account {
   return result;
 }
 
-export interface MetricPrimaryKey {
-  onFreeTrial: Scalars['Boolean'];
-}
+export type MetricPrimaryKey = Pick<Metric, 'onFreeTrial'>;
 
 export type CreateMetricInput = Omit<
   Metric,
@@ -1390,7 +1392,7 @@ export async function updateMetric(
   }
 }
 
-export type QueryMetricInput = {} | {onFreeTrial: Scalars['Boolean']};
+export type QueryMetricInput = {} | {onFreeTrial: Scalars['Boolean']['input']};
 export type QueryMetricOutput = MultiResultType<Metric>;
 
 function makeEanForQueryMetric(
@@ -1506,7 +1508,7 @@ export async function queryMetric(
 
 /** queries the Metric table by primary key using a node id */
 export async function queryMetricByNodeId(
-  id: Scalars['ID']
+  id: Scalars['ID']['input']
 ): Promise<Readonly<Omit<ResultType<Metric>, 'metrics'>>> {
   const primaryKeyValues = Base64.decode(id)
     .split(':')
@@ -1618,11 +1620,10 @@ export function unmarshallMetric(item: Record<string, any>): Metric {
   return result;
 }
 
-export interface PlanMetricPrimaryKey {
-  cancelled: Scalars['Boolean'];
-  onFreeTrial: Scalars['Boolean'];
-  planName?: Maybe<Scalars['String']>;
-}
+export type PlanMetricPrimaryKey = Pick<
+  PlanMetric,
+  'cancelled' | 'onFreeTrial' | 'planName'
+>;
 
 export type CreatePlanMetricInput = Omit<
   PlanMetric,
@@ -2031,12 +2032,15 @@ export async function updatePlanMetric(
 
 export type QueryPlanMetricInput =
   | {}
-  | {cancelled: Scalars['Boolean']}
-  | {cancelled: Scalars['Boolean']; onFreeTrial: Scalars['Boolean']}
+  | {cancelled: Scalars['Boolean']['input']}
   | {
-      cancelled: Scalars['Boolean'];
-      onFreeTrial: Scalars['Boolean'];
-      planName?: Maybe<Scalars['String']>;
+      cancelled: Scalars['Boolean']['input'];
+      onFreeTrial: Scalars['Boolean']['input'];
+    }
+  | {
+      cancelled: Scalars['Boolean']['input'];
+      onFreeTrial: Scalars['Boolean']['input'];
+      planName?: Maybe<Scalars['String']['input']>;
     };
 export type QueryPlanMetricOutput = MultiResultType<PlanMetric>;
 
@@ -2159,7 +2163,7 @@ export async function queryPlanMetric(
 
 /** queries the PlanMetric table by primary key using a node id */
 export async function queryPlanMetricByNodeId(
-  id: Scalars['ID']
+  id: Scalars['ID']['input']
 ): Promise<Readonly<Omit<ResultType<PlanMetric>, 'metrics'>>> {
   const primaryKeyValues = Base64.decode(id)
     .split(':')
@@ -2308,10 +2312,10 @@ export function unmarshallPlanMetric(item: Record<string, any>): PlanMetric {
   return result;
 }
 
-export interface SubscriptionEventPrimaryKey {
-  effectiveDate: Scalars['Date'];
-  externalId: Scalars['String'];
-}
+export type SubscriptionEventPrimaryKey = Pick<
+  SubscriptionEvent,
+  'effectiveDate' | 'externalId'
+>;
 
 export type CreateSubscriptionEventInput = Omit<
   SubscriptionEvent,
@@ -2475,8 +2479,11 @@ export async function readSubscriptionEvent(
 }
 
 export type QuerySubscriptionEventInput =
-  | {externalId: Scalars['String']}
-  | {effectiveDate: Scalars['Date']; externalId: Scalars['String']};
+  | {externalId: Scalars['String']['input']}
+  | {
+      effectiveDate: Scalars['Date']['input'];
+      externalId: Scalars['String']['input'];
+    };
 export type QuerySubscriptionEventOutput = MultiResultType<SubscriptionEvent>;
 
 function makeEanForQuerySubscriptionEvent(
@@ -2600,7 +2607,7 @@ export async function querySubscriptionEvent(
 
 /** queries the SubscriptionEvent table by primary key using a node id */
 export async function querySubscriptionEventByNodeId(
-  id: Scalars['ID']
+  id: Scalars['ID']['input']
 ): Promise<Readonly<Omit<ResultType<SubscriptionEvent>, 'metrics'>>> {
   const primaryKeyValues = Base64.decode(id)
     .split(':')

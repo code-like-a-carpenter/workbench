@@ -45,17 +45,23 @@ export type MakeOptional<T, K extends keyof T> = Omit<T, K> & {
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & {
   [SubKey in K]: Maybe<T[SubKey]>;
 };
+export type MakeEmpty<T extends {[key: string]: unknown}, K extends keyof T> = {
+  [_ in K]?: never;
+};
+export type Incremental<T> =
+  | T
+  | {[P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never};
 /** All built-in and custom scalars, mapped to their actual values */
 export interface Scalars {
-  ID: string;
-  String: string;
-  Boolean: boolean;
-  Int: number;
-  Float: number;
+  ID: {input: string; output: string};
+  String: {input: string; output: string};
+  Boolean: {input: boolean; output: boolean};
+  Int: {input: number; output: number};
+  Float: {input: number; output: number};
   /** JavaScript Date stored as a Number in DynamoDB */
-  Date: Date;
+  Date: {input: Date; output: Date};
   /** Arbitrary JSON stored as a Map in DynamoDB */
-  JSONObject: Record<string, unknown>;
+  JSONObject: {input: Record<string, unknown>; output: Record<string, unknown>};
 }
 
 /** CDC Event Types */
@@ -77,14 +83,14 @@ export interface HandlerConfig {
 /** Reusable options for all generated lambdas */
 export interface LambdaConfig {
   /** Measured in megabytes. */
-  memory?: InputMaybe<Scalars['Int']>;
+  memory?: InputMaybe<Scalars['Int']['input']>;
   /**
    * Measured in seconds. Reminder that handlers may need to do retries in-band, so
    * consider making this a relatively high number and using alarms to catch
    * timeouts rather than terminating the function. In order to make space for up
    * to 5 retries, please add sixty seconds to your intended timeout.
    */
-  timeout?: InputMaybe<Scalars['Int']>;
+  timeout?: InputMaybe<Scalars['Int']['input']>;
 }
 
 /**
@@ -97,10 +103,10 @@ export interface LambdaConfig {
  * differently.
  */
 export interface Model {
-  createdAt: Scalars['Date'];
-  id: Scalars['ID'];
-  updatedAt: Scalars['Date'];
-  version: Scalars['Int'];
+  createdAt: Scalars['Date']['output'];
+  id: Scalars['ID']['output'];
+  updatedAt: Scalars['Date']['output'];
+  version: Scalars['Int']['output'];
 }
 
 /**
@@ -116,11 +122,11 @@ export type ProjectionType = 'ALL' | 'KEYS_ONLY';
  * the dependencies module must include an `idGenerator()`.
  */
 export interface PublicModel {
-  createdAt: Scalars['Date'];
-  id: Scalars['ID'];
-  publicId: Scalars['String'];
-  updatedAt: Scalars['Date'];
-  version: Scalars['Int'];
+  createdAt: Scalars['Date']['output'];
+  id: Scalars['ID']['output'];
+  publicId: Scalars['String']['output'];
+  updatedAt: Scalars['Date']['output'];
+  version: Scalars['Int']['output'];
 }
 
 /**
@@ -130,9 +136,9 @@ export interface PublicModel {
  */
 export interface Timestamped {
   /** Set automatically when the item is first written */
-  createdAt: Scalars['Date'];
+  createdAt: Scalars['Date']['output'];
   /** Set automatically when the item is updated */
-  updatedAt: Scalars['Date'];
+  updatedAt: Scalars['Date']['output'];
 }
 
 /** A user session object. */
@@ -140,17 +146,17 @@ export type UserSession = Model &
   Timestamped &
   Versioned & {
     __typename?: 'UserSession';
-    createdAt: Scalars['Date'];
-    expires: Scalars['Date'];
-    id: Scalars['ID'];
-    session: Scalars['JSONObject'];
+    createdAt: Scalars['Date']['output'];
+    expires: Scalars['Date']['output'];
+    id: Scalars['ID']['output'];
+    session: Scalars['JSONObject']['output'];
     /**
      * Since `id` is a reserved field, sessionId is the field we'll use to inject a
      * random uuid, which the underlying system will use as the basis for `id`.
      */
-    sessionId: Scalars['String'];
-    updatedAt: Scalars['Date'];
-    version: Scalars['Int'];
+    sessionId: Scalars['String']['output'];
+    updatedAt: Scalars['Date']['output'];
+    version: Scalars['Int']['output'];
   };
 
 /**
@@ -159,12 +165,10 @@ export type UserSession = Model &
  * order to make updates.
  */
 export interface Versioned {
-  version: Scalars['Int'];
+  version: Scalars['Int']['output'];
 }
 
-export interface UserSessionPrimaryKey {
-  sessionId: Scalars['String'];
-}
+export type UserSessionPrimaryKey = Pick<UserSession, 'sessionId'>;
 
 export type CreateUserSessionInput = Omit<
   UserSession,

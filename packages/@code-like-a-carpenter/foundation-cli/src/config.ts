@@ -6,8 +6,14 @@ import {ConfigSchema as FoundationTypescriptPluginConfigSchema} from '@code-like
 export const TypescriptPluginConfigSchema = z.any().default({
   enumsAsTypes: true,
   scalars: {
-    Date: 'Date',
-    JSONObject: 'Record<string, unknown>',
+    Date: {
+      input: 'Date',
+      output: 'Date',
+    },
+    JSONObject: {
+      input: 'Record<string, unknown>',
+      output: 'Record<string, unknown>',
+    },
   },
   strictScalars: true,
 });

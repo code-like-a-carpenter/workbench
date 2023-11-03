@@ -20,70 +20,67 @@
   ],
   "references": [
     {
-      "path": "packages/@code-like-a-carpenter/assert"
-    },
-    {
-      "path": "packages/@code-like-a-carpenter/aws-env-loader"
-    },
-    {
-      "path": "packages/@code-like-a-carpenter/contract-tests"
-    },
-    {
-      "path": "packages/@code-like-a-carpenter/dotenv"
-    },
-    {
-      "path": "packages/@code-like-a-carpenter/env"
-    },
-    {
-      "path": "packages/@code-like-a-carpenter/errors"
-    },
-    {
-      "path": "packages/@code-like-a-carpenter/exception"
-    },
-    {
-      "path": "packages/@code-like-a-carpenter/foundation-cli"
-    },
-    {
-      "path": "packages/@code-like-a-carpenter/foundation-intermediate-representation"
-    },
-    {
-      "path": "packages/@code-like-a-carpenter/foundation-parser"
-    },
-    {
-      "path": "packages/@code-like-a-carpenter/foundation-plugin-cloudformation"
-    },
-    {
-      "path": "packages/@code-like-a-carpenter/foundation-plugin-typescript"
-    },
-    {
-      "path": "packages/@code-like-a-carpenter/foundation-runtime"
-    },
-    {
-      "path": "packages/@code-like-a-carpenter/foundation-transform-environment"
-    },
-    {
-      "path": "packages/@code-like-a-carpenter/graphql-codegen-helpers"
-    },
-    {
-      "path": "packages/@code-like-a-carpenter/interact"
-    },
-    {
-      "path": "packages/@code-like-a-carpenter/lambda-handlers"
-    },
-    {
-      "path": "packages/@code-like-a-carpenter/logger"
-    },
-    {
-      "path": "packages/@code-like-a-carpenter/multiglob"
-    },
-    {
-      "path": "packages/@code-like-a-carpenter/parallel"
+      "path": "packages/@code-like-a-carpenter/wait-for"
     },
     {
       "path": "packages/@code-like-a-carpenter/telemetry"
     },
     {
-      "path": "packages/@code-like-a-carpenter/wait-for"
+      "path": "packages/@code-like-a-carpenter/parallel"
+    },
+    {
+      "path": "packages/@code-like-a-carpenter/logger"
+    },
+    {
+      "path": "packages/@code-like-a-carpenter/lambda-handlers"
+    },
+    {
+      "path": "packages/@code-like-a-carpenter/interact"
+    },
+    {
+      "path": "packages/@code-like-a-carpenter/graphql-codegen-helpers"
+    },
+    {
+      "path": "packages/@code-like-a-carpenter/foundation-transform-environment"
+    },
+    {
+      "path": "packages/@code-like-a-carpenter/foundation-runtime"
+    },
+    {
+      "path": "packages/@code-like-a-carpenter/foundation-plugin-typescript"
+    },
+    {
+      "path": "packages/@code-like-a-carpenter/foundation-plugin-cloudformation"
+    },
+    {
+      "path": "packages/@code-like-a-carpenter/foundation-parser"
+    },
+    {
+      "path": "packages/@code-like-a-carpenter/foundation-intermediate-representation"
+    },
+    {
+      "path": "packages/@code-like-a-carpenter/foundation-cli"
+    },
+    {
+      "path": "packages/@code-like-a-carpenter/exception"
+    },
+    {
+      "path": "packages/@code-like-a-carpenter/errors"
+    },
+    {
+      "path": "packages/@code-like-a-carpenter/env"
+    },
+    {
+      "path": "packages/@code-like-a-carpenter/dotenv"
+    },
+    {
+      "path": "packages/@code-like-a-carpenter/contract-tests"
+    },
+    {
+      "path": "packages/@code-like-a-carpenter/aws-env-loader"
+    },
+    {
+      "path": "packages/@code-like-a-carpenter/assert"
     }
   ]
 }
