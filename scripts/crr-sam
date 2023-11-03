@@ -8,6 +8,7 @@ shift
 
 case "$action" in
   deploy)
+    action=redeploy
     ;;
   destroy)
     ;;
@@ -33,8 +34,6 @@ for testfile in "$@"; do
     projects="$projects $projectName"
   fi
 done
-
-
 
 deployed=''
 
