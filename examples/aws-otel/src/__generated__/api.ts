@@ -15,7 +15,7 @@ export type webhooks = Record<string, never>;
 export interface components {
   schemas: {
     ErrorsResponse: {
-      [key: string]: unknown | undefined;
+      [key: string]: unknown;
     };
     PingResponse: {
       status: string;
@@ -28,13 +28,15 @@ export interface components {
   pathItems: never;
 }
 
+export type $defs = Record<string, never>;
+
 export type external = Record<string, never>;
 
 export interface operations {
   /** @description Simple endpoint to prove everything is wired together */
   ping: {
     parameters: {
-      query: {
+      query?: {
         /** @description Indicates in which span to throw an exception, if any. */
         throwType?: 'immediate' | 'fast' | 'slow' | 'none';
       };
