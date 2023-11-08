@@ -6,7 +6,9 @@
     "@code-like-a-carpenter/env": "*",
     "@code-like-a-carpenter/errors": "*",
     "@code-like-a-carpenter/logger": "*",
-    "@code-like-a-carpenter/telemetry": "*"
+    "@code-like-a-carpenter/telemetry": "*",
+    "zod": "^3.22.4",
+    "zod-validation-error": "^2.1.0"
   },
   "author": "Ian Remmel <1182361+ianwremmel@users.noreply.github.com> (https://www.ianwremmel.com)",
   "bugs": "https://www.github.com/code-like-a-carpenter/workbench/issues",
@@ -30,7 +32,7 @@
     "access": "public"
   },
   "devDependencies": {
-    "@types/aws-lambda": "^8.10.125",
+    "@types/aws-lambda": "^8.10.126",
     "openapi-typescript": "^6.7.0"
   }
 }
