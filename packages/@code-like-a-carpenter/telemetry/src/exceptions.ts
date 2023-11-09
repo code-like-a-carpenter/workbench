@@ -5,6 +5,7 @@ import type {Span} from '@opentelemetry/api';
 import {SpanStatusCode} from '@opentelemetry/api';
 import type {Scope} from '@sentry/serverless';
 import {
+  AWSLambda,
   captureException as sentryCaptureException,
   withScope,
 } from '@sentry/serverless';
@@ -13,6 +14,8 @@ import {snakeCase} from 'snake-case';
 import {Exception} from '@code-like-a-carpenter/exception';
 import type {Logger} from '@code-like-a-carpenter/logger';
 import {logger as rootLogger} from '@code-like-a-carpenter/logger';
+
+import type {NoVoidHandler} from '..';
 
 import {getCurrentSpan} from './run-with';
 
@@ -132,4 +135,10 @@ function reformError(e: unknown): Error {
   }
 
   return new Exception(`Unknown error`, {cause: e});
+}
+
+export function setupExceptionTracing<T, R>(
+  handler: NoVoidHandler<T, R>
+): NoVoidHandler<T, R> {
+  return AWSLambda.wrapHandler(handler) as NoVoidHandler<T, R>;
 }

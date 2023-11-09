@@ -1,9 +1,9 @@
 import type {Attributes} from '@opentelemetry/api';
 import {SpanKind, trace} from '@opentelemetry/api';
 import {BasicTracerProvider} from '@opentelemetry/sdk-trace-base';
-import {AWSLambda} from '@sentry/serverless';
 import type {APIGatewayProxyEvent, APIGatewayProxyResult} from 'aws-lambda';
 
+import {setupExceptionTracing} from '..';
 import {runWithNewSpan} from '../run-with';
 
 import type {NoVoidHandler} from './types';
@@ -27,10 +27,7 @@ export type NoVoidAPIGatewayProxyHandler = NoVoidHandler<
 export function instrumentRestHandler(
   handler: NoVoidAPIGatewayProxyHandler
 ): NoVoidAPIGatewayProxyHandler {
-  // @ts-expect-error: Sentry uses the generalized AWS Handler type, which
-  // allows for nodeback-style handlers.
-  const sentryWrappedHandler: NoVoidAPIGatewayProxyHandler =
-    AWSLambda.wrapHandler(handler);
+  const tracedHandler = setupExceptionTracing(handler);
 
   let cold = true;
   return async (event, context) => {
@@ -59,7 +56,7 @@ export function instrumentRestHandler(
         event.resource,
         {attributes, kind: SpanKind.SERVER},
         async (span) => {
-          const result = await sentryWrappedHandler(event, context);
+          const result = await tracedHandler(event, context);
           if ('statusCode' in result) {
             span.setAttribute('http.status_code', result.statusCode);
           }

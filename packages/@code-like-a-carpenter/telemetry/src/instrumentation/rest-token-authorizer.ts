@@ -1,7 +1,6 @@
 import type {Attributes} from '@opentelemetry/api';
 import {SpanKind, trace} from '@opentelemetry/api';
 import {BasicTracerProvider} from '@opentelemetry/sdk-trace-base';
-import {AWSLambda} from '@sentry/serverless';
 import type {APIGatewayAuthorizerResultContext} from 'aws-lambda/common/api-gateway';
 import type {
   APIGatewayAuthorizerWithContextResult,
@@ -10,7 +9,7 @@ import type {
 
 import {assert} from '@code-like-a-carpenter/assert';
 
-import {captureException} from '../exceptions';
+import {captureException, setupExceptionTracing} from '../exceptions';
 import {runWithNewSpan} from '../run-with';
 
 import type {NoVoidHandler} from './types';
@@ -27,10 +26,7 @@ export function instrumentRestTokenAuthorizer<
 >(
   handler: NoVoidAPIGatewayAuthorizerWithContextResult<TAuthorizerContext>
 ): NoVoidAPIGatewayAuthorizerWithContextResult<TAuthorizerContext> {
-  // @ts-expect-error: Sentry uses the generalized AWS Handler type, which
-  // allows for nodeback-style handlers.
-  const sentryWrappedHandler: NoVoidAPIGatewayAuthorizerWithContextResult =
-    AWSLambda.wrapHandler(handler);
+  const tracedHandler = setupExceptionTracing(handler);
 
   let cold = true;
   return async (event, context) => {
@@ -68,7 +64,7 @@ export function instrumentRestTokenAuthorizer<
       return await runWithNewSpan(
         resource,
         {attributes, kind: SpanKind.SERVER},
-        () => sentryWrappedHandler(event, context)
+        () => tracedHandler(event, context)
       );
     } catch (err) {
       // We're considering this not to be escaped so that we alert on it, but
