@@ -1,15 +1,10 @@
 import {AssertionError} from 'assert';
 
 import {ServiceException} from '@aws-sdk/smithy-client';
-import type {Span} from '@opentelemetry/api';
 import {SpanStatusCode} from '@opentelemetry/api';
-import type {Scope} from '@sentry/serverless';
-import {
-  captureException as sentryCaptureException,
-  withScope,
-} from '@sentry/serverless';
 import {snakeCase} from 'snake-case';
 
+import {assert} from '@code-like-a-carpenter/assert';
 import {Exception} from '@code-like-a-carpenter/exception';
 import type {Logger} from '@code-like-a-carpenter/logger';
 import {logger as rootLogger} from '@code-like-a-carpenter/logger';
@@ -17,19 +12,20 @@ import {logger as rootLogger} from '@code-like-a-carpenter/logger';
 import type {NoVoidHandler} from './instrumentation';
 import {getCurrentSpan} from './run-with';
 
-// eslint-disable-next-line complexity
-function addExceptionDetails(err: unknown, span?: Span, scope?: Scope) {
+let exceptionTracingService: ExceptionTracingService;
+
+function makeAttributes(err: unknown) {
+  let attributes: Record<string, boolean | number | string | undefined> = {};
   if (err instanceof Exception) {
     Object.entries(err).forEach(([key, value]) => {
-      span?.setAttribute(
-        `com.code-like-a-carpenter.exception.${snakeCase(key)}`,
-        JSON.stringify(value)
-      );
+      attributes[`com.code-like-a-carpenter.exception.${snakeCase(key)}`] =
+        JSON.stringify(value);
     });
   }
 
   if (err instanceof ServiceException) {
-    span?.setAttributes({
+    attributes = {
+      ...attributes,
       'exception.aws.$fault': err.$fault,
       'exception.aws.$metadata.attempts': err.$metadata?.attempts,
       'exception.aws.$metadata.cfId': err.$metadata?.cfId,
@@ -44,38 +40,19 @@ function addExceptionDetails(err: unknown, span?: Span, scope?: Scope) {
       // @ts-expect-error - as far as I can tell, this _does_ exist. I don't
       // know why tsc can't see it.
       'exception.aws.$service': err.$service ?? '',
-    });
-
-    scope?.setContext('exception.aws', {
-      $fault: err.$fault,
-      '$metadata.attempts': err.$metadata?.attempts,
-      '$metadata.cfId': err.$metadata?.cfId,
-      '$metadata.extendedRequestId': err.$metadata?.extendedRequestId,
-      '$metadata.httpStatusCode': err.$metadata?.httpStatusCode,
-      '$metadata.requestId': err.$metadata?.requestId,
-      '$metadata.totalRetryDelay': err.$metadata?.totalRetryDelay,
-      '$response.statusCode': err.$response?.statusCode ?? '',
-      '$retryable.throttling': err.$retryable?.throttling ?? false,
-      // @ts-expect-error - as far as I can tell, this _does_ exist. I don't
-      // know why tsc can't see it.
-      $service: err.$service ?? '',
-    });
+    };
   }
-
   if (err instanceof Error && err.cause instanceof Error) {
-    span?.setAttributes({
+    attributes = {
+      ...attributes,
       'exception.cause.message': err.cause.message,
       'exception.cause.name': err.cause.name,
       'exception.cause.stacktrace': err.cause.stack,
       'exception.cause.type': err.cause.constructor.name,
-    });
-    scope?.setContext('exception.cause', {
-      message: err.cause.message,
-      name: err.cause.name,
-      stacktrace: err.cause.stack,
-      type: err.cause.constructor.name,
-    });
+    };
   }
+
+  return attributes;
 }
 
 /**
@@ -106,17 +83,19 @@ export function captureException(
     );
   }
 
-  if (escaped) {
-    // If the exception escaped, we assume a higher-level captureException call
-    // will send it to Sentry.
-    addExceptionDetails(err, span);
-  } else {
-    // If the exception has not escaped, we assume has been handled and someone
-    // still thinks it should be reporter so therefore we send it to Sentry.
-    withScope((scope) => {
-      addExceptionDetails(err, span, scope);
-      sentryCaptureException(err);
-    });
+  const attributes = makeAttributes(err);
+  span?.setAttributes(attributes);
+  // If the exception escaped, we assume a higher-level captureException call
+  // will send it to Sentry.
+  if (!escaped) {
+    // If the exception has not escaped,  we assume it has been handled and
+    // someone still thinks it should be reported therefore we send it to Sentry
+    // or Bugsnag or whatever.
+    assert(
+      exceptionTracingService,
+      'It should be impossible to get here without exceptionTracingService being set'
+    );
+    exceptionTracingService.captureException(err, attributes);
   }
 
   return err;
@@ -136,13 +115,22 @@ function reformError(e: unknown): Error {
 }
 
 export interface ExceptionTracingService {
+  captureException(
+    e: Error,
+    attributes: Record<string, boolean | number | string | undefined>
+  ): void;
+
   init(): void;
+
   wrapHandler<T, R>(handler: NoVoidHandler<T, R>): NoVoidHandler<T, R>;
 }
+
 export type ExceptionTracingServiceInitializer =
   ExceptionTracingService['init'];
 export type ExceptionTracingServiceWrapper =
   ExceptionTracingService['wrapHandler'];
+export type ExceptionTracingServiceCaptureException =
+  ExceptionTracingService['captureException'];
 
 export function setupExceptionTracing<T, R>(
   handler: NoVoidHandler<T, R>,
@@ -154,11 +142,13 @@ export function setupExceptionTracing<T, R>(
    */
   service: ExceptionTracingService
 ): NoVoidHandler<T, R> {
+  exceptionTracingService = service;
   service.init();
   return service.wrapHandler(handler);
 }
 
 export const noopExceptionTracingService: ExceptionTracingService = {
+  captureException() {},
   init() {},
   wrapHandler<T, R>(handler: NoVoidHandler<T, R>): NoVoidHandler<T, R> {
     return handler;
