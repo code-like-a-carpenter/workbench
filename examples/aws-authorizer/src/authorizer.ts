@@ -9,6 +9,8 @@ import {
   handleRestTokenAuthorizerEvent,
 } from '@code-like-a-carpenter/lambda-handlers';
 
+import {exceptionTracingService} from '../../dependencies';
+
 type AuthorizerContext =
   | {
       scheme: 'Bearer';
@@ -60,5 +62,6 @@ export const authorize = handleRestTokenAuthorizerEvent<AuthorizerContext>(
     }
 
     throw new Unauthorized(`${scheme} must be one of 'Bearer' or 'Basic'`);
-  }
+  },
+  exceptionTracingService
 );

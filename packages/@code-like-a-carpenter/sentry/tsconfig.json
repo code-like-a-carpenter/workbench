@@ -7,16 +7,13 @@
   "include": ["src"],
   "references": [
     {
-      "path": "../assert"
-    },
-    {
       "path": "../env"
     },
     {
-      "path": "../exception"
+      "path": "../errors"
     },
     {
-      "path": "../logger"
+      "path": "../telemetry"
     }
   ]
 }

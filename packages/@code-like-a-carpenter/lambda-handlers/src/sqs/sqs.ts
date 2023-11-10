@@ -1,6 +1,7 @@
 import type {SQSHandler} from 'aws-lambda';
 
 import {logger as rootLogger} from '@code-like-a-carpenter/logger';
+import type {ExceptionTracingService} from '@code-like-a-carpenter/telemetry';
 import {
   captureException,
   instrumentSQSHandler,
@@ -9,7 +10,15 @@ import {
 
 import type {SQSCallback} from './types';
 
-export function handleSQSEvent(cb: SQSCallback): SQSHandler {
+export function handleSQSEvent(
+  cb: SQSCallback /**
+   * If your service doesn't need exception tracing, you can pass in the
+   * `noopExceptionTracingService`. Rather than making this field optional, I
+   * decided that far fewer mistakes will be made if you have to explicitly
+   * choose not to use tracing.
+   */,
+  exceptionTracingService: ExceptionTracingService
+): SQSHandler {
   const instrumentedCb = instrumentSQSMessageHandler(cb);
   return instrumentSQSHandler(async (event, context) => {
     const promises = event.Records.map(async (record) => {
@@ -34,5 +43,5 @@ export function handleSQSEvent(cb: SQSCallback): SQSHandler {
           itemIdentifier: event.Records[index].messageId,
         })),
     };
-  });
+  }, exceptionTracingService);
 }

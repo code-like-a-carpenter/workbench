@@ -1,9 +1,28 @@
-import {AWSLambda} from '@sentry/serverless';
+import {
+  AWSLambda,
+  withScope,
+  captureException as sentryCaptureException,
+} from '@sentry/serverless';
 
 import {env} from '@code-like-a-carpenter/env';
 import {ClientError} from '@code-like-a-carpenter/errors';
+import type {
+  ExceptionTracingServiceInitializer,
+  ExceptionTracingServiceWrapper,
+  ExceptionTracingServiceCaptureException,
+} from '@code-like-a-carpenter/telemetry';
 
-export function initSentry() {
+export const captureException: ExceptionTracingServiceCaptureException = (
+  e: Error,
+  attributes: Record<string, boolean | number | string | undefined>
+) => {
+  withScope((scope) => {
+    scope.setContext('attributes', attributes);
+    sentryCaptureException(e);
+  });
+};
+
+export const init: ExceptionTracingServiceInitializer = () => {
   const dsn = env('SENTRY_DSN', '');
   if (!dsn) {
     console.warn('Missing SENTRY_DSN, Sentry will not be initialized');
@@ -61,4 +80,8 @@ export function initSentry() {
       throw err;
     }
   }
-}
+};
+
+export const wrapHandler: ExceptionTracingServiceWrapper = (handler) => {
+  return AWSLambda.wrapHandler(handler) as typeof handler;
+};

@@ -3,6 +3,7 @@ import type {
   APIGatewayProxyResult,
   Context as LambdaContext,
 } from 'aws-lambda';
+import type {Schema} from 'zod';
 
 import {assert} from '@code-like-a-carpenter/assert';
 import {env} from '@code-like-a-carpenter/env';
@@ -38,7 +39,8 @@ function safeUrlEncodedParse(body: string) {
 }
 
 export function formatEvent<O extends SimplifiedOperationObject>(
-  event: APIGatewayProxyEvent
+  event: APIGatewayProxyEvent,
+  schema?: Schema
 ): RestCallbackEvent<O> {
   const {
     body,
@@ -52,7 +54,7 @@ export function formatEvent<O extends SimplifiedOperationObject>(
 
   const h = new Headers();
 
-  Object.entries(headers)
+  Object.entries(headers ?? {})
     .filter(([, value]) => typeof value !== 'undefined')
     .forEach(([key, value]) => {
       assert(
@@ -91,7 +93,7 @@ export function formatEvent<O extends SimplifiedOperationObject>(
 
   // As far as I can tell, we probably never need to look at single-value. Even
   // items with one value appear to show up as multi-value.
-  Object.entries(queryStringParameters || {})
+  Object.entries(queryStringParameters ?? {})
     // Items that have multiple values would already have been added
     .filter(([key]) => !searchParams.has(key))
     .forEach(([key, value]) => {
@@ -105,6 +107,8 @@ export function formatEvent<O extends SimplifiedOperationObject>(
         ? null
         : h.get('content-type')?.includes('application/x-www-form-urlencoded')
         ? safeUrlEncodedParse(body)
+        : schema
+        ? schema.parse(safeJsonParse(body))
         : safeJsonParse(body),
     headers: h,
     originalEvent: event,
@@ -151,7 +155,7 @@ export function formatErrorResult<O extends SimplifiedOperationObject>(
           requestId: event.requestContext.requestId,
           xAmznTraceId: event.headers.get('X-Amzn-Trace-Id'),
         },
-        stack: err.stack,
+        stack: env('STAGE_NAME') === 'production' ? undefined : err.stack,
       }),
       statusCode: err.code,
     };
@@ -166,6 +170,55 @@ export function formatErrorResult<O extends SimplifiedOperationObject>(
           awsRequestId: context.awsRequestId,
           requestId: event.requestContext.requestId,
           xAmznTraceId: event.headers.get('X-Amzn-Trace-Id'),
+        },
+        stack: env('STAGE_NAME') === 'production' ? undefined : err.stack,
+      }),
+      statusCode: 500,
+    };
+  }
+
+  return {
+    body: JSON.stringify(err),
+    statusCode: 500,
+  };
+}
+
+export function formatEarlyErrorResult(
+  err: unknown,
+  event: APIGatewayProxyEvent,
+  context: LambdaContext
+): APIGatewayProxyResult {
+  if (!(err instanceof ClientError)) {
+    captureException(err, false);
+  }
+
+  if (err instanceof HttpException) {
+    return {
+      body: JSON.stringify({
+        message: err.message ?? err.name,
+        name: err.name,
+        requestIds: {
+          awsRequestId: context.awsRequestId,
+          requestId: event.requestContext.requestId,
+          // Headers is likely null on the API Gateway test page
+          xAmznTraceId: event.headers?.['X-Amzn-Trace-Id'],
+        },
+        stack: env('STAGE_NAME') === 'production' ? undefined : err.stack,
+      }),
+      statusCode: err.code,
+    };
+  }
+
+  if (err instanceof Error) {
+    return {
+      body: JSON.stringify({
+        message: err.message,
+        name: err.name,
+        requestIds: {
+          awsRequestId: context.awsRequestId,
+          requestId: event.requestContext.requestId,
+          // Headers is likely null on the API Gateway test page
+          xAmznTraceId: event.headers?.['X-Amzn-Trace-Id'],
         },
         stack: env('STAGE_NAME') === 'production' ? undefined : err.stack,
       }),

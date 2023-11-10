@@ -27,6 +27,7 @@ export function defineReducer(
     sourceModelName,
     targetModelName,
   } = cdc;
+  const {dependenciesModuleId} = model.table;
 
   const factoryName = multiReduce ? 'makeMultiReducer' : 'makeReducer';
 
@@ -42,6 +43,7 @@ import {
   Create${targetModelName}Input,
   Update${targetModelName}Input
 } from '${actionsModuleId}';
+import * as dependencies from '${dependenciesModuleId}';
 
 export const handler = ${factoryName}<
 ${sourceModelName},
@@ -54,7 +56,8 @@ Update${targetModelName}Input
     createTargetModel: create${targetModelName},
     unmarshallSourceModel: unmarshall${sourceModelName},
     updateTargetModel: update${targetModelName}
-  }
+  },
+  dependencies
 );
 `;
 

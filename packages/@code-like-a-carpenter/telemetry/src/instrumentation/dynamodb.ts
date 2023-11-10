@@ -1,10 +1,11 @@
 import type {Attributes} from '@opentelemetry/api';
 import {SpanKind, trace} from '@opentelemetry/api';
 import {BasicTracerProvider} from '@opentelemetry/sdk-trace-base';
-import {AWSLambda} from '@sentry/serverless';
 import type {DynamoDBBatchResponse, DynamoDBStreamEvent} from 'aws-lambda';
 import type {DynamoDBRecord} from 'aws-lambda/trigger/dynamodb-stream';
 
+import type {ExceptionTracingService} from '..';
+import {setupExceptionTracing} from '..';
 import {runWithNewSpan} from '../run-with';
 
 import type {NoVoidHandler} from './types';
@@ -15,12 +16,16 @@ export type NoVoidDynamoDBStreamHandler = NoVoidHandler<
 >;
 
 export function instrumentDynamoDBStreamHandler(
-  handler: NoVoidDynamoDBStreamHandler
+  handler: NoVoidDynamoDBStreamHandler,
+  /**
+   * If your service doesn't need exception tracing, you can pass in the
+   * `noopExceptionTracingService`. Rather than making this field optional, I
+   * decided that far fewer mistakes will be made if you have to explicitly
+   * choose not to use tracing.
+   */
+  exceptionTracingService: ExceptionTracingService
 ): NoVoidDynamoDBStreamHandler {
-  // @ts-expect-error: Sentry uses the generalized AWS Handler type, which
-  // allows for nodeback-style handlers.
-  const sentryWrappedHandler: NoVoidDynamoDBStreamHandler =
-    AWSLambda.wrapHandler(handler);
+  const tracedHandler = setupExceptionTracing(handler, exceptionTracingService);
 
   let cold = true;
   return async (event, context) => {
@@ -46,7 +51,7 @@ export function instrumentDynamoDBStreamHandler(
           attributes,
           kind: SpanKind.CONSUMER,
         },
-        () => sentryWrappedHandler(event, context)
+        () => tracedHandler(event, context)
       );
     } finally {
       const provider = trace.getTracerProvider();

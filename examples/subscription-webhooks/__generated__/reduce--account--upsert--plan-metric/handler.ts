@@ -1,6 +1,7 @@
 // This file is generated. Do not edit by hand.
 import {makeMultiReducer} from '@code-like-a-carpenter/foundation-runtime';
 
+import * as dependencies from '../../../dependencies';
 import {AccountUpsertPlanMetricReducer} from '../../src/reduce--account--upsert--plan-metric';
 import type {
   Account,
@@ -19,8 +20,12 @@ export const handler = makeMultiReducer<
   PlanMetric,
   CreatePlanMetricInput,
   UpdatePlanMetricInput
->(AccountUpsertPlanMetricReducer, {
-  createTargetModel: createPlanMetric,
-  unmarshallSourceModel: unmarshallAccount,
-  updateTargetModel: updatePlanMetric,
-});
+>(
+  AccountUpsertPlanMetricReducer,
+  {
+    createTargetModel: createPlanMetric,
+    unmarshallSourceModel: unmarshallAccount,
+    updateTargetModel: updatePlanMetric,
+  },
+  dependencies
+);

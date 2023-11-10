@@ -2,6 +2,7 @@ import type {DynamoDBStreamHandler} from 'aws-lambda';
 
 import {assert} from '@code-like-a-carpenter/assert';
 import {logger as rootLogger} from '@code-like-a-carpenter/logger';
+import type {ExceptionTracingService} from '@code-like-a-carpenter/telemetry';
 import {
   instrumentDynamoDBRecordHandler,
   instrumentDynamoDBStreamHandler,
@@ -10,7 +11,14 @@ import {
 import type {DynamoCallback} from './types';
 
 export function handleDynamoDBStreamEvent(
-  cb: DynamoCallback
+  cb: DynamoCallback,
+  /**
+   * If your service doesn't need exception tracing, you can pass in the
+   * `noopExceptionTracingService`. Rather than making this field optional, I
+   * decided that far fewer mistakes will be made if you have to explicitly
+   * choose not to use tracing.
+   */
+  exceptionTracingService: ExceptionTracingService
 ): DynamoDBStreamHandler {
   const instrumentedCb = instrumentDynamoDBRecordHandler(cb);
   return instrumentDynamoDBStreamHandler(async (event, context) => {
@@ -47,5 +55,5 @@ export function handleDynamoDBStreamEvent(
           };
         }),
     };
-  });
+  }, exceptionTracingService);
 }

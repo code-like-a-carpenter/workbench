@@ -26,12 +26,15 @@ export function defineReactor(
     sourceModelName,
   } = cdc;
 
+  const {dependenciesModuleId} = model.table;
+
   const code = `// This file is generated. Do not edit by hand.
 import {makeReactor} from '${runtimeModuleId}';
 import {${handlerImportName}} from '${handlerModuleId}';
 import type {${sourceModelName}, unmarshall${sourceModelName}} from '${actionsModuleId}';
+import * as dependencies from '${dependenciesModuleId}';
 
-export const handler = makeReactor<${sourceModelName}>(${handlerImportName}, {unmarshallSourceModel: unmarshall${sourceModelName}});
+export const handler = makeReactor<${sourceModelName}>(${handlerImportName}, {unmarshallSourceModel: unmarshall${sourceModelName}}, dependencies);
 `;
 
   const {fragment, stack} = makeHandler(config, model, cdc, code);

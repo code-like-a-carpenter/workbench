@@ -6,13 +6,14 @@ import {
   trace,
 } from '@opentelemetry/api';
 import {BasicTracerProvider} from '@opentelemetry/sdk-trace-base';
-import {AWSLambda} from '@sentry/serverless';
 import type {
   SQSBatchResponse,
   SQSEvent,
   SQSRecord,
 } from 'aws-lambda/trigger/sqs';
 
+import type {ExceptionTracingService} from '..';
+import {setupExceptionTracing} from '..';
 import {runWithNewSpan} from '../run-with';
 
 import type {NoVoidHandler} from './types';
@@ -24,6 +25,7 @@ import type {NoVoidHandler} from './types';
 export type NoVoidSQSHandler = NoVoidHandler<SQSEvent, SQSBatchResponse | void>;
 
 const sharedLinks = new WeakMap<SQSRecord, Link>();
+
 /**
  * Instruments an SQS handler.
  *
@@ -32,11 +34,16 @@ const sharedLinks = new WeakMap<SQSRecord, Link>();
  * harder to read way.
  */
 export function instrumentSQSHandler(
-  handler: NoVoidSQSHandler
+  handler: NoVoidSQSHandler,
+  /**
+   * If your service doesn't need exception tracing, you can pass in the
+   * `noopExceptionTracingService`. Rather than making this field optional, I
+   * decided that far fewer mistakes will be made if you have to explicitly
+   * choose not to use tracing.
+   */
+  exceptionTracingService: ExceptionTracingService
 ): NoVoidSQSHandler {
-  // @ts-expect-error: Sentry uses the generalized AWS Handler type, which
-  // allows for nodeback-style handlers.
-  const sentryWrappedHandler: NoVoidSQSHandler = AWSLambda.wrapHandler(handler);
+  const tracedHandler = setupExceptionTracing(handler, exceptionTracingService);
 
   let cold = true;
   return async (event, context) => {
@@ -88,7 +95,7 @@ export function instrumentSQSHandler(
           kind: SpanKind.CONSUMER,
           links: Array.from(links.values()),
         },
-        () => sentryWrappedHandler(event, context)
+        () => tracedHandler(event, context)
       );
     } finally {
       const provider = trace.getTracerProvider();

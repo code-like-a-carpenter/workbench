@@ -4,6 +4,8 @@ import {EventBridgeClient} from '@aws-sdk/client-eventbridge';
 import {DynamoDBDocumentClient} from '@aws-sdk/lib-dynamodb';
 import cuid from 'cuid';
 
+import * as SentryTracingService from '@code-like-a-carpenter/sentry';
+
 /** Figure out the correct URL for lambda to lambda calls. */
 function getEndpointUrl() {
   if (process.env.LOCALSTACK_HOSTNAME && process.env.EDGE_PORT) {
@@ -48,3 +50,5 @@ export const eventBridge: EventBridgeClient = new EventBridgeClient({
 export function idGenerator() {
   return cuid();
 }
+
+export const exceptionTracingService = SentryTracingService;
