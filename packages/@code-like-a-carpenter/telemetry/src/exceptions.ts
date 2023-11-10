@@ -139,6 +139,10 @@ export interface ExceptionTracingService {
   init(): void;
   wrapHandler<T, R>(handler: NoVoidHandler<T, R>): NoVoidHandler<T, R>;
 }
+export type ExceptionTracingServiceInitializer =
+  ExceptionTracingService['init'];
+export type ExceptionTracingServiceWrapper =
+  ExceptionTracingService['wrapHandler'];
 
 export function setupExceptionTracing<T, R>(
   handler: NoVoidHandler<T, R>,

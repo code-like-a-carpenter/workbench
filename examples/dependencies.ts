@@ -4,7 +4,7 @@ import {EventBridgeClient} from '@aws-sdk/client-eventbridge';
 import {DynamoDBDocumentClient} from '@aws-sdk/lib-dynamodb';
 import cuid from 'cuid';
 
-import {noopExceptionTracingService} from '@code-like-a-carpenter/telemetry';
+import * as SentryTracingService from '@code-like-a-carpenter/sentry';
 
 /** Figure out the correct URL for lambda to lambda calls. */
 function getEndpointUrl() {
@@ -51,4 +51,4 @@ export function idGenerator() {
   return cuid();
 }
 
-export const exceptionTracingService = noopExceptionTracingService;
+export const exceptionTracingService = SentryTracingService;

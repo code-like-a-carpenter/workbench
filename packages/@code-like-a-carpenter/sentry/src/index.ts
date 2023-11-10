@@ -2,8 +2,12 @@ import {AWSLambda} from '@sentry/serverless';
 
 import {env} from '@code-like-a-carpenter/env';
 import {ClientError} from '@code-like-a-carpenter/errors';
+import type {
+  ExceptionTracingServiceInitializer,
+  ExceptionTracingServiceWrapper,
+} from '@code-like-a-carpenter/telemetry';
 
-export function initSentry() {
+export const init: ExceptionTracingServiceInitializer = () => {
   const dsn = env('SENTRY_DSN', '');
   if (!dsn) {
     console.warn('Missing SENTRY_DSN, Sentry will not be initialized');
@@ -61,4 +65,8 @@ export function initSentry() {
       throw err;
     }
   }
-}
+};
+
+export const wrapHandler: ExceptionTracingServiceWrapper = (handler) => {
+  return AWSLambda.wrapHandler(handler) as typeof handler;
+};

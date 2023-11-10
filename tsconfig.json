@@ -26,6 +26,9 @@
       "path": "packages/@code-like-a-carpenter/telemetry"
     },
     {
+      "path": "packages/@code-like-a-carpenter/sentry"
+    },
+    {
       "path": "packages/@code-like-a-carpenter/parallel"
     },
     {

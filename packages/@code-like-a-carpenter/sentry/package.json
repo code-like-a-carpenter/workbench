@@ -1,6 +1,6 @@
 {
-  "name": "@code-like-a-carpenter/telemetry",
-  "description": "OpenTelemetry wrappers that make it easier to do basic things",
+  "name": "@code-like-a-carpenter/sentry",
+  "description": "Separates Sentry out from the main telemetry package",
   "author": "Ian Remmel <1182361+ianwremmel@users.noreply.github.com> (https://www.ianwremmel.com)",
   "bugs": "https://www.github.com/code-like-a-carpenter/workbench/issues",
   "engines": {
@@ -15,7 +15,7 @@
     },
     "./package.json": "./package.json"
   },
-  "homepage": "https://www.github.com/code-like-a-carpenter/workbench/tree/main/packages/@code-like-a-carpenter/telemetry",
+  "homepage": "https://www.github.com/code-like-a-carpenter/workbench/tree/main/packages/@code-like-a-carpenter/sentry",
   "license": "MIT",
   "repository": "git@github.com:code-like-a-carpenter/workbench.git",
   "types": "dist/types",
@@ -23,17 +23,9 @@
     "access": "public"
   },
   "dependencies": {
-    "@aws-sdk/smithy-client": "3.188.0",
-    "@code-like-a-carpenter/assert": "*",
     "@code-like-a-carpenter/env": "*",
-    "@code-like-a-carpenter/exception": "*",
-    "@code-like-a-carpenter/logger": "*",
-    "@opentelemetry/api": "1.4.0",
-    "@opentelemetry/sdk-trace-base": "^1.9.1",
-    "@sentry/serverless": "^7.50.0",
-    "snake-case": "^3.0.4"
-  },
-  "devDependencies": {
-    "@types/aws-lambda": "^8.10.126"
+    "@code-like-a-carpenter/errors": "*",
+    "@code-like-a-carpenter/telemetry": "*",
+    "@sentry/serverless": "^7.80.0"
   }
 }
