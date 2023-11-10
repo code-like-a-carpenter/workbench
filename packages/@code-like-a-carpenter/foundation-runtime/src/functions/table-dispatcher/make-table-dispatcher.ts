@@ -3,7 +3,11 @@ import type {DynamoDBRecord, DynamoDBStreamHandler} from 'aws-lambda';
 
 import {handleDynamoDBStreamEvent} from '@code-like-a-carpenter/lambda-handlers';
 
-import type {WithEventBridge, WithTableName} from '../../dependencies';
+import type {
+  WithEventBridge,
+  WithExceptionTracing,
+  WithTableName,
+} from '../../dependencies';
 
 /** Processes a single DynamoDB record. */
 async function handleRecord(
@@ -33,9 +37,10 @@ async function handleRecord(
 
 /** Factory for creating a table dispatcher. */
 export function makeDynamoDBStreamDispatcher(
-  dependencies: WithEventBridge & WithTableName
+  dependencies: WithEventBridge & WithTableName & WithExceptionTracing
 ): DynamoDBStreamHandler {
   return handleDynamoDBStreamEvent(
-    async (record) => await handleRecord(dependencies, record)
+    async (record) => await handleRecord(dependencies, record),
+    dependencies.exceptionTracingService
   );
 }

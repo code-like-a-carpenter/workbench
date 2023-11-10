@@ -27,7 +27,13 @@ export type NoVoidAPIGatewayProxyHandler = NoVoidHandler<
  */
 export function instrumentRestHandler(
   handler: NoVoidAPIGatewayProxyHandler,
-  exceptionTracingService?: ExceptionTracingService
+  /**
+   * If your service doesn't need exception tracing, you can pass in the
+   * `noopExceptionTracingService`. Rather than making this field optional, I
+   * decided that far fewer mistakes will be made if you have to explicitly
+   * choose not to use tracing.
+   */
+  exceptionTracingService: ExceptionTracingService
 ): NoVoidAPIGatewayProxyHandler {
   const tracedHandler = setupExceptionTracing(handler, exceptionTracingService);
 

@@ -4,6 +4,7 @@ import {ZodError} from 'zod';
 import {fromZodError} from 'zod-validation-error';
 
 import {logger as rootLogger} from '@code-like-a-carpenter/logger';
+import type {ExceptionTracingService} from '@code-like-a-carpenter/telemetry';
 import {instrumentRestHandler} from '@code-like-a-carpenter/telemetry';
 
 import {
@@ -19,6 +20,13 @@ import type {RestCallback, SimplifiedOperationObject} from './types';
  */
 export function handleRestEvent<O extends SimplifiedOperationObject>(
   callback: RestCallback<O>,
+  /**
+   * If your service doesn't need exception tracing, you can pass in the
+   * `noopExceptionTracingService`. Rather than making this field optional, I
+   * decided that far fewer mistakes will be made if you have to explicitly
+   * choose not to use tracing.
+   */
+  exceptionTracingService: ExceptionTracingService,
   schema?: Schema
 ): APIGatewayProxyHandler {
   return instrumentRestHandler(async (event, context) => {
@@ -53,5 +61,5 @@ export function handleRestEvent<O extends SimplifiedOperationObject>(
     } catch (err) {
       return formatErrorResult(err, restEvent, context);
     }
-  });
+  }, exceptionTracingService);
 }

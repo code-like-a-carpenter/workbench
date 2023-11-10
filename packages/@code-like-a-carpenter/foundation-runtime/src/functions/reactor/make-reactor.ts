@@ -1,6 +1,7 @@
 import {assert} from '@code-like-a-carpenter/assert';
 import {getCurrentSpan} from '@code-like-a-carpenter/telemetry';
 
+import type {WithExceptionTracing} from '../../dependencies';
 import {CDCHandler} from '../common/cdc-handler';
 import type {Handler} from '../common/handlers';
 import {makeSqsHandler} from '../common/handlers';
@@ -15,12 +16,13 @@ interface SDK<T> {
  */
 export function makeReactor<T>(
   constructor: ReactorConstructor<T>,
-  sdk: SDK<T>
+  sdk: SDK<T>,
+  dependencies: WithExceptionTracing
 ): Handler {
   const reactor = new constructor(sdk);
   return makeSqsHandler(async (record) => {
     await reactor.react(record);
-  });
+  }, dependencies);
 }
 
 export interface ReactorConstructor<T> {

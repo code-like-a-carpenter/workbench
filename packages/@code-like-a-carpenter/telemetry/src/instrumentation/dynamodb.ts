@@ -17,7 +17,13 @@ export type NoVoidDynamoDBStreamHandler = NoVoidHandler<
 
 export function instrumentDynamoDBStreamHandler(
   handler: NoVoidDynamoDBStreamHandler,
-  exceptionTracingService?: ExceptionTracingService
+  /**
+   * If your service doesn't need exception tracing, you can pass in the
+   * `noopExceptionTracingService`. Rather than making this field optional, I
+   * decided that far fewer mistakes will be made if you have to explicitly
+   * choose not to use tracing.
+   */
+  exceptionTracingService: ExceptionTracingService
 ): NoVoidDynamoDBStreamHandler {
   const tracedHandler = setupExceptionTracing(handler, exceptionTracingService);
 

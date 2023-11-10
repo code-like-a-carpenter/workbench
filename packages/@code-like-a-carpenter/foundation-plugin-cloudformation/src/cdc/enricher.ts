@@ -27,6 +27,8 @@ export function defineEnricher(
     targetModelName,
   } = cdc;
 
+  const {dependenciesModuleId} = model.table;
+
   const code = `// This file is generated. Do not edit by hand.
 import {makeEnricher} from '${runtimeModuleId}';
 import {${handlerImportName}} from '${handlerModuleId}';
@@ -40,6 +42,8 @@ import {
   Update${targetModelName}Input
 } from '${actionsModuleId}';
 
+import * as dependencies from '${dependenciesModuleId}';
+
 export const handler = makeEnricher<
 ${sourceModelName},
 ${targetModelName},
@@ -51,7 +55,8 @@ Update${targetModelName}Input
     createTargetModel: create${targetModelName},
     unmarshallSourceModel: unmarshall${sourceModelName},
     updateTargetModel: update${targetModelName}
-  }
+  },
+  dependencies
 );
 `;
 

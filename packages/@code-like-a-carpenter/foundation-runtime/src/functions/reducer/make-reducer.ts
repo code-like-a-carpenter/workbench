@@ -1,6 +1,7 @@
 import {assert} from '@code-like-a-carpenter/assert';
 import {getCurrentSpan} from '@code-like-a-carpenter/telemetry';
 
+import type {WithExceptionTracing} from '../../dependencies';
 import {NotFoundError} from '../../errors';
 import type {ResultType} from '../../types';
 import {CDCHandler} from '../common/cdc-handler';
@@ -33,12 +34,13 @@ export function makeReducer<
     CREATE_TARGET_INPUT,
     UPDATE_TARGET_INPUT
   >,
-  sdk: SDK<SOURCE, TARGET, CREATE_TARGET_INPUT, UPDATE_TARGET_INPUT>
+  sdk: SDK<SOURCE, TARGET, CREATE_TARGET_INPUT, UPDATE_TARGET_INPUT>,
+  dependencies: WithExceptionTracing
 ): Handler {
   const reducer = new constructor(sdk);
   return makeSqsHandler(async (record) => {
     await reducer.reduce(record);
-  });
+  }, dependencies);
 }
 
 export interface ReducerConstructor<

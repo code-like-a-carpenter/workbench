@@ -142,11 +142,21 @@ export interface ExceptionTracingService {
 
 export function setupExceptionTracing<T, R>(
   handler: NoVoidHandler<T, R>,
-  service?: ExceptionTracingService
+  /**
+   * If your service doesn't need exception tracing, you can pass in the
+   * `noopExceptionTracingService`. Rather than making this field optional, I
+   * decided that far fewer mistakes will be made if you have to explicitly
+   * choose not to use tracing.
+   */
+  service: ExceptionTracingService
 ): NoVoidHandler<T, R> {
-  if (service) {
-    service.init();
-    return service.wrapHandler(handler);
-  }
-  return handler;
+  service.init();
+  return service.wrapHandler(handler);
 }
+
+export const noopExceptionTracingService: ExceptionTracingService = {
+  init() {},
+  wrapHandler<T, R>(handler: NoVoidHandler<T, R>): NoVoidHandler<T, R> {
+    return handler;
+  },
+};

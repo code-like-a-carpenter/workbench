@@ -35,7 +35,13 @@ const sharedLinks = new WeakMap<SQSRecord, Link>();
  */
 export function instrumentSQSHandler(
   handler: NoVoidSQSHandler,
-  exceptionTracingService?: ExceptionTracingService
+  /**
+   * If your service doesn't need exception tracing, you can pass in the
+   * `noopExceptionTracingService`. Rather than making this field optional, I
+   * decided that far fewer mistakes will be made if you have to explicitly
+   * choose not to use tracing.
+   */
+  exceptionTracingService: ExceptionTracingService
 ): NoVoidSQSHandler {
   const tracedHandler = setupExceptionTracing(handler, exceptionTracingService);
 
