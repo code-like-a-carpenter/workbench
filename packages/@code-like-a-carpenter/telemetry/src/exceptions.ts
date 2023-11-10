@@ -5,7 +5,6 @@ import type {Span} from '@opentelemetry/api';
 import {SpanStatusCode} from '@opentelemetry/api';
 import type {Scope} from '@sentry/serverless';
 import {
-  AWSLambda,
   captureException as sentryCaptureException,
   withScope,
 } from '@sentry/serverless';
@@ -136,11 +135,18 @@ function reformError(e: unknown): Error {
   return new Exception(`Unknown error`, {cause: e});
 }
 
-export interface ExceptionTracingService {}
+export interface ExceptionTracingService {
+  init(): void;
+  wrapHandler<T, R>(handler: NoVoidHandler<T, R>): NoVoidHandler<T, R>;
+}
 
 export function setupExceptionTracing<T, R>(
   handler: NoVoidHandler<T, R>,
   service?: ExceptionTracingService
 ): NoVoidHandler<T, R> {
-  return AWSLambda.wrapHandler(handler) as NoVoidHandler<T, R>;
+  if (service) {
+    service.init();
+    return service.wrapHandler(handler);
+  }
+  return handler;
 }
