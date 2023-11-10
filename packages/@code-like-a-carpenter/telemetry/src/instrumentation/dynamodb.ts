@@ -4,6 +4,7 @@ import {BasicTracerProvider} from '@opentelemetry/sdk-trace-base';
 import type {DynamoDBBatchResponse, DynamoDBStreamEvent} from 'aws-lambda';
 import type {DynamoDBRecord} from 'aws-lambda/trigger/dynamodb-stream';
 
+import type {ExceptionTracingService} from '..';
 import {setupExceptionTracing} from '..';
 import {runWithNewSpan} from '../run-with';
 
@@ -15,9 +16,10 @@ export type NoVoidDynamoDBStreamHandler = NoVoidHandler<
 >;
 
 export function instrumentDynamoDBStreamHandler(
-  handler: NoVoidDynamoDBStreamHandler
+  handler: NoVoidDynamoDBStreamHandler,
+  exceptionTracingService?: ExceptionTracingService
 ): NoVoidDynamoDBStreamHandler {
-  const tracedHandler = setupExceptionTracing(handler);
+  const tracedHandler = setupExceptionTracing(handler, exceptionTracingService);
 
   let cold = true;
   return async (event, context) => {

@@ -9,6 +9,7 @@ import type {
 
 import {assert} from '@code-like-a-carpenter/assert';
 
+import type {ExceptionTracingService} from '../exceptions';
 import {captureException, setupExceptionTracing} from '../exceptions';
 import {runWithNewSpan} from '../run-with';
 
@@ -24,9 +25,10 @@ type NoVoidAPIGatewayAuthorizerWithContextResult<
 export function instrumentRestTokenAuthorizer<
   TAuthorizerContext extends APIGatewayAuthorizerResultContext,
 >(
-  handler: NoVoidAPIGatewayAuthorizerWithContextResult<TAuthorizerContext>
+  handler: NoVoidAPIGatewayAuthorizerWithContextResult<TAuthorizerContext>,
+  exceptionTracingService?: ExceptionTracingService
 ): NoVoidAPIGatewayAuthorizerWithContextResult<TAuthorizerContext> {
-  const tracedHandler = setupExceptionTracing(handler);
+  const tracedHandler = setupExceptionTracing(handler, exceptionTracingService);
 
   let cold = true;
   return async (event, context) => {

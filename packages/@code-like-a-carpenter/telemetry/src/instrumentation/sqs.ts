@@ -12,6 +12,7 @@ import type {
   SQSRecord,
 } from 'aws-lambda/trigger/sqs';
 
+import type {ExceptionTracingService} from '..';
 import {setupExceptionTracing} from '..';
 import {runWithNewSpan} from '../run-with';
 
@@ -33,9 +34,10 @@ const sharedLinks = new WeakMap<SQSRecord, Link>();
  * harder to read way.
  */
 export function instrumentSQSHandler(
-  handler: NoVoidSQSHandler
+  handler: NoVoidSQSHandler,
+  exceptionTracingService?: ExceptionTracingService
 ): NoVoidSQSHandler {
-  const tracedHandler = setupExceptionTracing(handler);
+  const tracedHandler = setupExceptionTracing(handler, exceptionTracingService);
 
   let cold = true;
   return async (event, context) => {

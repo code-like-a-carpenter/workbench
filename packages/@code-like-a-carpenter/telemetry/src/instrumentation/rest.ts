@@ -3,6 +3,7 @@ import {SpanKind, trace} from '@opentelemetry/api';
 import {BasicTracerProvider} from '@opentelemetry/sdk-trace-base';
 import type {APIGatewayProxyEvent, APIGatewayProxyResult} from 'aws-lambda';
 
+import type {ExceptionTracingService} from '..';
 import {setupExceptionTracing} from '..';
 import {runWithNewSpan} from '../run-with';
 
@@ -25,9 +26,10 @@ export type NoVoidAPIGatewayProxyHandler = NoVoidHandler<
  * harder to read way.
  */
 export function instrumentRestHandler(
-  handler: NoVoidAPIGatewayProxyHandler
+  handler: NoVoidAPIGatewayProxyHandler,
+  exceptionTracingService?: ExceptionTracingService
 ): NoVoidAPIGatewayProxyHandler {
-  const tracedHandler = setupExceptionTracing(handler);
+  const tracedHandler = setupExceptionTracing(handler, exceptionTracingService);
 
   let cold = true;
   return async (event, context) => {

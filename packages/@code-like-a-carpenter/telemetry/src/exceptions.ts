@@ -15,8 +15,7 @@ import {Exception} from '@code-like-a-carpenter/exception';
 import type {Logger} from '@code-like-a-carpenter/logger';
 import {logger as rootLogger} from '@code-like-a-carpenter/logger';
 
-import type {NoVoidHandler} from '..';
-
+import type {NoVoidHandler} from './instrumentation';
 import {getCurrentSpan} from './run-with';
 
 // eslint-disable-next-line complexity
@@ -137,8 +136,11 @@ function reformError(e: unknown): Error {
   return new Exception(`Unknown error`, {cause: e});
 }
 
+export interface ExceptionTracingService {}
+
 export function setupExceptionTracing<T, R>(
-  handler: NoVoidHandler<T, R>
+  handler: NoVoidHandler<T, R>,
+  service?: ExceptionTracingService
 ): NoVoidHandler<T, R> {
   return AWSLambda.wrapHandler(handler) as NoVoidHandler<T, R>;
 }
