@@ -33,6 +33,6 @@
   },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.126",
-    "openapi-typescript": "^6.7.0"
+    "openapi-typescript": "^6.7.1"
   }
 }
