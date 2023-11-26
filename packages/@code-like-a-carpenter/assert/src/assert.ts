@@ -23,4 +23,23 @@ export function assert(
   }
 }
 
-export {fail, strictEqual, notStrictEqual} from 'assert';
+export {
+  deepEqual,
+  deepStrictEqual,
+  doesNotMatch,
+  doesNotReject,
+  doesNotThrow,
+  equal,
+  fail,
+  ifError,
+  match,
+  notDeepEqual,
+  notDeepStrictEqual,
+  notEqual,
+  notStrictEqual,
+  ok,
+  rejects,
+  strictEqual,
+  throws,
+  AssertionError,
+} from 'assert';
