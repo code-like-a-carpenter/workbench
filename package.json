@@ -34,6 +34,7 @@
     "@ianwremmel/eslint-plugin-ianwremmel": "^6.2.2",
     "@jest/types": "^29.6.3",
     "@nrwl/nx-cloud": "^15.3.5",
+    "@semrel-extra/npm": "^1.2.2",
     "@types/jest": "^29.5.7",
     "@types/lodash": "^4.14.200",
     "@types/node": "^18.13.0",
@@ -89,6 +90,12 @@
   "release": {
     "branches": [
       "main"
+    ],
+    "plugins": [
+      "@semantic-release/commit-analyzer",
+      "@semantic-release/release-notes-generator",
+      "@semrel-extra/npm",
+      "@semantic-release/github"
     ]
   }
 }
