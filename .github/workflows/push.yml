@@ -28,6 +28,14 @@ jobs:
       - uses: './.github/actions/setup'
       - run: ./scripts/diff-lint
 
+  fixup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: ianwremmel/prevent-fixup-commits@v1.0.8
+
   lint:
     needs: build
     runs-on: ubuntu-latest
@@ -57,11 +65,21 @@ jobs:
           label: TSC
           report: 'reports/style/tsc.log'
 
+  nopush:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: ianwremmel/prevent-nopush-commits@v1.0.8
+
   release:
     needs:
       - build
       - diff
+      - fixup
       - lint
+      - nopush
       - test-integration
       - test-unit
     runs-on: ubuntu-latest
@@ -98,8 +116,6 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # There should be one node for each example, but at time of writing,
-        # two of the examples are disabled due to issues with localstack.
         nodeCount: [5]
         nodeIndex: [0, 1, 2, 3, 4]
     steps:
