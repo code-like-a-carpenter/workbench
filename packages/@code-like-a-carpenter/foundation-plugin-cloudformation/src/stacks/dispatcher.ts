@@ -60,7 +60,7 @@ export function makeDispatcherStack(
           },
         },
       ],
-      Runtime: 'nodejs18.x',
+      Runtime: 'nodejs20.x',
       Timeout: {Ref: 'Timeout'},
       Tracing: 'Active',
     },

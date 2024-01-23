@@ -34,7 +34,7 @@ Globals:
     Layers:
       - Fn::Sub: 'arn:aws:lambda:${AWS::Region}:901920570463:layer:aws-otel-nodejs-amd64-ver-1-8-0:2'
     MemorySize: 256
-    Runtime: nodejs18.x
+    Runtime: nodejs20.x
     Tracing: Active
     Timeout: 30
 

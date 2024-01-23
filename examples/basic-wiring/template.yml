@@ -19,7 +19,7 @@ Globals:
         STAGE_NAME: !Ref StageName
     Handler: index.handler
     MemorySize: 256
-    Runtime: nodejs18.x
+    Runtime: nodejs20.x
     Tracing: Active
     Timeout: 30
 

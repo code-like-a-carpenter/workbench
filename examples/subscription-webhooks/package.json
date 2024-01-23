@@ -2,7 +2,7 @@
   "name": "subscription-webhooks",
   "private": true,
   "engines": {
-    "node": "18.x",
+    "node": ">=20",
     "npm": "9.x"
   },
   "dependencies": {

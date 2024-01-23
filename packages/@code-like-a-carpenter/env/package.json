@@ -14,7 +14,7 @@
   "license": "MIT",
   "bugs": "https://www.github.com/code-like-a-carpenter/workbench/issues",
   "engines": {
-    "node": "18.x",
+    "node": ">=20",
     "npm": "9.x"
   },
   "homepage": "https://www.github.com/code-like-a-carpenter/workbench/tree/main/packages/@code-like-a-carpenter/env",

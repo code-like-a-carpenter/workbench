@@ -2,7 +2,7 @@
   "name": "aws-otel",
   "main": "src/index.ts",
   "engines": {
-    "node": "18.x",
+    "node": ">=20",
     "npm": "9.x"
   },
   "private": true,
