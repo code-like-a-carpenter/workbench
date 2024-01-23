@@ -34,6 +34,6 @@
     "@opentelemetry/api": "1.4.0"
   },
   "devDependencies": {
-    "@types/aws-lambda": "^8.10.125"
+    "@types/aws-lambda": "^8.10.131"
   }
 }
