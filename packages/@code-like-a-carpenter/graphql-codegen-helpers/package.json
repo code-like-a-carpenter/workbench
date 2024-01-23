@@ -8,8 +8,7 @@
   "author": "Ian Remmel <1182361+ianwremmel@users.noreply.github.com> (https://www.ianwremmel.com)",
   "bugs": "https://www.github.com/code-like-a-carpenter/workbench/issues",
   "engines": {
-    "node": "18.x",
-    "npm": "9.x"
+    "node": "20.x"
   },
   "exports": {
     ".": {
