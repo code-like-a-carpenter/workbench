@@ -72,8 +72,7 @@
     "wait-on": "^7.1.0"
   },
   "engines": {
-    "node": "18.x",
-    "npm": "9.x"
+    "node": "20.x"
   },
   "private": true,
   "workspaces": [
