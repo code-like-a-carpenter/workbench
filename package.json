@@ -24,7 +24,7 @@
     "@aws-sdk/client-dynamodb": "3.188.0",
     "@aws-sdk/client-eventbridge": "3.188.0",
     "@aws-sdk/lib-dynamodb": "3.188.0",
-    "@babel/preset-env": "^7.23.2",
+    "@babel/preset-env": "^7.23.8",
     "@babel/preset-typescript": "^7.23.2",
     "@commitlint/cli": "^18.2.0",
     "@commitlint/config-conventional": "^18.4.3",
