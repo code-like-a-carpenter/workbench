@@ -22,26 +22,32 @@
   "targetDefaults": {
     "build": {
       "dependsOn": ["^build"],
-      "inputs": ["default", "^dist"]
+      "inputs": ["default", "^dist"],
+      "cache": true
+    },
+    "build-cjs": {
+      "cache": true
+    },
+    "build-esm": {
+      "cache": true
+    },
+    "build-json-schemas": {
+      "cache": true
+    },
+    "build-openapi": {
+      "cache": true
+    },
+    "build-package": {
+      "cache": true
+    },
+    "build-project-refs": {
+      "cache": true
+    },
+    "build-readme": {
+      "cache": true
+    },
+    "build-types": {
+      "cache": true
     }
-  },
-  "tasksRunnerOptions": {
-    "default": {
-      "runner": "@nrwl/nx-cloud",
-      "options": {
-        "cacheableOperations": [
-          "build",
-          "build-cjs",
-          "build-esm",
-          "build-json-schemas",
-          "build-openapi",
-          "build-package",
-          "build-project-refs",
-          "build-readme",
-          "build-types"
-        ]
-      }
-    }
-  },
-  "npmScope": "code-like-a-carpenter"
+  }
 }

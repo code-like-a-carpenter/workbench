@@ -45,7 +45,6 @@ jobs:
         with:
           fetch-depth: 0
       - uses: './.github/actions/setup'
-      - run: npx nx workspace-lint
       - run: npx nx format:check
       - run: npm run lint
         env:

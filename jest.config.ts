@@ -19,6 +19,7 @@ declare global {
 
 const commonProjectConfig: Partial<Config.ProjectConfig> = {
   clearMocks: true,
+  modulePathIgnorePatterns: ['.nx/'],
   setupFilesAfterEnv: ['./jest.d/setup-files-after-env/faker.ts'],
   testEnvironment: 'node',
   testPathIgnorePatterns: ['/dist/', '/node_modules/'],
