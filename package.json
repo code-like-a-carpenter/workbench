@@ -33,7 +33,7 @@
     "@graphql-tools/apollo-engine-loader": "^8.0.0",
     "@ianwremmel/eslint-plugin-ianwremmel": "^6.2.2",
     "@jest/types": "^29.6.3",
-    "@nrwl/nx-cloud": "^15.3.5",
+    "@nrwl/nx-cloud": "^16.5.2",
     "@semrel-extra/npm": "^1.2.2",
     "@types/jest": "^29.5.10",
     "@types/lodash": "^4.14.200",
