@@ -2,7 +2,7 @@
   "$schema": "./node_modules/nx/schemas/nx-schema.json",
   "extends": "nx/presets/npm.json",
   "workspaceLayout": {
-    "appsDir": "demos",
+    "appsDir": "examples",
     "libsDir": "packages"
   },
   "namedInputs": {
@@ -15,39 +15,9 @@
     "sharedGlobals": [
       "{workspaceRoot}/.nx-cache-buster",
       "{workspaceRoot}/tsconfig.*.json",
+      "{workspaceRoot}/packages/@code-like-a-carpenter/nx/**/*",
       "{workspaceRoot}/packages/@code-like-a-carpenter/nx-auto/**/*"
     ]
   },
-  "plugins": ["@code-like-a-carpenter/nx-auto"],
-  "targetDefaults": {
-    "build": {
-      "dependsOn": ["^build"],
-      "inputs": ["default", "^dist"],
-      "cache": true
-    },
-    "build-cjs": {
-      "cache": true
-    },
-    "build-esm": {
-      "cache": true
-    },
-    "build-json-schemas": {
-      "cache": true
-    },
-    "build-openapi": {
-      "cache": true
-    },
-    "build-package": {
-      "cache": true
-    },
-    "build-project-refs": {
-      "cache": true
-    },
-    "build-readme": {
-      "cache": true
-    },
-    "build-types": {
-      "cache": true
-    }
-  }
+  "plugins": ["@code-like-a-carpenter/nx"]
 }
