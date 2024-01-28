@@ -1,4 +1,3 @@
-import assert from 'node:assert';
 import path from 'node:path';
 
 import type {CreateNodesFunction, TargetConfiguration} from '@nx/devkit';
@@ -15,12 +14,13 @@ export const createCliNodes: CreateNodesFunction = async (
     .filter((filePath) => !filePath.includes('.test.'))
     .join(' ');
 
-  let targets: Record<string, TargetConfiguration> = {
+  const targets: Record<string, TargetConfiguration> = {
     build: {
       cache: true,
       dependsOn: [
         'build-cjs',
         'build-esm',
+        'build-json-schemas',
         'build-readme',
         'build-types',
         '^build',
@@ -44,6 +44,16 @@ export const createCliNodes: CreateNodesFunction = async (
         command: `esbuild ${entryPoints} --format=esm --outdir={projectRoot}/dist/esm --platform=node --sourcemap=external`,
       },
       outputs: ['{projectRoot}/dist/esm'],
+    },
+    'build-json-schemas': {
+      cache: true,
+      executor: '@code-like-a-carpenter/nx:json-schema',
+      inputs: ['{projectRoot}/json-schemas/**/*.json'],
+      options: {
+        outDir: '{projectRoot}/src/__generated__/',
+        schemas: ['{projectRoot}/json-schemas/**/*.json'],
+      },
+      outputs: ['{projectRoot}/src/__generated__/json-schemas/**/*.d.ts'],
     },
     'build-package': {
       cache: true,
@@ -94,46 +104,6 @@ export const createCliNodes: CreateNodesFunction = async (
       outputs: ['{projectRoot}/dist/types'],
     },
   };
-
-  const jsonSchemas = glob.sync('*.json', {
-    cwd: path.join(projectRoot, 'json-schemas'),
-  });
-
-  if (jsonSchemas.length > 0) {
-    targets = {
-      ...targets,
-      'build-json-schemas': {
-        cache: true,
-        executor: 'nx:run-commands',
-        inputs: jsonSchemas.map(
-          (filePath) => `{projectRoot}/json-schemas/${filePath}`
-        ),
-        options: {
-          command: [
-            ...jsonSchemas.map(
-              (filepath) =>
-                `npx --no-install json2ts {projectRoot}/json-schemas/${filepath} {projectRoot}/src/__generated__/json-schemas/${filepath.replace(
-                  /.json$/,
-                  '.ts'
-                )}`
-            ),
-            `npx prettier --write {projectRoot}/src/__generated__/json-schemas`,
-          ].join(' && \\\n'),
-        },
-        outputs: jsonSchemas.map(
-          (filePath) =>
-            `{projectRoot}/src/__generated__/json-schemas/${filePath}`
-        ),
-      },
-    };
-
-    assert(typeof targets.build === 'object');
-    assert(targets.build !== null);
-    assert('dependsOn' in targets.build);
-    assert(Array.isArray(targets.build.dependsOn));
-
-    targets.build.dependsOn.push('build-json-schemas');
-  }
 
   return {
     projects: {

@@ -9,6 +9,8 @@ import {createNxNodes} from './create-nx-nodes';
 import {createPackageNodes} from './create-package-nodes';
 import {createRootNodes} from './create-root-nodes';
 
+export * from './helpers';
+
 export const createNodes: CreateNodes = [
   '**/package.json',
   async (projectConfigurationFile, options, context) => {
