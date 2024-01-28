@@ -429,9 +429,7 @@ export async function readUserSession(
       item._et === 'UserSession',
       () =>
         new DataIntegrityError(
-          `Expected ${JSON.stringify(input)} to load a UserSession but loaded ${
-            item._et
-          } instead`
+          `Expected ${JSON.stringify(input)} to load a UserSession but loaded ${item._et} instead`
         )
     );
 
@@ -509,9 +507,7 @@ export async function updateUserSession(
       item._et === 'UserSession',
       () =>
         new DataIntegrityError(
-          `Expected ${JSON.stringify({
-            sessionId: input.sessionId,
-          })} to update a UserSession but updated ${item._et} instead`
+          `Expected ${JSON.stringify({sessionId: input.sessionId})} to update a UserSession but updated ${item._et} instead`
         )
     );
 

@@ -106,10 +106,10 @@ export function formatEvent<O extends SimplifiedOperationObject>(
       body === null
         ? null
         : h.get('content-type')?.includes('application/x-www-form-urlencoded')
-        ? safeUrlEncodedParse(body)
-        : schema
-        ? schema.parse(safeJsonParse(body))
-        : safeJsonParse(body),
+          ? safeUrlEncodedParse(body)
+          : schema
+            ? schema.parse(safeJsonParse(body))
+            : safeJsonParse(body),
     headers: h,
     originalEvent: event,
     pathParameters: pathParameters as RestRequestPathParameters<O>,

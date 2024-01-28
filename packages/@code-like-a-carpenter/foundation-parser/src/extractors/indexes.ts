@@ -158,9 +158,8 @@ function extractSimpleIndexes(
   }
 
   return type.astNode.fields
-    .filter(
-      (field) =>
-        field.directives?.map(({name}) => name.value).includes('simpleIndex')
+    .filter((field) =>
+      field.directives?.map(({name}) => name.value).includes('simpleIndex')
     )
     .map((fieldNode): GSI => {
       const field = fieldMap[fieldNode.name.value];

@@ -1,7 +1,6 @@
 'use strict';
 
 const assert = require('assert');
-const fs = require('fs');
 const path = require('path');
 
 const glob = require('glob');
@@ -52,9 +51,7 @@ const command = {
 
     await writePrettierFile(tsconfigPath, JSON.stringify(tsconfig, null, 2));
 
-    const rootTsConfig = await loadRootTsConfig(
-      path.resolve(process.cwd(), 'tsconfig.json')
-    );
+    const rootTsConfig = await loadTsConfig('.');
 
     rootTsConfig.references = glob
       .sync(path.join('packages', '**', 'tsconfig.json'))
@@ -74,7 +71,7 @@ module.exports = command;
 
 /**
  * @param {string} packageName
- * @returns {Promise<import("@schemastore/tsconfig").JSONSchemaForTheTypeScriptCompilerSConfigurationFile>}
+ * @returns {Promise<import('@schemastore/tsconfig').JSONSchemaForTheTypeScriptCompilerSConfigurationFile>}
  */
 async function loadTsConfig(packageName) {
   try {
@@ -89,12 +86,4 @@ async function loadTsConfig(packageName) {
       include: ['src'],
     };
   }
-}
-
-/**
- * @param {string} tsconfigPath
- * @returns {Promise<import("@schemastore/tsconfig").JSONSchemaForTheTypeScriptCompilerSConfigurationFile>}
- */
-async function loadRootTsConfig(tsconfigPath) {
-  return JSON.parse(await fs.promises.readFile(tsconfigPath, 'utf-8'));
 }

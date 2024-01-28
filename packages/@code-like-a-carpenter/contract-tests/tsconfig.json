@@ -1,13 +1,13 @@
 {
   "compilerOptions": {
     "outDir": "./dist/types",
-    "rootDir": "./src"
+    "rootDir": "./src",
   },
   "extends": "../../../tsconfig.references.json",
   "include": ["src", "../../../types/**/*.d.ts"],
   "references": [
     {
-      "path": "../assert"
-    }
-  ]
+      "path": "../assert",
+    },
+  ],
 }

@@ -20,10 +20,10 @@ export type RestRequestBody<O extends SimplifiedOperationObject> = O extends {
 }
   ? O['requestBody']['content']['application/json']
   : O extends {requestBody: ContentTypeHtml}
-  ? string
-  : O extends {requestBody: ContentTypeUrlEncoded}
-  ? URLSearchParams
-  : null;
+    ? string
+    : O extends {requestBody: ContentTypeUrlEncoded}
+      ? URLSearchParams
+      : null;
 
 export type RestRequestPathParameters<O extends SimplifiedOperationObject> =
   O extends {parameters: {path: unknown}} ? O['parameters']['path'] : null;
