@@ -518,9 +518,7 @@ export async function readAccount(
       item._et === 'Account',
       () =>
         new DataIntegrityError(
-          `Expected ${JSON.stringify(input)} to load a Account but loaded ${
-            item._et
-          } instead`
+          `Expected ${JSON.stringify(input)} to load a Account but loaded ${item._et} instead`
         )
     );
 
@@ -613,9 +611,7 @@ export async function updateAccount(
       item._et === 'Account',
       () =>
         new DataIntegrityError(
-          `Expected ${JSON.stringify({
-            externalId: input.externalId,
-          })} to update a Account but updated ${item._et} instead`
+          `Expected ${JSON.stringify({externalId: input.externalId})} to update a Account but updated ${item._et} instead`
         )
     );
 
@@ -706,21 +702,13 @@ function makeKceForQueryAccount(
 ): string {
   if ('index' in input) {
     if (input.index === 'gsi1') {
-      return `#pk = :pk AND ${
-        operator === 'begins_with'
-          ? 'begins_with(#sk, :sk)'
-          : `#sk ${operator} :sk`
-      }`;
+      return `#pk = :pk AND ${operator === 'begins_with' ? 'begins_with(#sk, :sk)' : `#sk ${operator} :sk`}`;
     }
     throw new Error(
       'Invalid index. If TypeScript did not catch this, then this is a bug in codegen.'
     );
   } else {
-    return `#pk = :pk AND ${
-      operator === 'begins_with'
-        ? 'begins_with(#sk, :sk)'
-        : `#sk ${operator} :sk`
-    }`;
+    return `#pk = :pk AND ${operator === 'begins_with' ? 'begins_with(#sk, :sk)' : `#sk ${operator} :sk`}`;
   }
 }
 
@@ -1280,9 +1268,7 @@ export async function readMetric(
       item._et === 'Metric',
       () =>
         new DataIntegrityError(
-          `Expected ${JSON.stringify(input)} to load a Metric but loaded ${
-            item._et
-          } instead`
+          `Expected ${JSON.stringify(input)} to load a Metric but loaded ${item._et} instead`
         )
     );
 
@@ -1359,9 +1345,7 @@ export async function updateMetric(
       item._et === 'Metric',
       () =>
         new DataIntegrityError(
-          `Expected ${JSON.stringify({
-            onFreeTrial: input.onFreeTrial,
-          })} to update a Metric but updated ${item._et} instead`
+          `Expected ${JSON.stringify({onFreeTrial: input.onFreeTrial})} to update a Metric but updated ${item._et} instead`
         )
     );
 
@@ -1429,11 +1413,7 @@ function makeKceForQueryMetric(
       'Invalid index. If TypeScript did not catch this, then this is a bug in codegen.'
     );
   } else {
-    return `#pk = :pk AND ${
-      operator === 'begins_with'
-        ? 'begins_with(#sk, :sk)'
-        : `#sk ${operator} :sk`
-    }`;
+    return `#pk = :pk AND ${operator === 'begins_with' ? 'begins_with(#sk, :sk)' : `#sk ${operator} :sk`}`;
   }
 }
 
@@ -1905,9 +1885,7 @@ export async function readPlanMetric(
       item._et === 'PlanMetric',
       () =>
         new DataIntegrityError(
-          `Expected ${JSON.stringify(input)} to load a PlanMetric but loaded ${
-            item._et
-          } instead`
+          `Expected ${JSON.stringify(input)} to load a PlanMetric but loaded ${item._et} instead`
         )
     );
 
@@ -1989,11 +1967,7 @@ export async function updatePlanMetric(
       item._et === 'PlanMetric',
       () =>
         new DataIntegrityError(
-          `Expected ${JSON.stringify({
-            cancelled: input.cancelled,
-            onFreeTrial: input.onFreeTrial,
-            planName: input.planName,
-          })} to update a PlanMetric but updated ${item._et} instead`
+          `Expected ${JSON.stringify({cancelled: input.cancelled, onFreeTrial: input.onFreeTrial, planName: input.planName})} to update a PlanMetric but updated ${item._et} instead`
         )
     );
 
@@ -2084,11 +2058,7 @@ function makeKceForQueryPlanMetric(
       'Invalid index. If TypeScript did not catch this, then this is a bug in codegen.'
     );
   } else {
-    return `#pk = :pk AND ${
-      operator === 'begins_with'
-        ? 'begins_with(#sk, :sk)'
-        : `#sk ${operator} :sk`
-    }`;
+    return `#pk = :pk AND ${operator === 'begins_with' ? 'begins_with(#sk, :sk)' : `#sk ${operator} :sk`}`;
   }
 }
 
@@ -2456,9 +2426,7 @@ export async function readSubscriptionEvent(
       item._et === 'SubscriptionEvent',
       () =>
         new DataIntegrityError(
-          `Expected ${JSON.stringify(
-            input
-          )} to load a SubscriptionEvent but loaded ${item._et} instead`
+          `Expected ${JSON.stringify(input)} to load a SubscriptionEvent but loaded ${item._et} instead`
         )
     );
 
@@ -2526,11 +2494,7 @@ function makeKceForQuerySubscriptionEvent(
       'Invalid index. If TypeScript did not catch this, then this is a bug in codegen.'
     );
   } else {
-    return `#pk = :pk AND ${
-      operator === 'begins_with'
-        ? 'begins_with(#sk, :sk)'
-        : `#sk ${operator} :sk`
-    }`;
+    return `#pk = :pk AND ${operator === 'begins_with' ? 'begins_with(#sk, :sk)' : `#sk ${operator} :sk`}`;
   }
 }
 

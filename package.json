@@ -67,7 +67,7 @@
     "nx": "^16.10.0",
     "openapi-typescript": "^6.7.0",
     "patch-package": "^8.0.0",
-    "prettier": "^3.0.3",
+    "prettier": "^3.2.4",
     "typescript": "^5.2.2",
     "wait-on": "^7.1.0"
   },

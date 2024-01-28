@@ -1,22 +1,22 @@
 {
   "compilerOptions": {
     "outDir": "./dist/types",
-    "rootDir": "./src"
+    "rootDir": "./src",
   },
   "extends": "../../../tsconfig.references.json",
   "include": ["src"],
   "references": [
     {
-      "path": "../assert"
+      "path": "../assert",
     },
     {
-      "path": "../foundation-plugin-cloudformation"
+      "path": "../foundation-plugin-cloudformation",
     },
     {
-      "path": "../foundation-plugin-typescript"
+      "path": "../foundation-plugin-typescript",
     },
     {
-      "path": "../foundation-transform-environment"
-    }
-  ]
+      "path": "../foundation-transform-environment",
+    },
+  ],
 }
