@@ -4,6 +4,11 @@
       "implementation": "./executors/json-schema/executor",
       "schema": "./executors/json-schema/schema.json",
       "description": "json-schema executor"
+    },
+    "esbuild": {
+      "implementation": "./executors/esbuild/executor",
+      "schema": "./executors/esbuild/schema.json",
+      "description": "esbuild executor"
     }
   }
 }

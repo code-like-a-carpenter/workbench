@@ -2,7 +2,6 @@ import {readFile} from 'node:fs/promises';
 import path from 'node:path';
 
 import type {CreateNodesFunction, TargetConfiguration} from '@nx/devkit';
-import {glob} from 'glob';
 
 export const createPackageNodes: CreateNodesFunction = async (
   projectConfigurationFile
@@ -10,12 +9,6 @@ export const createPackageNodes: CreateNodesFunction = async (
   const projectRoot = path.dirname(projectConfigurationFile);
   const pkg = JSON.parse(await readFile(projectConfigurationFile, 'utf8'));
   const projectName = pkg.name;
-
-  const srcDir = path.join('.', projectRoot, 'src');
-
-  const entryPoints = (await glob(`${srcDir}/**/*.ts?(x)`))
-    .filter((filePath) => !filePath.includes('.test.'))
-    .join(' ');
 
   const targets: Record<string, TargetConfiguration> = {
     build: {
@@ -32,19 +25,23 @@ export const createPackageNodes: CreateNodesFunction = async (
     },
     'build-cjs': {
       cache: true,
-      executor: 'nx:run-commands',
+      executor: '@code-like-a-carpenter/nx:esbuild',
       inputs: ['{projectRoot}/src/**/*', 'sharedGlobals'],
       options: {
-        command: `esbuild ${entryPoints} --format=cjs --outdir={projectRoot}/dist/cjs --platform=node --sourcemap=external`,
+        entryPoints: ['{projectRoot}/src/**/*.[jt]s?(x)', '!**/*.test.*'],
+        format: 'cjs',
+        outDir: '{projectRoot}/dist/cjs',
       },
       outputs: ['{projectRoot}/dist/cjs'],
     },
     'build-esm': {
       cache: true,
-      executor: 'nx:run-commands',
+      executor: '@code-like-a-carpenter/nx:esbuild',
       inputs: ['{projectRoot}/src/**/*', 'sharedGlobals'],
       options: {
-        command: `esbuild ${entryPoints} --format=esm --outdir={projectRoot}/dist/esm --platform=node --sourcemap=external`,
+        entryPoints: ['{projectRoot}/src/**/*.[jt]s?(x)', '!**/*.test.*'],
+        format: 'esm',
+        outDir: '{projectRoot}/dist/esm',
       },
       outputs: ['{projectRoot}/dist/esm'],
     },
