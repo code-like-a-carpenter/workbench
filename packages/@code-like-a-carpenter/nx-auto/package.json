@@ -7,7 +7,7 @@
     "remark": "^14.0.2",
     "remark-stringify": "^10.0.2",
     "remark-toc": "^8.0.1",
-    "typescript": "^5.2.2",
+    "typescript": "^5.3.3",
     "unist-builder": "^3.0.1",
     "yargs": "^17.7.1"
   },
