@@ -11,7 +11,6 @@ export const createCliNodes: CreateNodesFunction = async (
     build: {
       cache: true,
       dependsOn: [
-        'build-cjs',
         'build-esm',
         'build-json-schemas',
         'build-readme',
@@ -19,17 +18,6 @@ export const createCliNodes: CreateNodesFunction = async (
         '^build',
       ],
       executor: 'nx:noop',
-    },
-    'build-cjs': {
-      cache: true,
-      executor: '@code-like-a-carpenter/nx:esbuild',
-      inputs: ['{projectRoot}/src/**/*', 'sharedGlobals'],
-      options: {
-        entryPoints: ['{projectRoot}/src/**/*.[jt]s?(x)', '!**/*.test.*'],
-        format: 'cjs',
-        outDir: '{projectRoot}/dist/cjs',
-      },
-      outputs: ['{projectRoot}/dist/cjs'],
     },
     'build-esm': {
       cache: true,

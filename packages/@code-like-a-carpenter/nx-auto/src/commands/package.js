@@ -92,10 +92,21 @@ async function config(packageName, type) {
     delete pkg.main;
     delete pkg.module;
   } else {
-    pkg.bin = './cli.js';
-    pkg.main = './dist/cjs/index.cjs';
+    pkg.bin = './cli.mjs';
 
-    delete pkg.exports;
+    pkg.exports = {
+      '.': {
+        /* eslint-disable sort-keys */
+        // `types` should [always come first](https://nodejs.org/api/packages.html#community-conditions-definitions)
+        types: './dist/types/index.d.ts',
+        import: './dist/esm/index.mjs',
+        /* eslint-enable sort-keys */
+      },
+      './package.json': './package.json',
+    };
+
+    delete pkg.main;
+    delete pkg.module;
   }
   assert(
     typeof rootPackageJson.homepage === 'string',
@@ -126,7 +137,7 @@ async function config(packageName, type) {
 }
 
 /**
- * @returns {Promise<import("@schemastore/package").JSONSchemaForNPMPackageJsonFiles>}
+ * @returns {Promise<import('@schemastore/package').JSONSchemaForNPMPackageJsonFiles>}
  */
 async function loadRootPackageJson() {
   return JSON.parse(
@@ -155,8 +166,8 @@ async function deps(packageName) {
     await removeExtraDependencies(packagePath, results.dependencies);
   }
 
-  const missingLocalPackages = Object.keys(results.missing).filter((m) =>
-    m.startsWith('@code-like-a-carpenter')
+  const missingLocalPackages = Object.keys(results.missing).filter(
+    (m) => m.startsWith('@code-like-a-carpenter') && m !== packageName
   );
   const missingNodePackages = Object.keys(results.missing).filter(
     (m) => !m.startsWith('@code-like-a-carpenter')

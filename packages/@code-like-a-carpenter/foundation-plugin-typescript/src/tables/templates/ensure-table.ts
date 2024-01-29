@@ -1,4 +1,4 @@
-import {snakeCase} from 'lodash';
+import snakeCase from 'lodash/snakeCase.js';
 
 /**
  * Generates the code for checking that the environment variables for this

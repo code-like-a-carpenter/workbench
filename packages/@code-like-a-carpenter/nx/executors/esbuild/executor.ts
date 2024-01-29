@@ -23,7 +23,6 @@ const runExecutor: Executor<EsbuildExecutor> = async (options) => {
     // `packages:'external'` should cover node modules and the return value in
     // the 'rewrite-extensions' plugin should cover everything else.
     bundle: true,
-    // bundle: false,
     entryPoints: eps,
     format,
     outExtension: {'.js': format === 'cjs' ? '.cjs' : '.mjs'},

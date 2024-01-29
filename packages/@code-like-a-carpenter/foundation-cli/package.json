@@ -13,7 +13,6 @@
   "publishConfig": {
     "access": "public"
   },
-  "main": "./dist/cjs/index.cjs",
   "dependencies": {
     "@code-like-a-carpenter/assert": "*",
     "@code-like-a-carpenter/foundation-plugin-cloudformation": "*",
@@ -28,5 +27,12 @@
     "yargs": "^17.7.1",
     "zod": "^3.22.4"
   },
-  "bin": "./cli.js"
+  "bin": "./cli.mjs",
+  "exports": {
+    ".": {
+      "types": "./dist/types/index.d.ts",
+      "import": "./dist/esm/index.mjs"
+    },
+    "./package.json": "./package.json"
+  }
 }
