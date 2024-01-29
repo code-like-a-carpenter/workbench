@@ -76,9 +76,12 @@ async function config(packageName, type) {
 
     pkg.exports = {
       '.': {
+        /* eslint-disable sort-keys */
+        // `types` should [always come first](https://nodejs.org/api/packages.html#community-conditions-definitions)
+        types: './dist/types/index.d.ts',
         import: './dist/esm/index.js',
         require: './dist/cjs/index.js',
-        types: './dist/types/index.d.ts',
+        /* eslint-enable sort-keys */
       },
       './package.json': './package.json',
     };
