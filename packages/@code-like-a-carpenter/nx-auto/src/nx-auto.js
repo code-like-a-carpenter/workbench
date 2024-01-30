@@ -28,6 +28,8 @@ exports.registerProjectTargets = function registerProjectTargets(
   }
 
   const projectRoot = path.dirname(projectFilePath);
+  const pkg = JSON.parse(fs.readFileSync(projectFilePath, 'utf8'));
+  const projectName = pkg.name;
 
   const srcDir = path.join('.', projectRoot, 'src');
   const distDir = path.join('.', projectRoot, 'dist');
@@ -116,6 +118,26 @@ exports.registerProjectTargets = function registerProjectTargets(
       outputs: ['{projectRoot}/dist/types'],
     },
   };
+
+  if (
+    projectName ===
+    '@code-like-a-carpenter/foundation-intermediate-representation'
+  ) {
+    // @ts-expect-error
+    targets['build-cjs'].dependsOn = ['build-core-schema'];
+    // @ts-expect-error
+    targets['build-esm'].dependsOn = ['build-core-schema'];
+    targets['build-core-schema'] = {
+      cache: true,
+      executor: 'nx:run-commands',
+      inputs: ['{projectRoot}/schema.graphqls', 'sharedGlobals'],
+      options: {
+        command:
+          'node ./packages/@code-like-a-carpenter/nx-auto/ inliner --export-name schema --source-file {projectRoot}/schema.graphqls --target-file {projectRoot}/src/__generated__/schema.ts',
+      },
+      outputs: ['{projectRoot}/src/__generated__/schema.ts'],
+    };
+  }
 
   const jsonSchemas = glob.sync('*.json', {
     cwd: path.join(projectRoot, 'json-schemas'),
