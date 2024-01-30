@@ -79,6 +79,7 @@ async function config(packageName, type) {
         /* eslint-disable sort-keys */
         // `types` should [always come first](https://nodejs.org/api/packages.html#community-conditions-definitions)
         types: './dist/types/index.d.ts',
+        development: './src/index.ts',
         import: './dist/esm/index.mjs',
         require: './dist/cjs/index.cjs',
         /* eslint-enable sort-keys */
@@ -99,6 +100,7 @@ async function config(packageName, type) {
         /* eslint-disable sort-keys */
         // `types` should [always come first](https://nodejs.org/api/packages.html#community-conditions-definitions)
         types: './dist/types/index.d.ts',
+        development: './src/index.ts',
         import: './dist/esm/index.mjs',
         /* eslint-enable sort-keys */
       },

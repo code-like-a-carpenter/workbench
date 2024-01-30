@@ -6,17 +6,20 @@
     "libsDir": "packages"
   },
   "namedInputs": {
+    "conditions": [{"env": "NODE_OPTIONS"}],
     "dist": ["{projectRoot}/dist/**/*"],
     "default": [
       "{projectRoot}/**/*",
       "sharedGlobals",
-      "!{projectRoot}/dist/**/*"
+      "!{projectRoot}/dist/**/*",
+      "!{projectRoot}/node_modules/**/*"
     ],
     "sharedGlobals": [
       "{workspaceRoot}/.nx-cache-buster",
       "{workspaceRoot}/tsconfig.*.json",
       "{workspaceRoot}/packages/@code-like-a-carpenter/nx/**/*",
-      "{workspaceRoot}/packages/@code-like-a-carpenter/nx-auto/**/*"
+      "{workspaceRoot}/packages/@code-like-a-carpenter/nx-auto/**/*",
+      "conditions"
     ]
   },
   "plugins": ["@code-like-a-carpenter/nx"]

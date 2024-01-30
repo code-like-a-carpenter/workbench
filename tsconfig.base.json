@@ -14,8 +14,6 @@
     "target": "es2022",
     "types": ["jest", "node"],
     "useDefineForClassFields": true,
-    "paths": {
-      "@code-like-a-carpenter/*": ["./packages/@code-like-a-carpenter/*"]
-    }
+    "paths": {}
   }
 }
