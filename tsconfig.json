@@ -80,6 +80,15 @@
       "path": "packages/@code-like-a-carpenter/contract-tests",
     },
     {
+      "path": "packages/@code-like-a-carpenter/cli-plugin-example",
+    },
+    {
+      "path": "packages/@code-like-a-carpenter/cli-core",
+    },
+    {
+      "path": "packages/@code-like-a-carpenter/cli",
+    },
+    {
       "path": "packages/@code-like-a-carpenter/aws-env-loader",
     },
     {
