@@ -9,6 +9,11 @@
       "implementation": "./executors/esbuild/executor",
       "schema": "./executors/esbuild/schema.json",
       "description": "esbuild executor"
+    },
+    "inliner": {
+      "implementation": "./executors/inliner/executor",
+      "schema": "./executors/inliner/schema.json",
+      "description": "inliner executor"
     }
   }
 }

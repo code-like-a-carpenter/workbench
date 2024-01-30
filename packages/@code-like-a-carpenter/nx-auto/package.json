@@ -2,9 +2,6 @@
   "name": "@code-like-a-carpenter/nx-auto",
   "main": "./src/index.js",
   "dependencies": {
-    "@babel/generator": "^7.23.6",
-    "@babel/template": "^7.23.9",
-    "@babel/types": "^7.23.9",
     "depcheck": "^1.4.3",
     "glob": "^10.3.10",
     "remark": "^14.0.2",

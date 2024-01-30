@@ -113,11 +113,12 @@ export const createPackageNodes: CreateNodesFunction = async (
     targets['build-esm'].dependsOn = ['build-core-schema'];
     targets['build-core-schema'] = {
       cache: true,
-      executor: 'nx:run-commands',
+      executor: '@code-like-a-carpenter/nx:inliner',
       inputs: ['{projectRoot}/schema.graphqls', 'sharedGlobals'],
       options: {
-        command:
-          'node ./packages/@code-like-a-carpenter/nx-auto/ inliner --export-name schema --source-file {projectRoot}/schema.graphqls --target-file {projectRoot}/src/__generated__/schema.ts',
+        exportName: 'schema',
+        sourceFile: '{projectRoot}/schema.graphqls',
+        targetFile: '{projectRoot}/src/__generated__/schema.ts',
       },
       outputs: ['{projectRoot}/src/__generated__/schema.ts'],
     };
