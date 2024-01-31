@@ -28,8 +28,8 @@ const command = {
       `packageName must not end with package.json, got ${packageName}`
     );
     assert(
-      /@.+\/.+/.test(packageName),
-      `packageName must be in the format @scope/name, got ${packageName}`
+      /@.+\/.+/.test(packageName) || packageName.split('/').length === 1,
+      `packageName must be in the format "@scope/name" or "name", got ${packageName}`
     );
 
     const packagePath = pathToPackage(packageName);
