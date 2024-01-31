@@ -8,6 +8,8 @@
     "*.tsx",
     "*.js",
     "*.jsx",
+    "examples/*/executors/**/*.js",
+    "examples/*/executors/**/*.ts",
     "examples/*/src/**/*.js",
     "examples/*/src/**/*.jsx",
     "examples/*/src/**/*.ts",
@@ -21,6 +23,9 @@
   "references": [
     {
       "path": "packages/@code-like-a-carpenter/wait-for",
+    },
+    {
+      "path": "packages/@code-like-a-carpenter/tooling-deps",
     },
     {
       "path": "packages/@code-like-a-carpenter/telemetry",

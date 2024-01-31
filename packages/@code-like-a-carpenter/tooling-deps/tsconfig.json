@@ -9,11 +9,5 @@
     {
       "path": "../cli-core",
     },
-    {
-      "path": "../cli-plugin-example",
-    },
-    {
-      "path": "../tooling-deps",
-    },
   ],
 }

@@ -24,7 +24,7 @@
     "@graphql-tools/schema": "^10.0.2",
     "glob": "^10.3.10",
     "graphql": "^16.8.1",
-    "yargs": "^17.7.1",
+    "yargs": "^17.7.2",
     "zod": "^3.22.4"
   },
   "bin": "./cli.mjs",
@@ -35,5 +35,8 @@
       "import": "./dist/esm/index.mjs"
     },
     "./package.json": "./package.json"
+  },
+  "devDependencies": {
+    "@types/yargs": "^17.0.32"
   }
 }
