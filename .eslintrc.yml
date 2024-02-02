@@ -57,6 +57,12 @@ overrides:
       prefer-destructuring: off
       sort-keys: off
 
+  - files:
+      - '*.d.ts'
+    rules:
+      eslint-comments/disable-enable-pair: off
+      eslint-comments/no-unlimited-disable: off
+
 parserOptions:
   sourceType: 'script'
 

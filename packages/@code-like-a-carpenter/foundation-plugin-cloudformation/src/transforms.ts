@@ -26,12 +26,12 @@ export async function applyTransforms(
  * Deals with the possibility that this code may run in commonjs or esm mode.
  */
 async function loadTransform(transformModule: string): Promise<Transform> {
-  if (typeof require !== 'undefined') {
+  try {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     const {transform} = require(transformModule);
     return transform;
+  } catch (err) {
+    const {transform} = await import(transformModule);
+    return transform;
   }
-
-  const {transform} = await import(transformModule);
-  return transform;
 }

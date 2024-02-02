@@ -13,7 +13,9 @@ import type {
   JestEnvironmentConfig,
 } from '@jest/environment';
 import Environment from 'jest-environment-node';
-import {camelCase, snakeCase, upperFirst} from 'lodash';
+import camelCase from 'lodash/camelCase.js';
+import snakeCase from 'lodash/snakeCase.js';
+import upperFirst from 'lodash/upperFirst.js';
 
 import {env} from '@code-like-a-carpenter/env';
 

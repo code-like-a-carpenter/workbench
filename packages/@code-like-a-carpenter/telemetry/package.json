@@ -8,9 +8,9 @@
   },
   "exports": {
     ".": {
-      "import": "./dist/esm/index.js",
-      "require": "./dist/cjs/index.js",
-      "types": "./dist/types/index.d.ts"
+      "types": "./dist/types/index.d.ts",
+      "import": "./dist/esm/index.mjs",
+      "require": "./dist/cjs/index.cjs"
     },
     "./package.json": "./package.json"
   },
@@ -32,6 +32,6 @@
     "snake-case": "^3.0.4"
   },
   "devDependencies": {
-    "@types/aws-lambda": "^8.10.132"
+    "@types/aws-lambda": "^8.10.133"
   }
 }

@@ -7,7 +7,8 @@ import type {
   GraphQLType,
 } from 'graphql';
 import {isNonNullType, isScalarType} from 'graphql';
-import {camelCase, snakeCase} from 'lodash';
+import camelCase from 'lodash/camelCase.js';
+import snakeCase from 'lodash/snakeCase.js';
 
 import type {
   Field,

@@ -1,0 +1,24 @@
+{
+  "$schema": "http://json-schema.org/schema",
+  "version": 2,
+  "title": "Esbuild executor",
+  "description": "",
+  "type": "object",
+  "properties": {
+    "entryPoints": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "format": {
+      "type": "string",
+      "enum": ["esm", "cjs"]
+    },
+    "outDir": {
+      "type": "string"
+    }
+  },
+  "required": ["entryPoints", "format", "outDir"],
+  "additionalProperties": false
+}

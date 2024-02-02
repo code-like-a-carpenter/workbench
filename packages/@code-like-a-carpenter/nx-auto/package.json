@@ -9,14 +9,14 @@
     "remark-toc": "^8.0.1",
     "typescript": "^5.3.3",
     "unist-builder": "^3.0.1",
-    "yargs": "^17.7.1"
+    "yargs": "^17.7.1",
+    "prettier": "^3.0.3"
   },
   "devDependencies": {
     "@schemastore/package": "^0.0.8",
     "@schemastore/tsconfig": "^0.0.10",
     "@types/prettier": "^3.0.0",
-    "@types/yargs": "^17.0.22",
-    "prettier": "^3.2.4"
+    "@types/yargs": "^17.0.22"
   },
   "private": true
 }

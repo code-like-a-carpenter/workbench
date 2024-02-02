@@ -1,4 +1,5 @@
-import {camelCase, upperFirst} from 'lodash';
+import camelCase from 'lodash/camelCase.js';
+import upperFirst from 'lodash/upperFirst.js';
 
 import {assert} from '@code-like-a-carpenter/assert';
 import type {Transform} from '@code-like-a-carpenter/foundation-plugin-cloudformation';
