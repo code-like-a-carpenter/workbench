@@ -28,6 +28,9 @@
       "path": "packages/@code-like-a-carpenter/tooling-deps",
     },
     {
+      "path": "packages/@code-like-a-carpenter/tooling-common",
+    },
+    {
       "path": "packages/@code-like-a-carpenter/telemetry",
     },
     {
@@ -83,6 +86,9 @@
     },
     {
       "path": "packages/@code-like-a-carpenter/contract-tests",
+    },
+    {
+      "path": "packages/@code-like-a-carpenter/cli-plugin-proxy",
     },
     {
       "path": "packages/@code-like-a-carpenter/cli-plugin-example",

@@ -4,6 +4,9 @@ import {readFile} from 'node:fs/promises';
 import findUp from 'find-up';
 import {glob} from 'glob';
 
+/**
+ * @returns A map of package names to their package.json file paths
+ */
 export async function findLocalPackages(): Promise<Map<string, string>> {
   const packagePath = await findUp('package.json');
   assert(packagePath, 'Could not find package.json');

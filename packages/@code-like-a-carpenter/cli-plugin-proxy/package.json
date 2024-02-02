@@ -1,12 +1,15 @@
 {
-  "name": "@code-like-a-carpenter/tooling-deps",
-  "description": "A CLI plugin for Code Like a Carpenter to manage dependencies",
+  "name": "@code-like-a-carpenter/cli-plugin-proxy",
+  "description": "Proxy command which forwards one or more API Gateway endpoints to localhost",
   "dependencies": {
+    "@aws-sdk/client-cloudformation": "3.188.0",
+    "@code-like-a-carpenter/assert": "*",
     "@code-like-a-carpenter/cli-core": "*",
     "@code-like-a-carpenter/tooling-common": "*",
-    "@nx/devkit": "^17.3.0",
-    "depcheck": "^1.4.7",
-    "minimatch": "^9.0.3"
+    "express": "^4.18.2",
+    "http-proxy": "^1.18.1",
+    "lodash": "^4.17.21",
+    "vhost": "^3.0.2"
   },
   "author": "Ian Remmel <1182361+ianwremmel@users.noreply.github.com> (https://www.ianwremmel.com)",
   "bugs": "https://www.github.com/code-like-a-carpenter/workbench/issues",
@@ -17,20 +20,20 @@
     ".": {
       "types": "./dist/types/index.d.ts",
       "development": "./src/index.ts",
-      "import": "./dist/esm/index.mjs",
-      "require": "./dist/cjs/index.cjs"
+      "import": "./dist/esm/index.mjs"
     },
     "./package.json": "./package.json"
   },
-  "homepage": "https://www.github.com/code-like-a-carpenter/workbench/tree/main/packages/@code-like-a-carpenter/tooling-deps",
+  "homepage": "https://www.github.com/code-like-a-carpenter/workbench/tree/main/packages/@code-like-a-carpenter/cli-plugin-proxy",
   "license": "MIT",
   "repository": "git@github.com:code-like-a-carpenter/workbench.git",
   "types": "dist/types",
   "publishConfig": {
     "access": "public"
   },
+  "bin": "./cli.mjs",
   "devDependencies": {
-    "@types/aws-lambda": "^8.10.133"
-  },
-  "executors": "./executors.json"
+    "@types/http-proxy": "^1.17.14",
+    "@types/vhost": "^3.0.9"
+  }
 }

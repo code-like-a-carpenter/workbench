@@ -13,6 +13,9 @@
       "path": "../cli-plugin-example",
     },
     {
+      "path": "../cli-plugin-proxy",
+    },
+    {
       "path": "../tooling-deps",
     },
   ],

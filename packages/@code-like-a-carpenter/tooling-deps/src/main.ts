@@ -4,8 +4,9 @@ import path from 'node:path';
 
 import {minimatch} from 'minimatch';
 
+import {findLocalPackages} from '@code-like-a-carpenter/tooling-common';
+
 import {runDepcheck} from './depcheck';
-import {findLocalPackages} from './find-local-packages';
 
 export interface MainArgs {
   readonly awsSdkVersion: string;
