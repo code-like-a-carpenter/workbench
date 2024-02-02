@@ -16,6 +16,7 @@
 -   [Maintainer](#maintainer)
 -   [Contribute](#contribute)
     -   [nx](#nx)
+    -   [Local development without building first](#local-development-without-building-first)
 -   [License](#license)
 
 <!-- tocstop -->
@@ -80,6 +81,28 @@ date --iso-8601=seconds> .nx-cache-buster
 ```
 
 Of course, remember to commit the updated file.
+
+### Local development without building first
+
+In addition to `cjs`/`esm` entries in each package's export map, there's also a
+`development` entry which exports the typescript source code. By setting
+`NODE_OPTIONS='--conditions=development`, `nx` _should_ be able to use project
+code without building it first.
+
+If you're debugging a cli, you can also `---import tsx` during development to
+run without building everything first:
+
+```sh
+NODE_OPTIONS='--conditions=development --import tsx' npx @code-like-a-carpenter/cli
+```
+
+This approach isn't fully compatible with `nx` yet. By setting `--import tsx`,
+`nx` ends up with libraries vying to import typescript files and errors. Since
+`--import` cannot be set on the environment when using `nx`, `nx` cannot call
+local clis that need to be transpiled on the fly. Either they need to be build
+before they get invoked as an `nx` target or (prefferably), they would also
+export an `nx` executor that can be called directly. If we don't need to shell
+out to a subprocess, we can rely on `nx`'s automatically registered swc/node
 
 ## License
 

@@ -4,19 +4,18 @@
   "dependencies": {
     "depcheck": "^1.4.3",
     "glob": "^10.3.10",
+    "prettier": "^3.0.3",
     "remark": "^14.0.2",
     "remark-stringify": "^10.0.2",
     "remark-toc": "^8.0.1",
     "typescript": "^5.3.3",
     "unist-builder": "^3.0.1",
-    "yargs": "^17.7.1",
-    "prettier": "^3.0.3"
+    "yargs": "^17.7.2"
   },
   "devDependencies": {
     "@schemastore/package": "^0.0.8",
     "@schemastore/tsconfig": "^0.0.10",
-    "@types/prettier": "^3.0.0",
-    "@types/yargs": "^17.0.22"
+    "@types/prettier": "^3.0.0"
   },
   "private": true
 }

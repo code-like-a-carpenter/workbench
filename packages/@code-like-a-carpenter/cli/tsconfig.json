@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "outDir": "./dist/types",
+    "rootDir": "./src",
+  },
+  "extends": "../../../tsconfig.references.json",
+  "include": ["src"],
+  "references": [
+    {
+      "path": "../cli-core",
+    },
+    {
+      "path": "../cli-plugin-example",
+    },
+    {
+      "path": "../cli-plugin-proxy",
+    },
+    {
+      "path": "../tooling-deps",
+    },
+  ],
+}

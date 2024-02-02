@@ -95,6 +95,14 @@ export const createNodes: CreateNodes = [
         ],
         executor: 'nx:noop',
       },
+      'codegen:deps': {
+        cache: true,
+        executor: '@code-like-a-carpenter/tooling-deps:deps',
+        options: {
+          definitelyTyped: ['http-proxy', 'yargs', 'vhost'],
+          packageName: projectName,
+        },
+      },
       'codegen:executors': {
         cache: true,
         executor: '@code-like-a-carpenter/nx:json-schema',
@@ -164,7 +172,7 @@ fi
       },
       'codegen:project-refs': {
         cache: true,
-        dependsOn: ['^codegen:project-refs', 'codegen:package'],
+        dependsOn: ['^codegen:project-refs', 'codegen:deps'],
         executor: 'nx:run-commands',
         inputs: ['{projectRoot}/package.json', 'sharedGlobals'],
         options: {

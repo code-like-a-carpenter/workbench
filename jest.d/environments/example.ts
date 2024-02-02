@@ -13,37 +13,12 @@ import type {
   JestEnvironmentConfig,
 } from '@jest/environment';
 import Environment from 'jest-environment-node';
-import camelCase from 'lodash/camelCase.js';
 import snakeCase from 'lodash/snakeCase.js';
-import upperFirst from 'lodash/upperFirst.js';
 
 import {env} from '@code-like-a-carpenter/env';
+import {getStackName} from '@code-like-a-carpenter/tooling-common';
 
 type TestEnv = 'aws' | 'localstack';
-
-function getStackName(projectName: string): string {
-  const stackName = upperFirst(camelCase(projectName));
-  let suffix = '';
-  if (env('GITHUB_SHA', '') !== '') {
-    suffix = `${env('GITHUB_SHA', '').slice(0, 7)}`;
-  }
-
-  if (env('GITHUB_HEAD_REF', '') !== '') {
-    suffix = `${suffix}-${env('GITHUB_HEAD_REF')
-      .replace(/[/_]/g, '-')
-      .substring(0, 20)}`;
-  } else if (env('GITHUB_REF', '') !== '') {
-    const branchName = env('GITHUB_REF', '')
-      .split('/')
-      .slice(2)
-      .join('/')
-      .replace(/[/_]/g, '-')
-      .substring(0, 20);
-    suffix = `${suffix}-${branchName}`;
-  }
-
-  return suffix ? `${stackName}-${suffix}` : stackName;
-}
 
 export default class ExampleEnvironment extends Environment {
   private readonly exampleName: string;

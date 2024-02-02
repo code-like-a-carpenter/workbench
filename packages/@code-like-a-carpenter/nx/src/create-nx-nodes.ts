@@ -10,7 +10,7 @@ export const createNxNodes: CreateNodesFunction = async (
     build: {
       cache: true,
       executor: '@code-like-a-carpenter/nx:json-schema',
-      inputs: ['{projectRoot}/executors/*/schema.json'],
+      inputs: ['{projectRoot}/executors/*/schema.json', 'sharedGlobals'],
       options: {
         schemas: ['{projectRoot}/executors/*/schema.json'],
       },

@@ -1,0 +1,38 @@
+{
+  "name": "@code-like-a-carpenter/cli",
+  "description": "CLI for Code Like a Carpenter",
+  "author": "Ian Remmel <1182361+ianwremmel@users.noreply.github.com> (https://www.ianwremmel.com)",
+  "bugs": "https://www.github.com/code-like-a-carpenter/workbench/issues",
+  "engines": {
+    "node": "20.x"
+  },
+  "homepage": "https://www.github.com/code-like-a-carpenter/workbench/tree/main/packages/@code-like-a-carpenter/cli",
+  "license": "MIT",
+  "repository": "git@github.com:code-like-a-carpenter/workbench.git",
+  "types": "dist/types",
+  "publishConfig": {
+    "access": "public"
+  },
+  "bin": "./cli.mjs",
+  "code-like-a-carpenter": {
+    "plugins": [
+      "@code-like-a-carpenter/cli-plugin-example",
+      "@code-like-a-carpenter/cli-plugin-proxy",
+      "@code-like-a-carpenter/tooling-deps"
+    ]
+  },
+  "dependencies": {
+    "@code-like-a-carpenter/cli-core": "*",
+    "@code-like-a-carpenter/cli-plugin-example": "*",
+    "@code-like-a-carpenter/cli-plugin-proxy": "*",
+    "@code-like-a-carpenter/tooling-deps": "*"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/types/index.d.ts",
+      "development": "./src/index.ts",
+      "import": "./dist/esm/index.mjs"
+    },
+    "./package.json": "./package.json"
+  }
+}

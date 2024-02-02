@@ -1,14 +1,10 @@
 'use strict';
 
 const assert = require('assert');
-const {spawnSync} = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
-const depcheck = require('depcheck');
-
 const {writePackageJson} = require('../lib/helpers');
-const {pathToPackage} = require('../lib/helpers');
 const {readPackageJson} = require('../lib/helpers');
 
 /** @type import('yargs').CommandModule */
@@ -34,7 +30,6 @@ const command = {
       `packageName must not end with package.json, got ${packageName}`
     );
 
-    await deps(packageName);
     if (type === 'example') {
       await configExample(packageName);
     } else {
@@ -79,6 +74,7 @@ async function config(packageName, type) {
         /* eslint-disable sort-keys */
         // `types` should [always come first](https://nodejs.org/api/packages.html#community-conditions-definitions)
         types: './dist/types/index.d.ts',
+        development: './src/index.ts',
         import: './dist/esm/index.mjs',
         require: './dist/cjs/index.cjs',
         /* eslint-enable sort-keys */
@@ -99,6 +95,7 @@ async function config(packageName, type) {
         /* eslint-disable sort-keys */
         // `types` should [always come first](https://nodejs.org/api/packages.html#community-conditions-definitions)
         types: './dist/types/index.d.ts',
+        development: './src/index.ts',
         import: './dist/esm/index.mjs',
         /* eslint-enable sort-keys */
       },
@@ -146,108 +143,4 @@ async function loadRootPackageJson() {
       'utf-8'
     )
   );
-}
-
-/**
- * @param {string} packageName
- */
-async function deps(packageName) {
-  const packagePath = pathToPackage(packageName);
-
-  const results = await depcheck(packagePath, {
-    detectors: [
-      ...Object.values(depcheck.detector),
-      depcheck.detector.typescriptImportType,
-    ],
-    ignoreDirs: ['.aws-sam', 'dist'],
-  });
-
-  if (results.dependencies.length > 0) {
-    await removeExtraDependencies(packagePath, results.dependencies);
-  }
-
-  const missingLocalPackages = Object.keys(results.missing).filter(
-    (m) => m.startsWith('@code-like-a-carpenter') && m !== packageName
-  );
-  const missingNodePackages = Object.keys(results.missing).filter(
-    (m) => !m.startsWith('@code-like-a-carpenter')
-  );
-
-  if (missingLocalPackages.length > 0) {
-    await addMissingLocalDependencies(packagePath, missingLocalPackages);
-  }
-
-  if (missingNodePackages.length > 0) {
-    await addMissingNodeDependencies(packagePath, missingNodePackages);
-  }
-}
-
-/**
- * @param {string} packageName
- * @param {readonly string[]} dependencies
- */
-function addMissingLocalDependencies(packageName, dependencies) {
-  spawnSync('npm', ['install', '--workspace', packageName, ...dependencies], {
-    stdio: 'inherit',
-  });
-}
-
-// This is the current version bundled with lambda
-const awsSdkVersion = '3.188.0';
-
-/**
- * @param {string} packageName
- * @param {readonly string[]} dependencies
- */
-function addMissingNodeDependencies(packageName, dependencies) {
-  const awsDeps = dependencies
-    .filter((d) => d.startsWith('@aws-sdk'))
-    .map((d) => `${d}@${awsSdkVersion}`);
-
-  const normalDeps = dependencies
-    .filter((d) => !d.startsWith('@aws-sdk'))
-    .filter((d) => d !== 'aws-lambda')
-    .map((d) => `${d}@latest`);
-
-  const needsLambda = dependencies.includes('aws-lambda');
-
-  if (awsDeps.length) {
-    spawnSync(
-      'npm',
-      ['install', '--workspace', packageName, '--save-exact', ...awsDeps],
-      {
-        stdio: 'inherit',
-      }
-    );
-  }
-
-  if (normalDeps.length) {
-    spawnSync('npm', ['install', '--workspace', packageName, ...normalDeps], {
-      stdio: 'inherit',
-    });
-  }
-
-  if (needsLambda) {
-    spawnSync(
-      'npm',
-      [
-        'install',
-        '--save-dev',
-        '--workspace',
-        packageName,
-        '@types/aws-lambda',
-      ],
-      {stdio: 'inherit'}
-    );
-  }
-}
-
-/**
- * @param {string} packageName
- * @param {readonly string[]} dependencies
- */
-function removeExtraDependencies(packageName, dependencies) {
-  spawnSync('npm', ['uninstall', '--workspace', packageName, ...dependencies], {
-    stdio: 'inherit',
-  });
 }
