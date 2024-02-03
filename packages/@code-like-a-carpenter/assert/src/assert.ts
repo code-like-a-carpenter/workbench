@@ -26,13 +26,17 @@ export function assert(
 export {
   deepEqual,
   deepStrictEqual,
-  doesNotMatch,
+  // Removing the next line for now because it's missing from esbuild's node
+  // builtins polyfill
+  // doesNotMatch,
   doesNotReject,
   doesNotThrow,
   equal,
   fail,
   ifError,
-  match,
+  // Removing the next line for now because it's missing from esbuild's node
+  // builtins polyfill
+  // match,
   notDeepEqual,
   notDeepStrictEqual,
   notEqual,
