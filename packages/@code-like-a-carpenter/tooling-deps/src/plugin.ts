@@ -36,7 +36,6 @@ export const plugin = definePlugin((yargs) => {
         type: 'array',
       },
       'package-name': {
-        demandOption: true,
         type: 'string',
       },
     },
