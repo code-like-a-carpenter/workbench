@@ -14,11 +14,27 @@ export interface MainArgs {
   readonly devPatterns: readonly string[];
   readonly dryRun: boolean;
   readonly ignoreDirs: readonly string[];
-  readonly packageName: string;
+  readonly packageName?: string;
+}
+
+export async function main(args: MainArgs) {
+  const localPackages = await findLocalPackages();
+  if ('packageName' in args && typeof args.packageName === 'string') {
+    const {packageName} = args;
+    await processSinglePackage({...args, packageName}, localPackages);
+    return;
+  }
+
+  for (const packageName of localPackages.keys()) {
+    await processSinglePackage({...args, packageName}, localPackages);
+  }
 }
 
 // eslint-disable-next-line complexity
-export async function main(args: MainArgs) {
+export async function processSinglePackage(
+  args: Omit<MainArgs, 'packageName'> & {readonly packageName: string},
+  localPackages: Map<string, string>
+) {
   const {
     awsSdkVersion,
     definitelyTyped,
@@ -28,7 +44,6 @@ export async function main(args: MainArgs) {
     packageName,
   } = args;
   assert(Array.isArray(devPatterns), 'devPatterns must be an array');
-  const localPackages = await findLocalPackages();
 
   const packagePath = localPackages.get(packageName);
   assert(packagePath, `Could not find path for ${packageName}`);
