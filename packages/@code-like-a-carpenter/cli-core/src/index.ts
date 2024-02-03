@@ -30,14 +30,12 @@ export async function main() {
 }
 
 async function load(pluginName: string) {
-  try {
-    const {default: plugin} = await import(pluginName);
-    return plugin;
-  } catch (err) {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const {default: plugin} = require(pluginName);
-    return plugin;
+  const mod = await import(pluginName);
+  if (mod.default) {
+    return mod.default.transform;
   }
+
+  return mod.transform;
 }
 
 export async function registerPlugin(yargs: Argv, fn: RegisterPluginFunction) {
