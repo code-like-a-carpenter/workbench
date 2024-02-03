@@ -99,7 +99,15 @@ export const createNodes: CreateNodes = [
         cache: true,
         executor: '@code-like-a-carpenter/tooling-deps:deps',
         options: {
-          definitelyTyped: ['http-proxy', 'yargs', 'vhost'],
+          definitelyTyped: [
+            'dotenv',
+            'http-proxy',
+            'js-yaml',
+            'lodash.*',
+            'prettier',
+            'vhost',
+            'yargs',
+          ],
           packageName: projectName,
         },
       },

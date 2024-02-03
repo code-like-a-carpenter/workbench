@@ -5,7 +5,7 @@ import {
   CloudFormationClient,
   DescribeStacksCommand,
 } from '@aws-sdk/client-cloudformation';
-import snakeCase from 'lodash/snakeCase';
+import snakeCase from 'lodash.snakecase';
 
 import {assert} from '@code-like-a-carpenter/assert';
 import {getStackName} from '@code-like-a-carpenter/tooling-common';
