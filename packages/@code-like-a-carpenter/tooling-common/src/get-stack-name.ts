@@ -1,5 +1,5 @@
-import camelCase from 'lodash/camelCase';
-import upperFirst from 'lodash/upperFirst';
+import camelCase from 'lodash.camelcase';
+import upperFirst from 'lodash.upperfirst';
 
 import {env} from '@code-like-a-carpenter/env';
 

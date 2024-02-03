@@ -8,6 +8,7 @@ extends:
   - 'plugin:workspaces/recommended'
   - 'plugin:@ianwremmel/ianwremmel/modern'
   - 'plugin:@ianwremmel/ianwremmel/typescript'
+  - 'plugin:lodash/recommended'
   - 'prettier'
 
 ignorePatterns:
@@ -70,9 +71,11 @@ plugins:
   - workspaces
 
 settings:
+  import/internal-regex: '^@code-like-a-carpenter/'
+  lodash:
+    pragma: '_'
   react:
     version: 'detect'
-  import/internal-regex: '^@code-like-a-carpenter/'
 
 rules:
   '@typescript-eslint/consistent-type-imports': 'error'
@@ -94,3 +97,20 @@ rules:
         - 'src'
   workspaces/no-relative-imports: 'error'
   require-jsdoc: off
+
+  'lodash/import-scope':
+    - error
+    - method-package
+  'lodash/prefer-constant': off
+  'lodash/prefer-get': off
+  'lodash/prefer-includes': off
+  'lodash/prefer-is-nil': off
+  'lodash/prefer-lodash-chain': off
+  'lodash/prefer-lodash-method': off
+  'lodash/prefer-lodash-typecheck': off
+  'lodash/prefer-matches': off
+  'lodash/prefer-noop': off
+  'lodash/prefer-over-quantifier': off
+  'lodash/prefer-some': off
+  'lodash/prefer-startswith': off
+  'lodash/prefer-times': off

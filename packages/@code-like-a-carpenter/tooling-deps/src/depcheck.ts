@@ -2,6 +2,7 @@ import {readFile} from 'node:fs/promises';
 import path from 'node:path';
 
 import depcheck from 'depcheck';
+import {minimatch} from 'minimatch';
 
 export async function runDepcheck(
   packagePath: string,
@@ -47,7 +48,7 @@ export async function runDepcheck(
       // Auto install the types packages for the specified implementation packages
       async (filePath, deps) =>
         deps
-          .filter((dep) => definitelyTyped.includes(dep))
+          .filter((dep) => definitelyTyped.some((dt) => minimatch(dep, dt)))
           .map((dep) => `@types/${dep}`),
       // Include support for the code-like-a-carpenter plugin system
       async (filePath) => {
