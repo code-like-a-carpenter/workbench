@@ -32,10 +32,10 @@ export async function main() {
 async function load(pluginName: string) {
   const mod = await import(pluginName);
   if (mod.default) {
-    return mod.default.transform;
+    return mod.default;
   }
 
-  return mod.transform;
+  return mod;
 }
 
 export async function registerPlugin(yargs: Argv, fn: RegisterPluginFunction) {
