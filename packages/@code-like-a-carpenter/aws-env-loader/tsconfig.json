@@ -1,13 +1,13 @@
 {
   "compilerOptions": {
     "outDir": "./dist/types",
-    "rootDir": "./src",
+    "rootDir": "./src"
   },
   "extends": "../../../tsconfig.references.json",
   "include": ["src"],
   "references": [
     {
-      "path": "../env",
-    },
-  ],
+      "path": "../env"
+    }
+  ]
 }
