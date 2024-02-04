@@ -1,0 +1,12 @@
+diff --git a/node_modules/openapi-typescript/package.json b/node_modules/openapi-typescript/package.json
+index fc94a8d..5b4ce78 100644
+--- a/node_modules/openapi-typescript/package.json
++++ b/node_modules/openapi-typescript/package.json
+@@ -14,6 +14,7 @@
+   "main": "./dist/index.js",
+   "exports": {
+     ".": {
++      "types": "./dist/index.d.ts",
+       "import": "./dist/index.js",
+       "require": "./dist/index.cjs"
+     },
