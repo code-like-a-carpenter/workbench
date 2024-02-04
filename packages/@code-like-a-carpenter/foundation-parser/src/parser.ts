@@ -1,7 +1,7 @@
 import assert from 'assert';
 import path from 'path';
 
-import type {Types} from '@graphql-codegen/plugin-helpers/typings/types';
+import type {Types} from '@graphql-codegen/plugin-helpers';
 import type {GraphQLSchema} from 'graphql';
 import {assertObjectType, isObjectType} from 'graphql';
 
