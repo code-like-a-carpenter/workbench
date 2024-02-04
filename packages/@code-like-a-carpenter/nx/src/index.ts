@@ -271,27 +271,5 @@ fi
         },
       },
     };
-
-    // if (
-    //   projectBaseName.startsWith('cli-') ||
-    //   projectBaseName.endsWith('-cli') ||
-    //   projectBaseName === 'cli'
-    // ) {
-    //   return createCliNodes(projectConfigurationFile, options, context);
-    // }
-    //
-    // if (projectConfigurationFile.startsWith('examples')) {
-    //   return createExampleNodes(projectConfigurationFile, options, context);
-    // }
-    //
-    // if (projectConfigurationFile.startsWith('packages')) {
-    //   return createPackageNodes(projectConfigurationFile, options, context);
-    // }
-    //
-    // if (projectConfigurationFile === 'package.json') {
-    //   return createRootNodes(projectConfigurationFile, options, context);
-    // }
-    //
-    // assert.fail(`Unknown projectConfigurationFile ${projectConfigurationFile}`);
   },
 ];
