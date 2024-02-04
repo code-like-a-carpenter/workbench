@@ -102,5 +102,8 @@
       "@semrel-extra/npm",
       "@semantic-release/github"
     ]
+  },
+  "code-like-a-carpenter": {
+    "root": true
   }
 }

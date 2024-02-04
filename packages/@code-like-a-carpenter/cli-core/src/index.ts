@@ -2,11 +2,11 @@ import type {Argv} from 'yargs';
 import y from 'yargs';
 import {hideBin} from 'yargs/helpers';
 
-import {getConfig} from './config';
+import {load as loadConfig} from './config';
+
 export type RegisterPluginFunction = (yargs: Argv) => void | Promise<void>;
 
 export type {Config} from './config';
-export {configSchema, getConfig} from './config';
 
 export function definePlugin(
   fn: RegisterPluginFunction
@@ -15,7 +15,7 @@ export function definePlugin(
 }
 
 export async function main() {
-  const cfg = await getConfig();
+  const cfg = await loadConfig();
 
   const yargs = y(hideBin(process.argv));
 

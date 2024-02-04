@@ -15,6 +15,7 @@
   },
   "bin": "./cli.mjs",
   "code-like-a-carpenter": {
+    "cliMain": true,
     "plugins": [
       "@code-like-a-carpenter/cli-plugin-example",
       "@code-like-a-carpenter/cli-plugin-proxy",

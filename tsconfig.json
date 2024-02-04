@@ -104,6 +104,9 @@
     },
     {
       "path": "packages/@code-like-a-carpenter/wait-for"
+    },
+    {
+      "path": "packages/@code-like-a-carpenter/workbench-config"
     }
   ]
 }

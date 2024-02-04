@@ -8,6 +8,9 @@
   "references": [
     {
       "path": "../cli-core"
+    },
+    {
+      "path": "../workbench-config"
     }
   ]
 }
