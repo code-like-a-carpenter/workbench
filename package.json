@@ -104,6 +104,17 @@
     ]
   },
   "code-like-a-carpenter": {
-    "root": true
+    "root": true,
+    "deps": {
+      "definitelyTyped": [
+        "dotenv",
+        "http-proxy",
+        "js-yaml ",
+        "lodash.*",
+        "prettier",
+        "vhost ",
+        "yargs "
+      ]
+    }
   }
 }

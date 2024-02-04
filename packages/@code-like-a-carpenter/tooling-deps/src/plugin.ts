@@ -13,6 +13,7 @@ export const plugin = definePlugin((yargs) => {
         type: 'string',
       },
       'definitely-typed': {
+        default: [],
         demandOption: true,
         type: 'array',
       },
@@ -41,10 +42,8 @@ export const plugin = definePlugin((yargs) => {
     },
     command: 'deps',
     describe: 'Add/remove dependencies based on code analysis',
-    async handler(args) {
-      // @ts-expect-error - sometimes the types for yargs figure out the args
-      // type, but not this time
-      return main(args);
+    async handler(argv) {
+      return main(argv as object);
     },
   });
 });

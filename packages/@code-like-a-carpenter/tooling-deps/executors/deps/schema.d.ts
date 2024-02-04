@@ -12,5 +12,4 @@ export interface DepsExecutor {
   ignoreDirs?: string[];
   packageName: string;
   definitelyTyped?: string[];
-  [k: string]: unknown;
 }
