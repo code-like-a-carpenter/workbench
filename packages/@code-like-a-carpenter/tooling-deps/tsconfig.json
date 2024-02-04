@@ -12,5 +12,8 @@
     {
       "path": "../tooling-common",
     },
+    {
+      "path": "../workbench-config",
+    },
   ],
 }
