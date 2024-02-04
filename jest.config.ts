@@ -1,4 +1,5 @@
 import assert from 'node:assert';
+import path from 'node:path';
 
 import type {Config} from '@jest/types';
 import {globSync} from 'glob';
@@ -45,7 +46,9 @@ const config: Config.GlobalConfig = {
       displayName: 'Unit Tests',
       testMatch: workspaces
         .flatMap((ws) => globSync(ws))
-        .filter((packagePath) => !packagePath.includes('example'))
+        .filter(
+          (packagePath) => !packagePath.split(path.sep).includes('examples')
+        )
         .flatMap((packagePath) => [
           `<rootDir>/${packagePath}/**/?(*.)+(test).[tj]s?(x)`,
         ]),
@@ -57,7 +60,9 @@ const config: Config.GlobalConfig = {
       testEnvironment: './jest.d/environments/example.ts',
       testMatch: workspaces
         .flatMap((ws) => globSync(ws))
-        .filter((packagePath) => packagePath.includes('example'))
+        .filter((packagePath) =>
+          packagePath.split(path.sep).includes('examples')
+        )
         .filter(
           (packagePath) =>
             process.env.TEST_ENV === 'aws' || !packagePath.includes('aws-')
