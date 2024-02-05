@@ -13,5 +13,8 @@
     "minimatch": "^9.0.3",
     "prettier": "^3.2.5"
   },
-  "private": true
+  "private": true,
+  "devDependencies": {
+    "@types/prettier": "^3.0.0"
+  }
 }

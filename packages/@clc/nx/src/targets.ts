@@ -30,6 +30,14 @@ export function addTarget(
     `targetName "${targetName}" should not start with phase "${phase}"`
   );
 
+  for (const dep of target.dependsOn ?? []) {
+    assert(
+      typeof dep === 'string',
+      'This code assumes all dependencies are strings. If you see this error, please make the code more robust'
+    );
+    assert(dep in targets, `dependency "${dep}" has not been defined`);
+  }
+
   const fullTargetName = `${phase}:${targetName}`;
   assert(
     !(fullTargetName in targets),
