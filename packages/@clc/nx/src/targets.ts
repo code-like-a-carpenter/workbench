@@ -44,9 +44,15 @@ export function addTarget(
     `target "${targetName}" has already been defined in phase "${phase}"`
   );
 
+  const targetDependsOn = new Set(target.dependsOn ?? []);
+  // Everything should depend on on codegen:deps so that when we make changes to
+  // executors, they get their new dependencies before they try to execute.
+  targetDependsOn.add('codegen:deps');
+  target.dependsOn = Array.from(targetDependsOn);
+
   targets[fullTargetName] = target;
 
-  const dependsOn = targets[phase].dependsOn ?? [];
-  dependsOn.push(fullTargetName);
-  targets[phase].dependsOn = dependsOn;
+  const phaseDependsOn = targets[phase].dependsOn ?? [];
+  phaseDependsOn.push(fullTargetName);
+  targets[phase].dependsOn = phaseDependsOn;
 }

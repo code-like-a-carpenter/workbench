@@ -141,9 +141,6 @@ export const createNodes: CreateNodes = [
     if (type !== 'example') {
       addTarget(targets, 'codegen', 'package', {
         cache: true,
-        // this doesn't _really_ depend on deps, but this is the easiest way to
-        // ensure two targets aren't dealing package.json at the same time
-        dependsOn: ['codegen:deps'],
         executor: 'nx:run-commands',
         inputs: [
           '{projectRoot}/src/**/*',
@@ -158,7 +155,7 @@ export const createNodes: CreateNodes = [
 
       addTarget(targets, 'codegen', 'project-refs', {
         cache: true,
-        dependsOn: ['codegen:deps', 'codegen:package'],
+        dependsOn: ['codegen:package'],
         executor: 'nx:run-commands',
         inputs: ['{projectRoot}/package.json', 'sharedGlobals'],
         options: {
