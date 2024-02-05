@@ -3,14 +3,12 @@ import path from 'node:path';
 
 import type {CreateNodes, TargetConfiguration} from '@nx/devkit';
 
-import {createNxNodes} from './create-nx-nodes';
-
 export * from './helpers';
 
 export const createNodes: CreateNodes = [
   '**/package.json',
   // eslint-disable-next-line complexity
-  async (projectConfigurationFile, options, context) => {
+  async (projectConfigurationFile) => {
     const projectRoot = path.dirname(projectConfigurationFile);
     const projectName = projectRoot.includes('@')
       ? projectRoot.split('/').slice(-2).join('/')
@@ -23,7 +21,25 @@ export const createNodes: CreateNodes = [
     }
 
     if (projectName.includes('nx')) {
-      return createNxNodes(projectConfigurationFile, options, context);
+      const targets: Record<string, TargetConfiguration> = {
+        build: {
+          cache: true,
+          executor: '@code-like-a-carpenter/nx:json-schema',
+          inputs: ['{projectRoot}/executors/*/schema.json', 'sharedGlobals'],
+          options: {
+            schemas: ['{projectRoot}/executors/*/schema.json'],
+          },
+          outputs: ['{projectRoot}/executors/*/schema.d.ts'],
+        },
+      };
+
+      return {
+        projects: {
+          [projectRoot]: {
+            targets,
+          },
+        },
+      };
     }
 
     let type = 'package';
