@@ -16,6 +16,7 @@
 -   [Maintainer](#maintainer)
 -   [Contribute](#contribute)
     -   [nx](#nx)
+    -   [`@clc` vs `@code-like-a-carpenter`](#clc-vs-code-like-a-carpenter)
     -   [Local development without building first](#local-development-without-building-first)
 -   [License](#license)
 
@@ -81,6 +82,15 @@ date --iso-8601=seconds> .nx-cache-buster
 ```
 
 Of course, remember to commit the updated file.
+
+### `@clc` vs `@code-like-a-carpenter`
+
+`@clc` packages are internal-only. They won't be published but need to be
+packages for other tooling to work. For example, there's an internal-only `nx`
+plugin which is where most of the repo's build configuration comes from. Not
+only does this plugin need to a different package.json layout (it's `main` entry
+needs to point to a typescript file, not a built file), it just wouldn't make
+sense outside the context of this particular repository.
 
 ### Local development without building first
 

@@ -22,5 +22,5 @@
       "conditions"
     ]
   },
-  "plugins": ["@code-like-a-carpenter/nx"]
+  "plugins": ["@clc/nx"]
 }

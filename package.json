@@ -34,6 +34,7 @@
     "@graphql-tools/apollo-engine-loader": "^8.0.0",
     "@ianwremmel/eslint-plugin-ianwremmel": "^6.2.2",
     "@jest/types": "^29.6.3",
+    "@nx/devkit": "^18.0.1",
     "@nx/plugin": "^17.2.8",
     "@semrel-extra/npm": "^1.2.2",
     "@swc-node/register": "^1.6.8",
