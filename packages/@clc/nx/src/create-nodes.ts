@@ -3,6 +3,8 @@ import path from 'node:path';
 
 import type {CreateNodes, TargetConfiguration} from '@nx/devkit';
 
+import {addPhase, addTarget} from './targets';
+
 export const createNodes: CreateNodes = [
   '**/package.json',
   // eslint-disable-next-line complexity
@@ -19,17 +21,47 @@ export const createNodes: CreateNodes = [
     }
 
     if (projectName.includes('nx')) {
-      const targets: Record<string, TargetConfiguration> = {
-        build: {
-          cache: true,
-          executor: '@code-like-a-carpenter/nx:json-schema',
-          inputs: ['{projectRoot}/executors/*/schema.json', 'sharedGlobals'],
-          options: {
-            schemas: ['{projectRoot}/executors/*/schema.json'],
-          },
-          outputs: ['{projectRoot}/executors/*/schema.d.ts'],
+      const targets: Record<string, TargetConfiguration> = {};
+      // Setup the basic phases of the build process
+
+      // Codegen produces files that will be committed to the repo.
+      addPhase(targets, 'codegen');
+
+      // Build produces transient files that will not be committed
+      addPhase(targets, 'build', ['codegen']);
+
+      // All is just a catchall target that we should consider the default
+      // target for any repo
+      addPhase(targets, 'all', ['build', 'codegen']);
+
+      // Now, define individual targets
+
+      addTarget(targets, 'codegen', 'json-schemas', {
+        cache: true,
+        executor: '@code-like-a-carpenter/nx:json-schema',
+        inputs: ['{projectRoot}/executors/*/schema.json', 'sharedGlobals'],
+        options: {
+          schemas: ['{projectRoot}/executors/*/schema.json'],
         },
-      };
+        outputs: ['{projectRoot}/executors/*/schema.d.ts'],
+      });
+
+      addTarget(targets, 'codegen', 'deps', {
+        cache: true,
+        executor: '@code-like-a-carpenter/tooling-deps:deps',
+        options: {
+          definitelyTyped: [
+            'dotenv',
+            'http-proxy',
+            'js-yaml',
+            'lodash.*',
+            'prettier',
+            'vhost',
+            'yargs',
+          ],
+          packageName: projectName,
+        },
+      });
 
       return {
         projects: {
