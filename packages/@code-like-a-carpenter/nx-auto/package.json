@@ -2,20 +2,17 @@
   "name": "@code-like-a-carpenter/nx-auto",
   "main": "./src/index.js",
   "dependencies": {
-    "glob": "^10.3.10",
     "mdast": "^3.0.0",
     "prettier": "^3.2.5",
     "remark": "^14.0.2",
     "remark-stringify": "^10.0.2",
     "remark-toc": "^8.0.1",
-    "typescript": "^5.3.3",
     "unified": "^10.1.2",
     "unist-builder": "^3.0.1",
     "yargs": "^17.7.2"
   },
   "devDependencies": {
     "@schemastore/package": "^0.0.8",
-    "@schemastore/tsconfig": "^0.0.10",
     "@types/prettier": "^3.0.0",
     "@types/yargs": "^17.0.32"
   },

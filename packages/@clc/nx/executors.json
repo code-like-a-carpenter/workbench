@@ -19,6 +19,11 @@
       "implementation": "./executors/package-json/executor",
       "schema": "./executors/package-json/schema.json",
       "description": "package-json executor"
+    },
+    "project-refs": {
+      "implementation": "./executors/project-refs/executor",
+      "schema": "./executors/project-refs/schema.json",
+      "description": "project-refs executor"
     }
   }
 }

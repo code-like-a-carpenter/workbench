@@ -149,12 +149,9 @@ export const createNodes: CreateNodes = [
     if (type !== 'example') {
       addTarget(targets, 'codegen', 'project-refs', {
         cache: true,
-        dependsOn: ['codegen:package'],
-        executor: 'nx:run-commands',
+        dependsOn: ['^codegen:project-refs', 'codegen:package'],
+        executor: '@clc/nx:project-refs',
         inputs: ['{projectRoot}/package.json', 'sharedGlobals'],
-        options: {
-          command: `node ./packages/@code-like-a-carpenter/nx-auto/ project-refs --package-name {projectName}`,
-        },
         outputs: [
           '{projectRoot}/tsconfig.json',
           '{workspaceRoot}/tsconfig.json',

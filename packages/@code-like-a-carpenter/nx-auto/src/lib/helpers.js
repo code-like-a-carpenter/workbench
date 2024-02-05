@@ -5,7 +5,6 @@ const fs = require('fs');
 const path = require('path');
 
 const prettier = require('prettier');
-const ts = require('typescript');
 
 /**
  * @param {string} filename
@@ -24,17 +23,6 @@ async function readPackageJson(packageName) {
   return await readJsonFile(pathToPackageFile(packageName, 'package.json'));
 }
 exports.readPackageJson = readPackageJson;
-
-/**
- * @param {string} packageName
- * @returns {Promise<import("@schemastore/tsconfig").JSONSchemaForTheTypeScriptCompilerSConfigurationFile>}
- */
-async function readTsConfigJson(packageName) {
-  const filename = pathToPackageFile(packageName, 'tsconfig.json');
-  const text = await fs.promises.readFile(filename, 'utf-8');
-  return ts.parseConfigFileTextToJson(filename, text).config;
-}
-exports.readTsConfigJson = readTsConfigJson;
 
 /**
  * @param {string} packageName

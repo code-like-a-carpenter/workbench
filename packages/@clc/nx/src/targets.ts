@@ -30,19 +30,25 @@ export function addTarget(
     `targetName "${targetName}" should not start with phase "${phase}"`
   );
 
-  for (const dep of target.dependsOn ?? []) {
-    assert(
-      typeof dep === 'string',
-      'This code assumes all dependencies are strings. If you see this error, please make the code more robust'
-    );
-    assert(dep in targets, `dependency "${dep}" has not been defined`);
-  }
-
   const fullTargetName = `${phase}:${targetName}`;
   assert(
     !(fullTargetName in targets),
     `target "${targetName}" has already been defined in phase "${phase}"`
   );
+
+  for (let dep of target.dependsOn ?? []) {
+    assert(
+      typeof dep === 'string',
+      'This code assumes all dependencies are strings. If you see this error, please make the code more robust'
+    );
+    if (dep.startsWith('^')) {
+      dep = dep.slice(1);
+    }
+    assert(
+      dep === fullTargetName || dep in targets,
+      `dependency "${dep}" has not been defined`
+    );
+  }
 
   const targetDependsOn = new Set(target.dependsOn ?? []);
   // Everything should depend on on codegen:deps so that when we make changes to
