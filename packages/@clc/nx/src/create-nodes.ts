@@ -51,7 +51,7 @@ export const createNodes: CreateNodes = [
 
     addTarget(targets, 'codegen', 'executors', {
       cache: true,
-      executor: '@code-like-a-carpenter/nx:json-schema',
+      executor: '@clc/nx:json-schema',
       inputs: ['{projectRoot}/executors/*/schema.json', 'sharedGlobals'],
       options: {
         schemas: ['{projectRoot}/executors/*/schema.json'],
@@ -83,7 +83,7 @@ export const createNodes: CreateNodes = [
     if (type === 'package') {
       addTarget(targets, 'build', 'cjs', {
         cache: true,
-        executor: '@code-like-a-carpenter/nx:esbuild',
+        executor: '@clc/nx:esbuild',
         options: {
           entryPoints: ['{projectRoot}/src/**/*.[jt]s?(x)', '!**/*.test.*'],
           format: 'cjs',
@@ -96,7 +96,7 @@ export const createNodes: CreateNodes = [
     if (type === 'package' || type === 'cli') {
       addTarget(targets, 'build', 'esm', {
         cache: true,
-        executor: '@code-like-a-carpenter/nx:esbuild',
+        executor: '@clc/nx:esbuild',
         inputs: ['{projectRoot}/src/**/*', 'sharedGlobals'],
         options: {
           entryPoints: ['{projectRoot}/src/**/*.[jt]s?(x)', '!**/*.test.*'],
@@ -119,7 +119,7 @@ export const createNodes: CreateNodes = [
 
     addTarget(targets, 'codegen', 'json-schemas', {
       cache: true,
-      executor: '@code-like-a-carpenter/nx:json-schema',
+      executor: '@clc/nx:json-schema',
       inputs: ['{projectRoot}/json-schemas/**/*.json'],
       options: {
         outDir: '{projectRoot}/src/__generated__/',
@@ -193,7 +193,7 @@ export const createNodes: CreateNodes = [
     ) {
       addTarget(targets, 'codegen', 'core-schema', {
         cache: true,
-        executor: '@code-like-a-carpenter/nx:inliner',
+        executor: '@clc/nx:inliner',
         inputs: ['{projectRoot}/schema.graphqls', 'sharedGlobals'],
         options: {
           exportName: 'schema',

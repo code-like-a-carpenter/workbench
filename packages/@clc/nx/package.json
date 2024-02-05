@@ -1,8 +1,17 @@
 {
   "name": "@clc/nx",
   "main": "./src/index.ts",
-  "private": true,
   "dependencies": {
-    "@nx/devkit": "^18.0.1"
-  }
+    "@babel/generator": "^7.23.6",
+    "@babel/template": "^7.23.9",
+    "@babel/types": "^7.23.9",
+    "@nx/devkit": "17.2.8",
+    "esbuild": "^0.20.0",
+    "glob": "^10.3.10",
+    "json-schema-to-typescript": "^13.1.2",
+    "minimatch": "^9.0.3",
+    "prettier": "^3.2.5"
+  },
+  "executors": "./executors.json",
+  "private": true
 }
