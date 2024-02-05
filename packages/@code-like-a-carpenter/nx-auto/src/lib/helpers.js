@@ -63,20 +63,6 @@ function pathToPackageFile(packageName, filename) {
 exports.pathToPackageFile = pathToPackageFile;
 
 /**
- *
- * @param {string} packageName
- * @param {import("@schemastore/package").JSONSchemaForNPMPackageJsonFiles} pkg
- * @returns {Promise<void>}
- */
-async function writePackageJson(packageName, pkg) {
-  await writePrettierFile(
-    pathToPackageFile(packageName, 'package.json'),
-    JSON.stringify(pkg, null, 2)
-  );
-}
-exports.writePackageJson = writePackageJson;
-
-/**
  * @param {string} filename
  * @param {string} content
  */

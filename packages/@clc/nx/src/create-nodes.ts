@@ -138,21 +138,15 @@ export const createNodes: CreateNodes = [
       outputs: [`{projectRoot}/src/__generated__/api.ts`],
     });
 
-    if (type !== 'example') {
-      addTarget(targets, 'codegen', 'package', {
-        cache: true,
-        executor: 'nx:run-commands',
-        inputs: [
-          '{projectRoot}/src/**/*',
-          '{workspaceRoot}/package.json',
-          'sharedGlobals',
-        ],
-        options: {
-          command: `node ./packages/@code-like-a-carpenter/nx-auto/ package --package-name {projectName} --type=${type}`,
-        },
-        outputs: ['{projectRoot}/package.json'],
-      });
+    addTarget(targets, 'codegen', 'package', {
+      cache: true,
+      executor: '@clc/nx:package-json',
+      inputs: ['{workspaceRoot}/package.json', 'sharedGlobals'],
+      options: {type},
+      outputs: ['{projectRoot}/package.json'],
+    });
 
+    if (type !== 'example') {
       addTarget(targets, 'codegen', 'project-refs', {
         cache: true,
         dependsOn: ['codegen:package'],

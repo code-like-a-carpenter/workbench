@@ -1,10 +1,5 @@
 {
   "executors": {
-    "json-schema": {
-      "implementation": "./executors/json-schema/executor",
-      "schema": "./executors/json-schema/schema.json",
-      "description": "json-schema executor"
-    },
     "esbuild": {
       "implementation": "./executors/esbuild/executor",
       "schema": "./executors/esbuild/schema.json",
@@ -14,6 +9,16 @@
       "implementation": "./executors/inliner/executor",
       "schema": "./executors/inliner/schema.json",
       "description": "inliner executor"
+    },
+    "json-schema": {
+      "implementation": "./executors/json-schema/executor",
+      "schema": "./executors/json-schema/schema.json",
+      "description": "json-schema executor"
+    },
+    "package-json": {
+      "implementation": "./executors/package-json/executor",
+      "schema": "./executors/package-json/schema.json",
+      "description": "package-json executor"
     }
   }
 }

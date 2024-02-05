@@ -6,6 +6,7 @@
     "@babel/template": "^7.23.9",
     "@babel/types": "^7.23.9",
     "@nx/devkit": "17.2.8",
+    "@schemastore/package": "^0.0.10",
     "esbuild": "^0.20.0",
     "glob": "^10.3.10",
     "json-schema-to-typescript": "^13.1.2",
@@ -13,5 +14,8 @@
     "prettier": "^3.2.5"
   },
   "executors": "./executors.json",
-  "private": true
+  "private": true,
+  "devDependencies": {
+    "@types/prettier": "^3.0.0"
+  }
 }

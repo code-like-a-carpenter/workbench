@@ -1,67 +1,58 @@
-'use strict';
+import assert from 'node:assert';
+import path from 'node:path';
 
-const assert = require('assert');
-const fs = require('fs');
-const path = require('path');
+import type {Executor, ExecutorContext} from '@nx/devkit';
+import type {JSONSchemaForNPMPackageJsonFiles} from '@schemastore/package';
 
-const {writePackageJson} = require('../lib/helpers');
-const {readPackageJson} = require('../lib/helpers');
+import {
+  extractProjectName,
+  extractProjectRoot,
+  readPackageJson,
+  writePackageJson,
+} from '../..';
 
-/** @type import('yargs').CommandModule */
-const command = {
-  builder(yargs) {
-    return yargs.options({
-      packageName: {
-        description: 'The name of the package to generate dependencies for',
-        required: true,
-        type: 'string',
-      },
-      type: {
-        choices: ['package', 'example', 'cli'],
-        default: 'package',
-        required: false,
-      },
-    });
-  },
-  command: 'package',
-  async handler({packageName, type}) {
-    assert(
-      !packageName.endsWith('package.json'),
-      `packageName must not end with package.json, got ${packageName}`
-    );
+import type {PackageJsonExecutor} from './schema';
 
-    if (type === 'example') {
-      await configExample(packageName);
-    } else {
-      await config(packageName, type);
-    }
-  },
+const runExecutor: Executor<PackageJsonExecutor> = async ({type}, context) => {
+  const root = extractProjectRoot(context);
+  const packageJsonPath = path.join(root, 'package.json');
+  const pkg = await readPackageJson(packageJsonPath);
+
+  if (type === 'example') {
+    await configExample(pkg, context);
+  } else {
+    await config(pkg, type, context);
+  }
+
+  await writePackageJson(packageJsonPath, pkg);
+
+  return {
+    success: true,
+  };
 };
 
-module.exports = command;
-
-/**
- * @param {string} packageName
- */
-async function configExample(packageName) {
-  const pkg = await readPackageJson(packageName);
-  const rootPackageJson = await loadRootPackageJson();
+async function configExample(
+  pkg: JSONSchemaForNPMPackageJsonFiles,
+  context: ExecutorContext
+) {
+  const rootPackageJson = await loadRootPackageJson(context);
 
   pkg.engines = rootPackageJson.engines;
   pkg.private = true;
-
-  await writePackageJson(packageName, pkg);
 }
 
-/**
- * @param {string} packageName
- * @param {'cli'|'package'} type
- */
-async function config(packageName, type) {
-  const pkg = await readPackageJson(packageName);
-  const rootPackageJson = await loadRootPackageJson();
+async function config(
+  pkg: JSONSchemaForNPMPackageJsonFiles,
+  type: 'cli' | 'package',
+  context: ExecutorContext
+) {
+  const packageName = extractProjectName(context);
+  const rootPackageJson = await loadRootPackageJson(context);
 
-  assert(pkg.description, `Missing package.json description in ${packageName}`);
+  assert(
+    pkg.description,
+    `Missing package.json description in "${packageName}"`
+  );
 
   pkg.author = pkg.author ?? rootPackageJson.author;
   pkg.bugs = rootPackageJson.bugs;
@@ -129,18 +120,13 @@ async function config(packageName, type) {
       access: 'public',
     };
   }
-
-  await writePackageJson(packageName, pkg);
 }
 
-/**
- * @returns {Promise<import('@schemastore/package').JSONSchemaForNPMPackageJsonFiles>}
- */
-async function loadRootPackageJson() {
-  return JSON.parse(
-    await fs.promises.readFile(
-      path.join(process.cwd(), 'package.json'),
-      'utf-8'
-    )
-  );
+async function loadRootPackageJson(
+  context: ExecutorContext
+): Promise<JSONSchemaForNPMPackageJsonFiles> {
+  const packageJsonPath = path.join(context.root, 'package.json');
+  return readPackageJson(packageJsonPath);
 }
+
+export default runExecutor;
