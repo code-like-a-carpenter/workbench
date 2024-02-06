@@ -13,7 +13,11 @@
     "json-schema-to-typescript": "^13.1.2",
     "minimatch": "^9.0.3",
     "prettier": "^3.2.5",
-    "typescript": "^5.3.3"
+    "remark": "^15.0.1",
+    "remark-stringify": "^11.0.0",
+    "remark-toc": "^9.0.0",
+    "typescript": "^5.3.3",
+    "unist-builder": "^4.0.0"
   },
   "executors": "./executors.json",
   "private": true,

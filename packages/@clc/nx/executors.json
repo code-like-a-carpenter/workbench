@@ -24,6 +24,11 @@
       "implementation": "./executors/project-refs/executor",
       "schema": "./executors/project-refs/schema.json",
       "description": "project-refs executor"
+    },
+    "readme": {
+      "implementation": "./executors/readme/executor",
+      "schema": "./executors/readme/schema.json",
+      "description": "readme executor"
     }
   }
 }

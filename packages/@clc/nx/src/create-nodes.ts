@@ -161,16 +161,13 @@ export const createNodes: CreateNodes = [
       addTarget(targets, 'codegen', 'readme', {
         cache: true,
         dependsOn: ['codegen:package'],
-        executor: 'nx:run-commands',
+        executor: '@clc/nx:readme',
         inputs: [
           '{projectRoot}/README.md',
           '{projectRoot}/package.json',
           '{workspaceRoot}/package.json',
           'sharedGlobals',
         ],
-        options: {
-          command: `node ./packages/@code-like-a-carpenter/nx-auto/ readme --package-name {projectName}`,
-        },
         outputs: ['{projectRoot}/README.md'],
       });
     }
