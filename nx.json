@@ -18,7 +18,6 @@
       "{workspaceRoot}/.nx-cache-buster",
       "{workspaceRoot}/tsconfig.*.json",
       "{workspaceRoot}/packages/@code-like-a-carpenter/nx/**/*",
-      "{workspaceRoot}/packages/@code-like-a-carpenter/nx-auto/**/*",
       "conditions"
     ]
   },
