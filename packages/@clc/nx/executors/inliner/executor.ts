@@ -1,4 +1,5 @@
-import {readFile, writeFile} from 'node:fs/promises';
+import {mkdir, readFile, writeFile} from 'node:fs/promises';
+import path from 'node:path';
 
 import generate from '@babel/generator';
 import template from '@babel/template';
@@ -20,6 +21,7 @@ const runExecutor: Executor<InlinerExecutor> = async (
     raw: t.templateLiteral([t.templateElement({raw}, false)], []),
   });
 
+  await mkdir(path.dirname(targetFile), {recursive: true});
   await writeFile(targetFile, `${generate(ast).code}\n`);
 
   return {

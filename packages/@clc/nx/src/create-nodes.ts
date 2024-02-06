@@ -52,7 +52,7 @@ export const createNodes: CreateNodes = [
     addTarget(targets, 'codegen', 'executors', {
       cache: true,
       executor: '@clc/nx:json-schema',
-      inputs: ['{projectRoot}/executors/*/schema.json', 'sharedGlobals'],
+      inputs: ['{projectRoot}/executors/*/schema.json'],
       options: {
         schemas: ['{projectRoot}/executors/*/schema.json'],
       },
@@ -83,6 +83,7 @@ export const createNodes: CreateNodes = [
     if (type === 'package') {
       addTarget(targets, 'build', 'cjs', {
         cache: true,
+        dependsOn: ['codegen'],
         executor: '@clc/nx:esbuild',
         options: {
           entryPoints: ['{projectRoot}/src/**/*.[jt]s?(x)', '!**/*.test.*'],
@@ -96,8 +97,9 @@ export const createNodes: CreateNodes = [
     if (type === 'package' || type === 'cli') {
       addTarget(targets, 'build', 'esm', {
         cache: true,
+        dependsOn: ['codegen'],
         executor: '@clc/nx:esbuild',
-        inputs: ['{projectRoot}/src/**/*', 'sharedGlobals'],
+        inputs: ['{projectRoot}/src/**/*'],
         options: {
           entryPoints: ['{projectRoot}/src/**/*.[jt]s?(x)', '!**/*.test.*'],
           format: 'esm',
@@ -108,8 +110,8 @@ export const createNodes: CreateNodes = [
 
       addTarget(targets, 'build', 'types', {
         cache: true,
+        dependsOn: ['^build:types', 'codegen'],
         executor: 'nx:run-commands',
-        inputs: ['{projectRoot}/src/**/*', 'sharedGlobals'],
         options: {
           command: `tsc --project {projectRoot}/tsconfig.json`,
         },
@@ -125,7 +127,7 @@ export const createNodes: CreateNodes = [
         outDir: '{projectRoot}/src/__generated__/',
         schemas: ['{projectRoot}/json-schemas/**/*.json'],
       },
-      outputs: ['{projectRoot}/src/__generated__/json-schemas/**/*.d.ts'],
+      outputs: ['{projectRoot}/src/__generated__/json-schemas/**/*.ts'],
     });
 
     addTarget(targets, 'codegen', 'openapi', {
@@ -141,7 +143,7 @@ export const createNodes: CreateNodes = [
     addTarget(targets, 'codegen', 'package', {
       cache: true,
       executor: '@clc/nx:package-json',
-      inputs: ['{workspaceRoot}/package.json', 'sharedGlobals'],
+      inputs: ['{workspaceRoot}/package.json'],
       options: {type},
       outputs: ['{projectRoot}/package.json'],
     });
@@ -151,7 +153,7 @@ export const createNodes: CreateNodes = [
         cache: true,
         dependsOn: ['^codegen:project-refs', 'codegen:package'],
         executor: '@clc/nx:project-refs',
-        inputs: ['{projectRoot}/package.json', 'sharedGlobals'],
+        inputs: ['{projectRoot}/package.json'],
         outputs: [
           '{projectRoot}/tsconfig.json',
           '{workspaceRoot}/tsconfig.json',
@@ -166,7 +168,6 @@ export const createNodes: CreateNodes = [
           '{projectRoot}/README.md',
           '{projectRoot}/package.json',
           '{workspaceRoot}/package.json',
-          'sharedGlobals',
         ],
         outputs: ['{projectRoot}/README.md'],
       });
@@ -179,7 +180,7 @@ export const createNodes: CreateNodes = [
       addTarget(targets, 'codegen', 'core-schema', {
         cache: true,
         executor: '@clc/nx:inliner',
-        inputs: ['{projectRoot}/schema.graphqls', 'sharedGlobals'],
+        inputs: ['{projectRoot}/schema.graphqls'],
         options: {
           exportName: 'schema',
           sourceFile: '{projectRoot}/schema.graphqls',

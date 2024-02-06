@@ -1,3 +1,4 @@
+import {mkdir} from 'node:fs/promises';
 import path from 'node:path';
 
 import type {Executor} from '@nx/devkit';
@@ -25,6 +26,7 @@ const executor: Executor<JsonSchemaExecutor> = async ({outDir, schemas}) => {
           .replace(sharedBased, outDir)
           .replace(/\.json$/, '.ts');
 
+        await mkdir(path.dirname(outFilename), {recursive: true});
         await writePrettierFile(outFilename, out);
       } else {
         await writePrettierFile(filename.replace(/\.json$/, '.d.ts'), out);

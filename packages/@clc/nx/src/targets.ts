@@ -50,6 +50,10 @@ export function addTarget(
     );
   }
 
+  const targetInputs = new Set(target.inputs ?? ['default']);
+  targetInputs.add('sharedGlobals');
+  target.inputs = Array.from(targetInputs);
+
   const targetDependsOn = new Set(target.dependsOn ?? []);
   // Everything should depend on on codegen:deps so that when we make changes to
   // executors, they get their new dependencies before they try to execute.
