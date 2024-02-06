@@ -37,17 +37,15 @@ export function addTarget(
   );
 
   for (let dep of target.dependsOn ?? []) {
-    assert(
-      typeof dep === 'string',
-      'This code assumes all dependencies are strings. If you see this error, please make the code more robust'
-    );
-    if (dep.startsWith('^')) {
-      dep = dep.slice(1);
+    if (typeof dep === 'string') {
+      if (dep.startsWith('^')) {
+        dep = dep.slice(1);
+      }
+      assert(
+        dep === fullTargetName || dep in targets,
+        `dependency "${dep}" has not been defined`
+      );
     }
-    assert(
-      dep === fullTargetName || dep in targets,
-      `dependency "${dep}" has not been defined`
-    );
   }
 
   const targetInputs = new Set(target.inputs ?? ['default']);

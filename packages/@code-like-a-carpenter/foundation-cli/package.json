@@ -38,5 +38,6 @@
   },
   "devDependencies": {
     "@types/yargs": "^17.0.32"
-  }
+  },
+  "executors": "./executors.json"
 }

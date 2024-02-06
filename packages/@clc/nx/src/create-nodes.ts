@@ -1,3 +1,4 @@
+import {existsSync} from 'node:fs';
 import path from 'node:path';
 
 import type {CreateNodes, TargetConfiguration} from '@nx/devkit';
@@ -171,6 +172,52 @@ export const createNodes: CreateNodes = [
         ],
         outputs: ['{projectRoot}/README.md'],
       });
+    }
+
+    if (type === 'example') {
+      if (existsSync(path.resolve(projectRoot, '.foundationrc.js'))) {
+        addTarget(targets, 'build', 'foundation', {
+          cache: true,
+          dependsOn: [
+            {
+              projects: [
+                '@code-like-a-carpenter/foundation-cli',
+                '@code-like-a-carpenter/foundation-intermediate-representation',
+                '@code-like-a-carpenter/foundation-parser',
+                '@code-like-a-carpenter/foundation-plugin-cloudformation',
+                '@code-like-a-carpenter/foundation-plugin-typescript',
+                '@code-like-a-carpenter/foundation-runtime',
+              ],
+              target: 'build',
+            },
+          ],
+          executor: '@code-like-a-carpenter/foundation-cli:foundation',
+          inputs: [
+            '{projectRoot}/schema/**/*.graphqls',
+            '{projectRoot}/.foundationrc.js',
+            '{projectRoot}/../common.graphqls',
+            '{workspaceRoot}/.graphqlrc.js',
+            '{workspaceRoot}/schema.graphqls',
+          ],
+          options: {
+            config: '{projectRoot}/.foundationrc.js',
+          },
+          outputs: [
+            '{projectRoot}/src/__generated__/graphql.ts',
+            '{projectRoot}/src/__generated__/template.yml',
+            '{projectRoot}/src/__generated__/**/*',
+          ],
+        });
+
+        addTarget(targets, 'build', 'foundation:format', {
+          cache: true,
+          dependsOn: ['build:foundation'],
+          executor: 'nx:run-commands',
+          options: {
+            command: `npm run eslint -- '{projectRoot}/__generated__/**/*.ts' --fix`,
+          },
+        });
+      }
     }
 
     if (
