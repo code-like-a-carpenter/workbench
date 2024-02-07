@@ -33,5 +33,6 @@
   "devDependencies": {
     "@types/aws-lambda": "^8.10.133"
   },
-  "executors": "./executors.json"
+  "executors": "./executors.json",
+  "releaseAll": 1
 }

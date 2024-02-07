@@ -35,5 +35,6 @@
       "import": "./dist/esm/index.mjs"
     },
     "./package.json": "./package.json"
-  }
+  },
+  "releaseAll": 1
 }

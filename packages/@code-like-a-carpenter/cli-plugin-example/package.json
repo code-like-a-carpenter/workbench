@@ -25,5 +25,6 @@
   "publishConfig": {
     "access": "public"
   },
-  "bin": "./cli.mjs"
+  "bin": "./cli.mjs",
+  "releaseAll": 1
 }

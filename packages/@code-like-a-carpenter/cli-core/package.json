@@ -29,5 +29,6 @@
   "bin": "./cli.mjs",
   "devDependencies": {
     "@types/yargs": "^17.0.32"
-  }
+  },
+  "releaseAll": 1
 }

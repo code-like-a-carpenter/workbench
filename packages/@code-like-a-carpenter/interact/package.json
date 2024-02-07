@@ -25,5 +25,6 @@
   "dependencies": {
     "@code-like-a-carpenter/logger": "*",
     "@code-like-a-carpenter/telemetry": "*"
-  }
+  },
+  "releaseAll": 1
 }

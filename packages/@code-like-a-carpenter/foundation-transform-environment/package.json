@@ -26,5 +26,6 @@
   "types": "dist/types",
   "publishConfig": {
     "access": "public"
-  }
+  },
+  "releaseAll": 1
 }

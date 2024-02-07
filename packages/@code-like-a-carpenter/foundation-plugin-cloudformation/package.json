@@ -36,5 +36,6 @@
   "devDependencies": {
     "@types/aws-lambda": "^8.10.133",
     "@types/js-yaml": "^4.0.9"
-  }
+  },
+  "releaseAll": 1
 }

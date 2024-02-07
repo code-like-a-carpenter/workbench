@@ -36,5 +36,6 @@
     "@types/http-proxy": "^1.17.14",
     "@types/lodash.snakecase": "^4.1.9",
     "@types/vhost": "^3.0.9"
-  }
+  },
+  "releaseAll": 1
 }
