@@ -5,7 +5,7 @@
     "@babel/generator": "^7.23.6",
     "@babel/template": "^7.23.9",
     "@babel/types": "^7.23.9",
-    "@nx/devkit": "17.2.8",
+    "@nx/devkit": "^18.0.2",
     "@schemastore/package": "^0.0.10",
     "esbuild": "^0.20.0",
     "find-up": "^5.0.0",
