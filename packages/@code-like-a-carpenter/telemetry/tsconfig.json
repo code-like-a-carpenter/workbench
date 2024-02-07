@@ -1,22 +1,22 @@
 {
   "compilerOptions": {
     "outDir": "./dist/types",
-    "rootDir": "./src",
+    "rootDir": "./src"
   },
   "extends": "../../../tsconfig.references.json",
   "include": ["src"],
   "references": [
     {
-      "path": "../assert",
+      "path": "../assert"
     },
     {
-      "path": "../env",
+      "path": "../env"
     },
     {
-      "path": "../exception",
+      "path": "../exception"
     },
     {
-      "path": "../logger",
-    },
-  ],
+      "path": "../logger"
+    }
+  ]
 }

@@ -2,7 +2,8 @@
   "name": "@code-like-a-carpenter/cli-plugin-example",
   "description": "Example plugin for the Code Like a Carpenter CLI",
   "dependencies": {
-    "@code-like-a-carpenter/cli-core": "*"
+    "@code-like-a-carpenter/cli-core": "*",
+    "@code-like-a-carpenter/workbench-config": "*"
   },
   "author": "Ian Remmel <1182361+ianwremmel@users.noreply.github.com> (https://www.ianwremmel.com)",
   "bugs": "https://www.github.com/code-like-a-carpenter/workbench/issues",
@@ -24,5 +25,6 @@
   "publishConfig": {
     "access": "public"
   },
-  "bin": "./cli.mjs"
+  "bin": "./cli.mjs",
+  "releaseAll": 1
 }

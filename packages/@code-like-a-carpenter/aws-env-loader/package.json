@@ -24,5 +24,6 @@
   "repository": "git@github.com:code-like-a-carpenter/workbench.git",
   "publishConfig": {
     "access": "public"
-  }
+  },
+  "releaseAll": 1
 }

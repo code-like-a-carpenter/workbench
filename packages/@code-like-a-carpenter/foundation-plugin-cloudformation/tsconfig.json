@@ -1,22 +1,22 @@
 {
   "compilerOptions": {
     "outDir": "./dist/types",
-    "rootDir": "./src",
+    "rootDir": "./src"
   },
   "extends": "../../../tsconfig.references.json",
   "include": ["src"],
   "references": [
     {
-      "path": "../assert",
+      "path": "../assert"
     },
     {
-      "path": "../foundation-intermediate-representation",
+      "path": "../foundation-intermediate-representation"
     },
     {
-      "path": "../foundation-parser",
+      "path": "../foundation-parser"
     },
     {
-      "path": "../graphql-codegen-helpers",
-    },
-  ],
+      "path": "../graphql-codegen-helpers"
+    }
+  ]
 }

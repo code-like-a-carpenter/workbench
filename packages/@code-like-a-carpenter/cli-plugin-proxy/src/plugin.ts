@@ -15,12 +15,6 @@ export const plugin = definePlugin((yargs) => {
               'When set, attempts to identify all packages in the repo (based on npm workspaces) that contain stack definitions and proxies them',
             type: 'boolean',
           },
-          bareEndpoint: {
-            conflicts: ['all', 'endpoint', 'project', 'stack'],
-            description:
-              'An arbitrary endpoint to proxy directly to localhost (no subdomains).',
-            type: 'string',
-          },
           endpoint: {
             description:
               'An arbitrary endpoint to proxy. May be set multiple times.',
@@ -41,6 +35,12 @@ export const plugin = definePlugin((yargs) => {
               "If you have access to the stack's name, you can specify it directly rather than inferring it from the stack's yml file (which is effectively what all the other options do). May be set multiple times.",
             type: 'array',
           },
+        })
+        .positional('bareEndpoint', {
+          conflicts: ['all', 'endpoint', 'project', 'stack'],
+          description:
+            'An arbitrary endpoint to proxy directly to localhost (no subdomains).',
+          type: 'string',
         })
         .check(({all, bareEndpoint, endpoint, project, stack}) => {
           if (!all && !bareEndpoint && !endpoint && !project && !stack) {

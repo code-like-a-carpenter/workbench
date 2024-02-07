@@ -1,0 +1,27 @@
+{
+  "name": "@clc/nx",
+  "main": "./src/index.ts",
+  "dependencies": {
+    "@babel/generator": "^7.23.6",
+    "@babel/template": "^7.23.9",
+    "@babel/types": "^7.23.9",
+    "@nx/devkit": "17.2.8",
+    "@schemastore/package": "^0.0.10",
+    "esbuild": "^0.20.0",
+    "find-up": "^5.0.0",
+    "glob": "^10.3.10",
+    "json-schema-to-typescript": "^13.1.2",
+    "minimatch": "^9.0.3",
+    "prettier": "^3.2.5",
+    "remark": "^15.0.1",
+    "remark-stringify": "^11.0.0",
+    "remark-toc": "^9.0.0",
+    "typescript": "^5.3.3",
+    "unist-builder": "^4.0.0"
+  },
+  "executors": "./executors.json",
+  "private": true,
+  "devDependencies": {
+    "@types/prettier": "^3.0.0"
+  }
+}

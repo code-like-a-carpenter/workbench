@@ -1,0 +1,34 @@
+{
+  "name": "@code-like-a-carpenter/workbench-config",
+  "description": "Shared config loader for many Workbench projects",
+  "author": "Ian Remmel <1182361+ianwremmel@users.noreply.github.com> (https://www.ianwremmel.com)",
+  "bugs": "https://www.github.com/code-like-a-carpenter/workbench/issues",
+  "engines": {
+    "node": "20.x"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/types/index.d.ts",
+      "development": "./src/index.ts",
+      "import": "./dist/esm/index.mjs",
+      "require": "./dist/cjs/index.cjs"
+    },
+    "./package.json": "./package.json"
+  },
+  "homepage": "https://www.github.com/code-like-a-carpenter/workbench/tree/main/packages/@code-like-a-carpenter/workbench-config",
+  "license": "MIT",
+  "repository": "git@github.com:code-like-a-carpenter/workbench.git",
+  "types": "dist/types",
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "cosmiconfig": "^9.0.0",
+    "lodash.merge": "^4.6.2",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@types/lodash.merge": "^4.6.9"
+  },
+  "releaseAll": 1
+}

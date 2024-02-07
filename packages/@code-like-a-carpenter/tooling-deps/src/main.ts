@@ -6,6 +6,7 @@ import {minimatch} from 'minimatch';
 
 import {findLocalPackages} from '@code-like-a-carpenter/tooling-common';
 
+import {load} from './config';
 import {runDepcheck} from './depcheck';
 
 export interface MainArgs {
@@ -17,7 +18,8 @@ export interface MainArgs {
   readonly packageName?: string;
 }
 
-export async function main(args: MainArgs) {
+export async function main(argv: Partial<MainArgs>) {
+  const args = (await load({deps: argv})).deps;
   const localPackages = await findLocalPackages();
   if ('packageName' in args && typeof args.packageName === 'string') {
     const {packageName} = args;

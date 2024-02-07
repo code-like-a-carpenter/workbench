@@ -11,8 +11,8 @@ simpler. Where those libraries are designed to be used in a few different
 scenarios with pluggable, configurable behaviors, this is mostly just a wrapper
 around `Console` that
 
-1.  always writes JSON
-2.  has a child\` method inspired by bunyan to create sub-loggers.
+1. always writes JSON
+2. has a child\` method inspired by bunyan to create sub-loggers.
 
 To be clear, bunyan is an excellent library, but a significant portion of its
 code is dedicated to writing log output somewhere other than STDOUT, which is

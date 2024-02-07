@@ -1,0 +1,9 @@
+{
+  "executors": {
+    "foundation": {
+      "implementation": "./executors/foundation/executor",
+      "schema": "./executors/foundation/schema.json",
+      "description": "foundation executor"
+    }
+  }
+}

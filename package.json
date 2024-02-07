@@ -9,6 +9,7 @@
   "author": "Ian Remmel <1182361+ianwremmel@users.noreply.github.com> (https://www.ianwremmel.com)",
   "repository": "git@github.com:code-like-a-carpenter/workbench.git",
   "scripts": {
+    "build": "npx nx run-many --target=build",
     "eslint": "eslint ${ESLINT_FORMAT_OPTIONS:-} --ignore-path .gitignore ",
     "lint": "npm-run-all --continue-on-error --parallel lint:*",
     "lint:changelog": "commitlint --from origin/main --to HEAD",
@@ -33,10 +34,11 @@
     "@graphql-tools/apollo-engine-loader": "^8.0.0",
     "@ianwremmel/eslint-plugin-ianwremmel": "^6.2.2",
     "@jest/types": "^29.6.3",
+    "@nx/devkit": "^18.0.1",
     "@nx/plugin": "^17.2.8",
     "@semrel-extra/npm": "^1.2.2",
-    "@swc-node/register": "^1.6.8",
-    "@swc/core": "^1.3.106",
+    "@swc-node/register": "^1.8.0",
+    "@swc/core": "^1.3.107",
     "@types/jest": "^29.5.10",
     "@types/lodash": "^4.14.200",
     "@types/node": "^20.0.0",
@@ -70,7 +72,7 @@
     "nx": "17.2.8",
     "openapi-typescript": "^6.7.4",
     "patch-package": "^8.0.0",
-    "prettier": "^3.2.4",
+    "prettier": "^3.2.5",
     "tsx": "^4.7.0",
     "typescript": "^5.3.3",
     "wait-on": "^7.1.0"
@@ -100,5 +102,19 @@
       "@semrel-extra/npm",
       "@semantic-release/github"
     ]
+  },
+  "code-like-a-carpenter": {
+    "root": true,
+    "deps": {
+      "definitelyTyped": [
+        "dotenv",
+        "http-proxy",
+        "js-yaml ",
+        "lodash.*",
+        "prettier",
+        "vhost ",
+        "yargs "
+      ]
+    }
   }
 }

@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json-schema.org/schema",
+  "version": 2,
+  "title": "Foundation executor",
+  "description": "",
+  "type": "object",
+  "properties": {
+    "config": {
+      "type": "string"
+    },
+    "outputs": {
+      "default": ["cloudformation", "typescript"],
+      "type": "array",
+      "items": {
+        "enum": ["cloudformation", "typescript"]
+      }
+    }
+  },
+  "required": ["config"],
+  "additionalProperties": false
+}

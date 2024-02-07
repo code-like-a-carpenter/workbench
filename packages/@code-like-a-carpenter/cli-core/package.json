@@ -2,7 +2,7 @@
   "name": "@code-like-a-carpenter/cli-core",
   "description": "CLI core for Code Like a Carpenter",
   "dependencies": {
-    "cosmiconfig": "^9.0.0",
+    "@code-like-a-carpenter/workbench-config": "*",
     "yargs": "^17.7.2",
     "zod": "^3.22.4"
   },
@@ -29,5 +29,6 @@
   "bin": "./cli.mjs",
   "devDependencies": {
     "@types/yargs": "^17.0.32"
-  }
+  },
+  "releaseAll": 1
 }

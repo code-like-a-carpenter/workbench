@@ -30,5 +30,6 @@
     "@graphql-codegen/plugin-helpers": "^5.0.1",
     "lodash": "^4.17.21",
     "zod": "^3.22.4"
-  }
+  },
+  "releaseAll": 1
 }
