@@ -1,5 +1,8 @@
+diff --git a/node_modules/nx/bin/nx-cloud.js b/node_modules/nx/bin/nx-cloud.js
+old mode 100755
+new mode 100644
 diff --git a/node_modules/nx/src/native/index.d.ts b/node_modules/nx/src/native/index.d.ts
-index 65c19a0..9587a75 100644
+index 3a3fc09..a9b209e 100644
 --- a/node_modules/nx/src/native/index.d.ts
 +++ b/node_modules/nx/src/native/index.d.ts
 @@ -1,6 +1,13 @@

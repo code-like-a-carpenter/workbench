@@ -5,7 +5,6 @@
     "@code-like-a-carpenter/cli-core": "*",
     "@code-like-a-carpenter/tooling-common": "*",
     "@code-like-a-carpenter/workbench-config": "*",
-    "@nx/devkit": "^17.3.0",
     "depcheck": "^1.4.7",
     "minimatch": "^9.0.3"
   },
