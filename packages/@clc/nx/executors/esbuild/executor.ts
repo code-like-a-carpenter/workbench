@@ -72,7 +72,7 @@ const runExecutor: Executor<EsbuildExecutor> = async (options) => {
         },
       },
     ],
-    sourcemap: 'external',
+    sourcemap: 'linked',
   });
 
   return {
