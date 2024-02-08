@@ -1,28 +1,37 @@
-import camelCase from 'lodash.camelcase';
-import upperFirst from 'lodash.upperfirst';
+import assert from 'node:assert';
+
+import ci from 'ci-info';
 
 import {env} from '@code-like-a-carpenter/env';
 
+import {formatStackName} from './format-stack-name';
+
+// Reminder: there's no good way to test this because `ci-info` does its thing
+// before we'd have a chance to mock it.
 export function getStackName(projectName: string): string {
-  const stackName = upperFirst(camelCase(projectName));
-  let suffix = '';
-  if (env('GITHUB_SHA', '') !== '') {
-    suffix = `${env('GITHUB_SHA', '').slice(0, 7)}`;
+  if (!ci.isCI) {
+    return formatStackName({ci: false, projectName});
+  }
+  if (ci.BUILDKITE) {
+    return formatStackName({
+      ci: true,
+      projectName,
+      ref: env('BUILDKITE_BRANCH'),
+      sha: env('BUILDKITE_COMMIT'),
+    });
   }
 
-  if (env('GITHUB_HEAD_REF', '') !== '') {
-    suffix = `${suffix}-${env('GITHUB_HEAD_REF')
-      .replace(/[/_]/g, '-')
-      .substring(0, 20)}`;
-  } else if (env('GITHUB_REF', '') !== '') {
-    const branchName = env('GITHUB_REF', '')
-      .split('/')
-      .slice(2)
-      .join('/')
-      .replace(/[/_]/g, '-')
-      .substring(0, 20);
-    suffix = `${suffix}-${branchName}`;
+  if (ci.GITHUB_ACTIONS) {
+    return formatStackName({
+      ci: true,
+      fullRef: env('GITHUB_HEAD_REF'),
+      projectName,
+      ref: env('GITHUB_REF'),
+      sha: env('GITHUB_SHA'),
+    });
   }
 
-  return suffix ? `${stackName}-${suffix}` : stackName;
+  assert.fail(
+    `"${ci.name}" is not a configured CI environment. Please update this file to support it.`
+  );
 }
