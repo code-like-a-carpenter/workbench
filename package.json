@@ -70,6 +70,7 @@
     "openapi-typescript": "^6.7.4",
     "patch-package": "^8.0.0",
     "prettier": "^3.2.5",
+    "prettier-2": "npm:prettier@^2",
     "tsx": "^4.7.0",
     "typescript": "^5.3.3",
     "wait-on": "^7.1.0"

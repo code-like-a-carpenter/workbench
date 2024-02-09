@@ -1,0 +1,49 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`formatStackName() converts a project name to a stack name 1`] = `"CodeLikeACarpenterToolingCommon"`;
+
+exports[`formatStackName() converts a project name to a stack name 2`] = `"CodeLikeACarpenterFoundationIntermediateRepresentation"`;
+
+exports[`formatStackName() converts a project name to a stack name 3`] = `"AwsOtel"`;
+
+exports[`formatStackName() converts a project name to a stack name 4`] = `"CheckRunReporter"`;
+
+exports[`formatStackName() converts a project name to a stack name in ci 1`] = `"ci--CodeLikeACarpenterToolingCommon-f7d69db"`;
+
+exports[`formatStackName() converts a project name to a stack name in ci 2`] = `"ci--CodeLikeACarpenterToolingCommon-openapiTypescript6-f7d69db"`;
+
+exports[`formatStackName() converts a project name to a stack name in ci 3`] = `"ci--CodeLikeACarpenterToolingCommon-openapiTypescript6-f7d69db"`;
+
+exports[`formatStackName() converts a project name to a stack name in ci 4`] = `"ci--CodeLikeACarpenterToolingCommon-f7d69db"`;
+
+exports[`formatStackName() converts a project name to a stack name in ci 5`] = `"ci--CodeLikeACarpenterToolingCommon-openapiTypescript6-f7d69db"`;
+
+exports[`formatStackName() converts a project name to a stack name in ci 6`] = `"ci--CodeLikeACarpenterFoundationIntermediateRepresentation-f7d69db"`;
+
+exports[`formatStackName() converts a project name to a stack name in ci 7`] = `"ci--CodeLikeACarpenterFoundationIntermediateRepresentation-openapiTypescript6-f7d69db"`;
+
+exports[`formatStackName() converts a project name to a stack name in ci 8`] = `"ci--CodeLikeACarpenterFoundationIntermediateRepresentation-openapiTypescript6-f7d69db"`;
+
+exports[`formatStackName() converts a project name to a stack name in ci 9`] = `"ci--CodeLikeACarpenterFoundationIntermediateRepresentation-f7d69db"`;
+
+exports[`formatStackName() converts a project name to a stack name in ci 10`] = `"ci--CodeLikeACarpenterFoundationIntermediateRepresentation-openapiTypescript6-f7d69db"`;
+
+exports[`formatStackName() converts a project name to a stack name in ci 11`] = `"ci--AwsOtel-f7d69db"`;
+
+exports[`formatStackName() converts a project name to a stack name in ci 12`] = `"ci--AwsOtel-openapiTypescript6-f7d69db"`;
+
+exports[`formatStackName() converts a project name to a stack name in ci 13`] = `"ci--AwsOtel-openapiTypescript6-f7d69db"`;
+
+exports[`formatStackName() converts a project name to a stack name in ci 14`] = `"ci--AwsOtel-f7d69db"`;
+
+exports[`formatStackName() converts a project name to a stack name in ci 15`] = `"ci--AwsOtel-openapiTypescript6-f7d69db"`;
+
+exports[`formatStackName() converts a project name to a stack name in ci 16`] = `"ci--CheckRunReporter-f7d69db"`;
+
+exports[`formatStackName() converts a project name to a stack name in ci 17`] = `"ci--CheckRunReporter-openapiTypescript6-f7d69db"`;
+
+exports[`formatStackName() converts a project name to a stack name in ci 18`] = `"ci--CheckRunReporter-openapiTypescript6-f7d69db"`;
+
+exports[`formatStackName() converts a project name to a stack name in ci 19`] = `"ci--CheckRunReporter-f7d69db"`;
+
+exports[`formatStackName() converts a project name to a stack name in ci 20`] = `"ci--CheckRunReporter-openapiTypescript6-f7d69db"`;

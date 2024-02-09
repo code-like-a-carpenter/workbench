@@ -24,6 +24,7 @@
   },
   "dependencies": {
     "@code-like-a-carpenter/env": "*",
+    "ci-info": "^4.0.0",
     "find-up": "^5.0.0",
     "glob": "^10.3.10",
     "lodash.camelcase": "^4.3.0",

@@ -160,7 +160,6 @@ destroy_one () {
 }
 
 get_stack_name () {
-
   if [ -n "${STACK_NAME:-}" ]; then
     echo "$STACK_NAME"
     return 0
@@ -168,32 +167,7 @@ get_stack_name () {
 
   local app="$1"
 
-  local stackname
-  # This PascalCases the last item in the path.
-  project_name=$(echo "$app" | awk -F/ '{print $NF}')
-  stackname=$(echo "$project_name" | sed -r 's/(^|[-_ ]+)([0-9a-z])/\U\2/g')
-
-  local suffix=''
-  if [ -n "${GITHUB_SHA:-}" ]; then
-    suffix="${GITHUB_SHA:0:7}"
-  fi
-
-  if [ -n "${GITHUB_HEAD_REF:-}" ]; then
-    # If we have a GITHUB_HEAD_REF, replace its slashes and underscores with
-    # hyphens and take the first 20 characters
-    suffix="$suffix-$(echo "$GITHUB_HEAD_REF" | sed -e 's#[/_]#-#g' | head -c 20)"
-  elif [ -n "${GITHUB_REF:-}" ]; then
-    # If we have a GITHUB_REF, remove the refs/heads/ prefix, replace its
-    # slashes and underscores with hyphens and take the first 20 characters
-    branch_name=$(echo "$GITHUB_REF" | cut -d '/' -f 3- | sed -e 's#[/_]#-#g' | head -c 20)
-    suffix="$suffix-$branch_name"
-  fi
-
-  if [ -z "$suffix" ]; then
-    echo "$stackname"
-  else
-    echo "$stackname-$suffix"
-  fi
+  npx ---no-install @code-like-a-carpenter/cli stack-name "$app"
 
   return 0
 }
