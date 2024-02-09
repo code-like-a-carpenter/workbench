@@ -16,7 +16,7 @@ export function getStackName(projectName: string): string {
     return formatStackName({
       ci: true,
       projectName,
-      ref: env('BUILDKITE_BRANCH'),
+      ref: env('BUILDKITE_BRANCH', ''),
       sha: env('BUILDKITE_COMMIT'),
     });
   }
@@ -24,9 +24,9 @@ export function getStackName(projectName: string): string {
   if (ci.GITHUB_ACTIONS) {
     return formatStackName({
       ci: true,
-      fullRef: env('GITHUB_HEAD_REF'),
+      fullRef: env('GITHUB_HEAD_REF', ''),
       projectName,
-      ref: env('GITHUB_REF'),
+      ref: env('GITHUB_REF', ''),
       sha: env('GITHUB_SHA'),
     });
   }

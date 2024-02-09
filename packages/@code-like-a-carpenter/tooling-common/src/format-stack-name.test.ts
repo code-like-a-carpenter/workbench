@@ -41,6 +41,7 @@ describe('formatStackName()', () => {
     (projectName, env) => {
       const stackName = formatStackName({projectName, ...env});
       expect(stackName).toMatchSnapshot();
+      expect(stackName).toMatch(/^ci--/);
       expect(stackName.length).toBeLessThan(128);
     }
   );
