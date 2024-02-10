@@ -3,9 +3,8 @@ import path from 'node:path';
 
 import type {Executor} from '@nx/devkit';
 import {glob} from 'glob';
-import {compileFromFile} from 'json-schema-to-typescript';
 
-import {writePrettierFile} from '../../';
+import {jsonSchemaToTypescript} from '@code-like-a-carpenter/tooling-common';
 
 import type {JsonSchemaExecutor} from './schema';
 
@@ -17,9 +16,6 @@ const executor: Executor<JsonSchemaExecutor> = async ({outDir, schemas}) => {
   const filenames = await glob(schemas);
   await Promise.all(
     filenames.map(async (filename) => {
-      // we want to use compileFromFile so it can handle references to other
-      // files
-      const out = await compileFromFile(filename);
       if (outDir) {
         const sharedBased = commonPrefix(filename, outDir);
         const outFilename = filename
@@ -27,9 +23,12 @@ const executor: Executor<JsonSchemaExecutor> = async ({outDir, schemas}) => {
           .replace(/\.json$/, '.ts');
 
         await mkdir(path.dirname(outFilename), {recursive: true});
-        await writePrettierFile(outFilename, out);
+        await jsonSchemaToTypescript({infile: filename, outfile: outFilename});
       } else {
-        await writePrettierFile(filename.replace(/\.json$/, '.d.ts'), out);
+        await jsonSchemaToTypescript({
+          infile: filename,
+          outfile: filename.replace(/\.json$/, '.d.ts'),
+        });
       }
     })
   );

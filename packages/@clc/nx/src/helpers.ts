@@ -1,11 +1,10 @@
 import assert from 'node:assert';
-import {readFile, writeFile} from 'node:fs/promises';
+import {readFile} from 'node:fs/promises';
 
 import type {ExecutorContext} from '@nx/devkit';
 import type {JSONSchemaForNPMPackageJsonFiles} from '@schemastore/package';
 import findUp from 'find-up';
 import {glob} from 'glob';
-import prettier from 'prettier';
 
 export function extractProjectName(context: ExecutorContext): string {
   const {projectName} = context;
@@ -64,14 +63,10 @@ export async function writePackageJson(
   filename: string,
   pkg: JSONSchemaForNPMPackageJsonFiles
 ) {
+  // This needs to be late-imported because nx doesn't do its dotenv loading
+  // early enough, so --conditions=deveopment isn't yet set.
+  const {writePrettierFile} = await import(
+    '@code-like-a-carpenter/tooling-common'
+  );
   await writePrettierFile(filename, JSON.stringify(pkg, null, 2));
-}
-
-export async function writePrettierFile(filename: string, content: string) {
-  const config = await prettier.resolveConfig(filename);
-  const formatted = await prettier.format(content, {
-    ...config,
-    filepath: filename,
-  });
-  await writeFile(filename, formatted);
 }

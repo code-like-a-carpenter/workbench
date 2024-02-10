@@ -27,12 +27,15 @@
     "ci-info": "^4.0.0",
     "find-up": "^5.0.0",
     "glob": "^10.3.10",
+    "json-schema-to-typescript": "^13.1.2",
     "lodash.camelcase": "^4.3.0",
-    "lodash.upperfirst": "^4.3.1"
+    "lodash.upperfirst": "^4.3.1",
+    "prettier": "^3.2.5"
   },
   "devDependencies": {
     "@types/lodash.camelcase": "^4.3.9",
-    "@types/lodash.upperfirst": "^4.3.9"
+    "@types/lodash.upperfirst": "^4.3.9",
+    "@types/prettier": "^3.0.0"
   },
   "releaseAll": 1
 }
