@@ -100,6 +100,9 @@
       "path": "packages/@code-like-a-carpenter/telemetry"
     },
     {
+      "path": "packages/@code-like-a-carpenter/tool-tool"
+    },
+    {
       "path": "packages/@code-like-a-carpenter/tooling-common"
     },
     {

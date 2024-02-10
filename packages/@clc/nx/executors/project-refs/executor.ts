@@ -6,9 +6,12 @@ import type {Executor} from '@nx/devkit';
 import {glob} from 'glob';
 import ts from 'typescript';
 
-import {writePrettierFile} from '@code-like-a-carpenter/tooling-common';
+import {
+  readPackageJson,
+  writePrettierFile,
+} from '@code-like-a-carpenter/tooling-common';
 
-import {extractProjectRoot, findLocalPackages, readPackageJson} from '../..';
+import {extractProjectRoot, findLocalPackages} from '../..';
 
 import type {ProjectRefsExecutor} from './schema';
 

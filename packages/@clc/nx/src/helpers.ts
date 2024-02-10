@@ -53,12 +53,6 @@ export async function findLocalPackages(): Promise<Map<string, string>> {
   );
 }
 
-export async function readPackageJson(
-  filename: string
-): Promise<JSONSchemaForNPMPackageJsonFiles> {
-  return JSON.parse(await readFile(filename, 'utf-8'));
-}
-
 export async function writePackageJson(
   filename: string,
   pkg: JSONSchemaForNPMPackageJsonFiles

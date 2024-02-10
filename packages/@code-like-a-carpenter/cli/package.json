@@ -20,6 +20,7 @@
       "@code-like-a-carpenter/cli-plugin-example",
       "@code-like-a-carpenter/cli-plugin-proxy",
       "@code-like-a-carpenter/cli-plugin-stack-name",
+      "@code-like-a-carpenter/tool-tool",
       "@code-like-a-carpenter/tooling-deps"
     ]
   },
@@ -28,6 +29,7 @@
     "@code-like-a-carpenter/cli-plugin-example": "*",
     "@code-like-a-carpenter/cli-plugin-proxy": "*",
     "@code-like-a-carpenter/cli-plugin-stack-name": "*",
+    "@code-like-a-carpenter/tool-tool": "*",
     "@code-like-a-carpenter/tooling-deps": "*"
   },
   "exports": {
