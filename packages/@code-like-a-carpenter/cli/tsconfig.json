@@ -19,6 +19,9 @@
       "path": "../cli-plugin-stack-name"
     },
     {
+      "path": "../tool-stack"
+    },
+    {
       "path": "../tool-tool"
     },
     {

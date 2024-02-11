@@ -1,0 +1,8 @@
+{
+  "$schema": "http://json-schema.org/schema",
+  "version": 2,
+  "title": "StackListSchema",
+  "description": "Lists all the stacks in the repo (based a bunch of assumptions)",
+  "type": "object",
+  "additionalProperties": false
+}

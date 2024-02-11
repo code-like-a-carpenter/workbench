@@ -1,0 +1,30 @@
+{
+  "$schema": "http://json-schema.org/schema",
+  "version": 2,
+  "title": "StackNameSchema",
+  "description": "Produces an AWS-safe stack name based on various environmental and input conditions",
+  "type": "object",
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "projectName": {
+          "description": "Name of a project within the repository that has a stack",
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Arbitrary string that will be converted to a stack name on a best-effort basis. Not validated against anything that may or may not be present in the repository.",
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    }
+  ],
+  "additionalProperties": false
+}
