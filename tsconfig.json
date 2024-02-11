@@ -40,9 +40,6 @@
       "path": "packages/@code-like-a-carpenter/cli-plugin-proxy"
     },
     {
-      "path": "packages/@code-like-a-carpenter/cli-plugin-stack-name"
-    },
-    {
       "path": "packages/@code-like-a-carpenter/contract-tests"
     },
     {

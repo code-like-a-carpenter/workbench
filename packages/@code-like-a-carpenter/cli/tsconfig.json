@@ -16,9 +16,6 @@
       "path": "../cli-plugin-proxy"
     },
     {
-      "path": "../cli-plugin-stack-name"
-    },
-    {
       "path": "../tool-stack"
     },
     {

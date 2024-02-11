@@ -24,7 +24,9 @@
   },
   "executors": "./executors.json",
   "dependencies": {
+    "@code-like-a-carpenter/assert": "*",
     "@code-like-a-carpenter/cli-core": "*",
+    "@code-like-a-carpenter/tooling-common": "*",
     "@nx/devkit": "^18.0.4"
   }
 }

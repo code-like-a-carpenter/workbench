@@ -16,7 +16,7 @@ export const plugin = definePlugin((yargs) => {
     'Produces an AWS-safe stack name based on various environmental and input conditions',
     (y) =>
       y
-        .option('projectName', {
+        .option('project-name', {
           conflicts: ['name'],
           demandOption: false,
           type: 'string',
