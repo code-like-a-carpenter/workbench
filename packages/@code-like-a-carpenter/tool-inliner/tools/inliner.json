@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/schema",
   "version": 2,
   "title": "Inliner executor",
-  "description": "",
+  "description": "Inlines a text file as a string in a typescript file",
   "type": "object",
   "properties": {
     "exportName": {

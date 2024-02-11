@@ -2,9 +2,6 @@
   "name": "@clc/nx",
   "main": "./src/index.ts",
   "dependencies": {
-    "@babel/generator": "^7.23.6",
-    "@babel/template": "^7.23.9",
-    "@babel/types": "^7.23.9",
     "@code-like-a-carpenter/tooling-common": "*",
     "@nx/devkit": "^18.0.2",
     "@schemastore/package": "^0.0.10",

@@ -13,6 +13,9 @@
       "path": "../cli-plugin-example"
     },
     {
+      "path": "../tool-inliner"
+    },
+    {
       "path": "../tool-json-schema"
     },
     {

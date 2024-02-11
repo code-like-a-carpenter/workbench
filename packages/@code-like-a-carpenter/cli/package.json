@@ -18,6 +18,7 @@
     "cliMain": true,
     "plugins": [
       "@code-like-a-carpenter/cli-plugin-example",
+      "@code-like-a-carpenter/tool-inliner",
       "@code-like-a-carpenter/tool-json-schema",
       "@code-like-a-carpenter/tool-stack",
       "@code-like-a-carpenter/tool-tool",
@@ -27,6 +28,7 @@
   "dependencies": {
     "@code-like-a-carpenter/cli-core": "*",
     "@code-like-a-carpenter/cli-plugin-example": "*",
+    "@code-like-a-carpenter/tool-inliner": "*",
     "@code-like-a-carpenter/tool-json-schema": "*",
     "@code-like-a-carpenter/tool-stack": "*",
     "@code-like-a-carpenter/tool-tool": "*",

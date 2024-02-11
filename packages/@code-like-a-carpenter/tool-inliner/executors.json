@@ -1,0 +1,9 @@
+{
+  "executors": {
+    "inliner": {
+      "description": "Inlines a text file as a string in a typescript file",
+      "implementation": "./src/__generated__/inliner-executor.ts",
+      "schema": "./tools/inliner.json"
+    }
+  }
+}

@@ -245,7 +245,7 @@ export const createNodes: CreateNodes = [
     ) {
       addTarget(targets, 'codegen', 'core-schema', {
         cache: true,
-        executor: '@clc/nx:inliner',
+        executor: '@code-like-a-carpenter/tool-inliner:inliner',
         inputs: ['{projectRoot}/schema.graphqls'],
         options: {
           exportName: 'schema',

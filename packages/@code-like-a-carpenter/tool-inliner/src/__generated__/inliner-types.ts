@@ -5,6 +5,9 @@
  * and run json-schema-to-typescript to regenerate this file.
  */
 
+/**
+ * Inlines a text file as a string in a typescript file
+ */
 export interface InlinerExecutor {
   /**
    * The name of the export to inline
