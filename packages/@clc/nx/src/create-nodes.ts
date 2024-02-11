@@ -52,7 +52,7 @@ export const createNodes: CreateNodes = [
 
     addTarget(targets, 'codegen', 'executors', {
       cache: true,
-      executor: '@clc/nx:json-schema',
+      executor: '@code-like-a-carpenter/tool-json-schema:json-schema',
       inputs: ['{projectRoot}/executors/*/schema.json'],
       options: {
         schemas: ['{projectRoot}/executors/*/schema.json'],
@@ -122,7 +122,7 @@ export const createNodes: CreateNodes = [
 
     addTarget(targets, 'codegen', 'json-schemas', {
       cache: true,
-      executor: '@clc/nx:json-schema',
+      executor: '@code-like-a-carpenter/tool-json-schema:json-schema',
       inputs: ['{projectRoot}/json-schemas/**/*.json'],
       options: {
         outDir: '{projectRoot}/src/__generated__/',

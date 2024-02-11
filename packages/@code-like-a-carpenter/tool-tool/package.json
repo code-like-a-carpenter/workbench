@@ -4,6 +4,7 @@
   "dependencies": {
     "@code-like-a-carpenter/assert": "*",
     "@code-like-a-carpenter/cli-core": "*",
+    "@code-like-a-carpenter/tool-json-schema": "*",
     "@code-like-a-carpenter/tooling-common": "*",
     "@nx/devkit": "^18.0.4",
     "@schemastore/package": "^0.0.10",

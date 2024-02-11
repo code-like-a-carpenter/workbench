@@ -13,6 +13,9 @@
       "path": "../cli-core"
     },
     {
+      "path": "../tool-json-schema"
+    },
+    {
       "path": "../tooling-common"
     }
   ]

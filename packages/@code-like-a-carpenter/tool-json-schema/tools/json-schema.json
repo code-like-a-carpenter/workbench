@@ -1,8 +1,8 @@
 {
   "$schema": "http://json-schema.org/schema",
   "version": 2,
-  "title": "JsonSchema executor",
-  "description": "",
+  "title": "JsonSchemaTool",
+  "description": "Generates TypeScript definitions from JSON Schema files",
   "type": "object",
   "properties": {
     "outDir": {
@@ -12,7 +12,7 @@
     "schemas": {
       "description": "List of glob patterns identifying JSON Schema definitions",
       "items": {
-        "type": "string"
+        "type": ["number", "string"]
       },
       "type": "array"
     }

@@ -1,6 +1,6 @@
 import {compileFromFile} from 'json-schema-to-typescript';
 
-import {writePrettierFile} from './filesystem';
+import {writePrettierFile} from '@code-like-a-carpenter/tooling-common';
 
 interface JsonSchemaToTypescriptOptions {
   readonly infile: string;

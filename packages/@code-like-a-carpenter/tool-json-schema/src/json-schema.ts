@@ -1,19 +1,26 @@
+import assert from 'node:assert';
 import {mkdir} from 'node:fs/promises';
 import path from 'node:path';
 
-import type {Executor} from '@nx/devkit';
 import {glob} from 'glob';
 
-import {jsonSchemaToTypescript} from '@code-like-a-carpenter/tooling-common';
+import type {JsonSchemaTool} from './__generated__/json-schema-types.ts';
+import {jsonSchemaToTypescript} from './json-schema-helpers';
 
-import type {JsonSchemaExecutor} from './schema';
-
-const executor: Executor<JsonSchemaExecutor> = async ({outDir, schemas}) => {
+export async function handler({
+  outDir,
+  schemas,
+}: JsonSchemaTool): Promise<void> {
   if (outDir) {
     outDir = outDir.endsWith(path.sep) ? outDir : outDir + path.sep;
   }
 
-  const filenames = await glob(schemas);
+  const strings = schemas.map((s) => {
+    assert(typeof s === 'string', 'schema must be a string');
+    return s;
+  });
+
+  const filenames = await glob(strings);
   await Promise.all(
     filenames.map(async (filename) => {
       if (outDir) {
@@ -32,11 +39,7 @@ const executor: Executor<JsonSchemaExecutor> = async ({outDir, schemas}) => {
       }
     })
   );
-
-  return {
-    success: true,
-  };
-};
+}
 
 function commonPrefix(a: string, b: string) {
   const length = Math.min(a.length, b.length);
@@ -46,5 +49,3 @@ function commonPrefix(a: string, b: string) {
   }
   return a.slice(0, i);
 }
-
-export default executor;

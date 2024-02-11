@@ -1,0 +1,9 @@
+{
+  "executors": {
+    "json-schema": {
+      "description": "Generates TypeScript definitions from JSON Schema files",
+      "implementation": "./src/__generated__/json-schema-executor.ts",
+      "schema": "./tools/json-schema.json"
+    }
+  }
+}

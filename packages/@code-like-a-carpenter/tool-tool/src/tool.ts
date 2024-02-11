@@ -7,8 +7,8 @@ import findUp from 'find-up';
 import kebabCase from 'lodash.kebabcase';
 
 import {assert} from '@code-like-a-carpenter/assert';
+import {jsonSchemaToTypescript} from '@code-like-a-carpenter/tool-json-schema';
 import {
-  jsonSchemaToTypescript,
   readPackageJson,
   writePrettierFile,
 } from '@code-like-a-carpenter/tooling-common';

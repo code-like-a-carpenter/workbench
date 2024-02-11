@@ -10,19 +10,7 @@
       "path": "../cli-core"
     },
     {
-      "path": "../cli-plugin-example"
-    },
-    {
-      "path": "../tool-json-schema"
-    },
-    {
-      "path": "../tool-stack"
-    },
-    {
-      "path": "../tool-tool"
-    },
-    {
-      "path": "../tooling-deps"
+      "path": "../tooling-common"
     }
   ]
 }

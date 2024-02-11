@@ -1,5 +1,6 @@
 import path from 'node:path';
 
+import camelCase from 'lodash.camelcase';
 import kebabCase from 'lodash.kebabcase';
 
 import {assert} from '@code-like-a-carpenter/assert';
@@ -21,7 +22,8 @@ import {definePlugin} from '@code-like-a-carpenter/cli-core';
 
 ${metadata
   .map(
-    (m) => `import {handler as ${m.toolName}Handler} from '../${m.toolName}';`
+    (m) =>
+      `import {handler as ${camelCase(m.toolName)}Handler} from '../${m.toolName}';`
   )
   .join('\n')}
 
@@ -35,7 +37,7 @@ ${metadata
     if ('properties' in m.schema) {
       const options = propsToOptions(m.schema);
       if (options.length) {
-        return `yargs.command('${m.commandName}', '${m.description}', (y) => y${options.join('\n')}, async (args) => {await ${m.toolName}Handler(args)})`;
+        return `yargs.command('${m.commandName}', '${m.description}', (y) => y${options.join('\n')}, async (args) => {await ${camelCase(m.toolName)}Handler(args)})`;
       }
     } else if ('oneOf' in m.schema) {
       assert(Array.isArray(m.schema.oneOf), 'oneOf must be an array');
@@ -61,7 +63,7 @@ ${metadata
         )
         .flat();
 
-      return `yargs.command('${m.commandName}', '${m.description}', (y) => y${options.join('\n')}, async (args) => {await ${m.toolName}Handler(args)})`;
+      return `yargs.command('${m.commandName}', '${m.description}', (y) => y${options.join('\n')}, async (args) => {await ${camelCase(m.toolName)}Handler(args)})`;
     } else if ('anyOf' in m.schema) {
       assert(Array.isArray(m.schema.anyOf), 'anyOf must be an array');
 
@@ -69,7 +71,7 @@ ${metadata
         .map((subschema) => propsToOptions(subschema))
         .flat();
 
-      return `yargs.command('${m.commandName}', '${m.description}', (y) => y${options}, async (args) => {await ${m.toolName}Handler(args)})`;
+      return `yargs.command('${m.commandName}', '${m.description}', (y) => y${options}, async (args) => {await ${camelCase(m.toolName)}Handler(args)})`;
     } else if ('allOf' in m.schema) {
       assert(Array.isArray(m.schema.allOf), 'allOf must be an array');
 
@@ -77,10 +79,10 @@ ${metadata
         .map((subschema) => propsToOptions(subschema))
         .flat();
 
-      return `yargs.command('${m.commandName}', '${m.description}', (y) => y${options}, async (args) => {await ${m.toolName}Handler(args)})`;
+      return `yargs.command('${m.commandName}', '${m.description}', (y) => y${options}, async (args) => {await ${camelCase(m.toolName)}Handler(args)})`;
     }
 
-    return `yargs.command('${m.commandName}', '${m.description}', async (args) => {await ${m.toolName}Handler(args)})`;
+    return `yargs.command('${m.commandName}', '${m.description}', async (args) => {await ${camelCase(m.toolName)}Handler(args)})`;
   })
   .join('\n')}
 });

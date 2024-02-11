@@ -5,7 +5,10 @@
  * and run json-schema-to-typescript to regenerate this file.
  */
 
-export interface JsonSchemaExecutor {
+/**
+ * Generates TypeScript definitions from JSON Schema files
+ */
+export interface JsonSchemaTool {
   /**
    * If present, schemas will be written to this directory instead of of as siblings to their source files. Further, they'll be written as standard .ts files rather than .d.ts files
    */
@@ -13,5 +16,5 @@ export interface JsonSchemaExecutor {
   /**
    * List of glob patterns identifying JSON Schema definitions
    */
-  schemas: string[];
+  schemas: (number | string)[];
 }

@@ -94,6 +94,9 @@
       "path": "packages/@code-like-a-carpenter/telemetry"
     },
     {
+      "path": "packages/@code-like-a-carpenter/tool-json-schema"
+    },
+    {
       "path": "packages/@code-like-a-carpenter/tool-stack"
     },
     {
