@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "outDir": "./dist/types",
+    "rootDir": "./src"
+  },
+  "extends": "../../../tsconfig.references.json",
+  "include": ["src"],
+  "references": [
+    {
+      "path": "../assert"
+    },
+    {
+      "path": "../cli-core"
+    },
+    {
+      "path": "../tool-json-schema"
+    },
+    {
+      "path": "../tooling-common"
+    }
+  ]
+}

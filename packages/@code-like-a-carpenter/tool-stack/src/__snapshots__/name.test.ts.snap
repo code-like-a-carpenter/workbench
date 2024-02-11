@@ -1,0 +1,49 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`cli-plugin-stack-name formats a project name 1`] = `"CodeLikeACarpenterToolingCommon"`;
+
+exports[`cli-plugin-stack-name formats a project name 2`] = `"CodeLikeACarpenterFoundationIntermediateRepresentation"`;
+
+exports[`cli-plugin-stack-name formats a project name 3`] = `"AwsOtel"`;
+
+exports[`cli-plugin-stack-name formats a project name in ci 1`] = `"ci--CodeLikeACarpenterToolingCommon-f7d69db"`;
+
+exports[`cli-plugin-stack-name formats a project name in ci 2`] = `"ci--CodeLikeACarpenterToolingCommon-openapiTypescript6-f7d69db"`;
+
+exports[`cli-plugin-stack-name formats a project name in ci 3`] = `"ci--CodeLikeACarpenterToolingCommon-openapiTypescript6-f7d69db"`;
+
+exports[`cli-plugin-stack-name formats a project name in ci 4`] = `"ci--CodeLikeACarpenterToolingCommon-f7d69db"`;
+
+exports[`cli-plugin-stack-name formats a project name in ci 5`] = `"ci--CodeLikeACarpenterToolingCommon-openapiTypescript6-f7d69db"`;
+
+exports[`cli-plugin-stack-name formats a project name in ci 6`] = `"ci--CodeLikeACarpenterFoundationIntermediateRepresentation-f7d69db"`;
+
+exports[`cli-plugin-stack-name formats a project name in ci 7`] = `"ci--CodeLikeACarpenterFoundationIntermediateRepresentation-openapiTypescript6-f7d69db"`;
+
+exports[`cli-plugin-stack-name formats a project name in ci 8`] = `"ci--CodeLikeACarpenterFoundationIntermediateRepresentation-openapiTypescript6-f7d69db"`;
+
+exports[`cli-plugin-stack-name formats a project name in ci 9`] = `"ci--CodeLikeACarpenterFoundationIntermediateRepresentation-f7d69db"`;
+
+exports[`cli-plugin-stack-name formats a project name in ci 10`] = `"ci--CodeLikeACarpenterFoundationIntermediateRepresentation-openapiTypescript6-f7d69db"`;
+
+exports[`cli-plugin-stack-name formats a project name in ci 11`] = `"ci--AwsOtel-f7d69db"`;
+
+exports[`cli-plugin-stack-name formats a project name in ci 12`] = `"ci--AwsOtel-openapiTypescript6-f7d69db"`;
+
+exports[`cli-plugin-stack-name formats a project name in ci 13`] = `"ci--AwsOtel-openapiTypescript6-f7d69db"`;
+
+exports[`cli-plugin-stack-name formats a project name in ci 14`] = `"ci--AwsOtel-f7d69db"`;
+
+exports[`cli-plugin-stack-name formats a project name in ci 15`] = `"ci--AwsOtel-openapiTypescript6-f7d69db"`;
+
+exports[`cli-plugin-stack-name formats a stack name 1`] = `"CheckRunReporter"`;
+
+exports[`cli-plugin-stack-name formats a stack name in ci 1`] = `"ci--CheckRunReporter-f7d69db"`;
+
+exports[`cli-plugin-stack-name formats a stack name in ci 2`] = `"ci--CheckRunReporter-openapiTypescript6-f7d69db"`;
+
+exports[`cli-plugin-stack-name formats a stack name in ci 3`] = `"ci--CheckRunReporter-openapiTypescript6-f7d69db"`;
+
+exports[`cli-plugin-stack-name formats a stack name in ci 4`] = `"ci--CheckRunReporter-f7d69db"`;
+
+exports[`cli-plugin-stack-name formats a stack name in ci 5`] = `"ci--CheckRunReporter-openapiTypescript6-f7d69db"`;

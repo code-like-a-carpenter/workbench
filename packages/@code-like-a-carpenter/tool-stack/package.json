@@ -1,0 +1,43 @@
+{
+  "name": "@code-like-a-carpenter/tool-stack",
+  "description": "A tool for dealing with AWS stacks in a monorepo",
+  "author": "Ian Remmel <1182361+ianwremmel@users.noreply.github.com> (https://www.ianwremmel.com)",
+  "bugs": "https://www.github.com/code-like-a-carpenter/workbench/issues",
+  "engines": {
+    "node": "20.x"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/types/index.d.ts",
+      "development": "./src/index.ts",
+      "import": "./dist/esm/index.mjs",
+      "require": "./dist/cjs/index.cjs"
+    },
+    "./package.json": "./package.json"
+  },
+  "homepage": "https://www.github.com/code-like-a-carpenter/workbench/tree/main/packages/@code-like-a-carpenter/tool-stack",
+  "license": "MIT",
+  "repository": "git@github.com:code-like-a-carpenter/workbench.git",
+  "types": "dist/types",
+  "publishConfig": {
+    "access": "public"
+  },
+  "executors": "./executors.json",
+  "dependencies": {
+    "@aws-sdk/client-cloudformation": "3.188.0",
+    "@code-like-a-carpenter/assert": "*",
+    "@code-like-a-carpenter/cli-core": "*",
+    "@code-like-a-carpenter/tooling-common": "*",
+    "@nx/devkit": "^18.0.4",
+    "express": "^4.18.2",
+    "glob": "^10.3.10",
+    "http-proxy": "^1.18.1",
+    "lodash.snakecase": "^4.1.1",
+    "vhost": "^3.0.2"
+  },
+  "devDependencies": {
+    "@types/http-proxy": "^1.17.14",
+    "@types/lodash.snakecase": "^4.1.9",
+    "@types/vhost": "^3.0.9"
+  }
+}

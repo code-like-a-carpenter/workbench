@@ -64,3 +64,19 @@ export function addTarget(
   phaseDependsOn.push(fullTargetName);
   targets[phase].dependsOn = phaseDependsOn;
 }
+
+export function addDependency(
+  targets: Record<string, TargetConfiguration>,
+  targetName: string,
+  dependsOn: string
+) {
+  const target = targets[targetName];
+  assert(target, `target "${targetName}" has not been defined`);
+  assert(
+    dependsOn in targets,
+    `dependency "${dependsOn}" has not been defined`
+  );
+  const targetDependsOn = new Set(target.dependsOn ?? []);
+  targetDependsOn.add(dependsOn);
+  target.dependsOn = Array.from(targetDependsOn);
+}

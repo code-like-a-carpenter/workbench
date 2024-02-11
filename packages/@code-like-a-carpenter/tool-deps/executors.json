@@ -1,0 +1,9 @@
+{
+  "executors": {
+    "deps": {
+      "description": "No description provided",
+      "implementation": "./src/__generated__/deps-executor.ts",
+      "schema": "./tools/deps.json"
+    }
+  }
+}

@@ -21,5 +21,6 @@
       "conditions"
     ]
   },
+  "nxCloudAccessToken": "MWQwMjlkZmYtMDYzZi00NDM0LWI5OGEtMGUzNzQwNTk4MDYyfHJlYWQ=",
   "plugins": ["@clc/nx"]
 }

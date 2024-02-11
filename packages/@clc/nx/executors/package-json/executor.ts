@@ -4,12 +4,9 @@ import path from 'node:path';
 import type {Executor, ExecutorContext} from '@nx/devkit';
 import type {JSONSchemaForNPMPackageJsonFiles} from '@schemastore/package';
 
-import {
-  extractProjectName,
-  extractProjectRoot,
-  readPackageJson,
-  writePackageJson,
-} from '../..';
+import {readPackageJson} from '@code-like-a-carpenter/tooling-common';
+
+import {extractProjectName, extractProjectRoot, writePackageJson} from '../..';
 
 import type {PackageJsonExecutor} from './schema';
 

@@ -13,13 +13,19 @@
       "path": "../cli-plugin-example"
     },
     {
-      "path": "../cli-plugin-proxy"
+      "path": "../tool-deps"
     },
     {
-      "path": "../cli-plugin-stack-name"
+      "path": "../tool-inliner"
     },
     {
-      "path": "../tooling-deps"
+      "path": "../tool-json-schema"
+    },
+    {
+      "path": "../tool-stack"
+    },
+    {
+      "path": "../tool-tool"
     }
   ]
 }

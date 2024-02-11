@@ -1,9 +1,0 @@
-{
-  "executors": {
-    "deps": {
-      "implementation": "./executors/deps/executor",
-      "schema": "./executors/deps/schema.json",
-      "description": "deps executor"
-    }
-  }
-}

@@ -1,0 +1,15 @@
+{
+  "$schema": "http://json-schema.org/schema",
+  "version": 2,
+  "title": "Tool Tool",
+  "description": "",
+  "type": "object",
+  "properties": {
+    "schemaDir": {
+      "type": "string",
+      "description": "A directory of json schemas defining each tool's inputs."
+    }
+  },
+  "additionalProperties": false,
+  "required": ["schemaDir"]
+}

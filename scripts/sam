@@ -167,7 +167,7 @@ get_stack_name () {
 
   local app="$1"
 
-  npx ---no-install @code-like-a-carpenter/cli stack-name "$app"
+  npx ---no-install @code-like-a-carpenter/cli stack:name --project-name "$app"
 
   return 0
 }

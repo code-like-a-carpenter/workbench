@@ -1,0 +1,42 @@
+{
+  "$schema": "http://json-schema.org/schema",
+  "version": 2,
+  "title": "Deps executor",
+  "description": "",
+  "type": "object",
+  "properties": {
+    "awsSdkVersion": {
+      "default": "3.188.0",
+      "type": "string"
+    },
+    "devPatterns": {
+      "default": ["*.spec.[jt]sx?"],
+      "items": {
+        "type": ["number", "string"]
+      },
+      "type": "array"
+    },
+    "dryRun": {
+      "default": false,
+      "type": "boolean"
+    },
+    "ignoreDirs": {
+      "default": [".aws-sam", "dist", "node_modules", "build", "public/build"],
+      "items": {
+        "type": ["number", "string"]
+      },
+      "type": "array"
+    },
+    "packageName": {
+      "type": "string"
+    },
+    "definitelyTyped": {
+      "type": "array",
+      "items": {
+        "type": ["number", "string"]
+      }
+    }
+  },
+  "required": ["packageName"],
+  "additionalProperties": false
+}

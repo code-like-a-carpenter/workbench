@@ -3,7 +3,7 @@ import path from 'node:path';
 
 import type {CreateNodes, TargetConfiguration} from '@nx/devkit';
 
-import {addPhase, addTarget} from './targets';
+import {addDependency, addPhase, addTarget} from './targets';
 
 export const createNodes: CreateNodes = [
   '**/package.json',
@@ -20,7 +20,7 @@ export const createNodes: CreateNodes = [
       return {};
     }
 
-    const targets: Record<string, TargetConfiguration> = {};
+    let targets: Record<string, TargetConfiguration> = {};
     // Set up the basic phases of the build process
 
     // Codegen produces files that will be committed to the repo.
@@ -35,7 +35,7 @@ export const createNodes: CreateNodes = [
 
     addTarget(targets, 'codegen', 'deps', {
       cache: true,
-      executor: '@code-like-a-carpenter/tooling-deps:deps',
+      executor: '@code-like-a-carpenter/tool-deps:deps',
       options: {
         definitelyTyped: [
           'dotenv',
@@ -52,7 +52,7 @@ export const createNodes: CreateNodes = [
 
     addTarget(targets, 'codegen', 'executors', {
       cache: true,
-      executor: '@clc/nx:json-schema',
+      executor: '@code-like-a-carpenter/tool-json-schema:json-schema',
       inputs: ['{projectRoot}/executors/*/schema.json'],
       options: {
         schemas: ['{projectRoot}/executors/*/schema.json'],
@@ -122,7 +122,7 @@ export const createNodes: CreateNodes = [
 
     addTarget(targets, 'codegen', 'json-schemas', {
       cache: true,
-      executor: '@clc/nx:json-schema',
+      executor: '@code-like-a-carpenter/tool-json-schema:json-schema',
       inputs: ['{projectRoot}/json-schemas/**/*.json'],
       options: {
         outDir: '{projectRoot}/src/__generated__/',
@@ -220,13 +220,32 @@ export const createNodes: CreateNodes = [
       }
     }
 
+    if (projectName.split('/').pop()?.startsWith('tool-')) {
+      addTarget(targets, 'codegen', 'tool', {
+        cache: true,
+        executor: '@code-like-a-carpenter/tool-tool:tool',
+        inputs: ['{projectRoot}/tools/*.json'],
+        options: {
+          schemaDir: '{projectRoot}/tools',
+        },
+        outputs: [
+          '{projectRoot}/package.json',
+          '{projectRoot}/executors.json',
+          '{projectRoot}/src/__generated__/plugin.ts',
+          '{projectRoot}/src/__generated__/*-executor.ts',
+          '{projectRoot}/src/__generated__/*-types.ts',
+        ],
+      });
+      addDependency(targets, 'build:types', 'codegen:tool');
+    }
+
     if (
       projectName ===
       '@code-like-a-carpenter/foundation-intermediate-representation'
     ) {
       addTarget(targets, 'codegen', 'core-schema', {
         cache: true,
-        executor: '@clc/nx:inliner',
+        executor: '@code-like-a-carpenter/tool-inliner:inliner',
         inputs: ['{projectRoot}/schema.graphqls'],
         options: {
           exportName: 'schema',
@@ -236,6 +255,10 @@ export const createNodes: CreateNodes = [
         outputs: ['{projectRoot}/src/__generated__/schema.ts'],
       });
     }
+
+    targets = Object.fromEntries(
+      Object.entries(targets).sort(([k1], [k2]) => k1.localeCompare(k2))
+    );
 
     return {
       projects: {

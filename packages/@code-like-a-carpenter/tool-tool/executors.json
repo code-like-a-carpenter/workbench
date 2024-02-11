@@ -1,0 +1,9 @@
+{
+  "executors": {
+    "tool": {
+      "description": "No description provided",
+      "implementation": "./src/__generated__/tool-executor.ts",
+      "schema": "./tools/tool.json"
+    }
+  }
+}

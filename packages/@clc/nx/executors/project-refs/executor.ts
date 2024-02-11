@@ -7,11 +7,11 @@ import {glob} from 'glob';
 import ts from 'typescript';
 
 import {
-  extractProjectRoot,
-  findLocalPackages,
   readPackageJson,
   writePrettierFile,
-} from '../..';
+} from '@code-like-a-carpenter/tooling-common';
+
+import {extractProjectRoot, findLocalPackages} from '../..';
 
 import type {ProjectRefsExecutor} from './schema';
 

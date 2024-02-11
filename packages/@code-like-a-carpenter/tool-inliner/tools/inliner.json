@@ -1,0 +1,23 @@
+{
+  "$schema": "http://json-schema.org/schema",
+  "version": 2,
+  "title": "Inliner executor",
+  "description": "Inlines a text file as a string in a typescript file",
+  "type": "object",
+  "properties": {
+    "exportName": {
+      "type": "string",
+      "description": "The name of the export to inline"
+    },
+    "sourceFile": {
+      "type": "string",
+      "description": "The file to inline"
+    },
+    "targetFile": {
+      "type": "string",
+      "description": "The file to write the inlined content to"
+    }
+  },
+  "required": ["exportName", "sourceFile", "targetFile"],
+  "additionalProperties": false
+}

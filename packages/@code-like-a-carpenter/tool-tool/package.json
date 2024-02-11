@@ -1,0 +1,43 @@
+{
+  "name": "@code-like-a-carpenter/tool-tool",
+  "description": "A tool for for generating other tools",
+  "dependencies": {
+    "@code-like-a-carpenter/assert": "*",
+    "@code-like-a-carpenter/cli-core": "*",
+    "@code-like-a-carpenter/tool-json-schema": "*",
+    "@code-like-a-carpenter/tooling-common": "*",
+    "@nx/devkit": "^18.0.4",
+    "@schemastore/package": "^0.0.10",
+    "find-up": "^5.0.0",
+    "lodash.camelcase": "^4.3.0",
+    "lodash.kebabcase": "^4.1.1",
+    "lodash.upperfirst": "^4.3.1"
+  },
+  "author": "Ian Remmel <1182361+ianwremmel@users.noreply.github.com> (https://www.ianwremmel.com)",
+  "bugs": "https://www.github.com/code-like-a-carpenter/workbench/issues",
+  "engines": {
+    "node": "20.x"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/types/index.d.ts",
+      "development": "./src/index.ts",
+      "import": "./dist/esm/index.mjs",
+      "require": "./dist/cjs/index.cjs"
+    },
+    "./package.json": "./package.json"
+  },
+  "homepage": "https://www.github.com/code-like-a-carpenter/workbench/tree/main/packages/@code-like-a-carpenter/tool-tool",
+  "license": "MIT",
+  "repository": "git@github.com:code-like-a-carpenter/workbench.git",
+  "types": "dist/types",
+  "publishConfig": {
+    "access": "public"
+  },
+  "devDependencies": {
+    "@types/lodash.camelcase": "^4.3.9",
+    "@types/lodash.kebabcase": "^4.1.9",
+    "@types/lodash.upperfirst": "^4.3.9"
+  },
+  "executors": "./executors.json"
+}
