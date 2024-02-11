@@ -37,9 +37,6 @@
       "path": "packages/@code-like-a-carpenter/cli-plugin-example"
     },
     {
-      "path": "packages/@code-like-a-carpenter/cli-plugin-proxy"
-    },
-    {
       "path": "packages/@code-like-a-carpenter/contract-tests"
     },
     {

@@ -4,6 +4,44 @@ import httpProxy from 'http-proxy';
 import vhost from 'vhost';
 
 import {assert} from '@code-like-a-carpenter/assert';
+import {findLocalPackages} from '@code-like-a-carpenter/tooling-common';
+
+import type {StackProxySchema} from './__generated__/proxy-types.ts';
+import {findEndpoints, findStacks} from './stacks';
+
+export async function handler(args: StackProxySchema): Promise<void> {
+  let stacks: string[] = [];
+
+  if (args.all || args.project) {
+    const localPackages = await findLocalPackages();
+    if (args.project) {
+      const projectSet = new Set(args.project as string[]);
+      for (const key of localPackages.keys()) {
+        if (!projectSet.has(key)) {
+          localPackages.delete(key);
+        }
+      }
+    }
+    stacks = stacks.concat(await findStacks(localPackages));
+  }
+
+  if (args.stack) {
+    stacks = stacks.concat(args.stack as string[]);
+  }
+
+  const endpoints = await findEndpoints(stacks);
+  if (args.endpoint) {
+    args.endpoint.forEach((endpoint, index) => {
+      assert(typeof endpoint === 'string', 'endpoint must be a string');
+      endpoints.set(`stack${index}`, endpoint);
+    });
+  }
+
+  await startAllProxies({
+    endpoints,
+    port: args.port ?? 3000,
+  });
+}
 
 interface StartAllProxiesOptions {
   readonly endpoints: Map<string, string>;

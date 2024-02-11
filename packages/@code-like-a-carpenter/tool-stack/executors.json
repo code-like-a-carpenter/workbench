@@ -9,6 +9,11 @@
       "description": "Lists all the stacks in the repo (based a bunch of assumptions)",
       "implementation": "./src/__generated__/list-executor.ts",
       "schema": "./tools/list.json"
+    },
+    "proxy": {
+      "description": "Proxies one or more API Gateways to localhost",
+      "implementation": "./src/__generated__/proxy-executor.ts",
+      "schema": "./tools/proxy.json"
     }
   }
 }

@@ -2,6 +2,7 @@ import {definePlugin} from '@code-like-a-carpenter/cli-core';
 
 import {handler as listHandler} from '../list';
 import {handler as nameHandler} from '../name';
+import {handler as proxyHandler} from '../proxy';
 
 export const plugin = definePlugin((yargs) => {
   yargs.command(
@@ -40,6 +41,41 @@ export const plugin = definePlugin((yargs) => {
         }),
     async (args) => {
       await nameHandler(args);
+    }
+  );
+  yargs.command(
+    'stack:proxy',
+    'Proxies one or more API Gateways to localhost',
+    (y) =>
+      y
+        .option('all', {
+          conflicts: [],
+          demandOption: false,
+          type: 'boolean',
+        })
+        .option('endpoint', {
+          conflicts: [],
+          demandOption: false,
+          type: 'array',
+        })
+        .option('port', {
+          conflicts: [],
+          default: 3000,
+          demandOption: false,
+          type: 'number',
+        })
+        .option('project', {
+          conflicts: [],
+          demandOption: false,
+          type: 'array',
+        })
+        .option('stack', {
+          conflicts: [],
+          demandOption: false,
+          type: 'array',
+        }),
+    async (args) => {
+      await proxyHandler(args);
     }
   );
 });

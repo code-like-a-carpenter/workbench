@@ -18,7 +18,6 @@
     "cliMain": true,
     "plugins": [
       "@code-like-a-carpenter/cli-plugin-example",
-      "@code-like-a-carpenter/cli-plugin-proxy",
       "@code-like-a-carpenter/tool-stack",
       "@code-like-a-carpenter/tool-tool",
       "@code-like-a-carpenter/tooling-deps"
@@ -27,7 +26,6 @@
   "dependencies": {
     "@code-like-a-carpenter/cli-core": "*",
     "@code-like-a-carpenter/cli-plugin-example": "*",
-    "@code-like-a-carpenter/cli-plugin-proxy": "*",
     "@code-like-a-carpenter/tool-stack": "*",
     "@code-like-a-carpenter/tool-tool": "*",
     "@code-like-a-carpenter/tooling-deps": "*"

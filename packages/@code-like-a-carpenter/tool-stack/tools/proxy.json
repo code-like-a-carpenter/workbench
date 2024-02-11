@@ -1,0 +1,61 @@
+{
+  "$schema": "http://json-schema.org/schema",
+  "version": 2,
+  "title": "StackProxySchema",
+  "description": "Proxies one or more API Gateways to localhost",
+  "type": "object",
+  "properties": {
+    "all": {
+      "description": "When set, attempts to identify all packages in the repo (based on npm workspaces) that contain stack definitions and proxies them",
+      "type": "boolean"
+    },
+    "endpoint": {
+      "description": "An arbitrary endpoint to proxy. May be set multiple times.",
+      "type": "array",
+      "items": {
+        "anyOf": [
+          {
+            "type": "number"
+          },
+          {
+            "type": "string"
+          }
+        ]
+      }
+    },
+    "port": {
+      "description": "The local port on which to listen",
+      "default": 3000,
+      "type": "number"
+    },
+    "project": {
+      "description": "The project to proxy. May be set multiple times.",
+      "type": "array",
+      "items": {
+        "anyOf": [
+          {
+            "type": "number"
+          },
+          {
+            "type": "string"
+          }
+        ]
+      }
+    },
+    "stack": {
+      "description": "If you have access to the stack's name, you can specify it directly rather than inferring it from the stack's yml file (which is effectively what all the other options do). May be set multiple times.",
+      "type": "array",
+      "items": {
+        "anyOf": [
+          {
+            "type": "number"
+          },
+          {
+            "type": "string"
+          }
+        ]
+      }
+    }
+  },
+  "additionalProperties": false
+}

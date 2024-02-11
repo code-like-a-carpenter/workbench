@@ -24,10 +24,20 @@
   },
   "executors": "./executors.json",
   "dependencies": {
+    "@aws-sdk/client-cloudformation": "3.188.0",
     "@code-like-a-carpenter/assert": "*",
     "@code-like-a-carpenter/cli-core": "*",
     "@code-like-a-carpenter/tooling-common": "*",
     "@nx/devkit": "^18.0.4",
-    "glob": "^10.3.10"
+    "express": "^4.18.2",
+    "glob": "^10.3.10",
+    "http-proxy": "^1.18.1",
+    "lodash.snakecase": "^4.1.1",
+    "vhost": "^3.0.2"
+  },
+  "devDependencies": {
+    "@types/http-proxy": "^1.17.14",
+    "@types/lodash.snakecase": "^4.1.9",
+    "@types/vhost": "^3.0.9"
   }
 }
