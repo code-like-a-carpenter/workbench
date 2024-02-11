@@ -233,7 +233,7 @@ is_deployed () {
 }
 
 list_all_apps () {
-  find ./packages/apps/@clc -mindepth 1 -maxdepth 1 -type d | xargs -n 1 basename
+  npx ---no-install @code-like-a-carpenter/cli stack:list --as-projects
 
   return 0
 }

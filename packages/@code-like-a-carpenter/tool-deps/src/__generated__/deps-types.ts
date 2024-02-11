@@ -10,6 +10,6 @@ export interface DepsExecutor {
   devPatterns?: (number | string)[];
   dryRun?: boolean;
   ignoreDirs?: (number | string)[];
-  packageName: string;
+  packageName?: string;
   definitelyTyped?: (number | string)[];
 }
