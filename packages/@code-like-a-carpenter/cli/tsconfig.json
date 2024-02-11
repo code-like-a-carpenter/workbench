@@ -13,6 +13,9 @@
       "path": "../cli-plugin-example"
     },
     {
+      "path": "../tool-deps"
+    },
+    {
       "path": "../tool-inliner"
     },
     {
@@ -23,9 +26,6 @@
     },
     {
       "path": "../tool-tool"
-    },
-    {
-      "path": "../tooling-deps"
     }
   ]
 }

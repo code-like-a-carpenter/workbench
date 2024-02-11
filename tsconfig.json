@@ -94,6 +94,9 @@
       "path": "packages/@code-like-a-carpenter/telemetry"
     },
     {
+      "path": "packages/@code-like-a-carpenter/tool-deps"
+    },
+    {
       "path": "packages/@code-like-a-carpenter/tool-inliner"
     },
     {
@@ -107,9 +110,6 @@
     },
     {
       "path": "packages/@code-like-a-carpenter/tooling-common"
-    },
-    {
-      "path": "packages/@code-like-a-carpenter/tooling-deps"
     },
     {
       "path": "packages/@code-like-a-carpenter/wait-for"

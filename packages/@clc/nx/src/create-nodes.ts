@@ -35,7 +35,7 @@ export const createNodes: CreateNodes = [
 
     addTarget(targets, 'codegen', 'deps', {
       cache: true,
-      executor: '@code-like-a-carpenter/tooling-deps:deps',
+      executor: '@code-like-a-carpenter/tool-deps:deps',
       options: {
         definitelyTyped: [
           'dotenv',

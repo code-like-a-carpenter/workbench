@@ -1,8 +1,8 @@
-# @code-like-a-carpenter/tooling-deps
+# @code-like-a-carpenter/tool-deps
 
 [![standard-readme compliant](https://img.shields.io/badge/readme%20style-standard-brightgreen.svg?style=flat-square)](https://github.com/RichardLitt/standard-readme)
 
-> A CLI plugin for Code Like a Carpenter to manage dependencies
+> A tool for Code Like a Carpenter to manage dependencies
 
 ## Table of Contents
 
@@ -15,7 +15,7 @@
 ## Install
 
 ```bash
-npm i @code-like-a-carpenter/tooling-deps
+npm i @code-like-a-carpenter/tool-deps
 ```
 
 ## Usage

@@ -7,9 +7,9 @@
 
 export interface DepsExecutor {
   awsSdkVersion?: string;
-  devPatterns?: string[];
+  devPatterns?: (number | string)[];
   dryRun?: boolean;
-  ignoreDirs?: string[];
+  ignoreDirs?: (number | string)[];
   packageName: string;
-  definitelyTyped?: string[];
+  definitelyTyped?: (number | string)[];
 }

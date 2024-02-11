@@ -6,19 +6,11 @@ import {minimatch} from 'minimatch';
 
 import {findLocalPackages} from '@code-like-a-carpenter/tooling-common';
 
+import type {DepsExecutor} from './__generated__/deps-types.ts';
 import {load} from './config';
 import {runDepcheck} from './depcheck';
 
-export interface MainArgs {
-  readonly awsSdkVersion: string;
-  readonly definitelyTyped: readonly string[];
-  readonly devPatterns: readonly string[];
-  readonly dryRun: boolean;
-  readonly ignoreDirs: readonly string[];
-  readonly packageName?: string;
-}
-
-export async function main(argv: Partial<MainArgs>) {
+export async function handler(argv: DepsExecutor): Promise<void> {
   const args = (await load({deps: argv})).deps;
   const localPackages = await findLocalPackages();
   if ('packageName' in args && typeof args.packageName === 'string') {
@@ -32,9 +24,16 @@ export async function main(argv: Partial<MainArgs>) {
   }
 }
 
+function ensureStrings(arr: readonly (number | string)[] = []): string[] {
+  return arr.map((item) => {
+    assert(typeof item === 'string', 'Expected string');
+    return item;
+  });
+}
+
 // eslint-disable-next-line complexity
 export async function processSinglePackage(
-  args: Omit<MainArgs, 'packageName'> & {readonly packageName: string},
+  args: DepsExecutor,
   localPackages: Map<string, string>
 ) {
   const {
@@ -57,8 +56,8 @@ export async function processSinglePackage(
         : packagePath
     ),
     packageName,
-    ignoreDirs,
-    definitelyTyped
+    ensureStrings(ignoreDirs),
+    ensureStrings(definitelyTyped)
   );
 
   const depsToAdd = new Set<string>();
@@ -71,7 +70,7 @@ export async function processSinglePackage(
     const isDev =
       dep.startsWith('@types/') ||
       places.every((place) =>
-        devPatterns.some((pattern) => minimatch(place, pattern))
+        ensureStrings(devPatterns).some((pattern) => minimatch(place, pattern))
       );
 
     if (isLocal && isDev) {
@@ -91,6 +90,7 @@ export async function processSinglePackage(
       `${packageName} is missing at least one dependency. Please "npm run cli -- deps" and commit the changes`
     );
 
+    assert(awsSdkVersion, 'awsSdkVersion is required');
     await addMissingNodeModules({
       awsSdkVersion,
       dependencies: Array.from(depsToAdd),
@@ -105,6 +105,7 @@ export async function processSinglePackage(
       `${packageName} is missing at least one dev dependency. Please "npm run cli -- deps" and commit the changes`
     );
 
+    assert(awsSdkVersion, 'awsSdkVersion is required');
     await addMissingNodeModules({
       awsSdkVersion,
       dependencies: Array.from(devDepsToAdd),

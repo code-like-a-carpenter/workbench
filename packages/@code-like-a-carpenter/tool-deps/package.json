@@ -1,6 +1,6 @@
 {
-  "name": "@code-like-a-carpenter/tooling-deps",
-  "description": "A CLI plugin for Code Like a Carpenter to manage dependencies",
+  "name": "@code-like-a-carpenter/tool-deps",
+  "description": "A tool for Code Like a Carpenter to manage dependencies",
   "dependencies": {
     "@code-like-a-carpenter/cli-core": "*",
     "@code-like-a-carpenter/tooling-common": "*",
@@ -23,16 +23,15 @@
     },
     "./package.json": "./package.json"
   },
-  "homepage": "https://www.github.com/code-like-a-carpenter/workbench/tree/main/packages/@code-like-a-carpenter/tooling-deps",
+  "homepage": "https://www.github.com/code-like-a-carpenter/workbench/tree/main/packages/@code-like-a-carpenter/tool-deps",
   "license": "MIT",
   "repository": "git@github.com:code-like-a-carpenter/workbench.git",
   "types": "dist/types",
   "publishConfig": {
     "access": "public"
   },
+  "executors": "./executors.json",
   "devDependencies": {
     "@types/aws-lambda": "^8.10.133"
-  },
-  "executors": "./executors.json",
-  "releaseAll": 1
+  }
 }
