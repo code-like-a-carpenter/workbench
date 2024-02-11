@@ -8,4 +8,13 @@
 /**
  * Lists all the stacks in the repo (based a bunch of assumptions)
  */
-export interface StackListSchema {}
+export interface StackListSchema {
+  /**
+   * If true, prints the projects containing stacks instead of their stack names
+   */
+  asProjects?: boolean;
+  /**
+   * When set, returns the stacks that contain the corresponding test(s) (note that due to limitations in code generators, this field is marked as number|string, but numbers don't make sense here).
+   */
+  test?: (string | number)[];
+}

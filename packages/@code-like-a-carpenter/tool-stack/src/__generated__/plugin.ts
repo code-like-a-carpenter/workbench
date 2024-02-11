@@ -7,6 +7,18 @@ export const plugin = definePlugin((yargs) => {
   yargs.command(
     'stack:list',
     'Lists all the stacks in the repo (based a bunch of assumptions)',
+    (y) =>
+      y
+        .option('as-projects', {
+          conflicts: [],
+          demandOption: false,
+          type: 'boolean',
+        })
+        .option('test', {
+          conflicts: [],
+          demandOption: false,
+          type: 'array',
+        }),
     async (args) => {
       await listHandler(args);
     }

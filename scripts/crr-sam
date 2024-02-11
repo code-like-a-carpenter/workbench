@@ -21,19 +21,13 @@ esac
 # This script accepts a list of tests names from Check Run Reporter, filters
 # them down to just examples, and then deploys those stacks
 
-projects=''
+CMD="npx --no-install @code-like-a-carpenter/cli stack:list --as-projects"
 
 for testfile in "$@"; do
-  if [[ ! "$testfile" =~ ^examples/ ]]; then
-    echo "Skipping $testfile which does not appear to test an AWS stack"
-    continue
-  fi
-
-  projectName=$(echo "$testfile" | awk -F/ '{print $2}')
-  if [[ "$projects" != *"$projectName"* ]]; then
-    projects="$projects $projectName"
-  fi
+  CMD="$CMD --test $testfile"
 done
+
+projects=$($CMD)
 
 deployed=''
 
