@@ -40,7 +40,7 @@ export const plugin = definePlugin((yargs) => {
         })
         .option('package-name', {
           conflicts: [],
-          demandOption: true,
+          demandOption: false,
           type: 'string',
         })
         .option('definitely-typed', {

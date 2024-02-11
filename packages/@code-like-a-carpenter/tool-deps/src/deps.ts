@@ -33,7 +33,7 @@ function ensureStrings(arr: readonly (number | string)[] = []): string[] {
 
 // eslint-disable-next-line complexity
 export async function processSinglePackage(
-  args: DepsExecutor,
+  args: DepsExecutor & {readonly packageName: string},
   localPackages: Map<string, string>
 ) {
   const {
