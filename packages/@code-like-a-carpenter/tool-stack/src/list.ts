@@ -11,7 +11,8 @@ import {
 import type {StackListSchema} from './__generated__/list-types.ts';
 
 export async function handler(args: StackListSchema): Promise<void> {
-  const files = args.test ?? (await glob('**/template.yml'));
+  const files =
+    args.test ?? (await glob(['**/template.yml', '**/template.json']));
   const strings = files.map((f) => {
     assert(typeof f === 'string', 'file must be a string');
     return f;
