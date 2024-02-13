@@ -1,6 +1,7 @@
 import express from 'express';
 import type Server from 'http-proxy';
 import httpProxy from 'http-proxy';
+import {Agent, fetch} from 'undici';
 import vhost from 'vhost';
 
 import {assert} from '@code-like-a-carpenter/assert';
@@ -84,7 +85,16 @@ export async function startAllProxies({
       stackNames.map(async (stackName) => {
         try {
           const result = await fetch(
-            `http://${stackName}.localhost:${port}/api/v1/ping`
+            `http://${stackName}.localhost:${port}/api/v1/ping`,
+            {
+              dispatcher: new Agent({
+                connect: {
+                  lookup: (hostname, options, callback) => {
+                    callback(null, [{address: '127.0.0.1', family: 4}]);
+                  },
+                },
+              }),
+            }
           );
           if (!result.ok) {
             const error = new Error(`Stack ${stackName} is not available`);
