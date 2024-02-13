@@ -37,7 +37,8 @@ export async function findEndpoints(
 }
 
 async function getStackUrl(stackName: string): Promise<string> {
-  if (!process.env.CI) {
+  // If we aleady have an AWS_SECRET_ACCESS_KEY, don't try to to use autoloading
+  if (!process.env.CI && !process.env.AWS_SECRET_ACCESS_KEY) {
     process.env.AWS_REGION = process.env.AWS_REGION ?? 'us-east-1';
     process.env.AWS_PROFILE = process.env.AWS_PROFILE ?? 'webstorm_playground';
     process.env.AWS_SDK_LOAD_CONFIG = process.env.AWS_SDK_LOAD_CONFIG ?? '1';
