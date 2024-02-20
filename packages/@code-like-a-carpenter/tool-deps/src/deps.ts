@@ -87,7 +87,7 @@ export async function processSinglePackage(
   if (depsToAdd.size) {
     assert(
       !dryRun,
-      `${packageName} is missing at least one dependency. Please "npm run cli -- deps" and commit the changes`
+      `${packageName} is missing the following dependencies: ${Array.from(depsToAdd).join(', ')}. Please "npm run cli -- deps" and commit the changes`
     );
 
     assert(awsSdkVersion, 'awsSdkVersion is required');
@@ -102,7 +102,7 @@ export async function processSinglePackage(
   if (devDepsToAdd.size) {
     assert(
       !dryRun,
-      `${packageName} is missing at least one dev dependency. Please "npm run cli -- deps" and commit the changes`
+      `${packageName} is missing the following dependencies: ${Array.from(devDepsToAdd).join(', ')}. Please "npm run cli -- deps" and commit the changes`
     );
 
     assert(awsSdkVersion, 'awsSdkVersion is required');
@@ -117,7 +117,7 @@ export async function processSinglePackage(
   if (localDepsToAdd.size) {
     assert(
       !dryRun,
-      `${packageName} is missing at least one local dependency. Please "npm run cli -- deps" and commit the changes`
+      `${packageName} is missing the following dependencies: ${Array.from(localDepsToAdd).join(', ')}. Please "npm run cli -- deps" and commit the changes`
     );
 
     await addMissingLocalPackages(
@@ -130,7 +130,7 @@ export async function processSinglePackage(
   if (localDevDepsToAdd.size) {
     assert(
       !dryRun,
-      `${packageName} is missing at least one local dev dependency. Please "npm run cli -- deps" and commit the changes`
+      `${packageName} is missing the following dependencies: ${Array.from(localDevDepsToAdd).join(', ')}. Please "npm run cli -- deps" and commit the changes`
     );
 
     await addMissingLocalPackages(
@@ -156,6 +156,7 @@ export async function addMissingLocalPackages(
   dependencies: string[],
   dev: boolean
 ) {
+  console.log('Adding missing local packages', packageName, dependencies, dev);
   assert(dependencies.length > 0, 'Received empty dependencies list');
 
   spawnSync(
@@ -184,6 +185,7 @@ export async function addMissingNodeModules({
   readonly dev: boolean;
   readonly packageName: string;
 }) {
+  console.log('Adding missing node modules', packageName, dependencies, dev);
   assert(dependencies.length > 0, 'Received empty dependencies list');
 
   const awsDeps = dependencies
@@ -232,6 +234,7 @@ export async function removeExtraneousPackages(
   packageName: string,
   dependencies: string[]
 ) {
+  console.log('Removing extraneous packages', packageName, dependencies);
   assert(dependencies.length > 0, 'Received empty dependencies list');
 
   spawnSync('npm', ['uninstall', '--workspace', packageName, ...dependencies], {

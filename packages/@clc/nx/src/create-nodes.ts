@@ -48,6 +48,7 @@ export const createNodes: CreateNodes = [
         ],
         packageName: projectName,
       },
+      outputs: ['{projectRoot}/package.json'],
     });
 
     addTarget(targets, 'codegen', 'executors', {

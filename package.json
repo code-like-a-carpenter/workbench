@@ -107,11 +107,11 @@
       "definitelyTyped": [
         "dotenv",
         "http-proxy",
-        "js-yaml ",
+        "js-yaml",
         "lodash.*",
         "prettier",
-        "vhost ",
-        "yargs "
+        "vhost",
+        "yargs"
       ]
     }
   }
