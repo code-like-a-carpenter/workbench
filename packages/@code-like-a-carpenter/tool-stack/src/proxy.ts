@@ -10,6 +10,7 @@ import {findLocalPackages} from '@code-like-a-carpenter/tooling-common';
 import type {StackProxySchema} from './__generated__/proxy-types.ts';
 import {findEndpoints, findStacks} from './stacks';
 
+// eslint-disable-next-line complexity
 export async function handler(args: StackProxySchema): Promise<void> {
   let stacks: string[] = [];
 
@@ -36,6 +37,11 @@ export async function handler(args: StackProxySchema): Promise<void> {
       assert(typeof endpoint === 'string', 'endpoint must be a string');
       endpoints.set(`stack${index}`, endpoint);
     });
+
+    if (endpoints.size === 1 && args.endpoint) {
+      makeProxy(endpoints.values().next().value).listen(args.port ?? 3000);
+      return;
+    }
   }
 
   await startAllProxies({
@@ -141,10 +147,6 @@ export async function startAllProxies({
 function makeProxy(endpoint: string): Server {
   const endpointUrl = new URL(endpoint);
 
-  // There's a bug in http-proxy that prevents it from handling redirects when
-  // the target is an object, so we need to convert the url the the desired
-  // string.
-  // https://github.com/http-party/node-http-proxy/issues/1338
   endpointUrl.protocol = 'https:';
   endpointUrl.port = '443';
 
