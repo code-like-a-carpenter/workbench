@@ -73,6 +73,7 @@ jobs:
       - uses: ianwremmel/prevent-nopush-commits@v1.0.8
 
   release:
+    if: ${{ github.event.repository.default_branch == github.ref_name }}
     needs:
       - build
       - diff
@@ -185,3 +186,14 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           directory: 'reports/coverage'
+
+  tracker:
+    needs:
+      - release
+    if: ${{ github.event.repository.default_branch == github.ref_name }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - run: ./scripts/tracker.js
