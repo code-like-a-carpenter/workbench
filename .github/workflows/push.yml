@@ -73,6 +73,7 @@ jobs:
       - uses: ianwremmel/prevent-nopush-commits@v1.0.8
 
   release:
+    if: ${{ github.event.repository.default_branch == github.ref_name }}
     needs:
       - build
       - diff
