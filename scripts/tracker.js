@@ -5,10 +5,6 @@
 const {execSync} = require('child_process');
 const querystring = require('querystring');
 
-const {debug, format: f} = require('@ianwremmel/debug');
-
-const d = debug(__filename);
-
 /**
  * @typedef {Object} ClientOptions
  * @property {string} projectId
@@ -63,7 +59,7 @@ async function deliverStories(options) {
  * @param {Object} story
  */
 async function deliverStory({projectId, token}, {id, name}) {
-  d(f`Delivering ${id} (${name})`);
+  console.log(`Delivering ${id} (${name})`);
   const body = {
     current_state: 'delivered',
     id,
@@ -79,11 +75,11 @@ async function deliverStory({projectId, token}, {id, name}) {
   });
 
   if (!req.ok) {
-    d(f`Failed to deliver ${id} (${name})`);
+    console.log(`Failed to deliver ${id} (${name})`);
     throw new Error(await req.text());
   }
 
-  d(f`Delivered ${id} (${name})`);
+  console.log(`Delivered ${id} (${name})`);
 }
 
 /**
@@ -119,7 +115,7 @@ function filterStories(stories) {
  * @returns {Promise<Story[]>}
  */
 async function listStories({projectId, token}, type) {
-  d(f`Listing finished ${type} stories for ${projectId}`);
+  console.log(`Listing finished ${type} stories for ${projectId}`);
   const req = await fetch(
     `https://www.pivotaltracker.com/services/v5/projects/${projectId}/stories?${querystring.stringify(
       {
@@ -135,7 +131,7 @@ async function listStories({projectId, token}, type) {
   );
 
   if (req.ok) {
-    d(f`Listed finished ${type} stories for ${projectId}`);
+    console.log(`Listed finished ${type} stories for ${projectId}`);
     return await req.json();
   }
 
