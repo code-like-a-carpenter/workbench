@@ -199,6 +199,7 @@ export const createNodes: CreateNodes = [
             '{projectRoot}/../common.graphqls',
             '{workspaceRoot}/.graphqlrc.js',
             '{workspaceRoot}/schema.graphqls',
+            '{workspaceRoot}/packages/@code-like-a-carpenter/foundation-*/**/*',
           ],
           options: {
             config: '{projectRoot}/.foundationrc.js',

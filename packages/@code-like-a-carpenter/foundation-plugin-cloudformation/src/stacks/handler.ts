@@ -12,6 +12,7 @@ import type {
 } from '../__generated__/json-schemas/serverless-application-model';
 import type {Config} from '../config';
 import {combineFragments} from '../fragments/combine-fragments';
+import {makeKmsKey} from '../fragments/kms-key';
 import {makeLogGroup} from '../fragments/log-group';
 import {filterNull} from '../helpers';
 import type {ServerlessApplicationModel} from '../types';
@@ -36,11 +37,15 @@ export function makeHandlerStack(config: Config): ServerlessApplicationModel {
   const qPolicyName = 'QueuePolicy';
   const ruleName = 'Rule';
 
+  const KmsMasterKeyId = config.singleQueueKey
+    ? {Ref: 'ExternalKmsMasterKeyId'}
+    : {Ref: qKeyName};
+
   const dlq: AWSSQSQueue = {
     Properties: {
       // @ts-expect-error typedef doesn't include intrinsic functions
       KmsMasterKeyId: {
-        'Fn::If': ['IsProd', {Ref: qKeyName}, 'AWS::NoValue'],
+        'Fn::If': ['UseKey', KmsMasterKeyId, 'AWS::NoValue'],
       },
     },
     Type: 'AWS::SQS::Queue',
@@ -99,103 +104,17 @@ export function makeHandlerStack(config: Config): ServerlessApplicationModel {
   };
 
   const qKey: AWSKMSKey = {
-    Condition: 'IsProd',
-    Properties: {
-      KeyPolicy: {
-        Statement: [
-          {
-            Action: ['kms:Decrypt', 'kms:GenerateDataKey'],
-            Effect: 'Allow',
-            Principal: {
-              Service: 'events.amazonaws.com',
-            },
-            Resource: '*',
-            Sid: 'Allow EventBridge to use the Key',
-          },
-          {
-            Action: [
-              'kms:Create*',
-              'kms:Describe*',
-              'kms:Enable*',
-              'kms:List*',
-              'kms:Put*',
-              'kms:Update*',
-              'kms:Revoke*',
-              'kms:Disable*',
-              'kms:Get*',
-              'kms:Delete*',
-              'kms:ScheduleKeyDeletion',
-              'kms:CancelKeyDeletion',
-            ],
-            Effect: 'Allow',
-            Principal: {
-              AWS: {
-                // eslint-disable-next-line no-template-curly-in-string
-                'Fn::Sub': 'arn:aws:iam::${AWS::AccountId}:root',
-              },
-            },
-            Resource: '*',
-            Sid: 'Allow administration of the key',
-          },
-          {
-            Action: [
-              'kms:Encrypt',
-              'kms:Decrypt',
-              'kms:ReEncrypt*',
-              'kms:GenerateDataKey*',
-              'kms:CreateGrant',
-              'kms:DescribeKey',
-            ],
-            Condition: {
-              StringEquals: {
-                'kms:CallerAccount': {
-                  // eslint-disable-next-line no-template-curly-in-string
-                  'Fn::Sub': '${AWS::AccountId}',
-                },
-                'kms:ViaService': 'sqs.us-east-1.amazonaws.com',
-              },
-            },
-            Effect: 'Allow',
-            Principal: {
-              AWS: '*',
-            },
-            Resource: '*',
-            Sid: 'Allow authorized SQS callers to access the key',
-          },
-          {
-            Action: [
-              'kms:Describe*',
-              'kms:Get*',
-              'kms:List*',
-              'kms:RevokeGrant',
-            ],
-            Effect: 'Allow',
-            Principal: {
-              AWS: {
-                // eslint-disable-next-line no-template-curly-in-string
-                'Fn::Sub': 'arn:aws:iam::${AWS::AccountId}:root',
-              },
-            },
-            Resource: '*',
-            Sid: 'Allow direct access to key metadata to the account',
-          },
-        ],
-        Version: '2012-10-17',
-      },
-      PendingWindowInDays: 7,
-    },
-    Type: 'AWS::KMS::Key',
+    ...makeKmsKey(),
+    Condition: 'DefineKey',
   };
 
   const q: AWSSQSQueue = {
     Properties: {
       // @ts-expect-error typedef doesn't include intrinsic functions
       'Fn::If': [
-        'IsProd',
+        'UseKey',
         {
-          KmsMasterKeyId: {
-            Ref: qKeyName,
-          },
+          KmsMasterKeyId,
           RedrivePolicy: {
             deadLetterTargetArn: {
               'Fn::GetAtt': [dlqName, 'Arn'],
@@ -279,9 +198,25 @@ export function makeHandlerStack(config: Config): ServerlessApplicationModel {
 
   return combineFragments(makeLogGroup({functionName: fnName}), {
     AWSTemplateFormatVersion: '2010-09-09',
-    Conditions: {
-      IsProd: {'Fn::Equals': [{Ref: 'StageName'}, 'production']},
-    },
+    Conditions: config.singleQueueKey
+      ? {
+          HasExternalKey: {
+            'Fn::Not': [
+              {'Fn::Equals': [{Ref: 'ExternalKmsMasterKeyId'}, 'AWS::NoValue']},
+            ],
+          },
+          IsProd: {'Fn::Equals': [{Ref: 'StageName'}, 'production']},
+          UseKey: {
+            // The IsProd here is slightly redundant, but the goal is to ensure
+            // this fail in prod if not external key is defined.
+            'Fn::Or': [{Condition: 'HasExternalKey'}, {Condition: 'IsProd'}],
+          },
+        }
+      : {
+          DefineKey: {'Fn::And': [{Condition: 'IsProd'}]},
+          IsProd: {'Fn::Equals': [{Ref: 'StageName'}, 'production']},
+          UseKey: {Condition: 'DefineKey'},
+        },
     Globals: {
       Function: {
         Handler: 'index.handler',
@@ -348,6 +283,16 @@ export function makeHandlerStack(config: Config): ServerlessApplicationModel {
       },
     },
     Parameters: {
+      ...(config.singleQueueKey
+        ? {
+            ExternalKmsMasterKeyId: {
+              // We still need to allow this to be undefined in so that we can
+              // avoid generating the key in non-prod scenarios.
+              Default: 'AWS::NoValue',
+              Type: 'String',
+            },
+          }
+        : {}),
       CodeUri: {Type: 'String'},
       DetailType: {Type: 'CommaDelimitedList'},
       MemorySize: {Type: 'Number'},
@@ -359,9 +304,9 @@ export function makeHandlerStack(config: Config): ServerlessApplicationModel {
       Timeout: {Type: 'Number'},
     },
     Resources: {
+      ...(config.singleQueueKey ? {} : {[qKeyName]: qKey}),
       [dlqName]: dlq,
       [fnName]: fn,
-      [qKeyName]: qKey,
       [qName]: q,
       [qPolicyName]: qPolicy,
       [ruleName]: rule,

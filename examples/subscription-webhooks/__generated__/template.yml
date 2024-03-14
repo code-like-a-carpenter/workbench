@@ -1,5 +1,7 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Conditions:
+  DefineSharedKmsKey:
+    Condition: 'IsProd'
   IsProd:
     Fn::Equals:
       - Ref: 'StageName'
@@ -58,6 +60,11 @@ Resources:
       Parameters:
         CodeUri: 'enricher--subscription-event--upsert--account'
         DetailType: 'INSERT,MODIFY'
+        ExternalKmsMasterKeyId:
+          Fn::If:
+            - 'DefineSharedKmsKey'
+            - Ref: 'SharedKmsKey'
+            - 'AWS::NoValue'
         MemorySize: 256
         SourceModelName: 'SubscriptionEvent'
         StageName:
@@ -79,6 +86,11 @@ Resources:
       Parameters:
         CodeUri: 'reduce--account--upsert--plan-metric'
         DetailType: 'INSERT,MODIFY'
+        ExternalKmsMasterKeyId:
+          Fn::If:
+            - 'DefineSharedKmsKey'
+            - Ref: 'SharedKmsKey'
+            - 'AWS::NoValue'
         MemorySize: 256
         SourceModelName: 'Account'
         StageName:
@@ -102,6 +114,11 @@ Resources:
       Parameters:
         CodeUri: 'reduce--plan-metric--upsert--metric'
         DetailType: 'INSERT,MODIFY'
+        ExternalKmsMasterKeyId:
+          Fn::If:
+            - 'DefineSharedKmsKey'
+            - Ref: 'SharedKmsKey'
+            - 'AWS::NoValue'
         MemorySize: 256
         SourceModelName: 'PlanMetric'
         StageName:
@@ -297,6 +314,69 @@ Resources:
             - 'FNDNSCDCFnReducePMUpsertM675ec33d'
             - 'Outputs.Role'
     Type: 'AWS::IAM::Policy'
+  SharedKmsKey:
+    Condition: 'DefineSharedKmsKey'
+    Properties:
+      KeyPolicy:
+        Statement:
+          - Action:
+              - 'kms:Decrypt'
+              - 'kms:GenerateDataKey'
+            Effect: 'Allow'
+            Principal:
+              Service: 'events.amazonaws.com'
+            Resource: '*'
+            Sid: 'Allow EventBridge to use the Key'
+          - Action:
+              - 'kms:Create*'
+              - 'kms:Describe*'
+              - 'kms:Enable*'
+              - 'kms:List*'
+              - 'kms:Put*'
+              - 'kms:Update*'
+              - 'kms:Revoke*'
+              - 'kms:Disable*'
+              - 'kms:Get*'
+              - 'kms:Delete*'
+              - 'kms:ScheduleKeyDeletion'
+              - 'kms:CancelKeyDeletion'
+            Effect: 'Allow'
+            Principal:
+              AWS:
+                Fn::Sub: 'arn:aws:iam::${AWS::AccountId}:root'
+            Resource: '*'
+            Sid: 'Allow administration of the key'
+          - Action:
+              - 'kms:Encrypt'
+              - 'kms:Decrypt'
+              - 'kms:ReEncrypt*'
+              - 'kms:GenerateDataKey*'
+              - 'kms:CreateGrant'
+              - 'kms:DescribeKey'
+            Condition:
+              StringEquals:
+                kms:CallerAccount:
+                  Fn::Sub: '${AWS::AccountId}'
+                kms:ViaService: 'sqs.us-east-1.amazonaws.com'
+            Effect: 'Allow'
+            Principal:
+              AWS: '*'
+            Resource: '*'
+            Sid: 'Allow authorized SQS callers to access the key'
+          - Action:
+              - 'kms:Describe*'
+              - 'kms:Get*'
+              - 'kms:List*'
+              - 'kms:RevokeGrant'
+            Effect: 'Allow'
+            Principal:
+              AWS:
+                Fn::Sub: 'arn:aws:iam::${AWS::AccountId}:root'
+            Resource: '*'
+            Sid: 'Allow direct access to key metadata to the account'
+        Version: '2012-10-17'
+      PendingWindowInDays: 7
+    Type: 'AWS::KMS::Key'
   TableAccount:
     Properties:
       AttributeDefinitions:
