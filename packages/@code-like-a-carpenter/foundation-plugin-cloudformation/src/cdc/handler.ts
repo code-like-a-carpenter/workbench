@@ -11,6 +11,7 @@ import type {
 } from '../__generated__/json-schemas/serverless-application-model';
 import type {Config} from '../config';
 import {combineFragments} from '../fragments/combine-fragments';
+import {makeKmsKey} from '../fragments/kms-key';
 import {writeLambda} from '../fragments/lambda';
 import {filterNull} from '../helpers';
 import {makeHandlerStack, makeHandlerStackName} from '../stacks/handler';
@@ -46,11 +47,23 @@ export function makeHandler(
   writeLambda(directory, template);
 
   const stackName = makeHandlerStackName(model, cdc);
+  const qKeyName = 'SharedKmsKey';
 
   const stack: Resource7 = {
     Properties: {
       Location: nestedStackLocation,
       Parameters: {
+        ...(config.singleQueueKey
+          ? {
+              ExternalKmsMasterKeyId: {
+                'Fn::If': [
+                  'DefineSharedKmsKey',
+                  {Ref: qKeyName},
+                  'AWS::NoValue',
+                ],
+              },
+            }
+          : {}),
         CodeUri: filename,
         DetailType: event === 'UPSERT' ? 'INSERT,MODIFY' : event,
         MemorySize: memorySize,
@@ -141,7 +154,13 @@ export function makeHandler(
   const tableAccessPolicyName = `${functionName}TableAccessPolicy`;
 
   const fragment = combineFragments({
+    Conditions: config.singleQueueKey
+      ? {DefineSharedKmsKey: {Condition: 'IsProd'}}
+      : {},
     Resources: {
+      ...(config.singleQueueKey
+        ? {[qKeyName]: {...makeKmsKey(), Condition: 'DefineSharedKmsKey'}}
+        : {}),
       [stackName]: stack,
       ...(readableTables.length || writableTables.length
         ? {[tableAccessPolicyName]: tableAccessPolicy}

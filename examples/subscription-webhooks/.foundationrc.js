@@ -16,6 +16,7 @@ const config = {
   typescriptOutput: './__generated__/graphql.ts',
   actionsModuleId: './__generated__/graphql',
   outputConfig: {format: 'yaml'},
+  singleQueueKey: true,
 };
 
 module.exports = config;

@@ -35,6 +35,7 @@ export const ConfigSchema = ParserConfigSchema.extend({
       yamlConfig: DumpOptions.default({}),
     })
     .default({}),
+  singleQueueKey: z.boolean().default(false),
   sourceTemplate: z.string().optional(),
 });
 

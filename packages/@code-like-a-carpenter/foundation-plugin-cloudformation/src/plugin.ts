@@ -70,15 +70,15 @@ export const plugin: PluginFunction<Config> = makePlugin(
           const {type} = cdc;
           if (type === 'ENRICHER') {
             const {fragment, stack} = defineEnricher(config, model, cdc);
-            stacks.set('cdc.yml', stack);
+            stacks.set(cdc.nestedStackLocation, stack);
             return fragment;
           } else if (type === 'REACTOR') {
             const {fragment, stack} = defineReactor(config, model, cdc);
-            stacks.set('cdc.yml', stack);
+            stacks.set(cdc.nestedStackLocation, stack);
             return fragment;
           } else if (type === 'REDUCER') {
             const {fragment, stack} = defineReducer(config, model, cdc);
-            stacks.set('cdc.yml', stack);
+            stacks.set(cdc.nestedStackLocation, stack);
             return fragment;
           }
           throw new Error(`Unexpected CDC type ${type}`);
