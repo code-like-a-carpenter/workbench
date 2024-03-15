@@ -26,5 +26,5 @@
     "@code-like-a-carpenter/env": "*",
     "fast-safe-stringify": "^2.1.1"
   },
-  "releaseAll": 1
+  "releaseAll": 2
 }

@@ -37,5 +37,5 @@
     "@types/lodash.upperfirst": "^4.3.9",
     "@types/prettier": "^3.0.0"
   },
-  "releaseAll": 1
+  "releaseAll": 2
 }

@@ -27,5 +27,5 @@
   "publishConfig": {
     "access": "public"
   },
-  "releaseAll": 1
+  "releaseAll": 2
 }

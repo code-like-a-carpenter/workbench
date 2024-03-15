@@ -26,5 +26,5 @@
     "@code-like-a-carpenter/logger": "*",
     "@code-like-a-carpenter/telemetry": "*"
   },
-  "releaseAll": 1
+  "releaseAll": 2
 }

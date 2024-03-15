@@ -40,5 +40,5 @@
     "@types/yargs": "^17.0.32"
   },
   "executors": "./executors.json",
-  "releaseAll": 1
+  "releaseAll": 2
 }

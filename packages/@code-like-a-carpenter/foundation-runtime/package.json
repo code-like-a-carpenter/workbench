@@ -36,5 +36,5 @@
   "devDependencies": {
     "@types/aws-lambda": "^8.10.131"
   },
-  "releaseAll": 1
+  "releaseAll": 2
 }
