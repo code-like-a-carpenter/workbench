@@ -26,7 +26,7 @@
     "@code-like-a-carpenter/env": "*",
     "@code-like-a-carpenter/errors": "*",
     "@code-like-a-carpenter/telemetry": "*",
-    "@sentry/serverless": "^7.80.0"
+    "@sentry/serverless": "^7.107.0"
   },
   "releaseAll": 3
 }
