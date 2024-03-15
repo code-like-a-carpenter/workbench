@@ -42,5 +42,5 @@
     },
     "./package.json": "./package.json"
   },
-  "releaseAll": 1
+  "releaseAll": 2
 }
