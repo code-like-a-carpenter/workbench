@@ -28,5 +28,5 @@
   "devDependencies": {
     "@types/dotenv": "^8.2.0"
   },
-  "releaseAll": 2
+  "releaseAll": 3
 }

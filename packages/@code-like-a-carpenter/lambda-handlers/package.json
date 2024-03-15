@@ -35,5 +35,5 @@
     "@types/aws-lambda": "^8.10.133",
     "openapi-typescript": "^6.7.4"
   },
-  "releaseAll": 2
+  "releaseAll": 3
 }
