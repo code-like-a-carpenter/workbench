@@ -25,5 +25,5 @@
   "dependencies": {
     "@code-like-a-carpenter/telemetry": "*"
   },
-  "releaseAll": 3
+  "releaseAll": 4
 }

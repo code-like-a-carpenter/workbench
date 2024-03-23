@@ -25,5 +25,5 @@
   "dependencies": {
     "@code-like-a-carpenter/exception": "*"
   },
-  "releaseAll": 3
+  "releaseAll": 4
 }

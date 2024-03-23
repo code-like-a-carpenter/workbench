@@ -28,5 +28,5 @@
     "@code-like-a-carpenter/telemetry": "*",
     "@sentry/serverless": "^7.80.0"
   },
-  "releaseAll": 3
+  "releaseAll": 4
 }

@@ -30,5 +30,5 @@
   "devDependencies": {
     "@types/lodash.merge": "^4.6.9"
   },
-  "releaseAll": 3
+  "releaseAll": 4
 }

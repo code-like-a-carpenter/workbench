@@ -27,5 +27,5 @@
     "access": "public"
   },
   "bin": "./cli.mjs",
-  "releaseAll": 3
+  "releaseAll": 4
 }

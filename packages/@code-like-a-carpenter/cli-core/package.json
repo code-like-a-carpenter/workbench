@@ -31,5 +31,5 @@
   "devDependencies": {
     "@types/yargs": "^17.0.32"
   },
-  "releaseAll": 3
+  "releaseAll": 4
 }
