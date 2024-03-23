@@ -82,7 +82,7 @@ export const createNodes: CreateNodes = [
       type = 'example';
     }
 
-    if (type === 'package') {
+    if (type === 'package' || type === 'cli') {
       addTarget(targets, 'build', 'cjs', {
         cache: true,
         dependsOn: ['codegen'],
@@ -94,9 +94,7 @@ export const createNodes: CreateNodes = [
         },
         outputs: ['{projectRoot}/dist/cjs'],
       });
-    }
 
-    if (type === 'package' || type === 'cli') {
       addTarget(targets, 'build', 'esm', {
         cache: true,
         dependsOn: ['codegen'],
