@@ -95,15 +95,15 @@ sense outside the context of this particular repository.
 ### Local development without building first
 
 In addition to `cjs`/`esm` entries in each package's export map, there's also a
-`development` entry which exports the typescript source code. By setting
-`NODE_OPTIONS='--conditions=development`, `nx` _should_ be able to use project
+`carpentry` entry which exports the typescript source code. By setting
+`NODE_OPTIONS='--conditions=carpentry`, `nx` _should_ be able to use project
 code without building it first.
 
-If you're debugging a cli, you can also `---import tsx` during development to
-run without building everything first:
+If you're debugging a cli, you can also `--import tsx` during development to run
+without building everything first:
 
 ```sh
-NODE_OPTIONS='--conditions=development --import tsx' npx @code-like-a-carpenter/cli
+NODE_OPTIONS='--conditions=carpentry --import tsx' npx @code-like-a-carpenter/cli
 ```
 
 This approach isn't fully compatible with `nx` yet. By setting `--import tsx`,

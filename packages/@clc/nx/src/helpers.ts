@@ -58,7 +58,7 @@ export async function writePackageJson(
   pkg: JSONSchemaForNPMPackageJsonFiles
 ) {
   // This needs to be late-imported because nx doesn't do its dotenv loading
-  // early enough, so --conditions=deveopment isn't yet set.
+  // early enough, so --conditions=carpentry isn't yet set.
   const {writePrettierFile} = await import(
     '@code-like-a-carpenter/tooling-common'
   );

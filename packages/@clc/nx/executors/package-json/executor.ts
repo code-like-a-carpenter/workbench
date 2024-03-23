@@ -59,7 +59,7 @@ async function config(
       /* eslint-disable sort-keys */
       // `types` should [always come first](https://nodejs.org/api/packages.html#community-conditions-definitions)
       types: './dist/types/index.d.ts',
-      development: './src/index.ts',
+      carpentry: './src/index.ts',
       import: './dist/esm/index.mjs',
       require: './dist/cjs/index.cjs',
       /* eslint-enable sort-keys */
