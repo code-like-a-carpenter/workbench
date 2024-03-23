@@ -53,7 +53,7 @@ export function addTarget(
   target.inputs = Array.from(targetInputs);
 
   const targetDependsOn = new Set(target.dependsOn ?? []);
-  // Everything should depend on on codegen:deps so that when we make changes to
+  // Everything should depend on codegen:deps so that when we make changes to
   // executors, they get their new dependencies before they try to execute.
   targetDependsOn.add('codegen:deps');
   target.dependsOn = Array.from(targetDependsOn);

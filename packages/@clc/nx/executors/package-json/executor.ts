@@ -54,45 +54,30 @@ async function config(
   pkg.author = pkg.author ?? rootPackageJson.author;
   pkg.bugs = rootPackageJson.bugs;
   pkg.engines = rootPackageJson.engines;
+  pkg.exports = {
+    '.': {
+      /* eslint-disable sort-keys */
+      // `types` should [always come first](https://nodejs.org/api/packages.html#community-conditions-definitions)
+      types: './dist/types/index.d.ts',
+      development: './src/index.ts',
+      import: './dist/esm/index.mjs',
+      require: './dist/cjs/index.cjs',
+      /* eslint-enable sort-keys */
+    },
+    './package.json': './package.json',
+  };
+  // These are mostly for legacy fallbacks and, if `exports` is configured
+  // correctly, should not be needed on modern platforms. When `main` is
+  // present, esbuild seems to prefer it in some unpredictable cases.
+  delete pkg.main;
+  delete pkg.module;
+
   if (type === 'package') {
     delete pkg.bin;
-
-    pkg.exports = {
-      '.': {
-        /* eslint-disable sort-keys */
-        // `types` should [always come first](https://nodejs.org/api/packages.html#community-conditions-definitions)
-        types: './dist/types/index.d.ts',
-        development: './src/index.ts',
-        import: './dist/esm/index.mjs',
-        require: './dist/cjs/index.cjs',
-        /* eslint-enable sort-keys */
-      },
-      './package.json': './package.json',
-    };
-
-    // These are mostly for legacy fallbacks and, if `exports` is configured
-    // correctly, should not be needed on modern platforms. When `main` is
-    // present, esbuild seems to prefer it in some unpredictable cases.
-    delete pkg.main;
-    delete pkg.module;
   } else {
     pkg.bin = './cli.mjs';
-
-    pkg.exports = {
-      '.': {
-        /* eslint-disable sort-keys */
-        // `types` should [always come first](https://nodejs.org/api/packages.html#community-conditions-definitions)
-        types: './dist/types/index.d.ts',
-        development: './src/index.ts',
-        import: './dist/esm/index.mjs',
-        /* eslint-enable sort-keys */
-      },
-      './package.json': './package.json',
-    };
-
-    delete pkg.main;
-    delete pkg.module;
   }
+
   assert(
     typeof rootPackageJson.homepage === 'string',
     'Missing homepage in top-level package.json'
