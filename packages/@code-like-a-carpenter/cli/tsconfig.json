@@ -16,6 +16,9 @@
       "path": "../tool-deps"
     },
     {
+      "path": "../tool-foundation"
+    },
+    {
       "path": "../tool-inliner"
     },
     {

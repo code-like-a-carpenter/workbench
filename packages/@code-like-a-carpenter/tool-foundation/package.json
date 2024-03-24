@@ -1,33 +1,12 @@
 {
-  "name": "@code-like-a-carpenter/foundation-cli",
+  "name": "@code-like-a-carpenter/tool-foundation",
   "description": "Wrapper around GraphQL Codegen so you don't have to think about it",
+  "releaseAll": 5,
   "author": "Ian Remmel <1182361+ianwremmel@users.noreply.github.com> (https://www.ianwremmel.com)",
   "bugs": "https://www.github.com/code-like-a-carpenter/workbench/issues",
   "engines": {
     "node": "20.x"
   },
-  "homepage": "https://www.github.com/code-like-a-carpenter/workbench/tree/main/packages/@code-like-a-carpenter/foundation-cli",
-  "license": "MIT",
-  "repository": "git@github.com:code-like-a-carpenter/workbench.git",
-  "types": "dist/types",
-  "publishConfig": {
-    "access": "public"
-  },
-  "dependencies": {
-    "@code-like-a-carpenter/assert": "*",
-    "@code-like-a-carpenter/foundation-plugin-cloudformation": "*",
-    "@code-like-a-carpenter/foundation-plugin-typescript": "*",
-    "@code-like-a-carpenter/foundation-transform-environment": "*",
-    "@graphql-codegen/core": "^4.0.0",
-    "@graphql-codegen/plugin-helpers": "^5.0.1",
-    "@graphql-codegen/typescript": "^4.0.1",
-    "@graphql-tools/schema": "^10.0.2",
-    "glob": "^10.3.10",
-    "graphql": "^16.8.1",
-    "yargs": "^17.7.2",
-    "zod": "^3.22.4"
-  },
-  "bin": "./cli.mjs",
   "exports": {
     ".": {
       "types": "./dist/types/index.d.ts",
@@ -37,9 +16,27 @@
     },
     "./package.json": "./package.json"
   },
-  "devDependencies": {
-    "@types/yargs": "^17.0.32"
+  "homepage": "https://www.github.com/code-like-a-carpenter/workbench/tree/main/packages/@code-like-a-carpenter/tool-foundation",
+  "license": "MIT",
+  "repository": "git@github.com:code-like-a-carpenter/workbench.git",
+  "types": "dist/types",
+  "publishConfig": {
+    "access": "public"
   },
   "executors": "./executors.json",
-  "releaseAll": 5
+  "dependencies": {
+    "@code-like-a-carpenter/assert": "*",
+    "@code-like-a-carpenter/cli-core": "*",
+    "@code-like-a-carpenter/foundation-plugin-cloudformation": "*",
+    "@code-like-a-carpenter/foundation-plugin-typescript": "*",
+    "@code-like-a-carpenter/foundation-transform-environment": "*",
+    "@graphql-codegen/core": "^4.0.2",
+    "@graphql-codegen/plugin-helpers": "^5.0.3",
+    "@graphql-codegen/typescript": "^4.0.6",
+    "@graphql-tools/schema": "^10.0.3",
+    "@nx/devkit": "^18.1.2",
+    "glob": "^10.3.10",
+    "graphql": "^16.8.1",
+    "zod": "^3.22.4"
+  }
 }

@@ -1,4 +1,4 @@
-# @code-like-a-carpenter/foundation-cli
+# @code-like-a-carpenter/tool-foundation
 
 [![standard-readme compliant](https://img.shields.io/badge/readme%20style-standard-brightgreen.svg?style=flat-square)](https://github.com/RichardLitt/standard-readme)
 
@@ -15,7 +15,7 @@
 ## Install
 
 ```bash
-npm i @code-like-a-carpenter/foundation-cli
+npm i @code-like-a-carpenter/tool-foundation
 ```
 
 ## Usage

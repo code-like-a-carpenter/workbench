@@ -52,9 +52,6 @@
       "path": "packages/@code-like-a-carpenter/exception"
     },
     {
-      "path": "packages/@code-like-a-carpenter/foundation-cli"
-    },
-    {
       "path": "packages/@code-like-a-carpenter/foundation-intermediate-representation"
     },
     {
@@ -95,6 +92,9 @@
     },
     {
       "path": "packages/@code-like-a-carpenter/tool-deps"
+    },
+    {
+      "path": "packages/@code-like-a-carpenter/tool-foundation"
     },
     {
       "path": "packages/@code-like-a-carpenter/tool-inliner"

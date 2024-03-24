@@ -1,0 +1,9 @@
+{
+  "executors": {
+    "foundation": {
+      "description": "No description provided",
+      "implementation": "./src/__generated__/foundation-executor.ts",
+      "schema": "./tools/foundation.json"
+    }
+  }
+}
