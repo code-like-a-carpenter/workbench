@@ -1,4 +1,4 @@
-/** @type {import('@code-like-a-carpenter/foundation-cli').InputConfig} */
+/** @type {import('@code-like-a-carpenter/tool-foundation').InputConfig} */
 const config = {
   dependenciesModuleId: '../dependencies',
   // Note that there's shared state between the CloudFormation and TypeScript

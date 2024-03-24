@@ -180,7 +180,7 @@ export const createNodes: CreateNodes = [
           dependsOn: [
             {
               projects: [
-                '@code-like-a-carpenter/foundation-cli',
+                '@code-like-a-carpenter/tool-foundation',
                 '@code-like-a-carpenter/foundation-intermediate-representation',
                 '@code-like-a-carpenter/foundation-parser',
                 '@code-like-a-carpenter/foundation-plugin-cloudformation',
@@ -190,7 +190,7 @@ export const createNodes: CreateNodes = [
               target: 'build',
             },
           ],
-          executor: '@code-like-a-carpenter/foundation-cli:foundation',
+          executor: '@code-like-a-carpenter/tool-foundation:foundation',
           inputs: [
             '{projectRoot}/schema/**/*.graphqls',
             '{projectRoot}/.foundationrc.js',

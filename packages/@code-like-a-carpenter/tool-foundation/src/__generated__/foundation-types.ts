@@ -5,7 +5,7 @@
  * and run json-schema-to-typescript to regenerate this file.
  */
 
-export interface FoundationExecutor {
+export interface Foundation {
   config: string;
-  outputs?: ('cloudformation' | 'typescript')[];
+  outputs?: string[];
 }

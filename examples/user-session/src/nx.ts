@@ -8,4 +8,4 @@
 // update package.json. Once that's done, the dependency graph should be
 // correct moving forward.
 
-import '@code-like-a-carpenter/foundation-cli';
+import '@code-like-a-carpenter/tool-foundation';
