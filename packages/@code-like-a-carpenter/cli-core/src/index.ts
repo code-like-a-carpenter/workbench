@@ -30,12 +30,17 @@ export async function main() {
 }
 
 async function load(pluginName: string) {
+  // This is a little goofy, but given the garbage state of js tooling, we may
+  // end up with multiple runtime wrappers and, therefore, mutiple layers of
+  // default exports. This code will walk down the chain of default exports
+  // until it finds the actual plugin.
   const mod = await import(pluginName);
-  if (mod.default) {
-    return mod.default;
+  let d = mod;
+  while ('default' in d) {
+    d = d.default;
   }
 
-  return mod;
+  return d;
 }
 
 export async function registerPlugin(yargs: Argv, fn: RegisterPluginFunction) {
