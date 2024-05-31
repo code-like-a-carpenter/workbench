@@ -7,7 +7,7 @@
     "@code-like-a-carpenter/errors": "*",
     "@code-like-a-carpenter/logger": "*",
     "@code-like-a-carpenter/telemetry": "*",
-    "zod": "^3.22.4",
+    "zod": "^3.23.8",
     "zod-validation-error": "^2.1.0"
   },
   "author": "Ian Remmel <1182361+ianwremmel@users.noreply.github.com> (https://www.ianwremmel.com)",
@@ -33,7 +33,7 @@
   },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.133",
-    "openapi-typescript": "^6.7.4"
+    "openapi-typescript": "^6.7.6"
   },
   "releaseAll": 5
 }

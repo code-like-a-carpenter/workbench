@@ -27,7 +27,7 @@
     "@code-like-a-carpenter/cli-core": "*",
     "@code-like-a-carpenter/tooling-common": "*",
     "@nx/devkit": "^18.0.4",
-    "glob": "^10.3.10",
+    "glob": "^10.4.1",
     "json-schema-to-typescript": "^13.1.2"
   }
 }
