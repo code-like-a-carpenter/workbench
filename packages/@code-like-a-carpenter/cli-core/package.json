@@ -4,7 +4,7 @@
   "dependencies": {
     "@code-like-a-carpenter/workbench-config": "*",
     "yargs": "^17.7.2",
-    "zod": "^3.22.4"
+    "zod": "^3.23.8"
   },
   "author": "Ian Remmel <1182361+ianwremmel@users.noreply.github.com> (https://www.ianwremmel.com)",
   "bugs": "https://www.github.com/code-like-a-carpenter/workbench/issues",

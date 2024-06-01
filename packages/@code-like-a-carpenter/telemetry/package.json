@@ -28,12 +28,12 @@
     "@code-like-a-carpenter/env": "*",
     "@code-like-a-carpenter/exception": "*",
     "@code-like-a-carpenter/logger": "*",
-    "@opentelemetry/api": "1.4.0",
-    "@opentelemetry/sdk-trace-base": "^1.9.1",
+    "@opentelemetry/api": "^1.8.0",
+    "@opentelemetry/sdk-trace-base": "^1.24.1",
     "snake-case": "^3.0.4"
   },
   "devDependencies": {
-    "@types/aws-lambda": "^8.10.133"
+    "@types/aws-lambda": "^8.10.138"
   },
   "releaseAll": 5
 }

@@ -6,7 +6,7 @@
     "@code-like-a-carpenter/cli-core": "*",
     "@code-like-a-carpenter/tool-json-schema": "*",
     "@code-like-a-carpenter/tooling-common": "*",
-    "@nx/devkit": "^18.0.4",
+    "@nx/devkit": "^19.1.1",
     "@schemastore/package": "^0.0.10",
     "find-up": "^5.0.0",
     "lodash.camelcase": "^4.3.0",

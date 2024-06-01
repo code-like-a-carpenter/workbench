@@ -33,7 +33,7 @@ describe('createUserSession()', () => {
   it('creates a record', async () => {
     const result = await createUserSession({
       session: {foo: 'foo'},
-      sessionId: faker.datatype.uuid(),
+      sessionId: faker.string.uuid(),
     });
 
     expect(result).toMatchInlineSnapshot(
@@ -56,11 +56,11 @@ describe('createUserSession()', () => {
         "item": {
           "createdAt": Any<Date>,
           "expires": Any<Date>,
-          "id": "VXNlclNlc3Npb246VVNFUl9TRVNTSU9OIzE4MWM4ODdjLWU3ZGYtNDMzMS05ZmJhLTY1ZDI1NTg2N2UyMA",
+          "id": "VXNlclNlc3Npb246VVNFUl9TRVNTSU9OIzE4MWM4ODdjLWU3ZGYtNDMzMS04OWZiLWE2NWQyNTU4NjdlMg",
           "session": {
             "foo": "foo",
           },
-          "sessionId": "181c887c-e7df-4331-9fba-65d255867e20",
+          "sessionId": "181c887c-e7df-4331-89fb-a65d255867e2",
           "updatedAt": Any<Date>,
           "version": 1,
         },
@@ -70,7 +70,7 @@ describe('createUserSession()', () => {
     );
 
     expect(Base64.decode(result.item.id)).toMatchInlineSnapshot(
-      `"UserSession:USER_SESSION#181c887c-e7df-4331-9fba-65d255867e20"`
+      `"UserSession:USER_SESSION#181c887c-e7df-4331-89fb-a65d255867e2"`
     );
 
     expect(result.item.createdAt.getTime()).not.toBeNaN();
@@ -97,7 +97,7 @@ describe('createUserSession()', () => {
     const result = await createUserSession({
       expires,
       session: {foo: 'foo'},
-      sessionId: faker.datatype.uuid(),
+      sessionId: faker.string.uuid(),
     });
 
     expect(result.item.expires.getTime()).not.toBeNaN();
@@ -114,7 +114,7 @@ describe('createUserSession()', () => {
     const result = await createUserSession({
       expires,
       session: {foo: 'foo'},
-      sessionId: faker.datatype.uuid(),
+      sessionId: faker.string.uuid(),
     });
 
     expect(result.item.expires.getTime()).not.toBeNaN();
@@ -128,45 +128,45 @@ describe('blindWriteUserSession()', () => {
   it('creates a user session if it does not exist', async () => {
     const result = await blindWriteUserSession({
       session: {foo: 'foo'},
-      sessionId: faker.datatype.uuid(),
+      sessionId: faker.string.uuid(),
     });
 
     try {
       expect(result).toMatchInlineSnapshot(
         itemMatcher,
         `
-      {
-        "capacity": {
-          "CapacityUnits": 1,
-          "GlobalSecondaryIndexes": undefined,
-          "LocalSecondaryIndexes": undefined,
-          "ReadCapacityUnits": undefined,
-          "Table": {
+        {
+          "capacity": {
             "CapacityUnits": 1,
+            "GlobalSecondaryIndexes": undefined,
+            "LocalSecondaryIndexes": undefined,
             "ReadCapacityUnits": undefined,
+            "Table": {
+              "CapacityUnits": 1,
+              "ReadCapacityUnits": undefined,
+              "WriteCapacityUnits": undefined,
+            },
+            "TableName": Any<String>,
             "WriteCapacityUnits": undefined,
           },
-          "TableName": Any<String>,
-          "WriteCapacityUnits": undefined,
-        },
-        "item": {
-          "createdAt": Any<Date>,
-          "expires": Any<Date>,
-          "id": "VXNlclNlc3Npb246VVNFUl9TRVNTSU9OIzE4MWM4ODdjLWU3ZGYtNDMzMS05ZmJhLTY1ZDI1NTg2N2UyMA",
-          "session": {
-            "foo": "foo",
+          "item": {
+            "createdAt": Any<Date>,
+            "expires": Any<Date>,
+            "id": "VXNlclNlc3Npb246VVNFUl9TRVNTSU9OIzE4MWM4ODdjLWU3ZGYtNDMzMS04OWZiLWE2NWQyNTU4NjdlMg",
+            "session": {
+              "foo": "foo",
+            },
+            "sessionId": "181c887c-e7df-4331-89fb-a65d255867e2",
+            "updatedAt": Any<Date>,
+            "version": 1,
           },
-          "sessionId": "181c887c-e7df-4331-9fba-65d255867e20",
-          "updatedAt": Any<Date>,
-          "version": 1,
-        },
-        "metrics": undefined,
-      }
-    `
+          "metrics": undefined,
+        }
+      `
       );
 
       expect(Base64.decode(result.item.id)).toMatchInlineSnapshot(
-        `"UserSession:USER_SESSION#181c887c-e7df-4331-9fba-65d255867e20"`
+        `"UserSession:USER_SESSION#181c887c-e7df-4331-89fb-a65d255867e2"`
       );
 
       expect(result.item.createdAt.getTime()).not.toBeNaN();
@@ -185,7 +185,7 @@ describe('blindWriteUserSession()', () => {
     const result = await blindWriteUserSession({
       expires,
       session: {foo: 'foo'},
-      sessionId: faker.datatype.uuid(),
+      sessionId: faker.string.uuid(),
     });
 
     expect(result.item.expires.getTime()).not.toBeNaN();
@@ -204,7 +204,7 @@ describe('blindWriteUserSession()', () => {
     const result = await blindWriteUserSession({
       expires,
       session: {foo: 'foo'},
-      sessionId: faker.datatype.uuid(),
+      sessionId: faker.string.uuid(),
     });
 
     expect(result.item.expires.getTime()).not.toBeNaN();
@@ -218,7 +218,7 @@ describe('blindWriteUserSession()', () => {
   it('overwrites an existing record', async () => {
     const createResult = await createUserSession({
       session: {foo: 'foo'},
-      sessionId: faker.datatype.uuid(),
+      sessionId: faker.string.uuid(),
     });
     expect(createResult).toMatchInlineSnapshot(
       itemMatcher,
@@ -240,11 +240,11 @@ describe('blindWriteUserSession()', () => {
         "item": {
           "createdAt": Any<Date>,
           "expires": Any<Date>,
-          "id": "VXNlclNlc3Npb246VVNFUl9TRVNTSU9OIzE4MWM4ODdjLWU3ZGYtNDMzMS05ZmJhLTY1ZDI1NTg2N2UyMA",
+          "id": "VXNlclNlc3Npb246VVNFUl9TRVNTSU9OIzE4MWM4ODdjLWU3ZGYtNDMzMS04OWZiLWE2NWQyNTU4NjdlMg",
           "session": {
             "foo": "foo",
           },
-          "sessionId": "181c887c-e7df-4331-9fba-65d255867e20",
+          "sessionId": "181c887c-e7df-4331-89fb-a65d255867e2",
           "updatedAt": Any<Date>,
           "version": 1,
         },
@@ -282,11 +282,11 @@ describe('blindWriteUserSession()', () => {
         "item": {
           "createdAt": Any<Date>,
           "expires": Any<Date>,
-          "id": "VXNlclNlc3Npb246VVNFUl9TRVNTSU9OIzE4MWM4ODdjLWU3ZGYtNDMzMS05ZmJhLTY1ZDI1NTg2N2UyMA",
+          "id": "VXNlclNlc3Npb246VVNFUl9TRVNTSU9OIzE4MWM4ODdjLWU3ZGYtNDMzMS04OWZiLWE2NWQyNTU4NjdlMg",
           "session": {
             "foo": "bar",
           },
-          "sessionId": "181c887c-e7df-4331-9fba-65d255867e20",
+          "sessionId": "181c887c-e7df-4331-89fb-a65d255867e2",
           "updatedAt": Any<Date>,
           "version": 2,
         },
@@ -318,11 +318,11 @@ describe('blindWriteUserSession()', () => {
         "item": {
           "createdAt": Any<Date>,
           "expires": Any<Date>,
-          "id": "VXNlclNlc3Npb246VVNFUl9TRVNTSU9OIzE4MWM4ODdjLWU3ZGYtNDMzMS05ZmJhLTY1ZDI1NTg2N2UyMA",
+          "id": "VXNlclNlc3Npb246VVNFUl9TRVNTSU9OIzE4MWM4ODdjLWU3ZGYtNDMzMS04OWZiLWE2NWQyNTU4NjdlMg",
           "session": {
             "foo": "bar",
           },
-          "sessionId": "181c887c-e7df-4331-9fba-65d255867e20",
+          "sessionId": "181c887c-e7df-4331-89fb-a65d255867e2",
           "updatedAt": Any<Date>,
           "version": 2,
         },
@@ -344,7 +344,7 @@ describe('blindWriteUserSession()', () => {
 
     const createResult = await createUserSession({
       session: {foo: 'foo'},
-      sessionId: faker.datatype.uuid(),
+      sessionId: faker.string.uuid(),
     });
 
     expect(createResult.item.expires).not.toBe(expires);
@@ -377,7 +377,7 @@ describe('blindWriteUserSession()', () => {
 
     const createResult = await createUserSession({
       session: {foo: 'foo'},
-      sessionId: faker.datatype.uuid(),
+      sessionId: faker.string.uuid(),
     });
 
     expect(createResult.item.expires).not.toBe(expires);
@@ -391,7 +391,7 @@ describe('blindWriteUserSession()', () => {
 
     expect(updateResult.item.version).toBe(2);
 
-    readUserSession(createResult.item);
+    await readUserSession(createResult.item);
 
     // cleanup, not part of test
     await deleteUserSession(createResult.item);
@@ -402,7 +402,7 @@ describe('deleteUserSession()', () => {
   it('deletes a record', async () => {
     const result = await createUserSession({
       session: {foo: 'foo'},
-      sessionId: faker.datatype.uuid(),
+      sessionId: faker.string.uuid(),
     });
 
     const deleteResult = await deleteUserSession(result.item);
@@ -445,7 +445,7 @@ describe('readUserSession()', () => {
   it('reads a record', async () => {
     const result = await createUserSession({
       session: {foo: 'foo'},
-      sessionId: faker.datatype.uuid(),
+      sessionId: faker.string.uuid(),
     });
 
     const readResult = await readUserSession(result.item);
@@ -469,11 +469,11 @@ describe('readUserSession()', () => {
         "item": {
           "createdAt": Any<Date>,
           "expires": Any<Date>,
-          "id": "VXNlclNlc3Npb246VVNFUl9TRVNTSU9OIzE4MWM4ODdjLWU3ZGYtNDMzMS05ZmJhLTY1ZDI1NTg2N2UyMA",
+          "id": "VXNlclNlc3Npb246VVNFUl9TRVNTSU9OIzE4MWM4ODdjLWU3ZGYtNDMzMS04OWZiLWE2NWQyNTU4NjdlMg",
           "session": {
             "foo": "foo",
           },
-          "sessionId": "181c887c-e7df-4331-9fba-65d255867e20",
+          "sessionId": "181c887c-e7df-4331-89fb-a65d255867e2",
           "updatedAt": Any<Date>,
           "version": 1,
         },
@@ -497,7 +497,7 @@ describe('updateUserSession()', () => {
   it('updates a record', async () => {
     const createResult = await createUserSession({
       session: {foo: 'foo'},
-      sessionId: faker.datatype.uuid(),
+      sessionId: faker.string.uuid(),
     });
     expect(createResult).toMatchInlineSnapshot(
       itemMatcher,
@@ -519,11 +519,11 @@ describe('updateUserSession()', () => {
         "item": {
           "createdAt": Any<Date>,
           "expires": Any<Date>,
-          "id": "VXNlclNlc3Npb246VVNFUl9TRVNTSU9OIzE4MWM4ODdjLWU3ZGYtNDMzMS05ZmJhLTY1ZDI1NTg2N2UyMA",
+          "id": "VXNlclNlc3Npb246VVNFUl9TRVNTSU9OIzE4MWM4ODdjLWU3ZGYtNDMzMS04OWZiLWE2NWQyNTU4NjdlMg",
           "session": {
             "foo": "foo",
           },
-          "sessionId": "181c887c-e7df-4331-9fba-65d255867e20",
+          "sessionId": "181c887c-e7df-4331-89fb-a65d255867e2",
           "updatedAt": Any<Date>,
           "version": 1,
         },
@@ -557,11 +557,11 @@ describe('updateUserSession()', () => {
         "item": {
           "createdAt": Any<Date>,
           "expires": Any<Date>,
-          "id": "VXNlclNlc3Npb246VVNFUl9TRVNTSU9OIzE4MWM4ODdjLWU3ZGYtNDMzMS05ZmJhLTY1ZDI1NTg2N2UyMA",
+          "id": "VXNlclNlc3Npb246VVNFUl9TRVNTSU9OIzE4MWM4ODdjLWU3ZGYtNDMzMS04OWZiLWE2NWQyNTU4NjdlMg",
           "session": {
             "foo": "bar",
           },
-          "sessionId": "181c887c-e7df-4331-9fba-65d255867e20",
+          "sessionId": "181c887c-e7df-4331-89fb-a65d255867e2",
           "updatedAt": Any<Date>,
           "version": 2,
         },
@@ -592,11 +592,11 @@ describe('updateUserSession()', () => {
         "item": {
           "createdAt": Any<Date>,
           "expires": Any<Date>,
-          "id": "VXNlclNlc3Npb246VVNFUl9TRVNTSU9OIzE4MWM4ODdjLWU3ZGYtNDMzMS05ZmJhLTY1ZDI1NTg2N2UyMA",
+          "id": "VXNlclNlc3Npb246VVNFUl9TRVNTSU9OIzE4MWM4ODdjLWU3ZGYtNDMzMS04OWZiLWE2NWQyNTU4NjdlMg",
           "session": {
             "foo": "bar",
           },
-          "sessionId": "181c887c-e7df-4331-9fba-65d255867e20",
+          "sessionId": "181c887c-e7df-4331-89fb-a65d255867e2",
           "updatedAt": Any<Date>,
           "version": 2,
         },
@@ -618,7 +618,7 @@ describe('updateUserSession()', () => {
 
     const createResult = await createUserSession({
       session: {foo: 'foo'},
-      sessionId: faker.datatype.uuid(),
+      sessionId: faker.string.uuid(),
     });
 
     expect(createResult.item.expires).not.toBe(expires);
@@ -649,7 +649,7 @@ describe('updateUserSession()', () => {
 
     const createResult = await createUserSession({
       session: {foo: 'foo'},
-      sessionId: faker.datatype.uuid(),
+      sessionId: faker.string.uuid(),
     });
 
     await updateUserSession({
@@ -678,7 +678,7 @@ describe('updateUserSession()', () => {
   it('throws an error if the loaded record is out of date', async () => {
     const createResult = await createUserSession({
       session: {foo: 'foo'},
-      sessionId: faker.datatype.uuid(),
+      sessionId: faker.string.uuid(),
     });
     await updateUserSession({
       ...createResult.item,

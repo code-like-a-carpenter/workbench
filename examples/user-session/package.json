@@ -12,7 +12,7 @@
     "@code-like-a-carpenter/assert": "*",
     "@code-like-a-carpenter/foundation-runtime": "*",
     "@code-like-a-carpenter/tool-foundation": "*",
-    "@faker-js/faker": "^7.6.0",
+    "@faker-js/faker": "^8.4.1",
     "base64url": "^3.0.1"
   }
 }
