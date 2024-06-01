@@ -56,11 +56,11 @@ describe('createUserSession()', () => {
         "item": {
           "createdAt": Any<Date>,
           "expires": Any<Date>,
-          "id": "VXNlclNlc3Npb246VVNFUl9TRVNTSU9OIzE4MWM4ODdjLWU3ZGYtNDMzMS05ZmJhLTY1ZDI1NTg2N2UyMA",
+          "id": "VXNlclNlc3Npb246VVNFUl9TRVNTSU9OIzE4MWM4ODdjLWU3ZGYtNDMzMS04OWZiLWE2NWQyNTU4NjdlMg",
           "session": {
             "foo": "foo",
           },
-          "sessionId": "181c887c-e7df-4331-9fba-65d255867e20",
+          "sessionId": "181c887c-e7df-4331-89fb-a65d255867e2",
           "updatedAt": Any<Date>,
           "version": 1,
         },
@@ -70,7 +70,7 @@ describe('createUserSession()', () => {
     );
 
     expect(Base64.decode(result.item.id)).toMatchInlineSnapshot(
-      `"UserSession:USER_SESSION#181c887c-e7df-4331-9fba-65d255867e20"`
+      `"UserSession:USER_SESSION#181c887c-e7df-4331-89fb-a65d255867e2"`
     );
 
     expect(result.item.createdAt.getTime()).not.toBeNaN();
@@ -135,38 +135,38 @@ describe('blindWriteUserSession()', () => {
       expect(result).toMatchInlineSnapshot(
         itemMatcher,
         `
-      {
-        "capacity": {
-          "CapacityUnits": 1,
-          "GlobalSecondaryIndexes": undefined,
-          "LocalSecondaryIndexes": undefined,
-          "ReadCapacityUnits": undefined,
-          "Table": {
+        {
+          "capacity": {
             "CapacityUnits": 1,
+            "GlobalSecondaryIndexes": undefined,
+            "LocalSecondaryIndexes": undefined,
             "ReadCapacityUnits": undefined,
+            "Table": {
+              "CapacityUnits": 1,
+              "ReadCapacityUnits": undefined,
+              "WriteCapacityUnits": undefined,
+            },
+            "TableName": Any<String>,
             "WriteCapacityUnits": undefined,
           },
-          "TableName": Any<String>,
-          "WriteCapacityUnits": undefined,
-        },
-        "item": {
-          "createdAt": Any<Date>,
-          "expires": Any<Date>,
-          "id": "VXNlclNlc3Npb246VVNFUl9TRVNTSU9OIzE4MWM4ODdjLWU3ZGYtNDMzMS05ZmJhLTY1ZDI1NTg2N2UyMA",
-          "session": {
-            "foo": "foo",
+          "item": {
+            "createdAt": Any<Date>,
+            "expires": Any<Date>,
+            "id": "VXNlclNlc3Npb246VVNFUl9TRVNTSU9OIzE4MWM4ODdjLWU3ZGYtNDMzMS04OWZiLWE2NWQyNTU4NjdlMg",
+            "session": {
+              "foo": "foo",
+            },
+            "sessionId": "181c887c-e7df-4331-89fb-a65d255867e2",
+            "updatedAt": Any<Date>,
+            "version": 1,
           },
-          "sessionId": "181c887c-e7df-4331-9fba-65d255867e20",
-          "updatedAt": Any<Date>,
-          "version": 1,
-        },
-        "metrics": undefined,
-      }
-    `
+          "metrics": undefined,
+        }
+      `
       );
 
       expect(Base64.decode(result.item.id)).toMatchInlineSnapshot(
-        `"UserSession:USER_SESSION#181c887c-e7df-4331-9fba-65d255867e20"`
+        `"UserSession:USER_SESSION#181c887c-e7df-4331-89fb-a65d255867e2"`
       );
 
       expect(result.item.createdAt.getTime()).not.toBeNaN();
@@ -240,11 +240,11 @@ describe('blindWriteUserSession()', () => {
         "item": {
           "createdAt": Any<Date>,
           "expires": Any<Date>,
-          "id": "VXNlclNlc3Npb246VVNFUl9TRVNTSU9OIzE4MWM4ODdjLWU3ZGYtNDMzMS05ZmJhLTY1ZDI1NTg2N2UyMA",
+          "id": "VXNlclNlc3Npb246VVNFUl9TRVNTSU9OIzE4MWM4ODdjLWU3ZGYtNDMzMS04OWZiLWE2NWQyNTU4NjdlMg",
           "session": {
             "foo": "foo",
           },
-          "sessionId": "181c887c-e7df-4331-9fba-65d255867e20",
+          "sessionId": "181c887c-e7df-4331-89fb-a65d255867e2",
           "updatedAt": Any<Date>,
           "version": 1,
         },
@@ -282,11 +282,11 @@ describe('blindWriteUserSession()', () => {
         "item": {
           "createdAt": Any<Date>,
           "expires": Any<Date>,
-          "id": "VXNlclNlc3Npb246VVNFUl9TRVNTSU9OIzE4MWM4ODdjLWU3ZGYtNDMzMS05ZmJhLTY1ZDI1NTg2N2UyMA",
+          "id": "VXNlclNlc3Npb246VVNFUl9TRVNTSU9OIzE4MWM4ODdjLWU3ZGYtNDMzMS04OWZiLWE2NWQyNTU4NjdlMg",
           "session": {
             "foo": "bar",
           },
-          "sessionId": "181c887c-e7df-4331-9fba-65d255867e20",
+          "sessionId": "181c887c-e7df-4331-89fb-a65d255867e2",
           "updatedAt": Any<Date>,
           "version": 2,
         },
@@ -318,11 +318,11 @@ describe('blindWriteUserSession()', () => {
         "item": {
           "createdAt": Any<Date>,
           "expires": Any<Date>,
-          "id": "VXNlclNlc3Npb246VVNFUl9TRVNTSU9OIzE4MWM4ODdjLWU3ZGYtNDMzMS05ZmJhLTY1ZDI1NTg2N2UyMA",
+          "id": "VXNlclNlc3Npb246VVNFUl9TRVNTSU9OIzE4MWM4ODdjLWU3ZGYtNDMzMS04OWZiLWE2NWQyNTU4NjdlMg",
           "session": {
             "foo": "bar",
           },
-          "sessionId": "181c887c-e7df-4331-9fba-65d255867e20",
+          "sessionId": "181c887c-e7df-4331-89fb-a65d255867e2",
           "updatedAt": Any<Date>,
           "version": 2,
         },
@@ -469,11 +469,11 @@ describe('readUserSession()', () => {
         "item": {
           "createdAt": Any<Date>,
           "expires": Any<Date>,
-          "id": "VXNlclNlc3Npb246VVNFUl9TRVNTSU9OIzE4MWM4ODdjLWU3ZGYtNDMzMS05ZmJhLTY1ZDI1NTg2N2UyMA",
+          "id": "VXNlclNlc3Npb246VVNFUl9TRVNTSU9OIzE4MWM4ODdjLWU3ZGYtNDMzMS04OWZiLWE2NWQyNTU4NjdlMg",
           "session": {
             "foo": "foo",
           },
-          "sessionId": "181c887c-e7df-4331-9fba-65d255867e20",
+          "sessionId": "181c887c-e7df-4331-89fb-a65d255867e2",
           "updatedAt": Any<Date>,
           "version": 1,
         },
@@ -519,11 +519,11 @@ describe('updateUserSession()', () => {
         "item": {
           "createdAt": Any<Date>,
           "expires": Any<Date>,
-          "id": "VXNlclNlc3Npb246VVNFUl9TRVNTSU9OIzE4MWM4ODdjLWU3ZGYtNDMzMS05ZmJhLTY1ZDI1NTg2N2UyMA",
+          "id": "VXNlclNlc3Npb246VVNFUl9TRVNTSU9OIzE4MWM4ODdjLWU3ZGYtNDMzMS04OWZiLWE2NWQyNTU4NjdlMg",
           "session": {
             "foo": "foo",
           },
-          "sessionId": "181c887c-e7df-4331-9fba-65d255867e20",
+          "sessionId": "181c887c-e7df-4331-89fb-a65d255867e2",
           "updatedAt": Any<Date>,
           "version": 1,
         },
@@ -557,11 +557,11 @@ describe('updateUserSession()', () => {
         "item": {
           "createdAt": Any<Date>,
           "expires": Any<Date>,
-          "id": "VXNlclNlc3Npb246VVNFUl9TRVNTSU9OIzE4MWM4ODdjLWU3ZGYtNDMzMS05ZmJhLTY1ZDI1NTg2N2UyMA",
+          "id": "VXNlclNlc3Npb246VVNFUl9TRVNTSU9OIzE4MWM4ODdjLWU3ZGYtNDMzMS04OWZiLWE2NWQyNTU4NjdlMg",
           "session": {
             "foo": "bar",
           },
-          "sessionId": "181c887c-e7df-4331-9fba-65d255867e20",
+          "sessionId": "181c887c-e7df-4331-89fb-a65d255867e2",
           "updatedAt": Any<Date>,
           "version": 2,
         },
@@ -592,11 +592,11 @@ describe('updateUserSession()', () => {
         "item": {
           "createdAt": Any<Date>,
           "expires": Any<Date>,
-          "id": "VXNlclNlc3Npb246VVNFUl9TRVNTSU9OIzE4MWM4ODdjLWU3ZGYtNDMzMS05ZmJhLTY1ZDI1NTg2N2UyMA",
+          "id": "VXNlclNlc3Npb246VVNFUl9TRVNTSU9OIzE4MWM4ODdjLWU3ZGYtNDMzMS04OWZiLWE2NWQyNTU4NjdlMg",
           "session": {
             "foo": "bar",
           },
-          "sessionId": "181c887c-e7df-4331-9fba-65d255867e20",
+          "sessionId": "181c887c-e7df-4331-89fb-a65d255867e2",
           "updatedAt": Any<Date>,
           "version": 2,
         },
