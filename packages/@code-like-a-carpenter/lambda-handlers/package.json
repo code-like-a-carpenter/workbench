@@ -8,7 +8,7 @@
     "@code-like-a-carpenter/logger": "*",
     "@code-like-a-carpenter/telemetry": "*",
     "zod": "^3.23.8",
-    "zod-validation-error": "^2.1.0"
+    "zod-validation-error": "^3.3.0"
   },
   "author": "Ian Remmel <1182361+ianwremmel@users.noreply.github.com> (https://www.ianwremmel.com)",
   "bugs": "https://www.github.com/code-like-a-carpenter/workbench/issues",
