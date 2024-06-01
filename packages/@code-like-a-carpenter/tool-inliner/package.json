@@ -29,6 +29,6 @@
     "@babel/types": "^7.24.6",
     "@code-like-a-carpenter/assert": "*",
     "@code-like-a-carpenter/cli-core": "*",
-    "@nx/devkit": "^18.0.4"
+    "@nx/devkit": "^19.1.1"
   }
 }
