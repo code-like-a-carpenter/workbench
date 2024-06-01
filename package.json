@@ -69,7 +69,7 @@
     "nx": "^19.1.1",
     "openapi-typescript": "^6.7.6",
     "patch-package": "^8.0.0",
-    "prettier": "^3.2.5",
+    "prettier": "^3.3.0",
     "prettier-2": "npm:prettier@^2",
     "tsx": "^4.11.0",
     "typescript": "^5.4.5",
