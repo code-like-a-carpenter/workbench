@@ -61,7 +61,7 @@ describe('cdc', () => {
   it('triggers lambda function when records is inserted into a table', async () => {
     await cleanup();
 
-    const externalId = String(faker.datatype.number());
+    const externalId = String(faker.number.int());
 
     // Confirm there is no record yet.
     await expect(async () => await readAccount({externalId})).rejects.toThrow(
@@ -81,7 +81,7 @@ describe('cdc', () => {
     \**************************************************************************/
     await createSubscriptionEvent({
       cancelled: false,
-      effectiveDate: faker.date.past(3),
+      effectiveDate: faker.date.past({years: 3}),
       externalId,
       monthlyPriceInCents: 1000,
       onFreeTrial: true,
@@ -148,7 +148,10 @@ describe('cdc', () => {
     \**************************************************************************/
     await createSubscriptionEvent({
       cancelled: false,
-      effectiveDate: faker.date.future(0, account.effectiveDate),
+      effectiveDate: faker.date.future({
+        refDate: account.effectiveDate,
+        years: 0,
+      }),
       externalId,
       monthlyPriceInCents: 1000,
       onFreeTrial: false,
@@ -222,7 +225,10 @@ describe('cdc', () => {
     \**************************************************************************/
     await createSubscriptionEvent({
       cancelled: false,
-      effectiveDate: faker.date.future(0, account.effectiveDate),
+      effectiveDate: faker.date.future({
+        refDate: account.effectiveDate,
+        years: 0,
+      }),
       externalId,
       monthlyPriceInCents: 500,
       onFreeTrial: false,
@@ -298,7 +304,10 @@ describe('cdc', () => {
     \**************************************************************************/
     await createSubscriptionEvent({
       cancelled: true,
-      effectiveDate: faker.date.future(0, account.effectiveDate),
+      effectiveDate: faker.date.future({
+        refDate: account.effectiveDate,
+        years: 0,
+      }),
       externalId,
       monthlyPriceInCents: 0,
       onFreeTrial: false,
