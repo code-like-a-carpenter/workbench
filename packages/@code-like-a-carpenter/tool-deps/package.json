@@ -32,6 +32,6 @@
   },
   "executors": "./executors.json",
   "devDependencies": {
-    "@types/aws-lambda": "^8.10.133"
+    "@types/aws-lambda": "^8.10.138"
   }
 }
