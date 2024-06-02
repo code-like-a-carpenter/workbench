@@ -25,6 +25,7 @@ const commonProjectConfig: Partial<Config.ProjectConfig> = {
   setupFilesAfterEnv: ['./jest.d/setup-files-after-env/faker.ts'],
   testEnvironment: 'node',
   testPathIgnorePatterns: ['/dist/', '/node_modules/'],
+  transformIgnorePatterns: ['.*\\.mjs'],
 };
 
 const CI = !!process.env.CI;
@@ -51,7 +52,7 @@ const config: Config.GlobalConfig = {
           (packagePath) => !packagePath.split(path.sep).includes('examples')
         )
         .flatMap((packagePath) => [
-          `<rootDir>/${packagePath}/**/?(*.)+(test).[tj]s?(x)`,
+          `<rootDir>/${packagePath}/**/?(*.)+(test).?(m)[tj]s?(x)`,
         ]),
     },
     // @ts-expect-error - types seem wrong

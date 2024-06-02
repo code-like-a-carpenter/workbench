@@ -18,7 +18,7 @@
     "lint:types": "bash -c \"tsc --build $TSC_OPTIONS\"",
     "postinstall": "patch-package",
     "prepare": "husky install",
-    "test": "TZ=UTC jest"
+    "test": "TZ=UTC node --experimental-vm-modules node_modules/jest/bin/jest.js"
   },
   "devDependencies": {
     "@aws-sdk/client-cloudformation": "3.188.0",

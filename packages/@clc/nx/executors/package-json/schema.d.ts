@@ -6,5 +6,6 @@
  */
 
 export interface PackageJsonExecutor {
+  mjs?: boolean;
   type?: 'cli' | 'example' | 'package';
 }
