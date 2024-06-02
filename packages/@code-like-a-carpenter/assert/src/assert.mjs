@@ -2,12 +2,17 @@
 // eslint-disable-next-line no-restricted-imports
 import nodeAssert, {AssertionError} from 'assert';
 
-type Provider = () => string | Error;
+/**
+ * @callback Provider
+ * @returns {string | Error}
+ */
 
-export function assert(
-  value: unknown,
-  message: string | Error | Provider
-): asserts value {
+/**
+ * @param value {unknown}
+ * @param message {string | Error | Provider}
+ * @returns {asserts value}
+ */
+export function assert(value, message) {
   if (typeof message === 'string' || message instanceof Error) {
     nodeAssert.ok(value, message);
   } else {

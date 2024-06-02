@@ -1,6 +1,6 @@
 import {assert} from '@code-like-a-carpenter/assert';
 
-import type {Foundation} from './__generated__/foundation-types.ts';
+import type {Foundation} from './__generated__/foundation-types';
 import {generateCode} from './lib';
 
 export async function handler({

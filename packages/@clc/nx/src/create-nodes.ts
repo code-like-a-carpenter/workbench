@@ -20,6 +20,9 @@ export const createNodes: CreateNodes = [
       return {};
     }
 
+    const mjs = existsSync(path.resolve(projectRoot, 'src/index.mjs'));
+    const mts = existsSync(path.resolve(projectRoot, 'src/index.mts'));
+
     let targets: Record<string, TargetConfiguration> = {};
     // Set up the basic phases of the build process
 
@@ -88,25 +91,30 @@ export const createNodes: CreateNodes = [
         dependsOn: ['codegen'],
         executor: '@clc/nx:esbuild',
         options: {
-          entryPoints: ['{projectRoot}/src/**/*.[jt]s?(x)', '!**/*.test.*'],
+          entryPoints: ['{projectRoot}/src/**/*.?(m)[jt]s?(x)', '!**/*.test.*'],
           format: 'cjs',
           outDir: '{projectRoot}/dist/cjs',
         },
         outputs: ['{projectRoot}/dist/cjs'],
       });
 
-      addTarget(targets, 'build', 'esm', {
-        cache: true,
-        dependsOn: ['codegen'],
-        executor: '@clc/nx:esbuild',
-        inputs: ['{projectRoot}/src/**/*'],
-        options: {
-          entryPoints: ['{projectRoot}/src/**/*.[jt]s?(x)', '!**/*.test.*'],
-          format: 'esm',
-          outDir: '{projectRoot}/dist/esm',
-        },
-        outputs: ['{projectRoot}/dist/esm'],
-      });
+      if (!mjs) {
+        addTarget(targets, 'build', 'esm', {
+          cache: true,
+          dependsOn: ['codegen'],
+          executor: '@clc/nx:esbuild',
+          inputs: ['{projectRoot}/src/**/*'],
+          options: {
+            entryPoints: [
+              '{projectRoot}/src/**/*.?(m)[jt]s?(x)',
+              '!**/*.test.*',
+            ],
+            format: 'esm',
+            outDir: '{projectRoot}/dist/esm',
+          },
+          outputs: ['{projectRoot}/dist/esm'],
+        });
+      }
 
       addTarget(targets, 'build', 'types', {
         cache: true,
@@ -144,7 +152,7 @@ export const createNodes: CreateNodes = [
       cache: true,
       executor: '@clc/nx:package-json',
       inputs: ['{workspaceRoot}/package.json'],
-      options: {type},
+      options: {mjs, mts, type},
       outputs: ['{projectRoot}/package.json'],
     });
 
@@ -223,6 +231,7 @@ export const createNodes: CreateNodes = [
     if (projectName.split('/').pop()?.startsWith('tool-')) {
       addTarget(targets, 'codegen', 'tool', {
         cache: true,
+        dependsOn: ['^build'],
         executor: '@code-like-a-carpenter/tool-tool:tool',
         inputs: ['{projectRoot}/tools/*.json'],
         options: {

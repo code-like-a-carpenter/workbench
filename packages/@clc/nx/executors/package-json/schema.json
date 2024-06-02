@@ -5,6 +5,14 @@
   "description": "",
   "type": "object",
   "properties": {
+    "mjs": {
+      "type": "boolean",
+      "default": false
+    },
+    "mts": {
+      "type": "boolean",
+      "default": false
+    },
     "type": {
       "enum": ["cli", "example", "package"],
       "type": "string",
