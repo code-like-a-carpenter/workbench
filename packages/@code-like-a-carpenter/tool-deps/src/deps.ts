@@ -6,7 +6,7 @@ import {minimatch} from 'minimatch';
 
 import {findLocalPackages} from '@code-like-a-carpenter/tooling-common';
 
-import type {DepsExecutor} from './__generated__/deps-types.ts';
+import type {DepsExecutor} from './__generated__/deps-types';
 import {load} from './config';
 import {runDepcheck} from './depcheck';
 
