@@ -113,7 +113,7 @@ export const createNodes: CreateNodes = [
         dependsOn: ['^build:types', 'codegen'],
         executor: 'nx:run-commands',
         options: {
-          command: `tsc --project {projectRoot}/tsconfig.json`,
+          command: `tsc --project {projectRoot}/tsconfig.json && scripts/dmts-to-dts {projectRoot}`,
         },
         outputs: ['{projectRoot}/dist/types'],
       });

@@ -61,10 +61,16 @@ async function config(
     '.': {
       /* eslint-disable sort-keys */
       // `types` should [always come first](https://nodejs.org/api/packages.html#community-conditions-definitions)
-      types: './dist/types/index.d.ts',
-      carpentry: './src/index.ts',
-      import: './dist/esm/index.mjs',
-      require: './dist/cjs/index.cjs',
+      import: {
+        types: './dist/types/index.d.mts',
+        carpentry: './src/index.ts',
+        default: './dist/esm/index.mjs',
+      },
+      require: {
+        types: './dist/cjs-types/index.d.ts',
+        carpentry: './src/index.ts',
+        default: './dist/cjs/index.cjs',
+      },
       /* eslint-enable sort-keys */
     },
     './package.json': './package.json',
@@ -75,10 +81,10 @@ async function config(
   delete pkg.main;
   delete pkg.module;
 
-  if (type === 'package') {
-    delete pkg.bin;
-  } else {
+  if (type === 'cli') {
     pkg.bin = './cli.mjs';
+  } else {
+    delete pkg.bin;
   }
 
   assert(
