@@ -11,7 +11,7 @@ import {extractProjectName, extractProjectRoot, writePackageJson} from '../..';
 import type {PackageJsonExecutor} from './schema';
 
 const runExecutor: Executor<PackageJsonExecutor> = async (
-  {mjs = false, type = 'package'},
+  {mjs = false, mts = false, type = 'package'},
   context
 ) => {
   const root = extractProjectRoot(context);
@@ -21,7 +21,7 @@ const runExecutor: Executor<PackageJsonExecutor> = async (
   if (type === 'example') {
     await configExample(pkg, context);
   } else {
-    await config(pkg, mjs, type, context);
+    await config(pkg, mjs, mts, type, context);
   }
 
   await writePackageJson(packageJsonPath, pkg);
@@ -44,6 +44,7 @@ async function configExample(
 async function config(
   pkg: JSONSchemaForNPMPackageJsonFiles,
   mjs: boolean,
+  mts: boolean,
   type: 'cli' | 'package' | 'esm',
   context: ExecutorContext
 ) {
@@ -64,12 +65,12 @@ async function config(
       // `types` should [always come first](https://nodejs.org/api/packages.html#community-conditions-definitions)
       import: {
         types: './dist/types/index.d.mts',
-        ...(mjs ? {} : {carpentry: './src/index.ts'}),
-        default: './dist/esm/index.mjs',
+        ...(mjs ? {} : {carpentry: mts ? './src/index.mts' : './src/index.ts'}),
+        default: mjs ? './src/index.mjs' : './dist/esm/index.mjs',
       },
       require: {
         types: './dist/cjs-types/index.d.ts',
-        ...(mjs ? {} : {carpentry: './src/index.ts'}),
+        ...(mjs ? {} : {carpentry: mts ? './src/index.mts' : './src/index.ts'}),
         default: './dist/cjs/index.cjs',
       },
       /* eslint-enable sort-keys */
