@@ -231,6 +231,7 @@ export const createNodes: CreateNodes = [
     if (projectName.split('/').pop()?.startsWith('tool-')) {
       addTarget(targets, 'codegen', 'tool', {
         cache: true,
+        dependsOn: ['^build'],
         executor: '@code-like-a-carpenter/tool-tool:tool',
         inputs: ['{projectRoot}/tools/*.json'],
         options: {
