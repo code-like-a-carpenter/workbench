@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "checkJs": false,
+    "outDir": "./dist/types",
+    "rootDir": "."
+  },
+  "extends": "../../../tsconfig.references.json",
+  "include": ["executors", "src"],
+  "references": []
+}

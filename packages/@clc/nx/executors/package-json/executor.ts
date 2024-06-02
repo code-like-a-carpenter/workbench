@@ -10,7 +10,10 @@ import {extractProjectName, extractProjectRoot, writePackageJson} from '../..';
 
 import type {PackageJsonExecutor} from './schema';
 
-const runExecutor: Executor<PackageJsonExecutor> = async ({type}, context) => {
+const runExecutor: Executor<PackageJsonExecutor> = async (
+  {type = 'package'},
+  context
+) => {
   const root = extractProjectRoot(context);
   const packageJsonPath = path.join(root, 'package.json');
   const pkg = await readPackageJson(packageJsonPath);

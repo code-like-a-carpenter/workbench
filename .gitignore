@@ -16,3 +16,5 @@ dist
 volume
 
 .nx/cache
+
+tsconfig.tsbuildinfo
