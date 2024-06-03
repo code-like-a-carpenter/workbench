@@ -3,13 +3,12 @@
     "noEmit": true
   },
   "extends": "./tsconfig.base.json",
+  "exclude": ["packages/@clc/nx/executors/readme/executor.js"],
   "include": [
     "*.ts",
     "*.tsx",
     "*.js",
     "*.jsx",
-    "examples/*/executors/**/*.js",
-    "examples/*/executors/**/*.ts",
     "examples/*/src/**/*.js",
     "examples/*/src/**/*.jsx",
     "examples/*/src/**/*.ts",

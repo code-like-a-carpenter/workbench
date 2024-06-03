@@ -84,6 +84,8 @@
     "packages/*/*"
   ],
   "lint-staged": {
+    "*.mjs": "npm run eslint -- ",
+    "*.mts": "npm run eslint -- ",
     "*.js": "npm run eslint -- ",
     "*.jsx": "npm run eslint -- ",
     "*.ts": "npm run eslint -- ",

@@ -17,6 +17,12 @@ ignorePatterns:
 
 overrides:
   - files:
+      - '**/*.mjs'
+      - '**/*.mts'
+    parserOptions:
+      sourceType: 'module'
+
+  - files:
       - '**/*.graphql'
       - '**/*.graphqls'
     extends: 'plugin:@graphql-eslint/schema-recommended'
@@ -29,6 +35,7 @@ overrides:
       strict: off
 
   - files:
+      - '**/*.mts'
       - '**/*.ts'
       - '**/*.tsx'
     parserOptions:
@@ -59,12 +66,14 @@ overrides:
       sort-keys: off
 
   - files:
+      - '*.d.mts'
       - '*.d.ts'
     rules:
       eslint-comments/disable-enable-pair: off
       eslint-comments/no-unlimited-disable: off
 
 parserOptions:
+  ecmaVersion: 2022
   sourceType: 'script'
 
 plugins:
