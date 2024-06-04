@@ -3,7 +3,7 @@
 exports[`@ttl expires a record after a specified duration 2`] = `
 {
   "additionalImports": [],
-  "dependenciesModuleId": "dependencies",
+  "dependenciesModuleId": "dependencies.ts",
   "models": [
     {
       "changeDataCaptureConfig": [],
@@ -110,7 +110,7 @@ exports[`@ttl expires a record after a specified duration 2`] = `
       },
       "secondaryIndexes": [],
       "table": {
-        "dependenciesModuleId": "../dependencies",
+        "dependenciesModuleId": "../dependencies.ts",
         "enablePointInTimeRecovery": true,
         "enableStreaming": false,
         "hasCdc": false,
@@ -154,7 +154,7 @@ exports[`@ttl expires a record after a specified duration 2`] = `
   ],
   "tables": [
     {
-      "dependenciesModuleId": "../dependencies",
+      "dependenciesModuleId": "../dependencies.ts",
       "enablePointInTimeRecovery": true,
       "enableStreaming": false,
       "hasCdc": false,
@@ -194,7 +194,7 @@ exports[`@ttl expires a record after a specified duration 2`] = `
 exports[`@ttl marks a fields as the ttl field 2`] = `
 {
   "additionalImports": [],
-  "dependenciesModuleId": "dependencies",
+  "dependenciesModuleId": "dependencies.ts",
   "models": [
     {
       "changeDataCaptureConfig": [],
@@ -301,7 +301,7 @@ exports[`@ttl marks a fields as the ttl field 2`] = `
       },
       "secondaryIndexes": [],
       "table": {
-        "dependenciesModuleId": "../dependencies",
+        "dependenciesModuleId": "../dependencies.ts",
         "enablePointInTimeRecovery": true,
         "enableStreaming": false,
         "hasCdc": false,
@@ -344,7 +344,7 @@ exports[`@ttl marks a fields as the ttl field 2`] = `
   ],
   "tables": [
     {
-      "dependenciesModuleId": "../dependencies",
+      "dependenciesModuleId": "../dependencies.ts",
       "enablePointInTimeRecovery": true,
       "enableStreaming": false,
       "hasCdc": false,
@@ -384,7 +384,7 @@ exports[`@ttl marks a fields as the ttl field 2`] = `
 exports[`@ttl optionally allows the end-user to specify an alternative expiration 2`] = `
 {
   "additionalImports": [],
-  "dependenciesModuleId": "dependencies",
+  "dependenciesModuleId": "dependencies.ts",
   "models": [
     {
       "changeDataCaptureConfig": [],
@@ -491,7 +491,7 @@ exports[`@ttl optionally allows the end-user to specify an alternative expiratio
       },
       "secondaryIndexes": [],
       "table": {
-        "dependenciesModuleId": "../dependencies",
+        "dependenciesModuleId": "../dependencies.ts",
         "enablePointInTimeRecovery": true,
         "enableStreaming": false,
         "hasCdc": false,
@@ -535,7 +535,7 @@ exports[`@ttl optionally allows the end-user to specify an alternative expiratio
   ],
   "tables": [
     {
-      "dependenciesModuleId": "../dependencies",
+      "dependenciesModuleId": "../dependencies.ts",
       "enablePointInTimeRecovery": true,
       "enableStreaming": false,
       "hasCdc": false,

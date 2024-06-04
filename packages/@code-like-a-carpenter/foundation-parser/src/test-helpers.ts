@@ -12,8 +12,9 @@ export async function parseSchema(raw: string) {
     schema,
     [],
     ParserConfigSchema.parse({
-      actionsModuleId: './placeholder/actions',
-      dependenciesModuleId: './placeholder/dependencies',
+      actionsModuleId: './placeholder/actions.ts',
+      dependenciesModuleId: './placeholder/dependencies.ts',
+      requireExtensions: true,
     }),
     {
       outputFile: './placeholder/output',

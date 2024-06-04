@@ -112,12 +112,12 @@ export async function handler(args: ${item.typesImportName}): Promise<void> {}`
 
     if (
       !indexContent.includes(
-        `export {plugin as default} from './__generated__/plugin';`
+        `export {plugin as default} from './__generated__/plugin.ts';`
       )
     ) {
       await writePrettierFile(
         path.join(metadata.root, 'src', 'index.ts'),
-        `export {plugin as default} from './__generated__/plugin';\n${indexContent.trim()}`
+        `export {plugin as default} from './__generated__/plugin.ts';\n${indexContent.trim()}`
       );
     }
   } catch (err) {

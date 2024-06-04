@@ -19,7 +19,7 @@ type Account implements Model & Versioned & Timestamped
   @reduces(
     event: UPSERT
     importName: "AccountUpsertPlanMetricReducer"
-    importPath: "../src/reduce--account--upsert--plan-metric"
+    importPath: "../src/reduce--account--upsert--plan-metric.ts"
     multiReduce: true
     targetModel: "PlanMetric"
   ) {
@@ -34,7 +34,7 @@ type Account implements Model & Versioned & Timestamped
   hasEverSubscribed: Boolean
   indexedPlanName: String
     @computed(
-      importPath: "../src/computed-fields"
+      importPath: "../src/computed-fields.ts"
       importName: "AccountIndexedPlanNameProvider"
       virtual: true
     )

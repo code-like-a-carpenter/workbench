@@ -8,4 +8,4 @@
 // intractable.
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-exports.handler = require('./ping').ping;
+exports.handler = require('./ping.ts').ping;

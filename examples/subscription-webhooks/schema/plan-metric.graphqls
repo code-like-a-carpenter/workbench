@@ -20,7 +20,7 @@ type PlanMetric implements Model & Timestamped & Versioned
   @reduces(
     event: UPSERT
     importName: "PlanMetricUpsertMetricReducer"
-    importPath: "../src/reduce--plan-metric--upsert--metric"
+    importPath: "../src/reduce--plan-metric--upsert--metric.ts"
     readableModels: ["PlanMetric"]
     targetModel: "Metric"
   ) {

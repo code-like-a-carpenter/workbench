@@ -200,7 +200,7 @@ function extractCommonConfig(
     actionsModuleId: resolveActionsModuleId(config, directory),
     directory,
     handlerImportName,
-    handlerModuleId: resolveHandlerModuleId(type, directory, handler),
+    handlerModuleId: resolveHandlerModuleId(config, type, directory, handler),
     memorySize,
     nestedStackLocation,
     runtimeModuleId: '@code-like-a-carpenter/foundation-runtime',

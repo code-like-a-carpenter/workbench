@@ -26,7 +26,7 @@ describe('@reacts', () => {
         @reacts(
           event: UPSERT
           importName: "Placeholder"
-          importPath: "../src/react--plan-metric--upsert"
+          importPath: "../src/react--plan-metric--upsert.ts"
         ) {
         createdAt: Date!
         id: ID!
@@ -49,7 +49,7 @@ describe('@reacts', () => {
     expect(table.dispatcherConfig).toMatchInlineSnapshot(`
       {
         "batchSize": 10,
-        "dependenciesModuleId": "../dependencies",
+        "dependenciesModuleId": "../dependencies.ts",
         "directory": "placeholder/dispatcher-table-plan-metric",
         "filename": "dispatcher-table-plan-metric",
         "functionName": "TablePlanMetricCDCDispatcher",
@@ -67,13 +67,13 @@ describe('@reacts', () => {
     expect(model.changeDataCaptureConfig).toMatchInlineSnapshot(`
       [
         {
-          "actionsModuleId": "../actions",
+          "actionsModuleId": "../actions.ts",
           "directory": "placeholder/react--plan-metric--upsert",
           "event": "UPSERT",
           "filename": "react--plan-metric--upsert",
           "functionName": "FnReactPMUpsert2b2e8d7d",
           "handlerImportName": "Placeholder",
-          "handlerModuleId": "../../../src/react--plan-metric--upsert",
+          "handlerModuleId": "../../../src/react--plan-metric--upsert.ts",
           "memorySize": 256,
           "nestedStackLocation": "./cdc.yml",
           "readableTables": [],
@@ -117,7 +117,7 @@ describe('@enriches', () => {
         @enriches(
           event: UPSERT
           importName: "Placeholder"
-          importPath: "../src/enrich--subscription--upsert--account"
+          importPath: "../src/enrich--subscription--upsert--account.ts"
           targetModel: "Account"
         )
         @ledger
@@ -151,7 +151,7 @@ describe('@enriches', () => {
     expect(table.dispatcherConfig).toMatchInlineSnapshot(`
       {
         "batchSize": 10,
-        "dependenciesModuleId": "../dependencies",
+        "dependenciesModuleId": "../dependencies.ts",
         "directory": "placeholder/dispatcher-table-subscription-event",
         "filename": "dispatcher-table-subscription-event",
         "functionName": "TableSubscriptionEventCDCDispatcher",
@@ -171,13 +171,13 @@ describe('@enriches', () => {
     expect(model.changeDataCaptureConfig).toMatchInlineSnapshot(`
       [
         {
-          "actionsModuleId": "../actions",
+          "actionsModuleId": "../actions.ts",
           "directory": "placeholder/enricher--subscription-event--upsert--account",
           "event": "UPSERT",
           "filename": "enricher--subscription-event--upsert--account",
           "functionName": "FnEnricherSEUpsertA5b59364d",
           "handlerImportName": "Placeholder",
-          "handlerModuleId": "../../../src/enrich--subscription--upsert--account",
+          "handlerModuleId": "../../../src/enrich--subscription--upsert--account.ts",
           "memorySize": 256,
           "nestedStackLocation": "./cdc.yml",
           "readableTables": [],

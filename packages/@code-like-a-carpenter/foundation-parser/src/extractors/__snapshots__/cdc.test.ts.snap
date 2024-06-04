@@ -3,7 +3,7 @@
 exports[`@enriches configures the handler to update one model when another changes 3`] = `
 {
   "additionalImports": [],
-  "dependenciesModuleId": "dependencies",
+  "dependenciesModuleId": "dependencies.ts",
   "models": [
     {
       "changeDataCaptureConfig": [],
@@ -145,7 +145,7 @@ exports[`@enriches configures the handler to update one model when another chang
       },
       "secondaryIndexes": [],
       "table": {
-        "dependenciesModuleId": "../dependencies",
+        "dependenciesModuleId": "../dependencies.ts",
         "enablePointInTimeRecovery": true,
         "enableStreaming": false,
         "hasCdc": false,
@@ -188,13 +188,13 @@ exports[`@enriches configures the handler to update one model when another chang
     {
       "changeDataCaptureConfig": [
         {
-          "actionsModuleId": "../actions",
+          "actionsModuleId": "../actions.ts",
           "directory": "placeholder/enricher--subscription-event--upsert--account",
           "event": "UPSERT",
           "filename": "enricher--subscription-event--upsert--account",
           "functionName": "FnEnricherSEUpsertA5b59364d",
           "handlerImportName": "Placeholder",
-          "handlerModuleId": "../../../src/enrich--subscription--upsert--account",
+          "handlerModuleId": "../../../src/enrich--subscription--upsert--account.ts",
           "memorySize": 256,
           "nestedStackLocation": "./cdc.yml",
           "readableTables": [],
@@ -407,10 +407,10 @@ exports[`@enriches configures the handler to update one model when another chang
       },
       "secondaryIndexes": [],
       "table": {
-        "dependenciesModuleId": "../dependencies",
+        "dependenciesModuleId": "../dependencies.ts",
         "dispatcherConfig": {
           "batchSize": 10,
-          "dependenciesModuleId": "../dependencies",
+          "dependenciesModuleId": "../dependencies.ts",
           "directory": "placeholder/dispatcher-table-subscription-event",
           "filename": "dispatcher-table-subscription-event",
           "functionName": "TableSubscriptionEventCDCDispatcher",
@@ -478,7 +478,7 @@ exports[`@enriches configures the handler to update one model when another chang
   ],
   "tables": [
     {
-      "dependenciesModuleId": "../dependencies",
+      "dependenciesModuleId": "../dependencies.ts",
       "enablePointInTimeRecovery": true,
       "enableStreaming": false,
       "hasCdc": false,
@@ -516,10 +516,10 @@ exports[`@enriches configures the handler to update one model when another chang
       "tableName": "TableAccount",
     },
     {
-      "dependenciesModuleId": "../dependencies",
+      "dependenciesModuleId": "../dependencies.ts",
       "dispatcherConfig": {
         "batchSize": 10,
-        "dependenciesModuleId": "../dependencies",
+        "dependenciesModuleId": "../dependencies.ts",
         "directory": "placeholder/dispatcher-table-subscription-event",
         "filename": "dispatcher-table-subscription-event",
         "functionName": "TableSubscriptionEventCDCDispatcher",
@@ -588,18 +588,18 @@ exports[`@enriches configures the handler to update one model when another chang
 exports[`@reacts configures an event handler for the model 3`] = `
 {
   "additionalImports": [],
-  "dependenciesModuleId": "dependencies",
+  "dependenciesModuleId": "dependencies.ts",
   "models": [
     {
       "changeDataCaptureConfig": [
         {
-          "actionsModuleId": "../actions",
+          "actionsModuleId": "../actions.ts",
           "directory": "placeholder/react--plan-metric--upsert",
           "event": "UPSERT",
           "filename": "react--plan-metric--upsert",
           "functionName": "FnReactPMUpsert2b2e8d7d",
           "handlerImportName": "Placeholder",
-          "handlerModuleId": "../../../src/react--plan-metric--upsert",
+          "handlerModuleId": "../../../src/react--plan-metric--upsert.ts",
           "memorySize": 256,
           "nestedStackLocation": "./cdc.yml",
           "readableTables": [],
@@ -793,10 +793,10 @@ exports[`@reacts configures an event handler for the model 3`] = `
       },
       "secondaryIndexes": [],
       "table": {
-        "dependenciesModuleId": "../dependencies",
+        "dependenciesModuleId": "../dependencies.ts",
         "dispatcherConfig": {
           "batchSize": 10,
-          "dependenciesModuleId": "../dependencies",
+          "dependenciesModuleId": "../dependencies.ts",
           "directory": "placeholder/dispatcher-table-plan-metric",
           "filename": "dispatcher-table-plan-metric",
           "functionName": "TablePlanMetricCDCDispatcher",
@@ -863,10 +863,10 @@ exports[`@reacts configures an event handler for the model 3`] = `
   ],
   "tables": [
     {
-      "dependenciesModuleId": "../dependencies",
+      "dependenciesModuleId": "../dependencies.ts",
       "dispatcherConfig": {
         "batchSize": 10,
-        "dependenciesModuleId": "../dependencies",
+        "dependenciesModuleId": "../dependencies.ts",
         "directory": "placeholder/dispatcher-table-plan-metric",
         "filename": "dispatcher-table-plan-metric",
         "functionName": "TablePlanMetricCDCDispatcher",

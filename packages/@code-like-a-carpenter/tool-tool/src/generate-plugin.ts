@@ -23,7 +23,7 @@ import {definePlugin} from '@code-like-a-carpenter/cli-core';
 ${metadata
   .map(
     (m) =>
-      `import {handler as ${camelCase(m.toolName)}Handler} from '../${m.toolName}';`
+      `import {handler as ${camelCase(m.toolName)}Handler} from '../${m.toolName}.ts';`
   )
   .join('\n')}
 
