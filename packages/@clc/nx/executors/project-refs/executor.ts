@@ -11,7 +11,7 @@ import {
   writePrettierFile,
 } from '@code-like-a-carpenter/tooling-common';
 
-import {extractProjectRoot, findLocalPackages} from '../..';
+import {extractProjectRoot, findLocalPackages} from '../../src/index.ts';
 
 import type {ProjectRefsExecutor} from './schema.json';
 

@@ -9,11 +9,11 @@ import type {
 
 import {assert} from '@code-like-a-carpenter/assert';
 
-import type {ExceptionTracingService} from '../exceptions';
-import {captureException, setupExceptionTracing} from '../exceptions';
-import {runWithNewSpan} from '../run-with';
+import type {ExceptionTracingService} from '../exceptions.ts';
+import {captureException, setupExceptionTracing} from '../exceptions.ts';
+import {runWithNewSpan} from '../run-with.ts';
 
-import type {NoVoidHandler} from './types';
+import type {NoVoidHandler} from './types.ts';
 
 type NoVoidAPIGatewayAuthorizerWithContextResult<
   TAuthorizerContext extends APIGatewayAuthorizerResultContext,

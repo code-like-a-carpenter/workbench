@@ -1,7 +1,7 @@
 import type {Logger} from '@code-like-a-carpenter/logger';
 import {ConsoleLogger} from '@code-like-a-carpenter/logger';
 
-import {interact} from './interact';
+import {interact} from './interact.ts';
 
 interface AddNumbersInput {
   a: number;

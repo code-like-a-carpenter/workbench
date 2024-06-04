@@ -1,3 +1,3 @@
-export * from './console-logger';
-export * from './logger';
-export * from './types';
+export * from './console-logger.ts';
+export * from './logger.ts';
+export * from './types.ts';

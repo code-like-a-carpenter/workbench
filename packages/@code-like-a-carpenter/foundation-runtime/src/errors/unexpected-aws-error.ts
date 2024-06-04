@@ -1,6 +1,6 @@
 import type {ServiceException} from '@aws-sdk/smithy-client';
 
-import {BaseDataLibraryError} from './base-error';
+import {BaseDataLibraryError} from './base-error.ts';
 
 /**
  * Thrown when an error is caught from the AWS SDK that we didn't expect to have

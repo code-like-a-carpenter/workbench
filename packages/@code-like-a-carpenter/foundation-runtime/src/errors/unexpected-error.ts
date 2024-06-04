@@ -1,4 +1,4 @@
-import {BaseDataLibraryError} from './base-error';
+import {BaseDataLibraryError} from './base-error.ts';
 
 /** Thrown when an unexpected error is caught and rethrown. */
 export class UnexpectedError extends BaseDataLibraryError<object> {

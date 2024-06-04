@@ -5,13 +5,13 @@ import type {
   Model,
 } from '@code-like-a-carpenter/foundation-intermediate-representation';
 
-import {ensureTableTemplate} from './ensure-table';
+import {ensureTableTemplate} from './ensure-table.ts';
 import {
   getTypeScriptTypeForField,
   handleCommonErrors,
   makeKeyTemplate,
   objectToString,
-} from './helpers';
+} from './helpers.ts';
 
 /**
  * Generates the query function for a table

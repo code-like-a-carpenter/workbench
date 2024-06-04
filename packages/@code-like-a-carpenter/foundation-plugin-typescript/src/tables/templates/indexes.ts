@@ -3,9 +3,9 @@ import type {
   SecondaryIndex,
 } from '@code-like-a-carpenter/foundation-intermediate-representation';
 
-import type {Config} from '../../config';
+import type {Config} from '../../config.ts';
 
-import {makeKeyTemplate} from './helpers';
+import {makeKeyTemplate} from './helpers.ts';
 
 /** Indicates if an index contains a particular field name */
 export function indexHasField(

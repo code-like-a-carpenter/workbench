@@ -12,7 +12,7 @@ import {
   getDirective,
   getOptionalArgStringValue,
   hasDirective,
-} from '../helpers';
+} from '../helpers.ts';
 
 export function getFieldFromFieldMap(
   fieldMap: Record<string, Field>,

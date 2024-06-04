@@ -1,6 +1,6 @@
-import {parseSchema} from '../test-helpers';
+import {parseSchema} from '../test-helpers.ts';
 
-import {convertDuration} from './ttl';
+import {convertDuration} from './ttl.ts';
 
 describe('@ttl', () => {
   it('marks a fields as the ttl field', async () => {

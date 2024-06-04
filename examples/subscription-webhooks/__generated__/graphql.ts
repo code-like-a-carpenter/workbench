@@ -37,8 +37,8 @@ import {
   UnexpectedError,
 } from '@code-like-a-carpenter/foundation-runtime';
 
-import {ddbDocClient} from '../../dependencies';
-import {AccountIndexedPlanNameProvider} from '../src/computed-fields';
+import {ddbDocClient} from '../../dependencies.ts';
+import {AccountIndexedPlanNameProvider} from '../src/computed-fields.ts';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends {[key: string]: unknown}> = {[K in keyof T]: T[K]};

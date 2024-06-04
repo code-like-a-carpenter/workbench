@@ -1,11 +1,11 @@
 import type {Model} from '@code-like-a-carpenter/foundation-intermediate-representation';
 
-import type {Config} from '../../config';
-import {filterNull} from '../../helpers';
-import {defineComputedInputFields, inputName} from '../computed-fields';
+import type {Config} from '../../config.ts';
+import {filterNull} from '../../helpers.ts';
+import {defineComputedInputFields, inputName} from '../computed-fields.ts';
 
-import {ensureTableTemplate} from './ensure-table';
-import {handleCommonErrors, makeKeyForRead, objectToString} from './helpers';
+import {ensureTableTemplate} from './ensure-table.ts';
+import {handleCommonErrors, makeKeyForRead, objectToString} from './helpers.ts';
 
 /**
  * Generates the updateItem function for a table

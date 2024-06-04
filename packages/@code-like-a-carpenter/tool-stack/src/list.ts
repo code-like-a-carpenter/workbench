@@ -8,7 +8,7 @@ import {
   readPackageJson,
 } from '@code-like-a-carpenter/tooling-common';
 
-import type {StackListSchema} from './__generated__/list-types';
+import type {StackListSchema} from './__generated__/list-types.ts';
 
 export async function handler(args: StackListSchema): Promise<void> {
   const files =

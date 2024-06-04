@@ -3,7 +3,7 @@ import path from 'node:path';
 
 import type {CreateNodes, TargetConfiguration} from '@nx/devkit';
 
-import {addDependency, addPhase, addTarget} from './targets';
+import {addDependency, addPhase, addTarget} from './targets.ts';
 
 export const createNodes: CreateNodes = [
   '**/package.json',

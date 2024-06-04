@@ -5,16 +5,16 @@ import type {
   TTLConfig,
 } from '@code-like-a-carpenter/foundation-intermediate-representation';
 
-import type {Config} from '../../config';
-import {filterNull} from '../../helpers';
+import type {Config} from '../../config.ts';
+import {filterNull} from '../../helpers.ts';
 
-import {marshallField} from './helpers';
+import {marshallField} from './helpers.ts';
 import {
   indexHasField,
   indexToEANPart,
   indexToEAVPart,
   indexToUpdateExpressionPart,
-} from './indexes';
+} from './indexes.ts';
 
 function wrapFieldNameWithQuotes({fieldName}: Field): string {
   return `'${fieldName}'`;

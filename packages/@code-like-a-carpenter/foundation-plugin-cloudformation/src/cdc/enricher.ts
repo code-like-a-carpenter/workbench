@@ -3,11 +3,11 @@ import type {
   Model,
 } from '@code-like-a-carpenter/foundation-intermediate-representation';
 
-import type {Config} from '../config';
-import {combineFragments} from '../fragments/combine-fragments';
-import type {ServerlessApplicationModel} from '../types';
+import type {Config} from '../config.ts';
+import {combineFragments} from '../fragments/combine-fragments.ts';
+import type {ServerlessApplicationModel} from '../types.ts';
 
-import {makeHandler} from './handler';
+import {makeHandler} from './handler.ts';
 
 /** Generates CDC Projector config for a model */
 export function defineEnricher(

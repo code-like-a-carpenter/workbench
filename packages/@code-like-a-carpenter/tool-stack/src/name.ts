@@ -1,7 +1,7 @@
 import {assert, fail} from '@code-like-a-carpenter/assert';
 import {getStackName} from '@code-like-a-carpenter/tooling-common';
 
-import type {StackNameSchema} from './__generated__/name-types';
+import type {StackNameSchema} from './__generated__/name-types.ts';
 
 export async function handler(args: StackNameSchema): Promise<void> {
   if ('projectName' in args) {

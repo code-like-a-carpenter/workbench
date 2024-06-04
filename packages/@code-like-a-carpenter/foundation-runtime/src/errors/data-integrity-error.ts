@@ -1,4 +1,4 @@
-import {BaseDataLibraryError} from './base-error';
+import {BaseDataLibraryError} from './base-error.ts';
 
 /**
  * Thrown when unmarshalling an item finds a missing but required field or

@@ -1,9 +1,9 @@
 import type {Model} from '@code-like-a-carpenter/foundation-intermediate-representation';
 
-import type {Config} from '../../config';
+import type {Config} from '../../config.ts';
 
-import {ensureTableTemplate} from './ensure-table';
-import {handleCommonErrors, makeKeyForRead, objectToString} from './helpers';
+import {ensureTableTemplate} from './ensure-table.ts';
+import {handleCommonErrors, makeKeyForRead, objectToString} from './helpers.ts';
 
 /**
  * Generates the deleteItem function for a table

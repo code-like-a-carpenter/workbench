@@ -1,8 +1,8 @@
 import type {Model} from '@code-like-a-carpenter/foundation-intermediate-representation';
 
-import {defineComputedOutputFields} from '../computed-fields';
+import {defineComputedOutputFields} from '../computed-fields.ts';
 
-import {unmarshallField} from './helpers';
+import {unmarshallField} from './helpers.ts';
 
 export const DIVIDER = '#:#';
 

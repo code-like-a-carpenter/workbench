@@ -1,12 +1,12 @@
 import {assert} from '@code-like-a-carpenter/assert';
 import {getCurrentSpan} from '@code-like-a-carpenter/telemetry';
 
-import type {WithExceptionTracing} from '../../dependencies';
-import type {ResultType} from '../../types';
-import {CDCHandler} from '../common/cdc-handler';
-import type {Handler} from '../common/handlers';
-import {makeSqsHandler} from '../common/handlers';
-import type {UnmarshalledDynamoDBRecord} from '../common/unmarshall-record';
+import type {WithExceptionTracing} from '../../dependencies.ts';
+import type {ResultType} from '../../types.ts';
+import {CDCHandler} from '../common/cdc-handler.ts';
+import type {Handler} from '../common/handlers.ts';
+import {makeSqsHandler} from '../common/handlers.ts';
+import type {UnmarshalledDynamoDBRecord} from '../common/unmarshall-record.ts';
 
 interface SDK<SOURCE, TARGET, CREATE_TARGET_INPUT, UPDATE_TARGET_INPUT> {
   createTargetModel: (

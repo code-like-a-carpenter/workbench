@@ -1,1 +1,1 @@
-export * from './make-reactor';
+export * from './make-reactor.ts';

@@ -1,4 +1,4 @@
-import {parseSchema} from '../test-helpers';
+import {parseSchema} from '../test-helpers.ts';
 
 describe('@partitionKey', () => {
   it('defines simple primary keys', async () => {

@@ -1,7 +1,7 @@
 import type {APIGatewayProxyEvent, APIGatewayProxyResult} from 'aws-lambda';
 import type {OperationObject} from 'openapi-typescript';
 
-import type {Context} from '../types';
+import type {Context} from '../types.ts';
 
 export interface ContentTypeHtml {
   content: {'text/html': string};

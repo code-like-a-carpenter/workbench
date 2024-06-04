@@ -5,8 +5,8 @@ import type {
   Metric,
   PlanMetric,
   UpdateMetricInput,
-} from '../__generated__/graphql';
-import {queryPlanMetric, readMetric} from '../__generated__/graphql';
+} from '../__generated__/graphql.ts';
+import {queryPlanMetric, readMetric} from '../__generated__/graphql.ts';
 
 export class PlanMetricUpsertMetricReducer extends Reducer<
   PlanMetric,

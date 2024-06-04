@@ -1,6 +1,9 @@
 import {runWithNewSpan} from '@code-like-a-carpenter/telemetry';
 
-import {AlreadyExistsError, OptimisticLockingError} from '../../errors';
+import {
+  AlreadyExistsError,
+  OptimisticLockingError,
+} from '../../errors/index.ts';
 
 export type VoidCallback = () => Promise<void>;
 

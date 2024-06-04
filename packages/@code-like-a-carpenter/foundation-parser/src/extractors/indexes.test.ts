@@ -1,4 +1,4 @@
-import {parseSchema} from '../test-helpers';
+import {parseSchema} from '../test-helpers.ts';
 
 describe('@lsi', () => {
   it('adds a single-field LSI to a single-field primary key', async () => {

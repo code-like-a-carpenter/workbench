@@ -6,9 +6,9 @@ import {faker} from '@faker-js/faker';
 import {NotFoundError} from '@code-like-a-carpenter/foundation-runtime';
 import {waitFor} from '@code-like-a-carpenter/wait-for';
 
-import {ddbDocClient} from '../dependencies';
+import {ddbDocClient} from '../dependencies.ts';
 
-import type {SubscriptionEventPrimaryKey} from './__generated__/graphql';
+import type {SubscriptionEventPrimaryKey} from './__generated__/graphql.ts';
 import {
   createSubscriptionEvent,
   deleteAccount,
@@ -20,7 +20,7 @@ import {
   querySubscriptionEvent,
   readAccount,
   readMetric,
-} from './__generated__/graphql';
+} from './__generated__/graphql.ts';
 
 export async function deleteSubscription(
   input: SubscriptionEventPrimaryKey

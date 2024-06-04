@@ -10,9 +10,9 @@ import * as foundationCloudformationPlugin from '@code-like-a-carpenter/foundati
 import type {Config as FoundationTypescriptPluginConfig} from '@code-like-a-carpenter/foundation-plugin-typescript';
 import * as foundationTypescriptPlugin from '@code-like-a-carpenter/foundation-plugin-typescript';
 
-import type {TypescriptPluginConfig} from './config';
-import {loadConfig} from './load-config';
-import {loadSchema} from './schema';
+import type {TypescriptPluginConfig} from './config.ts';
+import {loadConfig} from './load-config.ts';
+import {loadSchema} from './schema.ts';
 
 export type Outputs = 'cloudformation' | 'typescript';
 

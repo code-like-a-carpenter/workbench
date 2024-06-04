@@ -11,17 +11,17 @@ import type {
   TableSecondaryIndex,
 } from '@code-like-a-carpenter/foundation-intermediate-representation';
 
-import type {Config} from './config';
-import {extractDispatcherConfig} from './extractors/cdc';
+import type {Config} from './config.ts';
+import {extractDispatcherConfig} from './extractors/cdc.ts';
 import {
   getOptionalArgBooleanValue,
   getOptionalArgStringValue,
   getOptionalDirective,
   hasInterface,
-} from './helpers';
-import {getModel} from './models';
-import {resolveDependenciesModuleId} from './paths';
-import type {Writable} from './types';
+} from './helpers.ts';
+import {getModel} from './models.ts';
+import {resolveDependenciesModuleId} from './paths.ts';
+import type {Writable} from './types.ts';
 
 // Reminder: this is has an extra layer of nesting specifically for tests. It's
 // unlikely that there will ever be more than one schema during normal

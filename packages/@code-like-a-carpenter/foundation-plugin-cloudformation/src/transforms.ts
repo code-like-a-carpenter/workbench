@@ -1,7 +1,7 @@
 import type {IntermediateRepresentation} from '@code-like-a-carpenter/foundation-intermediate-representation';
 
-import type {Config} from './config';
-import type {ServerlessApplicationModel} from './types';
+import type {Config} from './config.ts';
+import type {ServerlessApplicationModel} from './types.ts';
 
 export type NestedStackTemplates = Map<string, ServerlessApplicationModel>;
 export type Transform = (

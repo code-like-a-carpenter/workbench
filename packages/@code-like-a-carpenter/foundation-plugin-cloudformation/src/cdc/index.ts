@@ -1,3 +1,3 @@
-export {defineEnricher} from './enricher';
-export {defineTableCdc} from './table';
-export {defineReactor} from './reactor';
+export {defineEnricher} from './enricher.ts';
+export {defineTableCdc} from './table.ts';
+export {defineReactor} from './reactor.ts';

@@ -1,4 +1,4 @@
-import type {LambdaConfig, ProjectionType} from './types';
+import type {LambdaConfig, ProjectionType} from './types.ts';
 
 export interface BaseTable {
   readonly dependenciesModuleId: string;

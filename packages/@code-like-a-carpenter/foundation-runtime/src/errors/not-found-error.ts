@@ -1,4 +1,4 @@
-import {BaseDataLibraryError} from './base-error';
+import {BaseDataLibraryError} from './base-error.ts';
 
 /** Thrown when the requested item cannot be found */
 export class NotFoundError<

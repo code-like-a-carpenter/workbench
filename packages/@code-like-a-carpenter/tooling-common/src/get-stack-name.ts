@@ -4,7 +4,7 @@ import ci from 'ci-info';
 
 import {env} from '@code-like-a-carpenter/env';
 
-import {formatStackName} from './format-stack-name';
+import {formatStackName} from './format-stack-name.ts';
 
 // Reminder: there's no good way to test this because `ci-info` does its thing
 // before we'd have a chance to mock it.

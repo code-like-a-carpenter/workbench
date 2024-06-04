@@ -8,7 +8,7 @@ import {
   instrumentSQSMessageHandler,
 } from '@code-like-a-carpenter/telemetry';
 
-import type {SQSCallback} from './types';
+import type {SQSCallback} from './types.ts';
 
 export function handleSQSEvent(
   cb: SQSCallback /**

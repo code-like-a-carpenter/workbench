@@ -1,6 +1,6 @@
 import {assert} from '@code-like-a-carpenter/assert';
 
-import {DataIntegrityError} from '../errors';
+import {DataIntegrityError} from '../errors/index.ts';
 
 /** identify function */
 function identity<T>(x: T): T {

@@ -1,6 +1,6 @@
 import assert from 'node:assert';
 
-import {parseSchema} from '../test-helpers';
+import {parseSchema} from '../test-helpers.ts';
 
 describe('@reacts', () => {
   it('configures an event handler for the model', async () => {

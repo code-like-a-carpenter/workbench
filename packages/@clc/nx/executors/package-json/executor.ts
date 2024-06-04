@@ -6,7 +6,11 @@ import type {JSONSchemaForNPMPackageJsonFiles} from '@schemastore/package';
 
 import {readPackageJson} from '@code-like-a-carpenter/tooling-common';
 
-import {extractProjectName, extractProjectRoot, writePackageJson} from '../..';
+import {
+  extractProjectName,
+  extractProjectRoot,
+  writePackageJson,
+} from '../../src/index.ts';
 
 import type {PackageJsonExecutor} from './schema.json';
 

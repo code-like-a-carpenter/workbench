@@ -1,2 +1,2 @@
-export * from './dispatcher';
-export * from './handler';
+export * from './dispatcher.ts';
+export * from './handler.ts';

@@ -16,7 +16,7 @@ import type {
   RestRequestPathParameters,
   RestResponseBody,
   SimplifiedOperationObject,
-} from './types';
+} from './types.ts';
 
 function safeJsonParse(obj: string) {
   try {

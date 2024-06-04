@@ -5,7 +5,7 @@ import type {compile} from 'dredd-transactions';
 
 import {assert} from '@code-like-a-carpenter/assert';
 
-import {testTransaction} from './tests';
+import {testTransaction} from './tests.ts';
 
 /**
  * This is awful: it calls parse and compile from dredd-transactions using a

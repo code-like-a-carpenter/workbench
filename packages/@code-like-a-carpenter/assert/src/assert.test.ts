@@ -1,6 +1,6 @@
 import {AssertionError} from 'assert';
 
-import {assert} from './assert';
+import {assert} from './assert.ts';
 
 describe('assert', () => {
   it('throws a string error', () => {

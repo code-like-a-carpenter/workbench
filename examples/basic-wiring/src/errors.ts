@@ -42,9 +42,9 @@ import {
 } from '@code-like-a-carpenter/errors';
 import {handleRestEvent} from '@code-like-a-carpenter/lambda-handlers';
 
-import {exceptionTracingService} from '../../dependencies';
+import {exceptionTracingService} from '../../dependencies.ts';
 
-import type {operations} from './__generated__/api';
+import type {operations} from './__generated__/api.ts';
 
 export const errors = handleRestEvent<operations['errors']>(
   // eslint-disable-next-line complexity

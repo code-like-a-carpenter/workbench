@@ -1,8 +1,8 @@
 import type {Executor} from '@nx/devkit';
 
-import {handler} from '../name';
+import {handler} from '../name.ts';
 
-import type {StackNameSchema} from './name-types';
+import type {StackNameSchema} from './name-types.ts';
 
 const executor: Executor<StackNameSchema> = async (args) => {
   await handler(args);

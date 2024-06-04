@@ -4,8 +4,8 @@ import path from 'node:path';
 
 import {glob} from 'glob';
 
-import type {JsonSchemaTool} from './__generated__/json-schema-types';
-import {jsonSchemaToTypescript} from './json-schema-helpers';
+import type {JsonSchemaTool} from './__generated__/json-schema-types.ts';
+import {jsonSchemaToTypescript} from './json-schema-helpers.ts';
 
 export async function handler({
   includeExtension,

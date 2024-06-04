@@ -5,7 +5,7 @@ import type {GraphQLObjectType} from 'graphql';
 
 import {assert} from '@code-like-a-carpenter/assert';
 
-import type {Config} from './config';
+import type {Config} from './config.ts';
 
 /** Resolves the path from the handler to the actions module. */
 export function resolveActionsModuleId(config: Config, directory: string) {

@@ -9,13 +9,13 @@ import type {
   AWSSQSQueue,
   AWSSQSQueuePolicy,
   Resource1,
-} from '../__generated__/json-schemas/serverless-application-model';
-import type {Config} from '../config';
-import {combineFragments} from '../fragments/combine-fragments';
-import {makeKmsKey} from '../fragments/kms-key';
-import {makeLogGroup} from '../fragments/log-group';
-import {filterNull} from '../helpers';
-import type {ServerlessApplicationModel} from '../types';
+} from '../__generated__/json-schemas/serverless-application-model.ts';
+import type {Config} from '../config.ts';
+import {combineFragments} from '../fragments/combine-fragments.ts';
+import {makeKmsKey} from '../fragments/kms-key.ts';
+import {makeLogGroup} from '../fragments/log-group.ts';
+import {filterNull} from '../helpers.ts';
+import type {ServerlessApplicationModel} from '../types.ts';
 
 export function isHandlerStack(resourceName: string) {
   return resourceName.startsWith('FNDNSCDC');

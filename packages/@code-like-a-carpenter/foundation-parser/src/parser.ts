@@ -11,10 +11,10 @@ import type {
   Table,
 } from '@code-like-a-carpenter/foundation-intermediate-representation';
 
-import type {Config} from './config';
-import {filterNull, hasInterface} from './helpers';
-import {extractModel} from './models';
-import {extractTable} from './tables';
+import type {Config} from './config.ts';
+import {filterNull, hasInterface} from './helpers.ts';
+import {extractModel} from './models.ts';
+import {extractTable} from './tables.ts';
 
 export interface Info {
   [key: string]: unknown;

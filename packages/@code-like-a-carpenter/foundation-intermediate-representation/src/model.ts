@@ -1,6 +1,6 @@
-import type {Field} from './field';
-import type {Table} from './table';
-import type {LambdaConfig, ProjectionType} from './types';
+import type {Field} from './field.ts';
+import type {Table} from './table.ts';
+import type {LambdaConfig, ProjectionType} from './types.ts';
 
 export type ChangeDataCaptureEvent = 'INSERT' | 'MODIFY' | 'REMOVE' | 'UPSERT';
 export type ChangeDataCaptureConfig =

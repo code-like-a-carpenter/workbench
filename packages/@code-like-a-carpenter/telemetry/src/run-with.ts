@@ -5,7 +5,7 @@ import {SpanKind, trace} from '@opentelemetry/api';
 
 import {env} from '@code-like-a-carpenter/env';
 
-import {captureException} from './exceptions';
+import {captureException} from './exceptions.ts';
 
 export type SpanHandler<T> = (span: Span) => T;
 

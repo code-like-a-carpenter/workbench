@@ -7,7 +7,7 @@ import type {
   WithEventBridge,
   WithExceptionTracing,
   WithTableName,
-} from '../../dependencies';
+} from '../../dependencies.ts';
 
 /** Processes a single DynamoDB record. */
 async function handleRecord(

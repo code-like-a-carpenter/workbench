@@ -6,9 +6,9 @@ import {minimatch} from 'minimatch';
 
 import {findLocalPackages} from '@code-like-a-carpenter/tooling-common';
 
-import type {DepsExecutor} from './__generated__/deps-types';
-import {load} from './config';
-import {runDepcheck} from './depcheck';
+import type {DepsExecutor} from './__generated__/deps-types.ts';
+import {load} from './config.ts';
+import {runDepcheck} from './depcheck.ts';
 
 export async function handler(argv: DepsExecutor): Promise<void> {
   const args = (await load({deps: argv})).deps;

@@ -7,7 +7,7 @@ import * as t from '@babel/types';
 
 import {assert} from '@code-like-a-carpenter/assert';
 
-import type {InlinerExecutor} from './__generated__/inliner-types';
+import type {InlinerExecutor} from './__generated__/inliner-types.ts';
 
 export async function handler(args: InlinerExecutor): Promise<void> {
   const {sourceFile, targetFile, exportName} = args;

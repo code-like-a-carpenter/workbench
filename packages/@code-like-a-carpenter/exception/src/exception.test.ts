@@ -1,4 +1,4 @@
-import {Exception} from './exception';
+import {Exception} from './exception.ts';
 
 describe('Exception', () => {
   it('is an instance of Error', () => {

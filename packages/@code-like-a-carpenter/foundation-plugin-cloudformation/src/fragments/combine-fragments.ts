@@ -1,5 +1,5 @@
-import {filterNull} from '../helpers';
-import type {ServerlessApplicationModel} from '../types';
+import {filterNull} from '../helpers.ts';
+import type {ServerlessApplicationModel} from '../types.ts';
 
 /** Combines multiple fragments into a single fragment. */
 export function combineFragments(

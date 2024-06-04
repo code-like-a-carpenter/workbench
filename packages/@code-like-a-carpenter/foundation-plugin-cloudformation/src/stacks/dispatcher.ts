@@ -1,10 +1,10 @@
 import type {TableWithCdc} from '@code-like-a-carpenter/foundation-intermediate-representation';
 
-import type {Resource1} from '../__generated__/json-schemas/serverless-application-model';
-import type {Config} from '../config';
-import {combineFragments} from '../fragments/combine-fragments';
-import {makeLogGroup} from '../fragments/log-group';
-import type {ServerlessApplicationModel} from '../types';
+import type {Resource1} from '../__generated__/json-schemas/serverless-application-model.ts';
+import type {Config} from '../config.ts';
+import {combineFragments} from '../fragments/combine-fragments.ts';
+import {makeLogGroup} from '../fragments/log-group.ts';
+import type {ServerlessApplicationModel} from '../types.ts';
 
 export function isDispatcherStack(resourceName: string) {
   return resourceName.startsWith('FNDNSTD');

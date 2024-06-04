@@ -4,7 +4,7 @@ import type {
   APIGatewayAuthorizerWithContextResult,
 } from 'aws-lambda/trigger/api-gateway-authorizer';
 
-import type {Context} from '../types';
+import type {Context} from '../types.ts';
 
 export type RestTokenAuthorizerResult<
   TAuthorizerContext extends APIGatewayAuthorizerResultContext,

@@ -15,11 +15,11 @@ import type {
   Model,
 } from '@code-like-a-carpenter/foundation-intermediate-representation';
 
-import type {Config} from './config';
-import {extractChangeDataCaptureConfig} from './extractors/cdc';
-import {extractSecondaryIndexes} from './extractors/indexes';
-import {extractPrimaryKey} from './extractors/primary-key';
-import {extractTTLConfig} from './extractors/ttl';
+import type {Config} from './config.ts';
+import {extractChangeDataCaptureConfig} from './extractors/cdc.ts';
+import {extractSecondaryIndexes} from './extractors/indexes.ts';
+import {extractPrimaryKey} from './extractors/primary-key.ts';
+import {extractTTLConfig} from './extractors/ttl.ts';
 import {
   getArgStringValue,
   getDirective,
@@ -29,8 +29,8 @@ import {
   hasDirective,
   hasInterface,
   isType,
-} from './helpers';
-import {extractTable} from './tables';
+} from './helpers.ts';
+import {extractTable} from './tables.ts';
 
 const models = new Map<GraphQLType, Model>();
 

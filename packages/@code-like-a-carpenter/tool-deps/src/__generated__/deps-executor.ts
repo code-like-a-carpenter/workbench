@@ -1,8 +1,8 @@
 import type {Executor} from '@nx/devkit';
 
-import {handler} from '../deps';
+import {handler} from '../deps.ts';
 
-import type {DepsExecutor} from './deps-types';
+import type {DepsExecutor} from './deps-types.ts';
 
 const executor: Executor<DepsExecutor> = async (args) => {
   await handler(args);

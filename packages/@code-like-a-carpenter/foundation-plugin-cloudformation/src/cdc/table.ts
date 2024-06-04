@@ -1,14 +1,14 @@
 import type {TableWithCdc} from '@code-like-a-carpenter/foundation-intermediate-representation';
 
-import type {Resource7} from '../__generated__/json-schemas/serverless-application-model';
-import type {Config} from '../config';
-import {combineFragments} from '../fragments/combine-fragments';
-import {writeLambda} from '../fragments/lambda';
+import type {Resource7} from '../__generated__/json-schemas/serverless-application-model.ts';
+import type {Config} from '../config.ts';
+import {combineFragments} from '../fragments/combine-fragments.ts';
+import {writeLambda} from '../fragments/lambda.ts';
 import {
   makeDispatcherStack,
   makeDispatcherStackName,
-} from '../stacks/dispatcher';
-import type {ServerlessApplicationModel} from '../types';
+} from '../stacks/dispatcher.ts';
+import type {ServerlessApplicationModel} from '../types.ts';
 
 /** Generates CDC config for a table */
 export function defineTableCdc(

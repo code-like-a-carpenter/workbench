@@ -8,7 +8,7 @@ import {
   instrumentDynamoDBStreamHandler,
 } from '@code-like-a-carpenter/telemetry';
 
-import type {DynamoCallback} from './types';
+import type {DynamoCallback} from './types.ts';
 
 export function handleDynamoDBStreamEvent(
   cb: DynamoCallback,

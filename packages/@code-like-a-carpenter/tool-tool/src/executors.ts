@@ -6,7 +6,7 @@ import {
   writePrettierFile,
 } from '@code-like-a-carpenter/tooling-common';
 
-import type {ToolMetadata} from './metadata';
+import type {ToolMetadata} from './metadata.ts';
 
 export async function addExecutorsToJson(
   metadata: ToolMetadata

@@ -1,1 +1,1 @@
-export * from './make-enricher';
+export * from './make-enricher.ts';

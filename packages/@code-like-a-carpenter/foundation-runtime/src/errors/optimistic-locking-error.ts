@@ -1,4 +1,4 @@
-import {BaseDataLibraryError} from './base-error';
+import {BaseDataLibraryError} from './base-error.ts';
 
 /**
  * Thrown when the requested item is out of date. use readUserSession to ge the

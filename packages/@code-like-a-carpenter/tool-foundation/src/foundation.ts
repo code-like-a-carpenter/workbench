@@ -1,7 +1,7 @@
 import {assert} from '@code-like-a-carpenter/assert';
 
-import type {Foundation} from './__generated__/foundation-types';
-import {generateCode} from './lib';
+import type {Foundation} from './__generated__/foundation-types.ts';
+import {generateCode} from './lib/index.ts';
 
 export async function handler({
   outputs = ['cloudformation', 'typescript'],
