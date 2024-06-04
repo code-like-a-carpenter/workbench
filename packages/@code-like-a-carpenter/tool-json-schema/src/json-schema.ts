@@ -8,6 +8,7 @@ import type {JsonSchemaTool} from './__generated__/json-schema-types';
 import {jsonSchemaToTypescript} from './json-schema-helpers';
 
 export async function handler({
+  includeExtension,
   outDir,
   schemas,
 }: JsonSchemaTool): Promise<void> {
@@ -34,7 +35,9 @@ export async function handler({
       } else {
         await jsonSchemaToTypescript({
           infile: filename,
-          outfile: filename.replace(/\.json$/, '.d.ts'),
+          outfile: includeExtension
+            ? filename.replace(/\.json$/, '.d.json.ts')
+            : filename.replace(/\.json$/, '.d.ts'),
         });
       }
     })

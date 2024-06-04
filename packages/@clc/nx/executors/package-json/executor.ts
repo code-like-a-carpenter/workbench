@@ -8,7 +8,7 @@ import {readPackageJson} from '@code-like-a-carpenter/tooling-common';
 
 import {extractProjectName, extractProjectRoot, writePackageJson} from '../..';
 
-import type {PackageJsonExecutor} from './schema';
+import type {PackageJsonExecutor} from './schema.json';
 
 const runExecutor: Executor<PackageJsonExecutor> = async (
   {type = 'package'},

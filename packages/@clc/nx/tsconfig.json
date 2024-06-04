@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "allowArbitraryExtensions": true,
     "checkJs": false,
     "outDir": "./dist/types",
     "rootDir": "."

@@ -5,7 +5,7 @@ import {build} from 'esbuild';
 import {globSync} from 'glob';
 import {minimatch} from 'minimatch';
 
-import type {EsbuildExecutor} from './schema';
+import type {EsbuildExecutor} from './schema.json';
 
 const runExecutor: Executor<EsbuildExecutor> = async (options) => {
   const {entryPoints: patterns, format, outDir} = options;

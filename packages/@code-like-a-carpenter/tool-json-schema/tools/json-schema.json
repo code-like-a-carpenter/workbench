@@ -5,6 +5,10 @@
   "description": "Generates TypeScript definitions from JSON Schema files",
   "type": "object",
   "properties": {
+    "includeExtension": {
+      "description": "If true, the file extension will be included in the output filename",
+      "type": "boolean"
+    },
     "outDir": {
       "description": "If present, schemas will be written to this directory instead of of as siblings to their source files. Further, they'll be written as standard .ts files rather than .d.ts files",
       "type": "string"

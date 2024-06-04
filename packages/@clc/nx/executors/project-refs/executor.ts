@@ -13,7 +13,7 @@ import {
 
 import {extractProjectRoot, findLocalPackages} from '../..';
 
-import type {ProjectRefsExecutor} from './schema';
+import type {ProjectRefsExecutor} from './schema.json';
 
 const runExecutor: Executor<ProjectRefsExecutor> = async (options, context) => {
   const root = extractProjectRoot(context);

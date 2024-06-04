@@ -56,9 +56,10 @@ export const createNodes: CreateNodes = [
       executor: '@code-like-a-carpenter/tool-json-schema:json-schema',
       inputs: ['{projectRoot}/executors/*/schema.json'],
       options: {
+        includeExtension: true,
         schemas: ['{projectRoot}/executors/*/schema.json'],
       },
-      outputs: ['{projectRoot}/executors/*/schema.d.ts'],
+      outputs: ['{projectRoot}/executors/*/schema.d.json.ts'],
     });
 
     if (projectName.includes('nx')) {

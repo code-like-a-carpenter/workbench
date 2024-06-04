@@ -8,6 +8,11 @@ export const plugin = definePlugin((yargs) => {
     'Generates TypeScript definitions from JSON Schema files',
     (y) =>
       y
+        .option('include-extension', {
+          conflicts: [],
+          demandOption: false,
+          type: 'boolean',
+        })
         .option('out-dir', {
           conflicts: [],
           demandOption: false,
