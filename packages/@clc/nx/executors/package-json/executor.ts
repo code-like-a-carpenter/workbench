@@ -6,6 +6,8 @@ import type {JSONSchemaForNPMPackageJsonFiles} from '@schemastore/package';
 
 import {readPackageJson} from '@code-like-a-carpenter/tooling-common';
 
+// This can be fixed my moving executors into src
+// eslint-disable-next-line no-restricted-imports
 import {
   extractProjectName,
   extractProjectRoot,

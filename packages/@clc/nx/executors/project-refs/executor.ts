@@ -11,6 +11,8 @@ import {
   writePrettierFile,
 } from '@code-like-a-carpenter/tooling-common';
 
+// This can be fixed my moving executors into src
+// eslint-disable-next-line no-restricted-imports
 import {extractProjectRoot, findLocalPackages} from '../../src/index.ts';
 
 import type {ProjectRefsExecutor} from './schema.json';
