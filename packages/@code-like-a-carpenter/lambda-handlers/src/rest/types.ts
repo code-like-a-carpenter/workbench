@@ -1,7 +1,10 @@
 import type {APIGatewayProxyEvent, APIGatewayProxyResult} from 'aws-lambda';
-import type {OperationObject} from 'openapi-typescript';
 
 import type {Context} from '../types.ts';
+
+// These types had to be temporary vendored because the package is marked as a
+// module, but this file still appears to be a commonjs-by-default module.
+import type {OperationObject} from './vendor/openapi.ts';
 
 export interface ContentTypeHtml {
   content: {'text/html': string};

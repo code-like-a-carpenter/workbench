@@ -123,7 +123,7 @@ export const createNodes: CreateNodes = [
           '{projectRoot}/src/**/*.[jt]s?(x)',
         ],
         options: {
-          command: `tsc --project {projectRoot}/tsconfig.json && scripts/dmts-to-dts {projectRoot}`,
+          command: `tsc --project {projectRoot}/tsconfig.json`,
         },
         outputs: [
           '{projectRoot}/dist/.tsconfig.tsbuildinfo',

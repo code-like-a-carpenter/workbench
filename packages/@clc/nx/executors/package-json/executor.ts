@@ -68,12 +68,12 @@ async function config(
       /* eslint-disable sort-keys */
       // `types` should [always come first](https://nodejs.org/api/packages.html#community-conditions-definitions)
       import: {
-        types: './dist/types/index.d.mts',
+        types: './dist/types/index.d.ts',
         carpentry: './src/index.ts',
         default: './dist/esm/index.mjs',
       },
       require: {
-        types: './dist/cjs-types/index.d.ts',
+        types: './dist/types/index.d.ts',
         carpentry: './src/index.ts',
         default: './dist/cjs/index.cjs',
       },
@@ -109,7 +109,7 @@ async function config(
   pkg.license = pkg.license ?? rootPackageJson.license;
   pkg.name = packageName;
   pkg.repository = rootPackageJson.repository;
-  pkg.types = 'dist/types';
+  delete pkg.types;
 
   if (!pkg.publishConfig?.access || pkg.publishConfig.access === 'public') {
     pkg.publishConfig = {

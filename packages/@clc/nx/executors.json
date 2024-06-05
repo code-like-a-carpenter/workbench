@@ -16,7 +16,7 @@
       "description": "project-refs executor"
     },
     "readme": {
-      "implementation": "./executors/readme/executor",
+      "implementation": "./executors/readme/executor.cjs",
       "schema": "./executors/readme/schema.json",
       "description": "readme executor"
     }

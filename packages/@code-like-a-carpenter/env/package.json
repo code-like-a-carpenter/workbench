@@ -1,16 +1,15 @@
 {
   "name": "@code-like-a-carpenter/env",
   "description": "Wrapper around process.env which throws instead of returning undefined",
-  "types": "dist/types",
   "exports": {
     ".": {
       "import": {
-        "types": "./dist/types/index.d.mts",
+        "types": "./dist/types/index.d.ts",
         "carpentry": "./src/index.ts",
         "default": "./dist/esm/index.mjs"
       },
       "require": {
-        "types": "./dist/cjs-types/index.d.ts",
+        "types": "./dist/types/index.d.ts",
         "carpentry": "./src/index.ts",
         "default": "./dist/cjs/index.cjs"
       }
