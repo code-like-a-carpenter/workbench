@@ -94,6 +94,9 @@ rules:
     - 'error'
     - args: 'after-used'
       ignoreRestSiblings: true
+  import/extensions:
+    - error
+    - ignorePackages
   import/no-extraneous-dependencies:
     - error
     - devDependencies:
