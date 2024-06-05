@@ -5,7 +5,7 @@ set -euo pipefail
 PROJECT_ROOT=$1
 
 for f in $(find $PROJECT_ROOT/dist/types -type f); do
-  outfile=$(echo $f | sed -e 's#types#cjs-types#' | sed -e 's#.d.mts#.d.ts#')
+  outfile=$(echo $f | sed -e 's#/types/#/cjs-types/#' | sed -e 's#.d.mts#.d.ts#')
   mkdir -p "$(dirname "$outfile")"
   sed -e 's#.mjs##g' "$f" > "$outfile"
 done
