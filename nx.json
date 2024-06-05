@@ -17,7 +17,7 @@
     "sharedGlobals": [
       "{workspaceRoot}/.nx-cache-buster",
       "{workspaceRoot}/tsconfig.*.json",
-      "{workspaceRoot}/packages/@code-like-a-carpenter/nx/**/*",
+      "{workspaceRoot}/packages/@clc/nx/**/*",
       "conditions"
     ]
   },
