@@ -113,10 +113,23 @@ export const createNodes: CreateNodes = [
         cache: true,
         dependsOn: ['^build:types', 'codegen'],
         executor: 'nx:run-commands',
+        inputs: [
+          'sharedGlobals',
+          '{workspaceRoot}/tsconfig.base.json',
+          '{workspaceRoot}/tsconfig.references.json',
+          '{workspaceRoot}/tsconfig.json',
+          '{projectRoot}/tsconfig.json',
+          '{projectRoot}/package.json',
+          '{projectRoot}/src/**/*.[jt]s?(x)',
+        ],
         options: {
           command: `tsc --project {projectRoot}/tsconfig.json && scripts/dmts-to-dts {projectRoot}`,
         },
-        outputs: ['{projectRoot}/dist/types'],
+        outputs: [
+          '{projectRoot}/dist/.tsconfig.tsbuildinfo',
+          '{projectRoot}/dist/types',
+          '{projectRoot}/dist/cjs-types',
+        ],
       });
     }
 
