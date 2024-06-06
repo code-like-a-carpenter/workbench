@@ -51,7 +51,7 @@ async function configExample(
 async function config(
   pkg: JSONSchemaForNPMPackageJsonFiles,
   mjs: boolean,
-  type: 'cli' | 'package' | 'esm',
+  type: Exclude<PackageJsonExecutor['type'], 'undefined'>,
   context: ExecutorContext
 ) {
   const packageName = extractProjectName(context);

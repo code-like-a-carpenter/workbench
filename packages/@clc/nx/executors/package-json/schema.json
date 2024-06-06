@@ -10,7 +10,7 @@
       "default": false
     },
     "type": {
-      "enum": ["cli", "example", "package"],
+      "enum": ["cli", "example", "package", "tool"],
       "type": "string",
       "default": "package"
     }

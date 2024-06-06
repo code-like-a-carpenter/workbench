@@ -83,9 +83,11 @@ export const createNodes: CreateNodes = [
       type = 'cli';
     } else if (projectConfigurationFile.startsWith('examples')) {
       type = 'example';
+    } else if (projectName.split('/').pop()?.startsWith('tool-')) {
+      type = 'tool';
     }
 
-    if (type === 'package' || type === 'cli') {
+    if (type === 'package' || type === 'cli' || type === 'tool') {
       addTarget(targets, 'build', 'cjs', {
         cache: true,
         dependsOn: ['codegen'],
@@ -240,7 +242,7 @@ export const createNodes: CreateNodes = [
       }
     }
 
-    if (projectName.split('/').pop()?.startsWith('tool-')) {
+    if (type === 'tool') {
       addTarget(targets, 'codegen', 'tool', {
         cache: true,
         executor: '@code-like-a-carpenter/tool-tool:tool',
@@ -256,7 +258,6 @@ export const createNodes: CreateNodes = [
           '{projectRoot}/src/__generated__/*-types.ts',
         ],
       });
-      addDependency(targets, 'build:types', 'codegen:tool');
     }
 
     if (
@@ -279,6 +280,14 @@ export const createNodes: CreateNodes = [
     targets = Object.fromEntries(
       Object.entries(targets).sort(([k1], [k2]) => k1.localeCompare(k2))
     );
+
+    if (type === 'tool') {
+      addDependency(targets, 'build:types', 'codegen:tool');
+      // codegen:tool can't work until the cjs for every tool exists. This should
+      // probably be something like "anything that depends on a tool needs all
+      // tools to be fully built", but I'm not sure how to express that
+      addDependency(targets, 'codegen:tool', '^build:cjs');
+    }
 
     return {
       projects: {
