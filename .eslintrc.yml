@@ -47,6 +47,7 @@ overrides:
 
   - files:
       - '**/*.spec.*'
+      - '**/*.test.*'
       - 'test/jest/spec/**/*'
       - '**/__mocks__/**/*'
     env:

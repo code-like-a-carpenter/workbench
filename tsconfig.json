@@ -14,6 +14,7 @@
     "examples/*/src/**/*.ts",
     "examples/*/src/**/*.tsx",
     "packages/*/*/src/**/*.js",
+    "packages/*/*/src/**/*.mjs",
     "packages/*/*/src/**/*.jsx",
     "packages/*/*/src/**/*.ts",
     "packages/*/*/src/**/*.tsx",
