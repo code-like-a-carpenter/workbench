@@ -21,6 +21,7 @@ export const createNodes: CreateNodes = [
     }
 
     const mjs = existsSync(path.resolve(projectRoot, 'src/index.mjs'));
+    const mts = existsSync(path.resolve(projectRoot, 'src/index.mts'));
 
     let targets: Record<string, TargetConfiguration> = {};
     // Set up the basic phases of the build process
@@ -107,7 +108,10 @@ export const createNodes: CreateNodes = [
           executor: '@clc/nx:esbuild',
           inputs: ['{projectRoot}/src/**/*'],
           options: {
-            entryPoints: ['{projectRoot}/src/**/*.[jt]s?(x)', '!**/*.test.*'],
+            entryPoints: [
+              '{projectRoot}/src/**/*.?(m)[jt]s?(x)',
+              '!**/*.test.*',
+            ],
             format: 'esm',
             outDir: '{projectRoot}/dist/esm',
           },
@@ -131,7 +135,9 @@ export const createNodes: CreateNodes = [
         options: {
           command: mjs
             ? `tsc --project {projectRoot}/tsconfig.json && scripts/dmts-to-dts {projectRoot}`
-            : `tsc --project {projectRoot}/tsconfig.json`,
+            : mts
+              ? `tsc --project {projectRoot}/tsconfig.json && scripts/dmts-to-dts {projectRoot}`
+              : `tsc --project {projectRoot}/tsconfig.json`,
         },
         outputs: [
           '{projectRoot}/dist/.tsconfig.tsbuildinfo',
@@ -166,7 +172,7 @@ export const createNodes: CreateNodes = [
       cache: true,
       executor: '@clc/nx:package-json',
       inputs: ['{workspaceRoot}/package.json'],
-      options: {mjs, type},
+      options: {mjs, mts, type},
       outputs: ['{projectRoot}/package.json'],
     });
 

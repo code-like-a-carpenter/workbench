@@ -4,13 +4,13 @@
   "exports": {
     ".": {
       "import": {
-        "types": "./dist/types/index.d.ts",
-        "carpentry": "./src/index.ts",
+        "types": "./dist/types/index.d.mts",
+        "carpentry": "./src/index.mts",
         "default": "./dist/esm/index.mjs"
       },
       "require": {
-        "types": "./dist/types/index.d.ts",
-        "carpentry": "./src/index.ts",
+        "types": "./dist/cjs-types/index.d.ts",
+        "carpentry": "./src/index.mts",
         "default": "./dist/cjs/index.cjs"
       }
     },

@@ -23,6 +23,10 @@ overrides:
       sourceType: 'module'
 
   - files:
+      - '**/*.mts'
+    parser: '@typescript-eslint/parser'
+
+  - files:
       - '**/*.graphql'
       - '**/*.graphqls'
     extends: 'plugin:@graphql-eslint/schema-recommended'

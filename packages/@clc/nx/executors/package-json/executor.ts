@@ -17,7 +17,7 @@ import {
 import type {PackageJsonExecutor} from './schema.json';
 
 const runExecutor: Executor<PackageJsonExecutor> = async (
-  {mjs = false, type = 'package'},
+  {mjs = false, mts = false, type = 'package'},
   context
 ) => {
   const root = extractProjectRoot(context);
@@ -27,7 +27,7 @@ const runExecutor: Executor<PackageJsonExecutor> = async (
   if (type === 'example') {
     await configExample(pkg, context);
   } else {
-    await config(pkg, mjs, type, context);
+    await config(pkg, mjs, mts, type, context);
   }
 
   await writePackageJson(packageJsonPath, pkg);
@@ -51,6 +51,7 @@ async function configExample(
 async function config(
   pkg: JSONSchemaForNPMPackageJsonFiles,
   mjs: boolean,
+  mts: boolean,
   type: Exclude<PackageJsonExecutor['type'], 'undefined'>,
   context: ExecutorContext
 ) {
@@ -70,13 +71,17 @@ async function config(
       /* eslint-disable sort-keys */
       // `types` should [always come first](https://nodejs.org/api/packages.html#community-conditions-definitions)
       import: {
-        types: mjs ? './dist/types/index.d.mts' : './dist/types/index.d.ts',
-        ...(mjs ? {} : {carpentry: './src/index.ts'}),
+        types:
+          mjs || mts ? './dist/types/index.d.mts' : './dist/types/index.d.ts',
+        ...(mjs ? {} : {carpentry: mts ? './src/index.mts' : './src/index.ts'}),
         default: mjs ? './src/index.mjs' : './dist/esm/index.mjs',
       },
       require: {
-        types: mjs ? './dist/cjs-types/index.d.ts' : './dist/types/index.d.ts',
-        ...(mjs ? {} : {carpentry: './src/index.ts'}),
+        types:
+          mjs || mts
+            ? './dist/cjs-types/index.d.ts'
+            : './dist/types/index.d.ts',
+        ...(mjs ? {} : {carpentry: mts ? './src/index.mts' : './src/index.ts'}),
         default: './dist/cjs/index.cjs',
       },
       /* eslint-enable sort-keys */

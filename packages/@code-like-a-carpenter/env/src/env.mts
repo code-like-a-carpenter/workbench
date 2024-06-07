@@ -1,5 +1,5 @@
-import {EnvironmentError} from './errors/environment-error.ts';
-import {TypeNarrowingError} from './errors/type-narrowing-error.ts';
+import {EnvironmentError} from './errors/environment-error.mts';
+import {TypeNarrowingError} from './errors/type-narrowing-error.mts';
 
 /**
  * Returns the value of the environment variable with the given key, using
