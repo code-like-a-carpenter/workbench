@@ -4,10 +4,12 @@ import {readFile} from 'node:fs/promises';
 import findUp from 'find-up';
 import {glob} from 'glob';
 
+import {readPackageJson} from './filesystem.mjs';
+
 /**
- * @returns A map of package names to their package.json file paths
+ * @returns {Promise<Map<string, string>>} A map of package names to their package.json file paths
  */
-export async function findLocalPackages(): Promise<Map<string, string>> {
+export async function findLocalPackages() {
   const packagePath = await findUp('package.json');
   assert(packagePath, 'Could not find package.json');
   assert(
@@ -15,11 +17,13 @@ export async function findLocalPackages(): Promise<Map<string, string>> {
     `packagePath must end with package.json, got ${packagePath}`
   );
 
-  const pkg = JSON.parse(await readFile(packagePath, 'utf-8'));
-  const {workspaces} = pkg;
-  const packageFiles = await glob(
-    workspaces.map((w: string) => `${w}/package.json`)
+  const pkg = await readPackageJson(packagePath);
+  const workspaces = pkg.workspaces ?? [];
+  assert(
+    Array.isArray(workspaces),
+    'This project currently only supports the Array form of workspaces'
   );
+  const packageFiles = await glob(workspaces.map((w) => `${w}/package.json`));
 
   return new Map(
     await Promise.all(
@@ -31,7 +35,9 @@ export async function findLocalPackages(): Promise<Map<string, string>> {
           typeof name === 'string',
           `${packageFile} has an invalid name field`
         );
-        return [name, packageFile] as const;
+        /** @type {[string, string]} */
+        const ret = [name, packageFile];
+        return ret;
       })
     )
   );

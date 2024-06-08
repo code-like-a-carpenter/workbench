@@ -1,20 +1,26 @@
 import camelCase from 'lodash.camelcase';
 import upperFirst from 'lodash.upperfirst';
 
-export interface FormatStackNameOptions {
-  readonly ci: boolean;
-  readonly fullRef?: string;
-  readonly projectName: string;
-  readonly sha?: string;
-  readonly ref?: string;
-}
+/**
+ * @typedef {Object} FormatStackNameOptions
+ * @property {boolean} ci
+ * @property {string} [fullRef]
+ * @property {string} projectName
+ * @property {string} [sha]
+ * @property {string} [ref]
+ */
+
+/**
+ * @param {FormatStackNameOptions} options
+ * @returns {string}
+ */
 export function formatStackName({
   ci,
   fullRef = '',
   projectName,
   sha = '',
   ref = '',
-}: FormatStackNameOptions): string {
+}) {
   const stackName = upperFirst(camelCase(projectName));
   let suffix = '';
 

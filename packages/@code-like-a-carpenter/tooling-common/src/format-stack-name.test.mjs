@@ -1,4 +1,4 @@
-import {formatStackName} from './format-stack-name.ts';
+import {formatStackName} from './format-stack-name.mjs';
 
 const GITHUB_HEAD_REF = 'dependabot/npm_and_yarn/openapi-typescript-6.7.4';
 const GITHUB_REF =
@@ -23,7 +23,13 @@ const projectNames = [
 ];
 
 const testData = projectNames
-  .map((projectName) => gitData.map((env) => [projectName, env] as const))
+  .map((projectName) =>
+    gitData.map((env) => {
+      /** @type {[string, {ci: boolean, fullRef?: string, sha: string, ref?: string}]} */
+      const ret = [projectName, env];
+      return ret;
+    })
+  )
   .flat(1);
 
 describe('formatStackName()', () => {

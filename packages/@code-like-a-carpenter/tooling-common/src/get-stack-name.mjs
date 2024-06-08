@@ -4,11 +4,17 @@ import ci from 'ci-info';
 
 import {env} from '@code-like-a-carpenter/env';
 
-import {formatStackName} from './format-stack-name.ts';
+import {formatStackName} from './format-stack-name.mjs';
 
 // Reminder: there's no good way to test this because `ci-info` does its thing
 // before we'd have a chance to mock it.
-export function getStackName(projectName: string): string {
+/**
+ * Get the stack name for a project
+ *
+ * @param {string} projectName
+ * @returns {string}
+ */
+export function getStackName(projectName) {
   if (!ci.isCI) {
     return formatStackName({ci: false, projectName});
   }
