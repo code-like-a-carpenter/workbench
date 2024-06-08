@@ -1,6 +1,6 @@
 /** @type {import('@code-like-a-carpenter/tool-foundation').InputConfig} */
 const config = {
-  dependenciesModuleId: '../dependencies.ts',
+  dependenciesModuleId: '../dependencies.mts',
   // Note that there's shared state between the CloudFormation and TypeScript
   // plugins, so config that's read be the parser needs to be the same.
   dispatcherDefaults: {

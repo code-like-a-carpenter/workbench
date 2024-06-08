@@ -6,7 +6,7 @@ import {faker} from '@faker-js/faker';
 import {NotFoundError} from '@code-like-a-carpenter/foundation-runtime';
 import {waitFor} from '@code-like-a-carpenter/wait-for';
 
-import {ddbDocClient} from '../dependencies.ts';
+import {ddbDocClient} from '../dependencies.mts';
 
 import type {SubscriptionEventPrimaryKey} from './__generated__/graphql.ts';
 import {

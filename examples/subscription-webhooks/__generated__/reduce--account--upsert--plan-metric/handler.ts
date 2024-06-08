@@ -1,7 +1,7 @@
 // This file is generated. Do not edit by hand.
 import {makeMultiReducer} from '@code-like-a-carpenter/foundation-runtime';
 
-import * as dependencies from '../../../dependencies.ts';
+import * as dependencies from '../../../dependencies.mts';
 import {AccountUpsertPlanMetricReducer} from '../../src/reduce--account--upsert--plan-metric.ts';
 import type {
   Account,

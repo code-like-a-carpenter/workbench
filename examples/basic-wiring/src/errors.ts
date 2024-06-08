@@ -42,7 +42,7 @@ import {
 } from '@code-like-a-carpenter/errors';
 import {handleRestEvent} from '@code-like-a-carpenter/lambda-handlers';
 
-import {exceptionTracingService} from '../../dependencies.ts';
+import {exceptionTracingService} from '../../dependencies.mts';
 
 import type {operations} from './__generated__/api.ts';
 

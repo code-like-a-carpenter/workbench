@@ -1,7 +1,7 @@
 // This file is generated. Do not edit by hand.
 import {makeReducer} from '@code-like-a-carpenter/foundation-runtime';
 
-import * as dependencies from '../../../dependencies.ts';
+import * as dependencies from '../../../dependencies.mts';
 import {PlanMetricUpsertMetricReducer} from '../../src/reduce--plan-metric--upsert--metric.ts';
 import type {
   PlanMetric,

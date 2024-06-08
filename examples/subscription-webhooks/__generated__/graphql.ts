@@ -37,7 +37,7 @@ import {
   UnexpectedError,
 } from '@code-like-a-carpenter/foundation-runtime';
 
-import {ddbDocClient} from '../../dependencies.ts';
+import {ddbDocClient} from '../../dependencies.mts';
 import {AccountIndexedPlanNameProvider} from '../src/computed-fields.ts';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;

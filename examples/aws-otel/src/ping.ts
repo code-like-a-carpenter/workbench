@@ -1,7 +1,7 @@
 import {handleRestEvent} from '@code-like-a-carpenter/lambda-handlers';
 import {runWithNewSpan} from '@code-like-a-carpenter/telemetry';
 
-import {exceptionTracingService} from '../../dependencies.ts';
+import {exceptionTracingService} from '../../dependencies.mts';
 
 import type {operations} from './__generated__/api.ts';
 

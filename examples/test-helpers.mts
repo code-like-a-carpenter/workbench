@@ -1,6 +1,6 @@
 import {GetCommand} from '@aws-sdk/lib-dynamodb';
 
-import {ddbDocClient} from './dependencies.ts';
+import {ddbDocClient} from './dependencies.mts';
 
 /** Loads a record raw */
 export async function load({
