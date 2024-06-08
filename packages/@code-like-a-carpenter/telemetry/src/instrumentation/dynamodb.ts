@@ -2,7 +2,7 @@ import type {Attributes} from '@opentelemetry/api';
 import {SpanKind, trace} from '@opentelemetry/api';
 import {BasicTracerProvider} from '@opentelemetry/sdk-trace-base';
 import type {DynamoDBBatchResponse, DynamoDBStreamEvent} from 'aws-lambda';
-import type {DynamoDBRecord} from 'aws-lambda/trigger/dynamodb-stream';
+import type {DynamoDBRecord} from 'aws-lambda/trigger/dynamodb-stream.js';
 
 import type {ExceptionTracingService} from '../index.ts';
 import {setupExceptionTracing} from '../index.ts';

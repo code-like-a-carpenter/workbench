@@ -10,7 +10,7 @@ import type {
 import type {
   APIGatewayAuthorizerResult,
   APIGatewayTokenAuthorizerEvent,
-} from 'aws-lambda/trigger/api-gateway-authorizer';
+} from 'aws-lambda/trigger/api-gateway-authorizer.js';
 
 import {runWithNewSpan} from './run-with.ts';
 

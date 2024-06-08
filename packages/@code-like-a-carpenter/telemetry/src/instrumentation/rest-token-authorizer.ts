@@ -1,11 +1,11 @@
 import type {Attributes} from '@opentelemetry/api';
 import {SpanKind, trace} from '@opentelemetry/api';
 import {BasicTracerProvider} from '@opentelemetry/sdk-trace-base';
-import type {APIGatewayAuthorizerResultContext} from 'aws-lambda/common/api-gateway';
+import type {APIGatewayAuthorizerResultContext} from 'aws-lambda/common/api-gateway.js';
 import type {
   APIGatewayAuthorizerWithContextResult,
   APIGatewayTokenAuthorizerEvent,
-} from 'aws-lambda/trigger/api-gateway-authorizer';
+} from 'aws-lambda/trigger/api-gateway-authorizer.js';
 
 import {assert} from '@code-like-a-carpenter/assert';
 
