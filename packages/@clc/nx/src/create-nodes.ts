@@ -202,7 +202,15 @@ export const createNodes: CreateNodes = [
     }
 
     if (type === 'example') {
+      let ext = null;
       if (existsSync(path.resolve(projectRoot, '.foundationrc.js'))) {
+        ext = 'js';
+      } else if (existsSync(path.resolve(projectRoot, '.foundationrc.cjs'))) {
+        ext = 'cjs';
+      } else if (existsSync(path.resolve(projectRoot, '.foundationrc.mjs'))) {
+        ext = 'mjs';
+      }
+      if (ext) {
         addTarget(targets, 'build', 'foundation', {
           cache: true,
           dependsOn: [
@@ -221,14 +229,14 @@ export const createNodes: CreateNodes = [
           executor: '@code-like-a-carpenter/tool-foundation:foundation',
           inputs: [
             '{projectRoot}/schema/**/*.graphqls',
-            '{projectRoot}/.foundationrc.js',
+            '{projectRoot}/.foundationrc.*',
             '{projectRoot}/../common.graphqls',
             '{workspaceRoot}/.graphqlrc.js',
             '{workspaceRoot}/schema.graphqls',
             '{workspaceRoot}/packages/@code-like-a-carpenter/foundation-*/**/*',
           ],
           options: {
-            config: '{projectRoot}/.foundationrc.js',
+            config: `{projectRoot}/.foundationrc.${ext}`,
           },
           outputs: [
             '{projectRoot}/src/__generated__/graphql.ts',
