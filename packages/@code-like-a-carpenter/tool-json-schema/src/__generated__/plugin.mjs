@@ -1,6 +1,6 @@
 import {definePlugin} from '@code-like-a-carpenter/cli-core';
 
-import {handler as jsonSchemaHandler} from '../json-schema.ts';
+import {handler as jsonSchemaHandler} from '../json-schema.mjs';
 
 export const plugin = definePlugin((yargs) => {
   yargs.command(

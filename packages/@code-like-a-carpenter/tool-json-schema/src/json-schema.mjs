@@ -4,14 +4,14 @@ import path from 'node:path';
 
 import {glob} from 'glob';
 
-import type {JsonSchemaTool} from './__generated__/json-schema-types.ts';
-import {jsonSchemaToTypescript} from './json-schema-helpers.ts';
+import {jsonSchemaToTypescript} from './json-schema-helpers.mjs';
 
-export async function handler({
-  includeExtension,
-  outDir,
-  schemas,
-}: JsonSchemaTool): Promise<void> {
+/** @typedef {import('./__generated__/json-schema-types.mts').JsonSchemaTool} JsonSchemaTool */
+
+/**
+ * @param {JsonSchemaTool} param0
+ */
+export async function handler({includeExtension, outDir, schemas}) {
   if (outDir) {
     outDir = outDir.endsWith(path.sep) ? outDir : outDir + path.sep;
   }
@@ -44,7 +44,11 @@ export async function handler({
   );
 }
 
-function commonPrefix(a: string, b: string) {
+/**
+ * @param {string} a
+ * @param {string} b
+ */
+function commonPrefix(a, b) {
   const length = Math.min(a.length, b.length);
   let i = 0;
   while (i < length && a[i] === b[i]) {
