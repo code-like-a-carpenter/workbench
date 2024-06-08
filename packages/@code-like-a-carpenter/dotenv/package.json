@@ -33,5 +33,6 @@
   "devDependencies": {
     "@types/dotenv": "^8.2.0"
   },
-  "releaseAll": 5
+  "releaseAll": 5,
+  "types": "./dist/types/index.d.ts"
 }

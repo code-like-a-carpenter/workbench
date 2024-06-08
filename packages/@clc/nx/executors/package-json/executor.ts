@@ -116,7 +116,10 @@ async function config(
   pkg.license = pkg.license ?? rootPackageJson.license;
   pkg.name = packageName;
   pkg.repository = rootPackageJson.repository;
-  delete pkg.types;
+  // I _think_ `types` here is necessary for any consumer that's not yet
+  // migrated to NodeNext
+  pkg.types =
+    mjs || mts ? './dist/types/index.d.mts' : './dist/types/index.d.ts';
 
   if (!pkg.publishConfig?.access || pkg.publishConfig.access === 'public') {
     pkg.publishConfig = {

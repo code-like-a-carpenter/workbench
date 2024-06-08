@@ -42,5 +42,6 @@
     "@types/aws-lambda": "^8.10.138",
     "@types/js-yaml": "^4.0.9"
   },
-  "releaseAll": 5
+  "releaseAll": 5,
+  "types": "./dist/types/index.d.ts"
 }

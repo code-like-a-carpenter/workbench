@@ -44,5 +44,6 @@
     "@types/lodash.kebabcase": "^4.1.9",
     "@types/lodash.upperfirst": "^4.3.9"
   },
-  "executors": "./executors.json"
+  "executors": "./executors.json",
+  "types": "./dist/types/index.d.ts"
 }
