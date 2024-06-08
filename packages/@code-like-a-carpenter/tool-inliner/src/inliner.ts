@@ -1,13 +1,19 @@
 import {mkdir, readFile, writeFile} from 'node:fs/promises';
 import path from 'node:path';
 
-import generate from '@babel/generator';
-import template from '@babel/template';
+import generateImport from '@babel/generator';
+import type {TemplateBuilder} from '@babel/template';
+import templateImport from '@babel/template';
 import * as t from '@babel/types';
+import type {Statement} from '@babel/types';
 
 import {assert} from '@code-like-a-carpenter/assert';
 
 import type {InlinerExecutor} from './__generated__/inliner-types.ts';
+
+const template: TemplateBuilder<Statement | Statement[]> =
+  templateImport.default ?? templateImport;
+const generate = generateImport.default ?? generateImport;
 
 export async function handler(args: InlinerExecutor): Promise<void> {
   const {sourceFile, targetFile, exportName} = args;

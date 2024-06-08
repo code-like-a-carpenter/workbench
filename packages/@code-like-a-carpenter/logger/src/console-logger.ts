@@ -1,8 +1,10 @@
-import stringify from 'fast-safe-stringify';
+import stringifyImport from 'fast-safe-stringify';
 
 import {env} from '@code-like-a-carpenter/env';
 
 import type {Meta, ConsoleLevels, LeveledLogger} from './types.ts';
+
+const stringify = stringifyImport.default ?? stringifyImport;
 
 const PARENT = Symbol('parent');
 const PARENT_KEY = Symbol('parent_key');
