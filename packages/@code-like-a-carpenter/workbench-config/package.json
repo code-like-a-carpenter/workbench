@@ -36,5 +36,6 @@
     "@types/lodash.merge": "^4.6.9"
   },
   "releaseAll": 5,
-  "types": "./dist/types/index.d.ts"
+  "types": "./dist/types/index.d.ts",
+  "type": "module"
 }

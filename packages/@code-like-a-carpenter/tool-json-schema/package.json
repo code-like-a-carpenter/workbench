@@ -35,5 +35,6 @@
     "glob": "^10.4.1",
     "json-schema-to-typescript": "^14.0.4"
   },
-  "types": "./dist/types/index.d.ts"
+  "types": "./dist/types/index.d.ts",
+  "type": "module"
 }

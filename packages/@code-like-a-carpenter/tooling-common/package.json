@@ -43,5 +43,6 @@
     "@types/prettier": "^3.0.0"
   },
   "releaseAll": 5,
-  "types": "./dist/types/index.d.ts"
+  "types": "./dist/types/index.d.ts",
+  "type": "module"
 }

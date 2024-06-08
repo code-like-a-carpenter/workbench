@@ -46,5 +46,6 @@
     "@types/lodash.snakecase": "^4.1.9",
     "@types/vhost": "^3.0.9"
   },
-  "types": "./dist/types/index.d.ts"
+  "types": "./dist/types/index.d.ts",
+  "type": "module"
 }

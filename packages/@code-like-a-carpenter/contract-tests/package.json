@@ -34,5 +34,6 @@
     "access": "public"
   },
   "releaseAll": 5,
-  "types": "./dist/types/index.d.ts"
+  "types": "./dist/types/index.d.ts",
+  "type": "module"
 }

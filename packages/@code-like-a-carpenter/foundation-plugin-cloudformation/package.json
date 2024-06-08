@@ -43,5 +43,6 @@
     "@types/js-yaml": "^4.0.9"
   },
   "releaseAll": 5,
-  "types": "./dist/types/index.d.ts"
+  "types": "./dist/types/index.d.ts",
+  "type": "module"
 }

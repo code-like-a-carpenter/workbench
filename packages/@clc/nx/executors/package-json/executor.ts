@@ -116,6 +116,11 @@ async function config(
   pkg.license = pkg.license ?? rootPackageJson.license;
   pkg.name = packageName;
   pkg.repository = rootPackageJson.repository;
+
+  // everything needs to be a module for local type resolution to work. this
+  // _probably_ won't effect consumers since we're still building CommonJS and
+  // ESM outputs.
+  pkg.type = 'module';
   // I _think_ `types` here is necessary for any consumer that's not yet
   // migrated to NodeNext
   pkg.types =

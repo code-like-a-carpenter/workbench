@@ -45,5 +45,6 @@
     "@types/lodash.upperfirst": "^4.3.9"
   },
   "executors": "./executors.json",
-  "types": "./dist/types/index.d.ts"
+  "types": "./dist/types/index.d.ts",
+  "type": "module"
 }
