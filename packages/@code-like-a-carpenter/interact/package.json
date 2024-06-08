@@ -31,5 +31,6 @@
     "@code-like-a-carpenter/logger": "*",
     "@code-like-a-carpenter/telemetry": "*"
   },
-  "releaseAll": 5
+  "releaseAll": 5,
+  "types": "./dist/types/index.d.ts"
 }

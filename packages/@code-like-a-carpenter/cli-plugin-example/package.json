@@ -32,5 +32,6 @@
     "access": "public"
   },
   "bin": "./cli.mjs",
-  "releaseAll": 5
+  "releaseAll": 5,
+  "types": "./dist/types/index.d.ts"
 }

@@ -45,5 +45,6 @@
     "@types/http-proxy": "^1.17.14",
     "@types/lodash.snakecase": "^4.1.9",
     "@types/vhost": "^3.0.9"
-  }
+  },
+  "types": "./dist/types/index.d.ts"
 }
