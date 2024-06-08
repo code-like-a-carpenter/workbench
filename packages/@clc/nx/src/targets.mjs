@@ -1,12 +1,13 @@
 import assert from 'node:assert';
 
-import type {TargetConfiguration} from '@nx/devkit';
+/** @typedef {import('@nx/devkit').TargetConfiguration} TargetConfiguration */
 
-export function addPhase(
-  targets: Record<string, TargetConfiguration>,
-  phase: string,
-  deps: readonly string[] = []
-) {
+/**
+ * @param {Record<string, TargetConfiguration>} targets
+ * @param {string} phase
+ * @param {string[]} [deps]
+ */
+export function addPhase(targets, phase, deps = []) {
   assert(!(phase in targets), `phase "${phase}" has already been defined`);
   targets[phase] = {
     cache: true,
@@ -15,12 +16,13 @@ export function addPhase(
   };
 }
 
-export function addTarget(
-  targets: Record<string, TargetConfiguration>,
-  phase: string,
-  targetName: string,
-  target: TargetConfiguration
-) {
+/**
+ * @param {Record<string, TargetConfiguration>} targets
+ * @param {string} phase
+ * @param {string} targetName
+ * @param {TargetConfiguration} target
+ */
+export function addTarget(targets, phase, targetName, target) {
   assert(
     phase in targets,
     `phase "${phase} has not been defined. Please do so before trying to register a target in this phase`
@@ -65,11 +67,12 @@ export function addTarget(
   targets[phase].dependsOn = phaseDependsOn;
 }
 
-export function addDependency(
-  targets: Record<string, TargetConfiguration>,
-  targetName: string,
-  dependsOn: string
-) {
+/**
+ * @param {Record<string, TargetConfiguration>} targets
+ * @param {string} targetName
+ * @param {string} dependsOn
+ */
+export function addDependency(targets, targetName, dependsOn) {
   const depForValidation = dependsOn.startsWith('^')
     ? dependsOn.slice(1)
     : dependsOn;

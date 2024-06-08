@@ -29,6 +29,7 @@
   "dependencies": {
     "@code-like-a-carpenter/cli-core": "*",
     "@code-like-a-carpenter/tooling-common": "*",
+    "@nx/devkit": "^19.2.2",
     "glob": "^10.4.1",
     "json-schema-to-typescript": "^14.0.4"
   },

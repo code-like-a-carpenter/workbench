@@ -2,22 +2,25 @@ import assert from 'node:assert';
 import {readFile} from 'node:fs/promises';
 import path from 'path';
 
-import type {Executor} from '@nx/devkit';
 import {glob} from 'glob';
 import ts from 'typescript';
 
 import {
+  findLocalPackages,
   readPackageJson,
   writePrettierFile,
 } from '@code-like-a-carpenter/tooling-common';
 
 // This can be fixed my moving executors into src
 // eslint-disable-next-line no-restricted-imports
-import {extractProjectRoot, findLocalPackages} from '../../src/index.ts';
+import {extractProjectRoot} from '../../src/index.mjs';
 
-import type {ProjectRefsExecutor} from './schema.json';
+/** @typedef {import('@nx/devkit').Executor} Executor */
 
-const runExecutor: Executor<ProjectRefsExecutor> = async (options, context) => {
+/** @typedef {import('./schema.d.json').ProjectRefsExecutor} ProjectRefsExecutor */
+
+/** @type {Executor<ProjectRefsExecutor>} */
+const runExecutor = async (options, context) => {
   const root = extractProjectRoot(context);
   const tsconfigPath = path.join(root, 'tsconfig.json');
   const packageJsonPath = path.join(root, 'package.json');
@@ -71,7 +74,10 @@ const runExecutor: Executor<ProjectRefsExecutor> = async (options, context) => {
   };
 };
 
-async function loadTsConfig(tsconfigPath: string) {
+/**
+ * @param {string} tsconfigPath
+ */
+async function loadTsConfig(tsconfigPath) {
   try {
     const text = await readFile(tsconfigPath, 'utf-8');
     return ts.parseConfigFileTextToJson(tsconfigPath, text).config;

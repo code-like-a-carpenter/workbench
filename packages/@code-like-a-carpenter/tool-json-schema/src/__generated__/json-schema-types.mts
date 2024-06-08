@@ -10,6 +10,10 @@
  */
 export interface JsonSchemaTool {
   /**
+   * The file extension to use for generated files
+   */
+  extension?: string;
+  /**
    * If true, the file extension will be included in the output filename
    */
   includeExtension?: boolean;

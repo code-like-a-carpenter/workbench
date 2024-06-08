@@ -71,9 +71,8 @@ overrides:
       sort-keys: off
 
   - files:
-      - '*.d.mts'
-      - '*.d.ts'
-      - '*.d.json.ts'
+      - '*.d.*'
+      - '*.d.json.*'
     rules:
       eslint-comments/disable-enable-pair: off
       eslint-comments/no-unlimited-disable: off

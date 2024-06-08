@@ -1,17 +1,17 @@
 {
   "executors": {
     "esbuild": {
-      "implementation": "./executors/esbuild/executor",
+      "implementation": "./executors/esbuild/executor.shim.cjs",
       "schema": "./executors/esbuild/schema.json",
       "description": "esbuild executor"
     },
     "package-json": {
-      "implementation": "./executors/package-json/executor",
+      "implementation": "./executors/package-json/executor.shim.cjs",
       "schema": "./executors/package-json/schema.json",
       "description": "package-json executor"
     },
     "project-refs": {
-      "implementation": "./executors/project-refs/executor",
+      "implementation": "./executors/project-refs/executor.shim.cjs",
       "schema": "./executors/project-refs/schema.json",
       "description": "project-refs executor"
     },

@@ -11,7 +11,12 @@ import {jsonSchemaToTypescript} from './json-schema-helpers.mjs';
 /**
  * @param {JsonSchemaTool} param0
  */
-export async function handler({includeExtension, outDir, schemas}) {
+export async function handler({
+  extension = 'ts',
+  includeExtension,
+  outDir,
+  schemas,
+}) {
   if (outDir) {
     outDir = outDir.endsWith(path.sep) ? outDir : outDir + path.sep;
   }
@@ -28,7 +33,7 @@ export async function handler({includeExtension, outDir, schemas}) {
         const sharedBased = commonPrefix(filename, outDir);
         const outFilename = filename
           .replace(sharedBased, outDir)
-          .replace(/\.json$/, '.ts');
+          .replace(/\.json$/, `.${extension}`);
 
         await mkdir(path.dirname(outFilename), {recursive: true});
         await jsonSchemaToTypescript({infile: filename, outfile: outFilename});
@@ -36,8 +41,8 @@ export async function handler({includeExtension, outDir, schemas}) {
         await jsonSchemaToTypescript({
           infile: filename,
           outfile: includeExtension
-            ? filename.replace(/\.json$/, '.d.json.ts')
-            : filename.replace(/\.json$/, '.d.ts'),
+            ? filename.replace(/\.json$/, `.d.json.${extension}`)
+            : filename.replace(/\.json$/, `.d.${extension}`),
         });
       }
     })

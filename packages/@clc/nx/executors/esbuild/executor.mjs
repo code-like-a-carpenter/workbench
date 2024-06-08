@@ -1,16 +1,18 @@
+import {createRequire} from 'node:module';
 import path from 'node:path';
 
-import type {Executor} from '@nx/devkit';
 import {build} from 'esbuild';
 import {globSync} from 'glob';
 import {minimatch} from 'minimatch';
 
-import type {EsbuildExecutor} from './schema.json';
+/** @typedef {import('@nx/devkit').Executor} Executor */
+/** @typedef {import('./schema.d.json').EsbuildExecutor} EsbuildExecutor */
 
-const runExecutor: Executor<EsbuildExecutor> = async (options) => {
+/** @type {Executor<EsbuildExecutor>} */
+const runExecutor = async (options) => {
   const {entryPoints: patterns, format, outDir} = options;
 
-  const eps = patterns.reduce<string[]>((acc, pattern) => {
+  const eps = patterns.reduce((acc, pattern) => {
     if (pattern.startsWith('!')) {
       return acc.filter((match) => minimatch(match, pattern));
     }
@@ -40,6 +42,7 @@ const runExecutor: Executor<EsbuildExecutor> = async (options) => {
               args.importer &&
               args.path.startsWith('.')
             ) {
+              const require = createRequire(import.meta.url);
               const fullPath = require.resolve(
                 path.join(args.resolveDir, args.path)
               );

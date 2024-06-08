@@ -1,9 +1,6 @@
 import assert from 'node:assert';
 import path from 'node:path';
 
-import type {Executor, ExecutorContext} from '@nx/devkit';
-import type {JSONSchemaForNPMPackageJsonFiles} from '@schemastore/package';
-
 import {readPackageJson} from '@code-like-a-carpenter/tooling-common';
 
 // This can be fixed my moving executors into src
@@ -12,11 +9,16 @@ import {
   extractProjectName,
   extractProjectRoot,
   writePackageJson,
-} from '../../src/index.ts';
+} from '../../src/index.mjs';
 
-import type {PackageJsonExecutor} from './schema.json';
+/** @typedef {import('@nx/devkit').Executor} Executor */
+/** @typedef {import('@nx/devkit').ExecutorContext} ExecutorContext */
+/** @typedef {import('@schemastore/package').JSONSchemaForNPMPackageJsonFiles} JSONSchemaForNPMPackageJsonFiles */
 
-const runExecutor: Executor<PackageJsonExecutor> = async (
+/** @typedef {import('./schema.d.json').PackageJsonExecutor} PackageJsonExecutor */
+
+/** @type {Executor<PackageJsonExecutor>} */
+const runExecutor = async (
   {mjs = false, mts = false, type = 'package'},
   context
 ) => {
@@ -37,24 +39,27 @@ const runExecutor: Executor<PackageJsonExecutor> = async (
   };
 };
 
-async function configExample(
-  pkg: JSONSchemaForNPMPackageJsonFiles,
-  context: ExecutorContext
-) {
+/**
+ * @param { JSONSchemaForNPMPackageJsonFiles } pkg
+ * @param {ExecutorContext} context
+ */
+async function configExample(pkg, context) {
   const rootPackageJson = await loadRootPackageJson(context);
 
   pkg.engines = rootPackageJson.engines;
   pkg.private = true;
 }
 
+/**
+ *
+ * @param { JSONSchemaForNPMPackageJsonFiles } pkg
+ * @param { boolean } mjs
+ * @param { boolean } mts
+ * @param { Exclude<PackageJsonExecutor['type'], 'undefined'> } type
+ * @param { ExecutorContext } context
+ */
 // eslint-disable-next-line complexity
-async function config(
-  pkg: JSONSchemaForNPMPackageJsonFiles,
-  mjs: boolean,
-  mts: boolean,
-  type: Exclude<PackageJsonExecutor['type'], 'undefined'>,
-  context: ExecutorContext
-) {
+async function config(pkg, mjs, mts, type, context) {
   const packageName = extractProjectName(context);
   const rootPackageJson = await loadRootPackageJson(context);
 
@@ -134,9 +139,11 @@ async function config(
   }
 }
 
-async function loadRootPackageJson(
-  context: ExecutorContext
-): Promise<JSONSchemaForNPMPackageJsonFiles> {
+/**
+ * @param {ExecutorContext} context
+ * @returns {Promise<JSONSchemaForNPMPackageJsonFiles>}
+ */
+async function loadRootPackageJson(context) {
   const packageJsonPath = path.join(context.root, 'package.json');
   return readPackageJson(packageJsonPath);
 }

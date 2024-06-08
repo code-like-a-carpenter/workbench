@@ -1,11 +1,13 @@
 import {existsSync} from 'node:fs';
 import path from 'node:path';
 
-import type {CreateNodes, TargetConfiguration} from '@nx/devkit';
+import {addDependency, addPhase, addTarget} from './targets.mjs';
 
-import {addDependency, addPhase, addTarget} from './targets.ts';
+/** @typedef {import('@nx/devkit').CreateNodes} CreateNodes */
+/** @typedef {import('@nx/devkit').TargetConfiguration} TargetConfiguration */
 
-export const createNodes: CreateNodes = [
+/** @type {CreateNodes} */
+export const createNodes = [
   '**/package.json',
   // eslint-disable-next-line complexity
   async (projectConfigurationFile) => {
@@ -23,7 +25,8 @@ export const createNodes: CreateNodes = [
     const mjs = existsSync(path.resolve(projectRoot, 'src/index.mjs'));
     const mts = existsSync(path.resolve(projectRoot, 'src/index.mts'));
 
-    let targets: Record<string, TargetConfiguration> = {};
+    /** @type {Record<string, TargetConfiguration>} */
+    let targets = {};
     // Set up the basic phases of the build process
 
     // Codegen produces files that will be committed to the repo.
@@ -59,10 +62,11 @@ export const createNodes: CreateNodes = [
       executor: '@code-like-a-carpenter/tool-json-schema:json-schema',
       inputs: ['{projectRoot}/executors/*/schema.json'],
       options: {
+        extension: mjs || mts ? 'mts' : 'ts',
         includeExtension: true,
         schemas: ['{projectRoot}/executors/*/schema.json'],
       },
-      outputs: ['{projectRoot}/executors/*/schema.d.json.ts'],
+      outputs: ['{projectRoot}/executors/*/schema.d.json.*'],
     });
 
     if (projectName.includes('nx')) {
