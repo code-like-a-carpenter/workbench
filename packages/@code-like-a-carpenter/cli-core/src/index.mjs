@@ -1,16 +1,22 @@
-import type {Argv} from 'yargs';
 import y from 'yargs';
 import {hideBin} from 'yargs/helpers';
 
-import {load as loadConfig} from './config.ts';
+/** @typedef {import('yargs').Argv} Argv */
+/** @typedef {import('./types.mjs').Config} Config */
 
-export type RegisterPluginFunction = (yargs: Argv) => void | Promise<void>;
+import {load as loadConfig} from './config.mjs';
 
-export type {Config} from './config.ts';
+/**
+ * @callback RegisterPluginFunction
+ * @param {Argv} yargs
+ * @returns {void | Promise<void>}
+ */
 
-export function definePlugin(
-  fn: RegisterPluginFunction
-): RegisterPluginFunction {
+/**
+ * @param {RegisterPluginFunction} fn
+ * @returns {RegisterPluginFunction}
+ */
+export function definePlugin(fn) {
   return fn;
 }
 
@@ -29,7 +35,11 @@ export async function main() {
   yargs.demandCommand().help().argv;
 }
 
-async function load(pluginName: string) {
+/**
+ * @param {string} pluginName
+ * @returns {Promise<*>}
+ */
+async function load(pluginName) {
   // This is a little goofy, but given the garbage state of js tooling, we may
   // end up with multiple runtime wrappers and, therefore, mutiple layers of
   // default exports. This code will walk down the chain of default exports
@@ -43,6 +53,11 @@ async function load(pluginName: string) {
   return d;
 }
 
-export async function registerPlugin(yargs: Argv, fn: RegisterPluginFunction) {
+/**
+ * @param {Argv} yargs
+ * @param {RegisterPluginFunction} fn
+ * @returns {Promise<void>}
+ */
+export async function registerPlugin(yargs, fn) {
   await fn(yargs);
 }
