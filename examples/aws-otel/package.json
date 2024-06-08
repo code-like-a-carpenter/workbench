@@ -10,5 +10,6 @@
     "@code-like-a-carpenter/env": "*",
     "@code-like-a-carpenter/lambda-handlers": "*",
     "@code-like-a-carpenter/telemetry": "*"
-  }
+  },
+  "type": "module"
 }

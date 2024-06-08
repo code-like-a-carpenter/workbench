@@ -15,5 +15,6 @@
     "@code-like-a-carpenter/wait-for": "*",
     "@faker-js/faker": "^8.4.1",
     "base64url": "^3.0.1"
-  }
+  },
+  "type": "module"
 }
