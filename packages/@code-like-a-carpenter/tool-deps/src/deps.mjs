@@ -6,11 +6,15 @@ import {minimatch} from 'minimatch';
 
 import {findLocalPackages} from '@code-like-a-carpenter/tooling-common';
 
-import type {DepsExecutor} from './__generated__/deps-types.ts';
-import {load} from './config.ts';
-import {runDepcheck} from './depcheck.ts';
+/** @typedef {import('./__generated__/deps-types.mts').DepsExecutor} DepsExecutor */
+import {load} from './config.mjs';
+import {runDepcheck} from './depcheck.mjs';
 
-export async function handler(argv: DepsExecutor): Promise<void> {
+/**
+ * @param {DepsExecutor} argv
+ * @return {Promise<void>}
+ */
+export async function handler(argv) {
   const args = (await load({deps: argv})).deps;
   const localPackages = await findLocalPackages();
   if ('packageName' in args && typeof args.packageName === 'string') {
@@ -24,18 +28,23 @@ export async function handler(argv: DepsExecutor): Promise<void> {
   }
 }
 
-function ensureStrings(arr: readonly (number | string)[] = []): string[] {
+/**
+ * @param {readonly (number | string)[]} arr
+ * @return {string[]}
+ */
+function ensureStrings(arr = []) {
   return arr.map((item) => {
     assert(typeof item === 'string', 'Expected string');
     return item;
   });
 }
 
+/**
+ * @param {DepsExecutor & {readonly packageName: string}} args
+ * @param {Map<string, string>} localPackages
+ */
 // eslint-disable-next-line complexity
-export async function processSinglePackage(
-  args: DepsExecutor & {readonly packageName: string},
-  localPackages: Map<string, string>
-) {
+export async function processSinglePackage(args, localPackages) {
   const {
     awsSdkVersion,
     definitelyTyped,
@@ -60,10 +69,14 @@ export async function processSinglePackage(
     ensureStrings(definitelyTyped)
   );
 
-  const depsToAdd = new Set<string>();
-  const devDepsToAdd = new Set<string>();
-  const localDepsToAdd = new Set<string>();
-  const localDevDepsToAdd = new Set<string>();
+  /** @type {Set<string>} */
+  const depsToAdd = new Set();
+  /** @type {Set<string>} */
+  const devDepsToAdd = new Set();
+  /** @type {Set<string>} */
+  const localDepsToAdd = new Set();
+  /** @type {Set<string>} */
+  const localDevDepsToAdd = new Set();
 
   for (const [dep, places] of Object.entries(depcheckresults.missing)) {
     const isLocal = localPackages.has(dep);
@@ -151,11 +164,13 @@ export async function processSinglePackage(
   }
 }
 
-export async function addMissingLocalPackages(
-  packageName: string,
-  dependencies: string[],
-  dev: boolean
-) {
+/**
+ * @param {string} packageName
+ * @param {string[]} dependencies
+ * @param {boolean} dev
+ * @return {Promise<void>}
+ */
+export async function addMissingLocalPackages(packageName, dependencies, dev) {
   console.log('Adding missing local packages', packageName, dependencies, dev);
   assert(dependencies.length > 0, 'Received empty dependencies list');
 
@@ -174,16 +189,20 @@ export async function addMissingLocalPackages(
   );
 }
 
+/**
+ * @param {object} options
+ * @param { string} options.awsSdkVersion
+ * @param {readonly string[]} options.dependencies
+ * @param { boolean} options.dev
+ * @param { string} options.packageName
+ *
+ */
+
 export async function addMissingNodeModules({
   awsSdkVersion,
   dependencies,
   dev,
   packageName,
-}: {
-  readonly awsSdkVersion: string;
-  readonly dependencies: readonly string[];
-  readonly dev: boolean;
-  readonly packageName: string;
 }) {
   console.log('Adding missing node modules', packageName, dependencies, dev);
   assert(dependencies.length > 0, 'Received empty dependencies list');
@@ -230,10 +249,12 @@ export async function addMissingNodeModules({
   }
 }
 
-export async function removeExtraneousPackages(
-  packageName: string,
-  dependencies: string[]
-) {
+/**
+ * @param {string} packageName
+ * @param {readonly string[]} dependencies
+ * @return {Promise<void>}
+ */
+export async function removeExtraneousPackages(packageName, dependencies) {
   console.log('Removing extraneous packages', packageName, dependencies);
   assert(dependencies.length > 0, 'Received empty dependencies list');
 

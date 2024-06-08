@@ -1,6 +1,6 @@
 import {definePlugin} from '@code-like-a-carpenter/cli-core';
 
-import {handler as depsHandler} from '../deps.ts';
+import {handler as depsHandler} from '../deps.mjs';
 
 export const plugin = definePlugin((yargs) => {
   yargs.command(

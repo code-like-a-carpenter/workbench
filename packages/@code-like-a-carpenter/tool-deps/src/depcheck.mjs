@@ -4,11 +4,17 @@ import path from 'node:path';
 import depcheck from 'depcheck';
 import {minimatch} from 'minimatch';
 
+/**
+ * @param {string} packagePath
+ * @param {string} packageName
+ * @param {readonly string[]} ignoreDirs
+ * @param {readonly string[]} definitelyTyped
+ */
 export async function runDepcheck(
-  packagePath: string,
-  packageName: string,
-  ignoreDirs: readonly string[],
-  definitelyTyped: readonly string[]
+  packagePath,
+  packageName,
+  ignoreDirs,
+  definitelyTyped
 ) {
   const results = await depcheck(packagePath, {
     detectors: [
@@ -16,7 +22,7 @@ export async function runDepcheck(
       (node) => {
         if (node.type === 'CommentBlock' && node.value.includes('import')) {
           return Array.from(
-            (node.value as string).matchAll(/import\(['"](.*?)['"]\)/g)
+            node.value.matchAll(/import\(['"](.*?)['"]\)/g)
           ).map(([, match]) => match);
         }
 
