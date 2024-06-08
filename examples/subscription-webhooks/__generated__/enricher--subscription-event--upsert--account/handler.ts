@@ -1,7 +1,7 @@
 // This file is generated. Do not edit by hand.
 import {makeEnricher} from '@code-like-a-carpenter/foundation-runtime';
 
-import * as dependencies from '../../../dependencies.ts';
+import * as dependencies from '../../../dependencies.mts';
 import {SubscriptionEventUpsertAccountEnricher} from '../../src/enrich--subscription--upsert--account.ts';
 import type {
   SubscriptionEvent,

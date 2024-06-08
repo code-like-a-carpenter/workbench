@@ -35,7 +35,7 @@ import {
   UnexpectedError,
 } from '@code-like-a-carpenter/foundation-runtime';
 
-import {ddbDocClient} from '../../dependencies.ts';
+import {ddbDocClient} from '../../dependencies.mts';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends {[key: string]: unknown}> = {[K in keyof T]: T[K]};

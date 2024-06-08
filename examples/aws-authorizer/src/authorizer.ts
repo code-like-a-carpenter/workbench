@@ -9,7 +9,7 @@ import {
   handleRestTokenAuthorizerEvent,
 } from '@code-like-a-carpenter/lambda-handlers';
 
-import {exceptionTracingService} from '../../dependencies.ts';
+import {exceptionTracingService} from '../../dependencies.mts';
 
 type AuthorizerContext =
   | {

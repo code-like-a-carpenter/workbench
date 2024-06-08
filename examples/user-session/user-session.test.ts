@@ -1,14 +1,14 @@
 import assert from 'assert';
 
 import {faker} from '@faker-js/faker';
-import Base64 from 'base64url';
+import Base64Import from 'base64url';
 
 import {
   NotFoundError,
   OptimisticLockingError,
 } from '@code-like-a-carpenter/foundation-runtime';
 
-import {load} from '../test-helpers.ts';
+import {load} from '../test-helpers.mts';
 
 import {
   blindWriteUserSession,
@@ -17,6 +17,8 @@ import {
   readUserSession,
   updateUserSession,
 } from './__generated__/graphql.ts';
+
+const Base64 = Base64Import.default ?? Base64Import;
 
 const userSessionMatcher = {
   createdAt: expect.any(Date),

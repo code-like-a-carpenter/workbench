@@ -1,6 +1,6 @@
 import {handleRestEvent} from '@code-like-a-carpenter/lambda-handlers';
 
-import {exceptionTracingService} from '../../dependencies.ts';
+import {exceptionTracingService} from '../../dependencies.mts';
 
 import type {operations} from './__generated__/api.ts';
 
