@@ -2,11 +2,11 @@ import type {Argv} from 'yargs';
 import y from 'yargs';
 import {hideBin} from 'yargs/helpers';
 
-import {load as loadConfig} from './config';
+import {load as loadConfig} from './config.ts';
 
 export type RegisterPluginFunction = (yargs: Argv) => void | Promise<void>;
 
-export type {Config} from './config';
+export type {Config} from './config.ts';
 
 export function definePlugin(
   fn: RegisterPluginFunction

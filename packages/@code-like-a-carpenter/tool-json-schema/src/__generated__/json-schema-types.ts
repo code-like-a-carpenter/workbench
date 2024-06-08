@@ -10,6 +10,10 @@
  */
 export interface JsonSchemaTool {
   /**
+   * If true, the file extension will be included in the output filename
+   */
+  includeExtension?: boolean;
+  /**
    * If present, schemas will be written to this directory instead of of as siblings to their source files. Further, they'll be written as standard .ts files rather than .d.ts files
    */
   outDir?: string;

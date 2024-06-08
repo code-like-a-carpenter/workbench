@@ -6,7 +6,7 @@ import kebabCase from 'lodash.kebabcase';
 import {assert} from '@code-like-a-carpenter/assert';
 import {writePrettierFile} from '@code-like-a-carpenter/tooling-common';
 
-import type {ToolMetadata} from './metadata';
+import type {ToolMetadata} from './metadata.ts';
 
 export async function generatePluginFile({
   generatedDir,
@@ -23,7 +23,7 @@ import {definePlugin} from '@code-like-a-carpenter/cli-core';
 ${metadata
   .map(
     (m) =>
-      `import {handler as ${camelCase(m.toolName)}Handler} from '../${m.toolName}';`
+      `import {handler as ${camelCase(m.toolName)}Handler} from '../${m.toolName}.ts';`
   )
   .join('\n')}
 

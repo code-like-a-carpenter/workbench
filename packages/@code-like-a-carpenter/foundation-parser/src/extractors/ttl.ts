@@ -8,7 +8,7 @@ import {
   getDirective,
   getOptionalArgBooleanValue,
   getOptionalArgStringValue,
-} from '../helpers';
+} from '../helpers.ts';
 
 /**
  * Accepts a duration string and returns a number representing the duration in

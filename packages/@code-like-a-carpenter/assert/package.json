@@ -10,12 +10,10 @@
     ".": {
       "import": {
         "types": "./dist/types/index.d.mts",
-        "carpentry": "./src/index.ts",
-        "default": "./dist/esm/index.mjs"
+        "default": "./src/index.mjs"
       },
       "require": {
         "types": "./dist/cjs-types/index.d.ts",
-        "carpentry": "./src/index.ts",
         "default": "./dist/cjs/index.cjs"
       }
     },
@@ -24,7 +22,6 @@
   "homepage": "https://www.github.com/code-like-a-carpenter/workbench/tree/main/packages/@code-like-a-carpenter/assert",
   "license": "MIT",
   "repository": "git@github.com:code-like-a-carpenter/workbench.git",
-  "types": "dist/types",
   "publishConfig": {
     "access": "public"
   },

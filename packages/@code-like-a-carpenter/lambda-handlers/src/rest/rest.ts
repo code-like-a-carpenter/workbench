@@ -12,8 +12,8 @@ import {
   formatErrorResult,
   formatEvent,
   formatSuccessResult,
-} from './formatters';
-import type {RestCallback, SimplifiedOperationObject} from './types';
+} from './formatters.ts';
+import type {RestCallback, SimplifiedOperationObject} from './types.ts';
 
 /**
  * Creates a handler for an API Gateway REST API (aka, an API Gateway V1 API).

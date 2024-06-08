@@ -1,4 +1,4 @@
-import {ConsoleLogger} from './console-logger';
+import {ConsoleLogger} from './console-logger.ts';
 
 describe('ConsoleLogger', () => {
   let spy: jest.SpyInstance;

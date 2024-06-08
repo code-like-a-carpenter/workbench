@@ -17,6 +17,16 @@ ignorePatterns:
 
 overrides:
   - files:
+      - '**/*.mjs'
+      - '**/*.mts'
+    parserOptions:
+      sourceType: 'module'
+
+  - files:
+      - '**/*.mts'
+    parser: '@typescript-eslint/parser'
+
+  - files:
       - '**/*.graphql'
       - '**/*.graphqls'
     extends: 'plugin:@graphql-eslint/schema-recommended'
@@ -29,6 +39,7 @@ overrides:
       strict: off
 
   - files:
+      - '**/*.mts'
       - '**/*.ts'
       - '**/*.tsx'
     parserOptions:
@@ -40,6 +51,7 @@ overrides:
 
   - files:
       - '**/*.spec.*'
+      - '**/*.test.*'
       - 'test/jest/spec/**/*'
       - '**/__mocks__/**/*'
     env:
@@ -59,12 +71,15 @@ overrides:
       sort-keys: off
 
   - files:
+      - '*.d.mts'
       - '*.d.ts'
+      - '*.d.json.ts'
     rules:
       eslint-comments/disable-enable-pair: off
       eslint-comments/no-unlimited-disable: off
 
 parserOptions:
+  ecmaVersion: 2022
   sourceType: 'script'
 
 plugins:
@@ -84,6 +99,9 @@ rules:
     - 'error'
     - args: 'after-used'
       ignoreRestSiblings: true
+  import/extensions:
+    - error
+    - ignorePackages
   import/no-extraneous-dependencies:
     - error
     - devDependencies:

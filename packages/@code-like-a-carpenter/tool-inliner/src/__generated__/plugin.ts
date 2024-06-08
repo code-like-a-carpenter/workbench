@@ -1,6 +1,6 @@
 import {definePlugin} from '@code-like-a-carpenter/cli-core';
 
-import {handler as inlinerHandler} from '../inliner';
+import {handler as inlinerHandler} from '../inliner.ts';
 
 export const plugin = definePlugin((yargs) => {
   yargs.command(

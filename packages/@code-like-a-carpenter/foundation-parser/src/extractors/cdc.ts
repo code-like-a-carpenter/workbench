@@ -22,8 +22,8 @@ import type {
   DispatcherConfig,
 } from '@code-like-a-carpenter/foundation-intermediate-representation';
 
-import type {Config} from '../config';
-import {DispatcherConfigSchema, HandlerConfigSchema} from '../config';
+import type {Config} from '../config.ts';
+import {DispatcherConfigSchema, HandlerConfigSchema} from '../config.ts';
 import {
   filterNull,
   getArgEnumValue,
@@ -31,13 +31,13 @@ import {
   getOptionalArg,
   getOptionalArgBooleanValue,
   getOptionalArgObjectValue,
-} from '../helpers';
+} from '../helpers.ts';
 import {
   resolveActionsModuleId,
   resolveDependenciesModuleId,
   resolveHandlerModuleId,
-} from '../paths';
-import {extractTableName} from '../tables';
+} from '../paths.ts';
+import {extractTableName} from '../tables.ts';
 
 export function extractDispatcherConfig(
   config: Config,
@@ -200,7 +200,7 @@ function extractCommonConfig(
     actionsModuleId: resolveActionsModuleId(config, directory),
     directory,
     handlerImportName,
-    handlerModuleId: resolveHandlerModuleId(type, directory, handler),
+    handlerModuleId: resolveHandlerModuleId(config, type, directory, handler),
     memorySize,
     nestedStackLocation,
     runtimeModuleId: '@code-like-a-carpenter/foundation-runtime',

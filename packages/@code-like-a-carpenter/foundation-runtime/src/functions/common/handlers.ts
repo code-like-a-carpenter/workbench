@@ -3,11 +3,11 @@ import type {Context, SQSHandler} from 'aws-lambda';
 import {assert} from '@code-like-a-carpenter/assert';
 import {handleSQSEvent} from '@code-like-a-carpenter/lambda-handlers';
 
-import type {WithExceptionTracing} from '../../dependencies';
+import type {WithExceptionTracing} from '../../dependencies.ts';
 
-import {retry} from './retry';
-import type {UnmarshalledDynamoDBRecord} from './unmarshall-record';
-import {unmarshallRecord} from './unmarshall-record';
+import {retry} from './retry.ts';
+import type {UnmarshalledDynamoDBRecord} from './unmarshall-record.ts';
+import {unmarshallRecord} from './unmarshall-record.ts';
 
 export type Callback = (
   record: UnmarshalledDynamoDBRecord,

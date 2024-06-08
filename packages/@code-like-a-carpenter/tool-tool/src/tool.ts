@@ -13,15 +13,15 @@ import {
   writePrettierFile,
 } from '@code-like-a-carpenter/tooling-common';
 
-import type {ToolTool} from './__generated__/tool-types';
+import type {ToolTool} from './__generated__/tool-types.ts';
 import {
   addExecutorsToJson,
   addExecutorsToPackageJson,
   generateExecutors,
-} from './executors';
-import {generatePluginFile} from './generate-plugin';
-import type {ToolMetadata} from './metadata';
-import {loadToolMetadata} from './metadata';
+} from './executors.ts';
+import {generatePluginFile} from './generate-plugin.ts';
+import type {ToolMetadata} from './metadata.ts';
+import {loadToolMetadata} from './metadata.ts';
 
 export async function handler({schemaDir}: ToolTool) {
   const metadata = await loadToolMetadata(schemaDir);
@@ -112,12 +112,12 @@ export async function handler(args: ${item.typesImportName}): Promise<void> {}`
 
     if (
       !indexContent.includes(
-        `export {plugin as default} from './__generated__/plugin';`
+        `export {plugin as default} from './__generated__/plugin.ts';`
       )
     ) {
       await writePrettierFile(
         path.join(metadata.root, 'src', 'index.ts'),
-        `export {plugin as default} from './__generated__/plugin';\n${indexContent.trim()}`
+        `export {plugin as default} from './__generated__/plugin.ts';\n${indexContent.trim()}`
       );
     }
   } catch (err) {

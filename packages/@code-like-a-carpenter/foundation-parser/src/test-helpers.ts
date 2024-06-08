@@ -2,8 +2,8 @@ import {buildSchema} from 'graphql';
 
 import {schema as coreSchema} from '@code-like-a-carpenter/foundation-intermediate-representation';
 
-import {ParserConfigSchema} from './config';
-import {parse} from './parser';
+import {ParserConfigSchema} from './config.ts';
+import {parse} from './parser.ts';
 
 export async function parseSchema(raw: string) {
   const schema = buildSchema(`${coreSchema}\n${raw}`);
@@ -12,8 +12,9 @@ export async function parseSchema(raw: string) {
     schema,
     [],
     ParserConfigSchema.parse({
-      actionsModuleId: './placeholder/actions',
-      dependenciesModuleId: './placeholder/dependencies',
+      actionsModuleId: './placeholder/actions.ts',
+      dependenciesModuleId: './placeholder/dependencies.ts',
+      requireExtensions: true,
     }),
     {
       outputFile: './placeholder/output',

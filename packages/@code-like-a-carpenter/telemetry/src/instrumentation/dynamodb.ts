@@ -4,11 +4,11 @@ import {BasicTracerProvider} from '@opentelemetry/sdk-trace-base';
 import type {DynamoDBBatchResponse, DynamoDBStreamEvent} from 'aws-lambda';
 import type {DynamoDBRecord} from 'aws-lambda/trigger/dynamodb-stream';
 
-import type {ExceptionTracingService} from '..';
-import {setupExceptionTracing} from '..';
-import {runWithNewSpan} from '../run-with';
+import type {ExceptionTracingService} from '../index.ts';
+import {setupExceptionTracing} from '../index.ts';
+import {runWithNewSpan} from '../run-with.ts';
 
-import type {NoVoidHandler} from './types';
+import type {NoVoidHandler} from './types.ts';
 
 export type NoVoidDynamoDBStreamHandler = NoVoidHandler<
   DynamoDBStreamEvent,

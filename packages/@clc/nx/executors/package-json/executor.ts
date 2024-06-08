@@ -6,12 +6,18 @@ import type {JSONSchemaForNPMPackageJsonFiles} from '@schemastore/package';
 
 import {readPackageJson} from '@code-like-a-carpenter/tooling-common';
 
-import {extractProjectName, extractProjectRoot, writePackageJson} from '../..';
+// This can be fixed my moving executors into src
+// eslint-disable-next-line no-restricted-imports
+import {
+  extractProjectName,
+  extractProjectRoot,
+  writePackageJson,
+} from '../../src/index.ts';
 
-import type {PackageJsonExecutor} from './schema';
+import type {PackageJsonExecutor} from './schema.json';
 
 const runExecutor: Executor<PackageJsonExecutor> = async (
-  {type = 'package'},
+  {mjs = false, mts = false, type = 'package'},
   context
 ) => {
   const root = extractProjectRoot(context);
@@ -21,7 +27,7 @@ const runExecutor: Executor<PackageJsonExecutor> = async (
   if (type === 'example') {
     await configExample(pkg, context);
   } else {
-    await config(pkg, type, context);
+    await config(pkg, mjs, mts, type, context);
   }
 
   await writePackageJson(packageJsonPath, pkg);
@@ -41,9 +47,12 @@ async function configExample(
   pkg.private = true;
 }
 
+// eslint-disable-next-line complexity
 async function config(
   pkg: JSONSchemaForNPMPackageJsonFiles,
-  type: 'cli' | 'package',
+  mjs: boolean,
+  mts: boolean,
+  type: Exclude<PackageJsonExecutor['type'], 'undefined'>,
   context: ExecutorContext
 ) {
   const packageName = extractProjectName(context);
@@ -62,13 +71,17 @@ async function config(
       /* eslint-disable sort-keys */
       // `types` should [always come first](https://nodejs.org/api/packages.html#community-conditions-definitions)
       import: {
-        types: './dist/types/index.d.mts',
-        carpentry: './src/index.ts',
-        default: './dist/esm/index.mjs',
+        types:
+          mjs || mts ? './dist/types/index.d.mts' : './dist/types/index.d.ts',
+        ...(mjs ? {} : {carpentry: mts ? './src/index.mts' : './src/index.ts'}),
+        default: mjs ? './src/index.mjs' : './dist/esm/index.mjs',
       },
       require: {
-        types: './dist/cjs-types/index.d.ts',
-        carpentry: './src/index.ts',
+        types:
+          mjs || mts
+            ? './dist/cjs-types/index.d.ts'
+            : './dist/types/index.d.ts',
+        ...(mjs ? {} : {carpentry: mts ? './src/index.mts' : './src/index.ts'}),
         default: './dist/cjs/index.cjs',
       },
       /* eslint-enable sort-keys */
@@ -103,7 +116,7 @@ async function config(
   pkg.license = pkg.license ?? rootPackageJson.license;
   pkg.name = packageName;
   pkg.repository = rootPackageJson.repository;
-  pkg.types = 'dist/types';
+  delete pkg.types;
 
   if (!pkg.publishConfig?.access || pkg.publishConfig.access === 'public') {
     pkg.publishConfig = {

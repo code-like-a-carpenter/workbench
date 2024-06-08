@@ -1,1 +1,1 @@
-export * from './aws-env-loader';
+export * from './aws-env-loader.ts';

@@ -1,6 +1,6 @@
 import {FieldProvider} from '@code-like-a-carpenter/foundation-runtime';
 
-import type {Account} from '../__generated__/graphql';
+import type {Account} from '../__generated__/graphql.ts';
 
 export class AccountIndexedPlanNameProvider extends FieldProvider<
   Account,

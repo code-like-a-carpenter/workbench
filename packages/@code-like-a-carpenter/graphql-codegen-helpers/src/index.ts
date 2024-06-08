@@ -1,1 +1,1 @@
-export * from './make-plugin';
+export * from './make-plugin.ts';

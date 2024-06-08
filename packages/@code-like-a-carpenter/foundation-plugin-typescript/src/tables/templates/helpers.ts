@@ -5,8 +5,8 @@ import type {
   PrimaryKeyConfig,
 } from '@code-like-a-carpenter/foundation-intermediate-representation';
 
-import type {Config} from '../../config';
-import {filterNull} from '../../helpers';
+import type {Config} from '../../config.ts';
+import {filterNull} from '../../helpers.ts';
 
 /** Gets the TypeScript type for that corresponds to the field. */
 export function getTypeScriptTypeForField({

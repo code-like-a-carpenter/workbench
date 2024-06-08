@@ -9,14 +9,14 @@ import {CLOUDFORMATION_SCHEMA} from 'js-yaml-cloudformation-schema';
 import {parse} from '@code-like-a-carpenter/foundation-parser';
 import {makePlugin} from '@code-like-a-carpenter/graphql-codegen-helpers';
 
-import {defineEnricher, defineReactor, defineTableCdc} from './cdc';
-import {defineReducer} from './cdc/reducer';
-import type {Config} from './config';
-import {ConfigSchema} from './config';
-import {combineFragments} from './fragments/combine-fragments';
-import {defineTable} from './table';
-import {applyTransforms} from './transforms';
-import type {ServerlessApplicationModel} from './types';
+import {defineEnricher, defineReactor, defineTableCdc} from './cdc/index.ts';
+import {defineReducer} from './cdc/reducer.ts';
+import type {Config} from './config.ts';
+import {ConfigSchema} from './config.ts';
+import {combineFragments} from './fragments/combine-fragments.ts';
+import {defineTable} from './table.ts';
+import {applyTransforms} from './transforms.ts';
+import type {ServerlessApplicationModel} from './types.ts';
 
 export {schema as addToSchema} from '@code-like-a-carpenter/foundation-intermediate-representation';
 

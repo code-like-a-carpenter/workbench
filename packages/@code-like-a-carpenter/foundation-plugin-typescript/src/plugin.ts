@@ -5,17 +5,17 @@ import type {PluginFunction} from '@graphql-codegen/plugin-helpers';
 import {parse} from '@code-like-a-carpenter/foundation-parser';
 import {makePlugin} from '@code-like-a-carpenter/graphql-codegen-helpers';
 
-import type {Config} from './config';
-import {ConfigSchema} from './config';
-import {filterNull} from './helpers';
-import {blindWriteTemplate} from './tables/templates/blind-write';
-import {createItemTemplate} from './tables/templates/create-item';
-import {deleteItemTemplate} from './tables/templates/delete-item';
-import {marshallTpl} from './tables/templates/marshall';
-import {queryTemplate} from './tables/templates/query';
-import {readItemTemplate} from './tables/templates/read-item';
-import {unmarshallTpl} from './tables/templates/unmarshall';
-import {updateItemTemplate} from './tables/templates/update-item';
+import type {Config} from './config.ts';
+import {ConfigSchema} from './config.ts';
+import {filterNull} from './helpers.ts';
+import {blindWriteTemplate} from './tables/templates/blind-write.ts';
+import {createItemTemplate} from './tables/templates/create-item.ts';
+import {deleteItemTemplate} from './tables/templates/delete-item.ts';
+import {marshallTpl} from './tables/templates/marshall.ts';
+import {queryTemplate} from './tables/templates/query.ts';
+import {readItemTemplate} from './tables/templates/read-item.ts';
+import {unmarshallTpl} from './tables/templates/unmarshall.ts';
+import {updateItemTemplate} from './tables/templates/update-item.ts';
 
 export {schema as addToSchema} from '@code-like-a-carpenter/foundation-intermediate-representation';
 

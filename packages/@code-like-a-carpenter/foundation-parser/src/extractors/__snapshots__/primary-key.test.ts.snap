@@ -3,7 +3,7 @@
 exports[`@compositeKey defines a composite primary key with no sort key fields 2`] = `
 {
   "additionalImports": [],
-  "dependenciesModuleId": "dependencies",
+  "dependenciesModuleId": "dependencies.ts",
   "models": [
     {
       "changeDataCaptureConfig": [],
@@ -100,7 +100,7 @@ exports[`@compositeKey defines a composite primary key with no sort key fields 2
       },
       "secondaryIndexes": [],
       "table": {
-        "dependenciesModuleId": "../dependencies",
+        "dependenciesModuleId": "../dependencies.ts",
         "enablePointInTimeRecovery": true,
         "enableStreaming": false,
         "hasCdc": false,
@@ -143,7 +143,7 @@ exports[`@compositeKey defines a composite primary key with no sort key fields 2
   ],
   "tables": [
     {
-      "dependenciesModuleId": "../dependencies",
+      "dependenciesModuleId": "../dependencies.ts",
       "enablePointInTimeRecovery": true,
       "enableStreaming": false,
       "hasCdc": false,
@@ -187,7 +187,7 @@ exports[`@compositeKey defines a composite primary key with no sort key fields 2
 exports[`@compositeKey defines composite primary keys 2`] = `
 {
   "additionalImports": [],
-  "dependenciesModuleId": "dependencies",
+  "dependenciesModuleId": "dependencies.ts",
   "models": [
     {
       "changeDataCaptureConfig": [],
@@ -330,7 +330,7 @@ exports[`@compositeKey defines composite primary keys 2`] = `
       },
       "secondaryIndexes": [],
       "table": {
-        "dependenciesModuleId": "../dependencies",
+        "dependenciesModuleId": "../dependencies.ts",
         "enablePointInTimeRecovery": true,
         "enableStreaming": false,
         "hasCdc": false,
@@ -389,7 +389,7 @@ exports[`@compositeKey defines composite primary keys 2`] = `
   ],
   "tables": [
     {
-      "dependenciesModuleId": "../dependencies",
+      "dependenciesModuleId": "../dependencies.ts",
       "enablePointInTimeRecovery": true,
       "enableStreaming": false,
       "hasCdc": false,
@@ -449,7 +449,7 @@ exports[`@compositeKey defines composite primary keys 2`] = `
 exports[`@compositeKey defines multi-field composite primary keys 2`] = `
 {
   "additionalImports": [],
-  "dependenciesModuleId": "dependencies",
+  "dependenciesModuleId": "dependencies.ts",
   "models": [
     {
       "changeDataCaptureConfig": [],
@@ -652,7 +652,7 @@ exports[`@compositeKey defines multi-field composite primary keys 2`] = `
       },
       "secondaryIndexes": [],
       "table": {
-        "dependenciesModuleId": "../dependencies",
+        "dependenciesModuleId": "../dependencies.ts",
         "enablePointInTimeRecovery": true,
         "enableStreaming": false,
         "hasCdc": false,
@@ -741,7 +741,7 @@ exports[`@compositeKey defines multi-field composite primary keys 2`] = `
   ],
   "tables": [
     {
-      "dependenciesModuleId": "../dependencies",
+      "dependenciesModuleId": "../dependencies.ts",
       "enablePointInTimeRecovery": true,
       "enableStreaming": false,
       "hasCdc": false,
@@ -831,7 +831,7 @@ exports[`@compositeKey defines multi-field composite primary keys 2`] = `
 exports[`@compositeKey defines multi-field composite primary keys with single-field partition key 2`] = `
 {
   "additionalImports": [],
-  "dependenciesModuleId": "dependencies",
+  "dependenciesModuleId": "dependencies.ts",
   "models": [
     {
       "changeDataCaptureConfig": [],
@@ -1004,7 +1004,7 @@ exports[`@compositeKey defines multi-field composite primary keys with single-fi
       },
       "secondaryIndexes": [],
       "table": {
-        "dependenciesModuleId": "../dependencies",
+        "dependenciesModuleId": "../dependencies.ts",
         "enablePointInTimeRecovery": true,
         "enableStreaming": false,
         "hasCdc": false,
@@ -1078,7 +1078,7 @@ exports[`@compositeKey defines multi-field composite primary keys with single-fi
   ],
   "tables": [
     {
-      "dependenciesModuleId": "../dependencies",
+      "dependenciesModuleId": "../dependencies.ts",
       "enablePointInTimeRecovery": true,
       "enableStreaming": false,
       "hasCdc": false,
@@ -1153,7 +1153,7 @@ exports[`@compositeKey defines multi-field composite primary keys with single-fi
 exports[`@compositeKey defines multi-field composite primary keys with single-field sort key 2`] = `
 {
   "additionalImports": [],
-  "dependenciesModuleId": "dependencies",
+  "dependenciesModuleId": "dependencies.ts",
   "models": [
     {
       "changeDataCaptureConfig": [],
@@ -1326,7 +1326,7 @@ exports[`@compositeKey defines multi-field composite primary keys with single-fi
       },
       "secondaryIndexes": [],
       "table": {
-        "dependenciesModuleId": "../dependencies",
+        "dependenciesModuleId": "../dependencies.ts",
         "enablePointInTimeRecovery": true,
         "enableStreaming": false,
         "hasCdc": false,
@@ -1400,7 +1400,7 @@ exports[`@compositeKey defines multi-field composite primary keys with single-fi
   ],
   "tables": [
     {
-      "dependenciesModuleId": "../dependencies",
+      "dependenciesModuleId": "../dependencies.ts",
       "enablePointInTimeRecovery": true,
       "enableStreaming": false,
       "hasCdc": false,
@@ -1475,7 +1475,7 @@ exports[`@compositeKey defines multi-field composite primary keys with single-fi
 exports[`@partitionKey defines multi-field simple primary keys 2`] = `
 {
   "additionalImports": [],
-  "dependenciesModuleId": "dependencies",
+  "dependenciesModuleId": "dependencies.ts",
   "models": [
     {
       "changeDataCaptureConfig": [],
@@ -1613,7 +1613,7 @@ exports[`@partitionKey defines multi-field simple primary keys 2`] = `
       },
       "secondaryIndexes": [],
       "table": {
-        "dependenciesModuleId": "../dependencies",
+        "dependenciesModuleId": "../dependencies.ts",
         "enablePointInTimeRecovery": true,
         "enableStreaming": false,
         "hasCdc": false,
@@ -1667,7 +1667,7 @@ exports[`@partitionKey defines multi-field simple primary keys 2`] = `
   ],
   "tables": [
     {
-      "dependenciesModuleId": "../dependencies",
+      "dependenciesModuleId": "../dependencies.ts",
       "enablePointInTimeRecovery": true,
       "enableStreaming": false,
       "hasCdc": false,
@@ -1722,7 +1722,7 @@ exports[`@partitionKey defines multi-field simple primary keys 2`] = `
 exports[`@partitionKey defines simple primary keys 2`] = `
 {
   "additionalImports": [],
-  "dependenciesModuleId": "dependencies",
+  "dependenciesModuleId": "dependencies.ts",
   "models": [
     {
       "changeDataCaptureConfig": [],
@@ -1815,7 +1815,7 @@ exports[`@partitionKey defines simple primary keys 2`] = `
       },
       "secondaryIndexes": [],
       "table": {
-        "dependenciesModuleId": "../dependencies",
+        "dependenciesModuleId": "../dependencies.ts",
         "enablePointInTimeRecovery": true,
         "enableStreaming": false,
         "hasCdc": false,
@@ -1854,7 +1854,7 @@ exports[`@partitionKey defines simple primary keys 2`] = `
   ],
   "tables": [
     {
-      "dependenciesModuleId": "../dependencies",
+      "dependenciesModuleId": "../dependencies.ts",
       "enablePointInTimeRecovery": true,
       "enableStreaming": false,
       "hasCdc": false,

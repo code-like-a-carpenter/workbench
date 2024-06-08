@@ -1,4 +1,4 @@
-import './config';
+import './config.ts';
 
 import {definePlugin} from '@code-like-a-carpenter/cli-core';
 import {load} from '@code-like-a-carpenter/workbench-config';

@@ -5,13 +5,21 @@ import type {GraphQLObjectType} from 'graphql';
 
 import {assert} from '@code-like-a-carpenter/assert';
 
-import type {Config} from './config';
+import type {Config} from './config.ts';
 
 /** Resolves the path from the handler to the actions module. */
 export function resolveActionsModuleId(config: Config, directory: string) {
   if (config.actionsModuleId.startsWith('.')) {
-    const resolved = path.relative(directory, config.actionsModuleId);
-    return resolved.replace(new RegExp(`${path.extname(resolved)}$`), '');
+    const importPath = path.relative(directory, config.actionsModuleId);
+
+    if (config.requireExtensions) {
+      assert(
+        path.extname(importPath),
+        `Expected ${importPath} to actionsModuleId to have an extension in file`
+      );
+    }
+
+    return importPath;
   }
   return config.actionsModuleId;
 }
@@ -22,12 +30,22 @@ export function resolveActionsModuleId(config: Config, directory: string) {
  */
 export function resolveDependenciesModuleId(config: Config, directory: string) {
   if (config.dependenciesModuleId.startsWith('.')) {
-    return path.relative(directory, config.dependenciesModuleId);
+    const importPath = path.relative(directory, config.dependenciesModuleId);
+
+    if (config.requireExtensions) {
+      assert(
+        path.extname(importPath),
+        `Expected ${importPath} to dependenciesModuleId to have an extension`
+      );
+    }
+
+    return importPath;
   }
   return config.dependenciesModuleId;
 }
 
 export function resolveHandlerModuleId(
+  config: Config,
   type: GraphQLObjectType,
   directory: string,
   handler: string
@@ -61,5 +79,17 @@ export function resolveHandlerModuleId(
 
   const absolutePathToHandler = path.join(path.dirname(schemaFile), handler);
   const absolutePathToDirectory = path.resolve(directory);
-  return path.relative(absolutePathToDirectory, absolutePathToHandler);
+  const importPath = path.relative(
+    absolutePathToDirectory,
+    absolutePathToHandler
+  );
+
+  if (config.requireExtensions) {
+    assert(
+      path.extname(importPath),
+      `Expected ${importPath} to have an extension in file ${schemaFile}`
+    );
+  }
+
+  return importPath;
 }

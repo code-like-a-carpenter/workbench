@@ -2,7 +2,7 @@ import stringify from 'fast-safe-stringify';
 
 import {env} from '@code-like-a-carpenter/env';
 
-import type {Meta, ConsoleLevels, LeveledLogger} from './types';
+import type {Meta, ConsoleLevels, LeveledLogger} from './types.ts';
 
 const PARENT = Symbol('parent');
 const PARENT_KEY = Symbol('parent_key');

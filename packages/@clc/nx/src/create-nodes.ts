@@ -3,7 +3,7 @@ import path from 'node:path';
 
 import type {CreateNodes, TargetConfiguration} from '@nx/devkit';
 
-import {addDependency, addPhase, addTarget} from './targets';
+import {addDependency, addPhase, addTarget} from './targets.ts';
 
 export const createNodes: CreateNodes = [
   '**/package.json',
@@ -19,6 +19,9 @@ export const createNodes: CreateNodes = [
     if (projectRoot === '.') {
       return {};
     }
+
+    const mjs = existsSync(path.resolve(projectRoot, 'src/index.mjs'));
+    const mts = existsSync(path.resolve(projectRoot, 'src/index.mts'));
 
     let targets: Record<string, TargetConfiguration> = {};
     // Set up the basic phases of the build process
@@ -56,9 +59,10 @@ export const createNodes: CreateNodes = [
       executor: '@code-like-a-carpenter/tool-json-schema:json-schema',
       inputs: ['{projectRoot}/executors/*/schema.json'],
       options: {
+        includeExtension: true,
         schemas: ['{projectRoot}/executors/*/schema.json'],
       },
-      outputs: ['{projectRoot}/executors/*/schema.d.ts'],
+      outputs: ['{projectRoot}/executors/*/schema.d.json.ts'],
     });
 
     if (projectName.includes('nx')) {
@@ -80,42 +84,66 @@ export const createNodes: CreateNodes = [
       type = 'cli';
     } else if (projectConfigurationFile.startsWith('examples')) {
       type = 'example';
+    } else if (projectName.split('/').pop()?.startsWith('tool-')) {
+      type = 'tool';
     }
 
-    if (type === 'package' || type === 'cli') {
+    if (type === 'package' || type === 'cli' || type === 'tool') {
       addTarget(targets, 'build', 'cjs', {
         cache: true,
         dependsOn: ['codegen'],
         executor: '@clc/nx:esbuild',
         options: {
-          entryPoints: ['{projectRoot}/src/**/*.[jt]s?(x)', '!**/*.test.*'],
+          entryPoints: ['{projectRoot}/src/**/*.?(m)[jt]s?(x)', '!**/*.test.*'],
           format: 'cjs',
           outDir: '{projectRoot}/dist/cjs',
         },
         outputs: ['{projectRoot}/dist/cjs'],
       });
 
-      addTarget(targets, 'build', 'esm', {
-        cache: true,
-        dependsOn: ['codegen'],
-        executor: '@clc/nx:esbuild',
-        inputs: ['{projectRoot}/src/**/*'],
-        options: {
-          entryPoints: ['{projectRoot}/src/**/*.[jt]s?(x)', '!**/*.test.*'],
-          format: 'esm',
-          outDir: '{projectRoot}/dist/esm',
-        },
-        outputs: ['{projectRoot}/dist/esm'],
-      });
+      if (!mjs) {
+        addTarget(targets, 'build', 'esm', {
+          cache: true,
+          dependsOn: ['codegen'],
+          executor: '@clc/nx:esbuild',
+          inputs: ['{projectRoot}/src/**/*'],
+          options: {
+            entryPoints: [
+              '{projectRoot}/src/**/*.?(m)[jt]s?(x)',
+              '!**/*.test.*',
+            ],
+            format: 'esm',
+            outDir: '{projectRoot}/dist/esm',
+          },
+          outputs: ['{projectRoot}/dist/esm'],
+        });
+      }
 
       addTarget(targets, 'build', 'types', {
         cache: true,
         dependsOn: ['^build:types', 'codegen'],
         executor: 'nx:run-commands',
+        inputs: [
+          'sharedGlobals',
+          '{workspaceRoot}/tsconfig.base.json',
+          '{workspaceRoot}/tsconfig.references.json',
+          '{workspaceRoot}/tsconfig.json',
+          '{projectRoot}/tsconfig.json',
+          '{projectRoot}/package.json',
+          '{projectRoot}/src/**/*.[jt]s?(x)',
+        ],
         options: {
-          command: `tsc --project {projectRoot}/tsconfig.json && scripts/dmts-to-dts {projectRoot}`,
+          command: mjs
+            ? `tsc --project {projectRoot}/tsconfig.json && scripts/dmts-to-dts {projectRoot}`
+            : mts
+              ? `tsc --project {projectRoot}/tsconfig.json && scripts/dmts-to-dts {projectRoot}`
+              : `tsc --project {projectRoot}/tsconfig.json`,
         },
-        outputs: ['{projectRoot}/dist/types'],
+        outputs: [
+          '{projectRoot}/dist/.tsconfig.tsbuildinfo',
+          '{projectRoot}/dist/types',
+          '{projectRoot}/dist/cjs-types',
+        ],
       });
     }
 
@@ -144,7 +172,7 @@ export const createNodes: CreateNodes = [
       cache: true,
       executor: '@clc/nx:package-json',
       inputs: ['{workspaceRoot}/package.json'],
-      options: {type},
+      options: {mjs, mts, type},
       outputs: ['{projectRoot}/package.json'],
     });
 
@@ -220,7 +248,7 @@ export const createNodes: CreateNodes = [
       }
     }
 
-    if (projectName.split('/').pop()?.startsWith('tool-')) {
+    if (type === 'tool') {
       addTarget(targets, 'codegen', 'tool', {
         cache: true,
         executor: '@code-like-a-carpenter/tool-tool:tool',
@@ -236,7 +264,6 @@ export const createNodes: CreateNodes = [
           '{projectRoot}/src/__generated__/*-types.ts',
         ],
       });
-      addDependency(targets, 'build:types', 'codegen:tool');
     }
 
     if (
@@ -259,6 +286,14 @@ export const createNodes: CreateNodes = [
     targets = Object.fromEntries(
       Object.entries(targets).sort(([k1], [k2]) => k1.localeCompare(k2))
     );
+
+    if (type === 'tool') {
+      addDependency(targets, 'build:types', 'codegen:tool');
+      // codegen:tool can't work until the cjs for every tool exists. This should
+      // probably be something like "anything that depends on a tool needs all
+      // tools to be fully built", but I'm not sure how to express that
+      addDependency(targets, 'codegen:tool', '^build:cjs');
+    }
 
     return {
       projects: {

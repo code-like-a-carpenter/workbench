@@ -5,8 +5,8 @@ import type {
   CreateAccountInput,
   SubscriptionEvent,
   UpdateAccountInput,
-} from '../__generated__/graphql';
-import {readAccount} from '../__generated__/graphql';
+} from '../__generated__/graphql.ts';
+import {readAccount} from '../__generated__/graphql.ts';
 
 export class SubscriptionEventUpsertAccountEnricher extends Enricher<
   SubscriptionEvent,

@@ -8,14 +8,14 @@ import type {
 import type {
   AWSIAMPolicy,
   Resource7,
-} from '../__generated__/json-schemas/serverless-application-model';
-import type {Config} from '../config';
-import {combineFragments} from '../fragments/combine-fragments';
-import {makeKmsKey} from '../fragments/kms-key';
-import {writeLambda} from '../fragments/lambda';
-import {filterNull} from '../helpers';
-import {makeHandlerStack, makeHandlerStackName} from '../stacks/handler';
-import type {ServerlessApplicationModel} from '../types';
+} from '../__generated__/json-schemas/serverless-application-model.ts';
+import type {Config} from '../config.ts';
+import {combineFragments} from '../fragments/combine-fragments.ts';
+import {makeKmsKey} from '../fragments/kms-key.ts';
+import {writeLambda} from '../fragments/lambda.ts';
+import {filterNull} from '../helpers.ts';
+import {makeHandlerStack, makeHandlerStackName} from '../stacks/handler.ts';
+import type {ServerlessApplicationModel} from '../types.ts';
 
 /** generate the dispatcher lambda function */
 export function makeHandler(

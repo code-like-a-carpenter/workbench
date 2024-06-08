@@ -1,2 +1,2 @@
-export * from './codegen';
-export * from './config';
+export * from './codegen.ts';
+export * from './config.ts';

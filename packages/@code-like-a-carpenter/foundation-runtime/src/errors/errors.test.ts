@@ -1,10 +1,10 @@
 import {ServiceException} from '@aws-sdk/smithy-client';
 
-import {AlreadyExistsError} from './already-exists-error';
-import {NotFoundError} from './not-found-error';
-import {OptimisticLockingError} from './optimistic-locking-error';
-import {UnexpectedAwsError} from './unexpected-aws-error';
-import {UnexpectedError} from './unexpected-error';
+import {AlreadyExistsError} from './already-exists-error.ts';
+import {NotFoundError} from './not-found-error.ts';
+import {OptimisticLockingError} from './optimistic-locking-error.ts';
+import {UnexpectedAwsError} from './unexpected-aws-error.ts';
+import {UnexpectedError} from './unexpected-error.ts';
 
 describe('AlreadyExistsError', () => {
   it('stringifies', () => {

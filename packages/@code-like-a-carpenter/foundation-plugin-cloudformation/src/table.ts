@@ -1,7 +1,7 @@
 import type {Table} from '@code-like-a-carpenter/foundation-intermediate-representation';
 
-import type {AWSDynamoDBTable} from './__generated__/json-schemas/serverless-application-model';
-import type {ServerlessApplicationModel} from './types';
+import type {AWSDynamoDBTable} from './__generated__/json-schemas/serverless-application-model.ts';
+import type {ServerlessApplicationModel} from './types.ts';
 
 /* eslint-disable complexity */
 /** cloudformation generator */

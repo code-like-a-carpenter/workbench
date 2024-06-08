@@ -1,8 +1,8 @@
 import type {Executor} from '@nx/devkit';
 
-import {handler} from '../inliner';
+import {handler} from '../inliner.ts';
 
-import type {InlinerExecutor} from './inliner-types';
+import type {InlinerExecutor} from './inliner-types.ts';
 
 const executor: Executor<InlinerExecutor> = async (args) => {
   await handler(args);

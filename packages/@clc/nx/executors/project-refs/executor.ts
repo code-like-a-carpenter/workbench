@@ -11,9 +11,11 @@ import {
   writePrettierFile,
 } from '@code-like-a-carpenter/tooling-common';
 
-import {extractProjectRoot, findLocalPackages} from '../..';
+// This can be fixed my moving executors into src
+// eslint-disable-next-line no-restricted-imports
+import {extractProjectRoot, findLocalPackages} from '../../src/index.ts';
 
-import type {ProjectRefsExecutor} from './schema';
+import type {ProjectRefsExecutor} from './schema.json';
 
 const runExecutor: Executor<ProjectRefsExecutor> = async (options, context) => {
   const root = extractProjectRoot(context);

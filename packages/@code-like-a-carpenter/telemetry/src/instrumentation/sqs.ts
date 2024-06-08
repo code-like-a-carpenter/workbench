@@ -12,11 +12,11 @@ import type {
   SQSRecord,
 } from 'aws-lambda/trigger/sqs';
 
-import type {ExceptionTracingService} from '..';
-import {setupExceptionTracing} from '..';
-import {runWithNewSpan} from '../run-with';
+import type {ExceptionTracingService} from '../index.ts';
+import {setupExceptionTracing} from '../index.ts';
+import {runWithNewSpan} from '../run-with.ts';
 
-import type {NoVoidHandler} from './types';
+import type {NoVoidHandler} from './types.ts';
 
 /**
  * Like SQSHandler, but requires the promise form and disallows the nodeback

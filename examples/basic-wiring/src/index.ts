@@ -1,3 +1,3 @@
-export * from './errors';
-export * from './ping';
-export * from './root';
+export * from './errors.ts';
+export * from './ping.ts';
+export * from './root.ts';

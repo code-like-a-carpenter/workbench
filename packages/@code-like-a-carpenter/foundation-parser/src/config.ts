@@ -18,6 +18,7 @@ export const ParserConfigSchema = z.object({
   dispatcherDefaults: DispatcherConfigSchema.default({}),
   handlerDefaults: HandlerConfigSchema.default({}),
   lambdaDefaults: LambdaConfigSchema.default({}),
+  requireExtensions: z.boolean().default(false),
   tableDefaults: z
     .object({enablePointInTimeRecovery: z.boolean().default(true)})
     .default({}),

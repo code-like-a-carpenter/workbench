@@ -1,2 +1,2 @@
-export * from './config';
-export * from './plugin';
+export * from './config.ts';
+export * from './plugin.ts';

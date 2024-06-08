@@ -12,7 +12,7 @@ import type {
   APIGatewayTokenAuthorizerEvent,
 } from 'aws-lambda/trigger/api-gateway-authorizer';
 
-import {runWithNewSpan} from './run-with';
+import {runWithNewSpan} from './run-with.ts';
 
 interface DynamoDBStreamHandlerResult {
   batchItemFailures: {itemIdentifier: string}[];

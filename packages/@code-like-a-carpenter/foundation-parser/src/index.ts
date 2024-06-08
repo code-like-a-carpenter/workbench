@@ -1,2 +1,2 @@
-export * from './config';
-export * from './parser';
+export * from './config.ts';
+export * from './parser.ts';

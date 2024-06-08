@@ -1,1 +1,1 @@
-export * from './make-table-dispatcher';
+export * from './make-table-dispatcher.ts';

@@ -1,6 +1,6 @@
 import {Exception} from '@code-like-a-carpenter/exception';
 
-import {ClientError, HttpException, NotFound} from './http-errors';
+import {ClientError, HttpException, NotFound} from './http-errors.ts';
 
 describe('ClientError', () => {
   it('is an instanceof Exception', () => {

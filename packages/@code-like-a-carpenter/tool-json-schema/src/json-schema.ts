@@ -5,9 +5,10 @@ import path from 'node:path';
 import {glob} from 'glob';
 
 import type {JsonSchemaTool} from './__generated__/json-schema-types.ts';
-import {jsonSchemaToTypescript} from './json-schema-helpers';
+import {jsonSchemaToTypescript} from './json-schema-helpers.ts';
 
 export async function handler({
+  includeExtension,
   outDir,
   schemas,
 }: JsonSchemaTool): Promise<void> {
@@ -34,7 +35,9 @@ export async function handler({
       } else {
         await jsonSchemaToTypescript({
           infile: filename,
-          outfile: filename.replace(/\.json$/, '.d.ts'),
+          outfile: includeExtension
+            ? filename.replace(/\.json$/, '.d.json.ts')
+            : filename.replace(/\.json$/, '.d.ts'),
         });
       }
     })

@@ -5,7 +5,7 @@ import {build} from 'esbuild';
 import {globSync} from 'glob';
 import {minimatch} from 'minimatch';
 
-import type {EsbuildExecutor} from './schema';
+import type {EsbuildExecutor} from './schema.json';
 
 const runExecutor: Executor<EsbuildExecutor> = async (options) => {
   const {entryPoints: patterns, format, outDir} = options;
@@ -38,8 +38,7 @@ const runExecutor: Executor<EsbuildExecutor> = async (options) => {
             if (
               args.kind === 'import-statement' &&
               args.importer &&
-              args.path.startsWith('.') &&
-              !pathExtIsJsLikeExtension(args.path)
+              args.path.startsWith('.')
             ) {
               const fullPath = require.resolve(
                 path.join(args.resolveDir, args.path)
@@ -81,34 +80,3 @@ const runExecutor: Executor<EsbuildExecutor> = async (options) => {
 };
 
 export default runExecutor;
-
-/**
- * @see https://github.com/favware/esbuild-plugin-file-path-extensions
- */
-// eslint-disable-next-line complexity
-function pathExtIsJsLikeExtension(p: string): boolean {
-  const ext = path.extname(p);
-
-  if (
-    // Regular extensions
-    ext === '.js' ||
-    ext === '.cjs' ||
-    ext === '.mjs' ||
-    // TypeScript extensions
-    ext === '.ts' ||
-    ext === '.cts' ||
-    ext === '.mts' ||
-    // JSX JavaScript extensions
-    ext === 'jsx' ||
-    ext === '.cjsx' ||
-    ext === '.mjsx' ||
-    // JSX TypeScript extensions
-    ext === '.tsx' ||
-    ext === '.ctsx' ||
-    ext === '.mtsx'
-  ) {
-    return true;
-  }
-
-  return false;
-}

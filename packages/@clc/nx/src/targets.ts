@@ -70,11 +70,15 @@ export function addDependency(
   targetName: string,
   dependsOn: string
 ) {
+  const depForValidation = dependsOn.startsWith('^')
+    ? dependsOn.slice(1)
+    : dependsOn;
+
   const target = targets[targetName];
   assert(target, `target "${targetName}" has not been defined`);
   assert(
-    dependsOn in targets,
-    `dependency "${dependsOn}" has not been defined`
+    depForValidation in targets,
+    `dependency "${depForValidation}" has not been defined`
   );
   const targetDependsOn = new Set(target.dependsOn ?? []);
   targetDependsOn.add(dependsOn);

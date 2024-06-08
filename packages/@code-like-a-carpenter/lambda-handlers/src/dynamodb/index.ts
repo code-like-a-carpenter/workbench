@@ -1,2 +1,2 @@
-export * from './dynamodb';
-export * from './types';
+export * from './dynamodb.ts';
+export * from './types.ts';

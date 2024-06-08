@@ -8,8 +8,8 @@ import type {
   UpdatePlanMetricInput,
   QueryAccountInput,
   QueryPlanMetricInput,
-} from '../__generated__/graphql';
-import {queryAccount, queryPlanMetric} from '../__generated__/graphql';
+} from '../__generated__/graphql.ts';
+import {queryAccount, queryPlanMetric} from '../__generated__/graphql.ts';
 
 export class AccountUpsertPlanMetricReducer extends MultiReducer<
   Account,

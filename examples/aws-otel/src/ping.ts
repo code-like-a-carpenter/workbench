@@ -1,9 +1,9 @@
 import {handleRestEvent} from '@code-like-a-carpenter/lambda-handlers';
 import {runWithNewSpan} from '@code-like-a-carpenter/telemetry';
 
-import {exceptionTracingService} from '../../dependencies';
+import {exceptionTracingService} from '../../dependencies.ts';
 
-import type {operations} from './__generated__/api';
+import type {operations} from './__generated__/api.ts';
 
 export const ping = handleRestEvent<operations['ping']>(async (event) => {
   const throwType = event.queryStringParameters.get('throwType');

@@ -1,6 +1,6 @@
 /** cloudformation generator */
-import type {AWSLogsLogGroup} from '../__generated__/json-schemas/serverless-application-model';
-import type {ServerlessApplicationModel} from '../types';
+import type {AWSLogsLogGroup} from '../__generated__/json-schemas/serverless-application-model.ts';
+import type {ServerlessApplicationModel} from '../types.ts';
 
 export interface LogGroupInput {
   functionName: string;

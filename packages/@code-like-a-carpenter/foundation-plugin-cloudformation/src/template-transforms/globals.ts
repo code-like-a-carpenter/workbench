@@ -1,7 +1,7 @@
 import {assert} from '@code-like-a-carpenter/assert';
 
-import {isDispatcherStack, isHandlerStack} from '../stacks';
-import type {ServerlessApplicationModel} from '../types';
+import {isDispatcherStack, isHandlerStack} from '../stacks/index.ts';
+import type {ServerlessApplicationModel} from '../types.ts';
 
 type NestedStackType = 'cdc' | 'dispatcher';
 type NestedStackTemplates = Record<NestedStackType, ServerlessApplicationModel>;

@@ -6,7 +6,7 @@ import {
   writePrettierFile,
 } from '@code-like-a-carpenter/tooling-common';
 
-import type {ToolMetadata} from './metadata';
+import type {ToolMetadata} from './metadata.ts';
 
 export async function addExecutorsToJson(
   metadata: ToolMetadata
@@ -65,9 +65,9 @@ export async function generateExecutors(metadata: ToolMetadata): Promise<void> {
         `
 import type {Executor} from '@nx/devkit';
 
-import {handler} from '../${item.toolName}';
+import {handler} from '../${item.toolName}.ts';
 
-import type {${item.typesImportName}} from './${typesImportPath}';
+import type {${item.typesImportName}} from './${typesImportPath}.ts';
 
 const executor: Executor<${item.typesImportName}> = async (args) => {
   await handler(args);

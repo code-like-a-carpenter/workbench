@@ -1,1 +1,1 @@
-export * from './sqs';
+export * from './sqs.ts';

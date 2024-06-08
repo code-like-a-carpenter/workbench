@@ -1,6 +1,6 @@
-import type {Import} from './field';
-import type {Model} from './model';
-import type {Table} from './table';
+import type {Import} from './field.ts';
+import type {Model} from './model.ts';
+import type {Table} from './table.ts';
 
 export interface IntermediateRepresentation {
   readonly dependenciesModuleId: string;

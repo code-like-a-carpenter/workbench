@@ -1,6 +1,6 @@
 import {definePlugin} from '@code-like-a-carpenter/cli-core';
 
-import {handler as jsonSchemaHandler} from '../json-schema';
+import {handler as jsonSchemaHandler} from '../json-schema.ts';
 
 export const plugin = definePlugin((yargs) => {
   yargs.command(
@@ -8,6 +8,11 @@ export const plugin = definePlugin((yargs) => {
     'Generates TypeScript definitions from JSON Schema files',
     (y) =>
       y
+        .option('include-extension', {
+          conflicts: [],
+          demandOption: false,
+          type: 'boolean',
+        })
         .option('out-dir', {
           conflicts: [],
           demandOption: false,

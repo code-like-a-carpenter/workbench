@@ -1,2 +1,2 @@
-export * from './rest-token-authorizer';
-export * from './types';
+export * from './rest-token-authorizer.ts';
+export * from './types.ts';

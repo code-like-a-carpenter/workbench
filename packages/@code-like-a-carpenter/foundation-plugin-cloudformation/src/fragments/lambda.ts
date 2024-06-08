@@ -16,7 +16,7 @@ export function writeLambda(directory: string, code: string): void {
 // @ts-ignore - tsc sees every function's index.ts as a shared namespace for
 // some reason
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const {handler} = require('./handler');
+const {handler} = require('./handler.ts');
 exports.handler = handler;
     `;
   fs.writeFileSync(path.join(directory, 'index.ts'), index);

@@ -8,7 +8,7 @@ import {
   OptimisticLockingError,
 } from '@code-like-a-carpenter/foundation-runtime';
 
-import {load} from '../test-helpers';
+import {load} from '../test-helpers.ts';
 
 import {
   blindWriteUserSession,
@@ -16,7 +16,7 @@ import {
   deleteUserSession,
   readUserSession,
   updateUserSession,
-} from './__generated__/graphql';
+} from './__generated__/graphql.ts';
 
 const userSessionMatcher = {
   createdAt: expect.any(Date),

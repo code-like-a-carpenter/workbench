@@ -1,4 +1,4 @@
-import type {AWSKMSKey} from '../__generated__/json-schemas/serverless-application-model';
+import type {AWSKMSKey} from '../__generated__/json-schemas/serverless-application-model.ts';
 
 export function makeKmsKey(): AWSKMSKey {
   return {

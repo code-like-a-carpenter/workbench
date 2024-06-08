@@ -6,7 +6,7 @@ import {logger as rootLogger} from '@code-like-a-carpenter/logger';
 import type {ExceptionTracingService} from '@code-like-a-carpenter/telemetry';
 import {instrumentRestTokenAuthorizer} from '@code-like-a-carpenter/telemetry';
 
-import type {RestTokenAuthorizerCallback} from './types';
+import type {RestTokenAuthorizerCallback} from './types.ts';
 
 export function handleRestTokenAuthorizerEvent<
   TAuthorizerContext extends APIGatewayAuthorizerResultContext,

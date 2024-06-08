@@ -1,1 +1,1 @@
-export * from './make-reducer';
+export * from './make-reducer.ts';

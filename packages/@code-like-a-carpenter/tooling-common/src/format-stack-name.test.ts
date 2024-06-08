@@ -1,4 +1,4 @@
-import {formatStackName} from './format-stack-name';
+import {formatStackName} from './format-stack-name.ts';
 
 const GITHUB_HEAD_REF = 'dependabot/npm_and_yarn/openapi-typescript-6.7.4';
 const GITHUB_REF =

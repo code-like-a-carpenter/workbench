@@ -1,4 +1,4 @@
-import {BaseDataLibraryError} from './base-error';
+import {BaseDataLibraryError} from './base-error.ts';
 
 /**
  * Similar to OptimisticLockingError, but thrown in the special case of the item

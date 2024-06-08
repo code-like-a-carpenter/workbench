@@ -9,8 +9,8 @@ import {Exception} from '@code-like-a-carpenter/exception';
 import type {Logger} from '@code-like-a-carpenter/logger';
 import {logger as rootLogger} from '@code-like-a-carpenter/logger';
 
-import type {NoVoidHandler} from './instrumentation';
-import {getCurrentSpan} from './run-with';
+import type {NoVoidHandler} from './instrumentation/index.ts';
+import {getCurrentSpan} from './run-with.ts';
 
 let exceptionTracingService: ExceptionTracingService;
 

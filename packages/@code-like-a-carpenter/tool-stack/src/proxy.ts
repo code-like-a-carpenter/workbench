@@ -8,7 +8,7 @@ import {assert} from '@code-like-a-carpenter/assert';
 import {findLocalPackages} from '@code-like-a-carpenter/tooling-common';
 
 import type {StackProxySchema} from './__generated__/proxy-types.ts';
-import {findEndpoints, findStacks} from './stacks';
+import {findEndpoints, findStacks} from './stacks.ts';
 
 // eslint-disable-next-line complexity
 export async function handler(args: StackProxySchema): Promise<void> {

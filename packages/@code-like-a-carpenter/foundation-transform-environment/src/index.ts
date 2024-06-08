@@ -1,1 +1,1 @@
-export * from './environment-transform';
+export * from './environment-transform.ts';

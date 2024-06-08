@@ -1,6 +1,6 @@
 import {captureException} from '@code-like-a-carpenter/telemetry';
 
-import {parallelMap} from './parallel';
+import {parallelMap} from './parallel.ts';
 
 jest.mock('@code-like-a-carpenter/telemetry', () => {
   const actual = jest.requireActual('@code-like-a-carpenter/telemetry');

@@ -10,7 +10,7 @@ import type {
   SecondaryIndex,
 } from '@code-like-a-carpenter/foundation-intermediate-representation';
 
-import type {Config} from '../config';
+import type {Config} from '../config.ts';
 import {
   getArgStringArrayValue,
   getArgStringValue,
@@ -20,9 +20,9 @@ import {
   getOptionalArgStringValue,
   hasDirective,
   hasInterface,
-} from '../helpers';
+} from '../helpers.ts';
 
-import {extractPrimaryKey, getFieldFromFieldMap} from './primary-key';
+import {extractPrimaryKey, getFieldFromFieldMap} from './primary-key.ts';
 
 export function extractSecondaryIndexes(
   config: Config,
