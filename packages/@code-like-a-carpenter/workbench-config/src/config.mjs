@@ -2,22 +2,30 @@ import {readFile, realpath} from 'node:fs/promises';
 import path from 'path';
 
 import {cosmiconfig} from 'cosmiconfig';
-import type {Config} from 'cosmiconfig';
 import merge from 'lodash.merge';
 import {z as zod} from 'zod';
 
-let schema = zod.object({});
-type Schema = typeof schema;
+/** @typedef {import('cosmiconfig').Config} Config */
 
-export function register<T extends Schema>(
-  fn: (s: typeof schema, z: typeof zod) => T
-): {schema: T; load: (argv?: object) => Promise<zod.infer<T>>} {
-  schema = fn(schema, zod);
-  return {load, schema: schema as T};
+let schema = zod.object({});
+/** @typedef {typeof schema} Schema */
+
+/**
+ * @template {Schema} T
+ * @param {(s: Schema, z: typeof zod) => T} fn
+ * @returns {{schema: T; load: (argv?: object) => Promise<zod.infer<T>>}}
+ */
+export function register(fn) {
+  const s = fn(schema, zod);
+  schema = s;
+  return {load, schema: s};
 }
 
 const moduleName = 'code-like-a-carpenter';
 
+/**
+ * @param {object} argv
+ */
 export async function load(argv = {}) {
   const [defaultConfigs, userConfigs] = await Promise.all([
     loadConfigs(await realpath(process.argv[1])),
@@ -33,9 +41,11 @@ export async function load(argv = {}) {
  * rules, but continues searching and loading if the directory contains a
  * non-root package.json file (e.g., a package.json file that does not include a
  * workspaces field).
- * @param startDir
+ *
+ * @param {string} startDir
+ * @returns {Promise<Config[]>}
  */
-async function loadConfigs(startDir: string): Promise<Config[]> {
+async function loadConfigs(startDir) {
   const explorer = cosmiconfig(moduleName);
   const result = await explorer.search(startDir);
   // Unfortunately, there doesn't appear to be a way to determine if !result
