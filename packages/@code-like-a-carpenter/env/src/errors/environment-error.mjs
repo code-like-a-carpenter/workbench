@@ -1,5 +1,8 @@
 export class EnvironmentError extends TypeError {
-  constructor(variableName: string) {
+  /**
+   * @param {string} variableName
+   */
+  constructor(variableName) {
     super(`process.env.${variableName} must be defined`);
   }
 }
