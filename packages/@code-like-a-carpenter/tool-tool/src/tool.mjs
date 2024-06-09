@@ -1,8 +1,8 @@
 import {existsSync} from 'node:fs';
 import {mkdir, readFile, writeFile} from 'node:fs/promises';
+import {createRequire} from 'node:module';
 import path from 'node:path';
 
-import type {JSONSchemaForNPMPackageJsonFiles} from '@schemastore/package';
 import findUp from 'find-up';
 import kebabCase from 'lodash.kebabcase';
 
@@ -13,17 +13,23 @@ import {
   writePrettierFile,
 } from '@code-like-a-carpenter/tooling-common';
 
-import type {ToolTool} from './__generated__/tool-types.ts';
 import {
   addExecutorsToJson,
   addExecutorsToPackageJson,
   generateExecutors,
-} from './executors.ts';
-import {generatePluginFile} from './generate-plugin.ts';
-import type {ToolMetadata} from './metadata.ts';
-import {loadToolMetadata} from './metadata.ts';
+} from './executors.mjs';
+import {generatePluginFile} from './generate-plugin.mjs';
+import {loadToolMetadata} from './metadata.mjs';
 
-export async function handler({schemaDir}: ToolTool) {
+/** @typedef {import('@schemastore/package').JSONSchemaForNPMPackageJsonFiles} JSONSchemaForNPMPackageJsonFiles */
+/** @typedef {import('./__generated__/tool-types.mts').ToolTool} ToolTool */
+/** @typedef {import('./metadata.mts').ToolMetadata} ToolMetadata */
+
+/**
+ * @param {ToolTool} args
+ * @return {Promise<void>}
+ */
+export async function handler({schemaDir}) {
   const metadata = await loadToolMetadata(schemaDir);
   for (const {schemaPath, typesPath} of metadata.metadata) {
     await mkdir(path.dirname(typesPath), {recursive: true});
@@ -42,7 +48,10 @@ export async function handler({schemaDir}: ToolTool) {
   await generateHandlers(metadata);
 }
 
-async function addAsCliPlugin(metadata: ToolMetadata) {
+/**
+ * @param {ToolMetadata} metadata
+ */
+async function addAsCliPlugin(metadata) {
   const pkg = await readPackageJson(metadata.packageJson);
   assert(pkg.name, `Package name is missing from ${metadata.packageJson}`);
   const rootPkgPath = await findUp('package.json', {
@@ -52,6 +61,7 @@ async function addAsCliPlugin(metadata: ToolMetadata) {
   if (rootPkgPath) {
     const rootPkg = await readPackageJson(rootPkgPath);
     if (rootPkg.name === '@code-like-a-carpenter/workbench') {
+      const require = createRequire(import.meta.url);
       // Need to put this in a variable so deps doesn't add it to package.json
       const cliPackageName = '@code-like-a-carpenter/cli';
       const cliPkgPathResolvePath = require.resolve(cliPackageName);
@@ -71,11 +81,12 @@ async function addAsCliPlugin(metadata: ToolMetadata) {
   await addToPackageJson(pkg, metadata.packageJson, pkg.name);
 }
 
-async function addToPackageJson(
-  pkg: JSONSchemaForNPMPackageJsonFiles,
-  packagePath: string,
-  toolPackageName: string
-) {
+/**
+ * @param {JSONSchemaForNPMPackageJsonFiles} pkg
+ * @param {string} packagePath
+ * @param {string} toolPackageName
+ */
+async function addToPackageJson(pkg, packagePath, toolPackageName) {
   const plugins = new Set(pkg['code-like-a-carpenter']?.plugins || []);
   plugins.add(toolPackageName);
   pkg['code-like-a-carpenter'] = pkg['code-like-a-carpenter'] || {};
@@ -83,13 +94,17 @@ async function addToPackageJson(
   await writeFile(packagePath, `${JSON.stringify(pkg, null, 2)}\n`);
 }
 
-async function generateHandlers(metadata: ToolMetadata) {
+/**
+ * @param {ToolMetadata} metadata}
+ * @return {Promise<void>}
+ */
+async function generateHandlers(metadata) {
   await Promise.all(
     metadata.metadata.map(async (item) => {
       const handlerPath = path.join(
         metadata.root,
         'src',
-        `${kebabCase(item.toolName)}.ts`
+        `${kebabCase(item.toolName)}.mjs`
       );
 
       if (!existsSync(handlerPath)) {
@@ -106,24 +121,24 @@ export async function handler(args: ${item.typesImportName}): Promise<void> {}`
 
   try {
     const indexContent = await readFile(
-      path.join(metadata.root, 'src', 'index.ts'),
+      path.join(metadata.root, 'src', 'index.mjs'),
       'utf-8'
     );
 
     if (
       !indexContent.includes(
-        `export {plugin as default} from './__generated__/plugin.ts';`
+        `export {plugin as default} from './__generated__/plugin.mjs';`
       )
     ) {
       await writePrettierFile(
-        path.join(metadata.root, 'src', 'index.ts'),
-        `export {plugin as default} from './__generated__/plugin.ts';\n${indexContent.trim()}`
+        path.join(metadata.root, 'src', 'index.mjs'),
+        `export {plugin as default} from './__generated__/plugin.mjs';\n${indexContent.trim()}`
       );
     }
   } catch (err) {
     if (err instanceof Error && 'code' in err && err.code === 'ENOENT') {
       await writePrettierFile(
-        path.join(metadata.root, 'src', 'index.ts'),
+        path.join(metadata.root, 'src', 'index.mjs'),
         `export {plugin as default} from './__generated__/plugin';\n`
       );
       return;

@@ -6,13 +6,13 @@ import kebabCase from 'lodash.kebabcase';
 import {assert} from '@code-like-a-carpenter/assert';
 import {writePrettierFile} from '@code-like-a-carpenter/tooling-common';
 
-import type {ToolMetadata} from './metadata.ts';
+/** @typedef {import('./metadata.mjs').ToolMetadata} ToolMetadata */
 
-export async function generatePluginFile({
-  generatedDir,
-  metadata,
-}: ToolMetadata) {
-  const pluginPath = path.join(generatedDir, 'plugin.ts');
+/**
+ * @param {ToolMetadata} metadata
+ */
+export async function generatePluginFile({generatedDir, metadata}) {
+  const pluginPath = path.join(generatedDir, 'plugin.mjs');
 
   // @ts-ignore
   await writePrettierFile(
@@ -23,7 +23,7 @@ import {definePlugin} from '@code-like-a-carpenter/cli-core';
 ${metadata
   .map(
     (m) =>
-      `import {handler as ${camelCase(m.toolName)}Handler} from '../${m.toolName}.ts';`
+      `import {handler as ${camelCase(m.toolName)}Handler} from '../${m.toolName}.mjs';`
   )
   .join('\n')}
 
@@ -91,21 +91,22 @@ ${metadata
   );
 }
 
-interface OptionTemplateOptions {
-  conflicts?: readonly string[];
-  defaultValue?: unknown;
-  propName: string;
-  required: readonly string[];
-  type: string;
-}
-
+/**
+ * @param {Object} OptionTemplateOptions
+ * @param { readonly string[]=} OptionTemplateOptions.conflicts
+ * @param { unknown=} OptionTemplateOptions.defaultValue
+ * @param {string} OptionTemplateOptions.propName
+ * @param {readonly string[]} OptionTemplateOptions.required
+ * @param {string} OptionTemplateOptions.type
+ * @return {string}
+ */
 function optionTemplate({
   conflicts = [],
   defaultValue,
   propName,
   required,
   type,
-}: OptionTemplateOptions) {
+}) {
   return `.option('${kebabCase(propName)}', {
     conflicts: [${conflicts.map((c) => `'${c}'`).join(',')}],${
       typeof defaultValue !== 'undefined'
@@ -117,7 +118,11 @@ function optionTemplate({
   })`;
 }
 
-function propsToOptions(subschema: object, conflicts?: readonly string[]) {
+/**
+ * @param {object} subschema
+ * @param {readonly string[]=} conflicts
+ */
+function propsToOptions(subschema, conflicts) {
   assert('properties' in subschema, 'properties must be in schema');
   assert(
     typeof subschema.properties === 'object',

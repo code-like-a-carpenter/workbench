@@ -9,28 +9,13 @@ import upperFirst from 'lodash.upperfirst';
 import {assert} from '@code-like-a-carpenter/assert';
 import {readPackageJson} from '@code-like-a-carpenter/tooling-common';
 
-export interface ToolMetadata {
-  readonly generatedDir: string;
-  readonly executorsJson: string;
-  readonly packageJson: string;
-  readonly metadata: readonly ToolMetadataItem[];
-  readonly root: string;
-}
+/** @typedef {import('./types.mts').ToolMetadata} ToolMetadata */
 
-export interface ToolMetadataItem {
-  readonly commandName: string;
-  readonly description: string;
-  readonly executorPath: string;
-  readonly schema: unknown;
-  readonly schemaPath: string;
-  readonly toolName: string;
-  readonly typesPath: string;
-  readonly typesImportName: string;
-}
-
-export async function loadToolMetadata(
-  schemaDir: string
-): Promise<ToolMetadata> {
+/**
+ * @param {string} schemaDir
+ * @return {Promise<ToolMetadata>}
+ */
+export async function loadToolMetadata(schemaDir) {
   const stats = await lstat(schemaDir);
   const schemaFiles = [];
   assert(stats.isDirectory(), `schema ${schemaDir} must be a directory`);
@@ -85,13 +70,20 @@ export async function loadToolMetadata(
           description: jsonSchema.description || 'No description provided',
           executorPath: path.join(
             generatedDir,
-            `${kebabCase(toolName)}-executor.ts`
+            `${kebabCase(toolName)}-executor.mjs`
+          ),
+          executorShimPath: path.join(
+            generatedDir,
+            `${kebabCase(toolName)}-executor.shim.cjs`
           ),
           schema: jsonSchema,
           schemaPath,
           toolName,
           typesImportName,
-          typesPath: path.join(generatedDir, `${kebabCase(toolName)}-types.ts`),
+          typesPath: path.join(
+            generatedDir,
+            `${kebabCase(toolName)}-types.mts`
+          ),
         };
       })
     ),

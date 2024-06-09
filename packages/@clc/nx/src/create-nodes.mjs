@@ -271,9 +271,9 @@ export const createNodes = [
         outputs: [
           '{projectRoot}/package.json',
           '{projectRoot}/executors.json',
-          '{projectRoot}/src/__generated__/plugin.ts',
-          '{projectRoot}/src/__generated__/*-executor.ts',
-          '{projectRoot}/src/__generated__/*-types.ts',
+          '{projectRoot}/src/__generated__/plugin.*',
+          '{projectRoot}/src/__generated__/*-executor.*',
+          '{projectRoot}/src/__generated__/*-types.*',
         ],
       });
     }

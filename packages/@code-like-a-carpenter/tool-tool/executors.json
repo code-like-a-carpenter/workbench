@@ -2,7 +2,7 @@
   "executors": {
     "tool": {
       "description": "No description provided",
-      "implementation": "./src/__generated__/tool-executor.ts",
+      "implementation": "./src/__generated__/tool-executor.shim.cjs",
       "schema": "./tools/tool.json"
     }
   }
