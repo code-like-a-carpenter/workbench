@@ -78,7 +78,6 @@ async function config(pkg, mjs, mts, type, context) {
       import: {
         types:
           mjs || mts ? './dist/types/index.d.mts' : './dist/types/index.d.ts',
-        ...(mjs ? {} : {carpentry: mts ? './src/index.mts' : './src/index.ts'}),
         default: mjs ? './src/index.mjs' : './dist/esm/index.mjs',
       },
       require: {
@@ -86,7 +85,6 @@ async function config(pkg, mjs, mts, type, context) {
           mjs || mts
             ? './dist/cjs-types/index.d.ts'
             : './dist/types/index.d.ts',
-        ...(mjs ? {} : {carpentry: mts ? './src/index.mts' : './src/index.ts'}),
         default: './dist/cjs/index.cjs',
       },
       /* eslint-enable sort-keys */

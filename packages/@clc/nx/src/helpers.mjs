@@ -1,5 +1,7 @@
 import assert from 'node:assert';
 
+import {writePrettierFile} from '@code-like-a-carpenter/tooling-common';
+
 /** @typedef {import('@nx/devkit').ExecutorContext} ExecutorContext */
 
 /** @typedef {import('@schemastore/package')} JSONSchemaForNPMPackageJsonFiles */
@@ -31,10 +33,5 @@ export function extractProjectRoot(context) {
  * @param {JSONSchemaForNPMPackageJsonFiles} pkg
  */
 export async function writePackageJson(filename, pkg) {
-  // This needs to be late-imported because nx doesn't do its dotenv loading
-  // early enough, so --conditions=carpentry isn't yet set.
-  const {writePrettierFile} = await import(
-    '@code-like-a-carpenter/tooling-common'
-  );
   await writePrettierFile(filename, JSON.stringify(pkg, null, 2));
 }
