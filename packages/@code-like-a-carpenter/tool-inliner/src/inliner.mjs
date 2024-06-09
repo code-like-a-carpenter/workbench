@@ -2,20 +2,26 @@ import {mkdir, readFile, writeFile} from 'node:fs/promises';
 import path from 'node:path';
 
 import generateImport from '@babel/generator';
-import type {TemplateBuilder} from '@babel/template';
 import templateImport from '@babel/template';
 import * as t from '@babel/types';
-import type {Statement} from '@babel/types';
 
 import {assert} from '@code-like-a-carpenter/assert';
 
-import type {InlinerExecutor} from './__generated__/inliner-types.ts';
+/**
+ * @template T
+ * @typedef {import('@babel/template').TemplateBuilder<T>} TemplateBuilder
+ */
+/** @typedef {import('@babel/types').Statement} Statement t */
+/** @typedef {import('./__generated__/inliner-types.mjs').InlinerExecutor} InlinerExecutor */
 
-const template: TemplateBuilder<Statement | Statement[]> =
-  templateImport.default ?? templateImport;
 const generate = generateImport.default ?? generateImport;
+/** @type {TemplateBuilder<Statement | Statement[]>}} */
+const template = templateImport.default ?? templateImport;
 
-export async function handler(args: InlinerExecutor): Promise<void> {
+/**
+ * @param {InlinerExecutor} args
+ */
+export async function handler(args) {
   const {sourceFile, targetFile, exportName} = args;
   const raw = (await readFile(sourceFile, 'utf-8')).replace(/`/g, '\\`');
 
