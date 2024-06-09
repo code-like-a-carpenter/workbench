@@ -7,6 +7,7 @@ const GITHUB_SHA = 'f7d69db466396454e27435e3dc4affde6a1f3263';
 const BUILDKITE_BRANCH = 'dependabot/npm_and_yarn/openapi-typescript-6.7.4';
 const BUILDKITE_COMMIT = 'f7d69db466396454e27435e3dc4affde6a1f3263';
 
+/** @type {Array<Record<string, string>>} */
 const gitData = [
   {GITHUB_ACTIONS: 'true', GITHUB_SHA},
   {GITHUB_ACTIONS: 'true', GITHUB_HEAD_REF, GITHUB_SHA},
@@ -24,11 +25,23 @@ const projectNames = [
 const stackNames = ['check-run-reporter'];
 
 const testDataForProjects = projectNames
-  .map((projectName) => gitData.map((env) => [projectName, env] as const))
+  .map((projectName) =>
+    gitData.map((env) => {
+      /** @type {[string, Record<string, string>]} */
+      const ret = [projectName, env];
+      return ret;
+    })
+  )
   .flat(1);
 
 const testDataForStacks = stackNames
-  .map((stackName) => gitData.map((env) => [stackName, env] as const))
+  .map((stackName) =>
+    gitData.map((env) => {
+      /** @type {[string, Record<string, string>]} */
+      const ret = [stackName, env];
+      return ret;
+    })
+  )
   .flat(1);
 
 describe('cli-plugin-stack-name', () => {

@@ -1,9 +1,12 @@
 import {assert, fail} from '@code-like-a-carpenter/assert';
 import {getStackName} from '@code-like-a-carpenter/tooling-common';
 
-import type {StackNameSchema} from './__generated__/name-types.ts';
+/** @typedef {import('./__generated__/name-types.mts').StackNameSchema} StackNameSchema */
 
-export async function handler(args: StackNameSchema): Promise<void> {
+/**
+ * @param {StackNameSchema} args
+ */
+export async function handler(args) {
   if ('projectName' in args) {
     assert(
       typeof args.projectName === 'string',

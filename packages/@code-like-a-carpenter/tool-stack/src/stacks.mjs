@@ -10,9 +10,13 @@ import snakeCase from 'lodash.snakecase';
 import {assert} from '@code-like-a-carpenter/assert';
 import {getStackName} from '@code-like-a-carpenter/tooling-common';
 
-export async function findStacks(
-  projects: Map<string, string>
-): Promise<readonly string[]> {
+/**
+ * Find the stacks for a given set of projects.
+ *
+ * @param {Map<string, string>} projects - A map of project names to their package.json paths.
+ * @returns {Promise<readonly string[]>} - A promise that resolves to an array of stack names.
+ */
+export async function findStacks(projects) {
   return Array.from(projects.entries())
     .filter(([, packageJsonPath]) => {
       const projectPath = path.dirname(packageJsonPath);
@@ -24,19 +28,31 @@ export async function findStacks(
     .map(([projectName]) => getStackName(projectName));
 }
 
-export async function findEndpoints(
-  stacks: readonly string[]
-): Promise<Map<string, string>> {
+/**
+ * Find the endpoints for a given set of stacks.
+ *
+ * @param {readonly string[]} stacks - An array of stack names.
+ * @returns {Promise<Map<string, string>>} - A promise that resolves to a map of stack names to their endpoints.
+ */
+export async function findEndpoints(stacks) {
   return new Map(
     await Promise.all(
-      stacks.map(
-        async (stackName) => [stackName, await getStackUrl(stackName)] as const
-      )
+      stacks.map(async (stackName) => {
+        /** @type {[string, string]} */
+        const ret = [stackName, await getStackUrl(stackName)];
+        return ret;
+      })
     )
   );
 }
 
-async function getStackUrl(stackName: string): Promise<string> {
+/**
+ * Get the URL for a given stack.
+ *
+ * @param {string} stackName - The name of the stack.
+ * @returns {Promise<string>} - A promise that resolves to the URL of the stack.
+ */
+async function getStackUrl(stackName) {
   // If we aleady have an AWS_SECRET_ACCESS_KEY, don't try to to use autoloading
   if (!process.env.CI && !process.env.AWS_SECRET_ACCESS_KEY) {
     process.env.AWS_REGION = process.env.AWS_REGION ?? 'us-east-1';

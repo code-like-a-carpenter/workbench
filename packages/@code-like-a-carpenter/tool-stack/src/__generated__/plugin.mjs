@@ -1,8 +1,8 @@
 import {definePlugin} from '@code-like-a-carpenter/cli-core';
 
-import {handler as listHandler} from '../list.ts';
-import {handler as nameHandler} from '../name.ts';
-import {handler as proxyHandler} from '../proxy.ts';
+import {handler as listHandler} from '../list.mjs';
+import {handler as nameHandler} from '../name.mjs';
+import {handler as proxyHandler} from '../proxy.mjs';
 
 export const plugin = definePlugin((yargs) => {
   yargs.command(

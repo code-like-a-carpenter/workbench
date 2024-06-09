@@ -1,5 +1,4 @@
 import express from 'express';
-import type Server from 'http-proxy';
 import httpProxy from 'http-proxy';
 import {Agent, fetch} from 'undici';
 import vhost from 'vhost';
@@ -7,17 +6,28 @@ import vhost from 'vhost';
 import {assert} from '@code-like-a-carpenter/assert';
 import {findLocalPackages} from '@code-like-a-carpenter/tooling-common';
 
-import type {StackProxySchema} from './__generated__/proxy-types.ts';
-import {findEndpoints, findStacks} from './stacks.ts';
+import {findEndpoints, findStacks} from './stacks.mjs';
 
+/** @typedef {import('http')} http */
+/**
+ * @template [TIncomingMessage=http['IncomingMessage']]
+ * @template [TServerResponse=http['ServerResponse']]
+ * @typedef {import('http-proxy')} Server
+ */
+/** @typedef {import('./__generated__/proxy-types.mts').StackProxySchema} StackProxySchema */
+
+/**
+ * @param {StackProxySchema} args
+ */
 // eslint-disable-next-line complexity
-export async function handler(args: StackProxySchema): Promise<void> {
-  let stacks: string[] = [];
+export async function handler(args) {
+  /** @type {string[]} */
+  let stacks = [];
 
   if (args.all || args.project) {
     const localPackages = await findLocalPackages();
     if (args.project) {
-      const projectSet = new Set(args.project as string[]);
+      const projectSet = new Set(args.project);
       for (const key of localPackages.keys()) {
         if (!projectSet.has(key)) {
           localPackages.delete(key);
@@ -28,7 +38,8 @@ export async function handler(args: StackProxySchema): Promise<void> {
   }
 
   if (args.stack) {
-    stacks = stacks.concat(args.stack as string[]);
+    assert(typeof args.stack === 'string', 'stack must be a string');
+    stacks = stacks.concat(args.stack);
   }
 
   const endpoints = await findEndpoints(stacks);
@@ -50,15 +61,16 @@ export async function handler(args: StackProxySchema): Promise<void> {
   });
 }
 
-interface StartAllProxiesOptions {
-  readonly endpoints: Map<string, string>;
-  readonly port: number;
-}
+/**
+ * @typedef {Object} StartAllProxiesOptions
+ * @property {Map<string, string>} endpoints
+ * @property {number} port
+ */
 
-export async function startAllProxies({
-  endpoints,
-  port,
-}: StartAllProxiesOptions) {
+/**
+ * @param {StartAllProxiesOptions} args
+ */
+export async function startAllProxies({endpoints, port}) {
   const app = express();
   const stackNames = Array.from(endpoints.keys());
 
@@ -144,7 +156,11 @@ export async function startAllProxies({
   });
 }
 
-function makeProxy(endpoint: string): Server {
+/**
+ * @param {string} endpoint
+ * @return {Server}
+ */
+function makeProxy(endpoint) {
   const endpointUrl = new URL(endpoint);
 
   endpointUrl.protocol = 'https:';

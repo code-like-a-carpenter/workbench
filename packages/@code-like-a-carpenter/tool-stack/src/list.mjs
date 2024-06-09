@@ -8,9 +8,12 @@ import {
   readPackageJson,
 } from '@code-like-a-carpenter/tooling-common';
 
-import type {StackListSchema} from './__generated__/list-types.ts';
+/** @typedef {import('./__generated__/list-types.mts').StackListSchema} StackListSchema */
 
-export async function handler(args: StackListSchema): Promise<void> {
+/**
+ * @param {StackListSchema} args
+ */
+export async function handler(args) {
   const files =
     args.test ?? (await glob(['**/template.yml', '**/template.json']));
   const strings = files.map((f) => {
