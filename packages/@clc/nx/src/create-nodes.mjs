@@ -266,6 +266,7 @@ export const createNodes = [
         executor: '@code-like-a-carpenter/tool-tool:tool',
         inputs: ['{projectRoot}/tools/*.json'],
         options: {
+          buildBeforeRun: !mjs,
           schemaDir: '{projectRoot}/tools',
         },
         outputs: [

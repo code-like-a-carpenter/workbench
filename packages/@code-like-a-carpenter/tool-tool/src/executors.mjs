@@ -22,7 +22,7 @@ export async function addExecutorsToJson(metadata) {
   for (const item of metadata.metadata) {
     json.executors[item.toolName] = {
       description: item.description,
-      implementation: `./${path.relative(metadata.root, item.executorShimPath)}`,
+      implementation: `./${path.relative(metadata.root, item.built ? item.buildDirExecutorPath : item.executorShimPath)}`,
       schema: `./${path.relative(metadata.root, item.schemaPath)}`,
     };
   }
@@ -65,9 +65,29 @@ export async function generateExecutors(metadata) {
         path.basename(typesImportPath)
       );
 
-      await writePrettierFile(
-        item.executorPath,
-        `
+      if (item.built) {
+        await writePrettierFile(
+          item.executorPath,
+          `
+import type {Executor} from '@nx/devkit';
+
+import {handler} from '../${item.toolName}.ts';
+
+import type {${item.typesImportName}} from './${typesImportPath}';
+
+const executor: Executor<${item.typesImportName}> = async (args) => {
+  await handler(args);
+
+  return {success: true};
+}
+
+export default executor;
+`
+        );
+      } else {
+        await writePrettierFile(
+          item.executorPath,
+          `
 /**
  * @template T
  * @typedef {import('@nx/devkit').Executor<T>} Executor
@@ -87,11 +107,11 @@ export const executor = async (args) => {
   return {success: true};
 }
 `
-      );
+        );
 
-      await writePrettierFile(
-        item.executorShimPath,
-        `
+        await writePrettierFile(
+          item.executorShimPath,
+          `
 // @ts-expect-error
 async function exec(...args) {
   const {executor} = await import('./${path.basename(item.executorPath)}');
@@ -100,7 +120,8 @@ async function exec(...args) {
 }
 module.exports = exec;
 `
-      );
+        );
+      }
     })
   );
 }

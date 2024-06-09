@@ -7,6 +7,10 @@
 
 export interface ToolTool {
   /**
+   * If true, this tool cannot be run without being built and, as such, some of the generated paths will be different. Note that _building_ the tool is left to an outside process.
+   */
+  buildBeforeRun?: boolean;
+  /**
    * A directory of json schemas defining each tool's inputs.
    */
   schemaDir: string;

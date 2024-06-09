@@ -6,13 +6,13 @@ import kebabCase from 'lodash.kebabcase';
 import {assert} from '@code-like-a-carpenter/assert';
 import {writePrettierFile} from '@code-like-a-carpenter/tooling-common';
 
-/** @typedef {import('./metadata.mjs').ToolMetadata} ToolMetadata */
+/** @typedef {import('./types.mjs').ToolMetadata} ToolMetadata */
 
 /**
  * @param {ToolMetadata} metadata
  */
-export async function generatePluginFile({generatedDir, metadata}) {
-  const pluginPath = path.join(generatedDir, 'plugin.mjs');
+export async function generatePluginFile({built, generatedDir, metadata}) {
+  const pluginPath = path.join(generatedDir, `plugin.${built ? 'ts' : 'mjs'}`);
 
   // @ts-ignore
   await writePrettierFile(
@@ -23,7 +23,7 @@ import {definePlugin} from '@code-like-a-carpenter/cli-core';
 ${metadata
   .map(
     (m) =>
-      `import {handler as ${camelCase(m.toolName)}Handler} from '../${m.toolName}.mjs';`
+      `import {handler as ${camelCase(m.toolName)}Handler} from '../${m.toolName}.${built ? 'ts' : 'mjs'}';`
   )
   .join('\n')}
 

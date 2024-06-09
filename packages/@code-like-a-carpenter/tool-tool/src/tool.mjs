@@ -29,8 +29,8 @@ import {loadToolMetadata} from './metadata.mjs';
  * @param {ToolTool} args
  * @return {Promise<void>}
  */
-export async function handler({schemaDir}) {
-  const metadata = await loadToolMetadata(schemaDir);
+export async function handler(args) {
+  const metadata = await loadToolMetadata(args);
   for (const {schemaPath, typesPath} of metadata.metadata) {
     await mkdir(path.dirname(typesPath), {recursive: true});
 
@@ -104,7 +104,7 @@ async function generateHandlers(metadata) {
       const handlerPath = path.join(
         metadata.root,
         'src',
-        `${kebabCase(item.toolName)}.mjs`
+        `${kebabCase(item.toolName)}.${metadata.built ? 'ts' : 'mjs'}`
       );
 
       if (!existsSync(handlerPath)) {
@@ -119,28 +119,31 @@ export async function handler(args: ${item.typesImportName}): Promise<void> {}`
     })
   );
 
-  try {
-    const indexContent = await readFile(
-      path.join(metadata.root, 'src', 'index.mjs'),
-      'utf-8'
-    );
+  const indexFile = path.join(
+    metadata.root,
+    'src',
+    `index.${metadata.built ? 'ts' : 'mjs'}`
+  );
 
-    if (
-      !indexContent.includes(
-        `export {plugin as default} from './__generated__/plugin.mjs';`
-      )
-    ) {
+  const pluginFile = `./${path.join(
+    '__generated__',
+    `plugin.${metadata.built ? 'ts' : 'mjs'}`
+  )}`;
+
+  const importLine = `export {plugin as default} from '${pluginFile}';`;
+
+  try {
+    const indexContent = await readFile(indexFile, 'utf-8');
+
+    if (!indexContent.includes(importLine)) {
       await writePrettierFile(
-        path.join(metadata.root, 'src', 'index.mjs'),
-        `export {plugin as default} from './__generated__/plugin.mjs';\n${indexContent.trim()}`
+        indexFile,
+        `${importLine}\n${indexContent.trim()}`
       );
     }
   } catch (err) {
     if (err instanceof Error && 'code' in err && err.code === 'ENOENT') {
-      await writePrettierFile(
-        path.join(metadata.root, 'src', 'index.mjs'),
-        `export {plugin as default} from './__generated__/plugin';\n`
-      );
+      await writePrettierFile(indexFile, `${importLine}\n`);
       return;
     }
     throw err;
