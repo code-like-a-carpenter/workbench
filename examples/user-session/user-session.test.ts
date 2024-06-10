@@ -1,5 +1,6 @@
 import assert from 'assert';
 
+import {load} from '@clc/test-helpers';
 import {faker} from '@faker-js/faker';
 import Base64Import from 'base64url';
 
@@ -7,8 +8,6 @@ import {
   NotFoundError,
   OptimisticLockingError,
 } from '@code-like-a-carpenter/foundation-runtime';
-
-import {load} from '../test-helpers.mts';
 
 import {
   blindWriteUserSession,

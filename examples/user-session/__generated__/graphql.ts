@@ -15,6 +15,7 @@ import {
 } from '@aws-sdk/lib-dynamodb';
 import {ServiceException} from '@aws-sdk/smithy-client';
 import type {NativeAttributeValue} from '@aws-sdk/util-dynamodb';
+import {ddbDocClient} from '@clc/dependencies';
 import Base64Import from 'base64url';
 
 import {assert} from '@code-like-a-carpenter/assert';
@@ -34,8 +35,6 @@ import {
   UnexpectedAwsError,
   UnexpectedError,
 } from '@code-like-a-carpenter/foundation-runtime';
-
-import {ddbDocClient} from '../../dependencies.mts';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends {[key: string]: unknown}> = {[K in keyof T]: T[K]};

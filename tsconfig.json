@@ -22,7 +22,13 @@
   ],
   "references": [
     {
+      "path": "packages/@clc/dependencies"
+    },
+    {
       "path": "packages/@clc/nx"
+    },
+    {
+      "path": "packages/@clc/test-helpers"
     },
     {
       "path": "packages/@code-like-a-carpenter/assert"
