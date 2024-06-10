@@ -107,6 +107,9 @@ rules:
     - devDependencies:
         - '!src/**/*'
         - '!packages/**/*'
+  # This rule doesn't seem to be able to find packages whose entrypoint is an
+  # mjs file. tsc _should_ provide the same assurance.
+  import/no-unresolved: off
   no-restricted-imports:
     - error
     - patterns:
