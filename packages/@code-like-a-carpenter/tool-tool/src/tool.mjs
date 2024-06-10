@@ -1,7 +1,7 @@
 import {existsSync} from 'node:fs';
 import {mkdir, readFile, writeFile} from 'node:fs/promises';
-import {createRequire} from 'node:module';
 import path from 'node:path';
+import {fileURLToPath} from 'node:url';
 
 import findUp from 'find-up';
 import kebabCase from 'lodash.kebabcase';
@@ -61,10 +61,16 @@ async function addAsCliPlugin(metadata) {
   if (rootPkgPath) {
     const rootPkg = await readPackageJson(rootPkgPath);
     if (rootPkg.name === '@code-like-a-carpenter/workbench') {
-      const require = createRequire(import.meta.url);
-      // Need to put this in a variable so deps doesn't add it to package.json
+      // Need to put this in a variable so deps doesn't add it to package.json,
+      // which would lead to a circular dependency.
       const cliPackageName = '@code-like-a-carpenter/cli';
-      const cliPkgPathResolvePath = require.resolve(cliPackageName);
+      // Reminder: import.meta.resolve works because it doesn't check for
+      // existence. createRequire().resolve() fails if the file does not exist.
+      // Since we're trying to fins package.json, we don't actually care if the
+      // entrypoint has been built yet.
+      const cliPkgPathResolvePath = fileURLToPath(
+        import.meta.resolve(cliPackageName)
+      );
       const cliPkgPath = await findUp('package.json', {
         cwd: path.dirname(cliPkgPathResolvePath),
       });
