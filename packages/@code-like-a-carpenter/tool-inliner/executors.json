@@ -2,7 +2,7 @@
   "executors": {
     "inliner": {
       "description": "Inlines a text file as a string in a typescript file",
-      "implementation": "./src/__generated__/inliner-executor.ts",
+      "implementation": "./src/__generated__/inliner-executor.shim.cjs",
       "schema": "./tools/inliner.json"
     }
   }

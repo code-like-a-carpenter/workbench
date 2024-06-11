@@ -5,6 +5,11 @@
   "description": "Generates TypeScript definitions from JSON Schema files",
   "type": "object",
   "properties": {
+    "extension": {
+      "default": "ts",
+      "description": "The file extension to use for generated files",
+      "type": "string"
+    },
     "includeExtension": {
       "description": "If true, the file extension will be included in the output filename",
       "type": "boolean"

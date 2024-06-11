@@ -11,12 +11,10 @@
     ".": {
       "import": {
         "types": "./dist/types/index.d.ts",
-        "carpentry": "./src/index.ts",
         "default": "./dist/esm/index.mjs"
       },
       "require": {
         "types": "./dist/types/index.d.ts",
-        "carpentry": "./src/index.ts",
         "default": "./dist/cjs/index.cjs"
       }
     },
@@ -44,5 +42,6 @@
     "graphql": "^16.8.1",
     "zod": "^3.23.8"
   },
-  "types": "./dist/types/index.d.ts"
+  "types": "./dist/types/index.d.ts",
+  "type": "module"
 }

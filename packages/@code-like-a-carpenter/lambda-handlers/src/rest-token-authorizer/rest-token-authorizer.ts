@@ -1,5 +1,5 @@
-import type {APIGatewayAuthorizerResultContext} from 'aws-lambda/common/api-gateway';
-import type {APIGatewayTokenAuthorizerWithContextHandler} from 'aws-lambda/trigger/api-gateway-authorizer';
+import type {APIGatewayAuthorizerResultContext} from 'aws-lambda/common/api-gateway.js';
+import type {APIGatewayTokenAuthorizerWithContextHandler} from 'aws-lambda/trigger/api-gateway-authorizer.js';
 
 import {HttpException} from '@code-like-a-carpenter/errors';
 import {logger as rootLogger} from '@code-like-a-carpenter/logger';

@@ -1,8 +1,8 @@
-import type {APIGatewayAuthorizerResultContext} from 'aws-lambda/common/api-gateway';
+import type {APIGatewayAuthorizerResultContext} from 'aws-lambda/common/api-gateway.js';
 import type {
   APIGatewayTokenAuthorizerEvent,
   APIGatewayAuthorizerWithContextResult,
-} from 'aws-lambda/trigger/api-gateway-authorizer';
+} from 'aws-lambda/trigger/api-gateway-authorizer.js';
 
 import type {Context} from '../types.ts';
 

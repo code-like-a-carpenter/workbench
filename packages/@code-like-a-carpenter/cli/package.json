@@ -39,17 +39,16 @@
     ".": {
       "import": {
         "types": "./dist/types/index.d.ts",
-        "carpentry": "./src/index.ts",
         "default": "./dist/esm/index.mjs"
       },
       "require": {
         "types": "./dist/types/index.d.ts",
-        "carpentry": "./src/index.ts",
         "default": "./dist/cjs/index.cjs"
       }
     },
     "./package.json": "./package.json"
   },
   "releaseAll": 5,
-  "types": "./dist/types/index.d.ts"
+  "types": "./dist/types/index.d.ts",
+  "type": "module"
 }

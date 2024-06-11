@@ -110,7 +110,7 @@ ${models
           } from '@aws-sdk/lib-dynamodb';`,
           `import {ServiceException} from '@aws-sdk/smithy-client';`,
           `import {NativeAttributeValue} from '@aws-sdk/util-dynamodb';`,
-          `import Base64 from 'base64url';`,
+          `import Base64Import from 'base64url';`,
           `import {assert} from '@code-like-a-carpenter/assert';`,
           `import {
             makeSortKeyForQuery,
@@ -133,6 +133,7 @@ ${models
             ({importName, importPath}) =>
               `import {${importName}} from '${importPath}';`
           ),
+          `const Base64 = Base64Import.default ?? Base64Import`,
         ],
       };
     } catch (err) {

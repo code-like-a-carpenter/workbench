@@ -5,12 +5,10 @@
     ".": {
       "import": {
         "types": "./dist/types/index.d.mts",
-        "carpentry": "./src/index.mts",
-        "default": "./dist/esm/index.mjs"
+        "default": "./src/index.mjs"
       },
       "require": {
         "types": "./dist/cjs-types/index.d.ts",
-        "carpentry": "./src/index.mts",
         "default": "./dist/cjs/index.cjs"
       }
     },
@@ -28,5 +26,6 @@
     "access": "public"
   },
   "releaseAll": 5,
-  "types": "./dist/types/index.d.mts"
+  "types": "./dist/types/index.d.mts",
+  "type": "module"
 }

@@ -17,7 +17,6 @@
 -   [Contribute](#contribute)
     -   [nx](#nx)
     -   [`@clc` vs `@code-like-a-carpenter`](#clc-vs-code-like-a-carpenter)
-    -   [Local development without building first](#local-development-without-building-first)
 -   [License](#license)
 
 <!-- tocstop -->
@@ -91,28 +90,6 @@ plugin which is where most of the repo's build configuration comes from. Not
 only does this plugin need to a different package.json layout (it's `main` entry
 needs to point to a typescript file, not a built file), it just wouldn't make
 sense outside the context of this particular repository.
-
-### Local development without building first
-
-In addition to `cjs`/`esm` entries in each package's export map, there's also a
-`carpentry` entry which exports the typescript source code. By setting
-`NODE_OPTIONS='--conditions=carpentry`, `nx` _should_ be able to use project
-code without building it first.
-
-If you're debugging a cli, you can also `--import tsx` during development to run
-without building everything first:
-
-```sh
-NODE_OPTIONS='--conditions=carpentry --import tsx' npx @code-like-a-carpenter/cli
-```
-
-This approach isn't fully compatible with `nx` yet. By setting `--import tsx`,
-`nx` ends up with libraries vying to import typescript files and errors. Since
-`--import` cannot be set on the environment when using `nx`, `nx` cannot call
-local clis that need to be transpiled on the fly. Either they need to be build
-before they get invoked as an `nx` target or (prefferably), they would also
-export an `nx` executor that can be called directly. If we don't need to shell
-out to a subprocess, we can rely on `nx`'s automatically registered swc/node
 
 ## License
 

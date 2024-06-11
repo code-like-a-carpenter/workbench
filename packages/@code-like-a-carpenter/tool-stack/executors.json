@@ -2,17 +2,17 @@
   "executors": {
     "name": {
       "description": "Produces an AWS-safe stack name based on various environmental and input conditions",
-      "implementation": "./src/__generated__/name-executor.ts",
+      "implementation": "./src/__generated__/name-executor.shim.cjs",
       "schema": "./tools/name.json"
     },
     "list": {
       "description": "Lists all the stacks in the repo (based a bunch of assumptions)",
-      "implementation": "./src/__generated__/list-executor.ts",
+      "implementation": "./src/__generated__/list-executor.shim.cjs",
       "schema": "./tools/list.json"
     },
     "proxy": {
       "description": "Proxies one or more API Gateways to localhost",
-      "implementation": "./src/__generated__/proxy-executor.ts",
+      "implementation": "./src/__generated__/proxy-executor.shim.cjs",
       "schema": "./tools/proxy.json"
     }
   }

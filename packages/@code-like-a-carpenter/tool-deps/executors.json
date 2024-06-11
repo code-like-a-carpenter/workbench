@@ -2,7 +2,7 @@
   "executors": {
     "deps": {
       "description": "No description provided",
-      "implementation": "./src/__generated__/deps-executor.ts",
+      "implementation": "./src/__generated__/deps-executor.shim.cjs",
       "schema": "./tools/deps.json"
     }
   }

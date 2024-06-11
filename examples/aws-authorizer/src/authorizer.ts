@@ -1,3 +1,5 @@
+import {exceptionTracingService} from '@clc/dependencies';
+
 import {
   Forbidden,
   NotFound,
@@ -8,8 +10,6 @@ import {
   generatePolicy,
   handleRestTokenAuthorizerEvent,
 } from '@code-like-a-carpenter/lambda-handlers';
-
-import {exceptionTracingService} from '../../dependencies.ts';
 
 type AuthorizerContext =
   | {

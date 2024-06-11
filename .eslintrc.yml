@@ -71,9 +71,8 @@ overrides:
       sort-keys: off
 
   - files:
-      - '*.d.mts'
-      - '*.d.ts'
-      - '*.d.json.ts'
+      - '*.d.*'
+      - '*.d.json.*'
     rules:
       eslint-comments/disable-enable-pair: off
       eslint-comments/no-unlimited-disable: off
@@ -107,6 +106,9 @@ rules:
     - devDependencies:
         - '!src/**/*'
         - '!packages/**/*'
+  # This rule doesn't seem to be able to find packages whose entrypoint is an
+  # mjs file. tsc _should_ provide the same assurance.
+  import/no-unresolved: off
   no-restricted-imports:
     - error
     - patterns:

@@ -46,7 +46,7 @@ all:
 	$(NPX) nx run-many --target build
 
 clean:
-	rm .nx/cache -rf examples/*/.aws-sam packages/*/*/dist
+	rm -rf .nx/cache examples/*/.aws-sam packages/*/*/dist
 
 ################################################################################
 ## Helpers

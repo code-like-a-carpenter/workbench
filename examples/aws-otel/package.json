@@ -6,9 +6,11 @@
   },
   "private": true,
   "dependencies": {
+    "@clc/dependencies": "*",
     "@code-like-a-carpenter/contract-tests": "*",
     "@code-like-a-carpenter/env": "*",
     "@code-like-a-carpenter/lambda-handlers": "*",
     "@code-like-a-carpenter/telemetry": "*"
-  }
+  },
+  "type": "module"
 }

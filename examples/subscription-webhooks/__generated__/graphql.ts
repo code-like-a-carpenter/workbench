@@ -15,7 +15,8 @@ import {
 } from '@aws-sdk/lib-dynamodb';
 import {ServiceException} from '@aws-sdk/smithy-client';
 import type {NativeAttributeValue} from '@aws-sdk/util-dynamodb';
-import Base64 from 'base64url';
+import {ddbDocClient} from '@clc/dependencies';
+import Base64Import from 'base64url';
 
 import {assert} from '@code-like-a-carpenter/assert';
 import type {
@@ -37,7 +38,6 @@ import {
   UnexpectedError,
 } from '@code-like-a-carpenter/foundation-runtime';
 
-import {ddbDocClient} from '../../dependencies.ts';
 import {AccountIndexedPlanNameProvider} from '../src/computed-fields.ts';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
@@ -54,6 +54,7 @@ export type MakeEmpty<T extends {[key: string]: unknown}, K extends keyof T> = {
 export type Incremental<T> =
   | T
   | {[P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never};
+const Base64 = Base64Import.default ?? Base64Import;
 /** All built-in and custom scalars, mapped to their actual values */
 export interface Scalars {
   ID: {input: string; output: string};

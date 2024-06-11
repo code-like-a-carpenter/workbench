@@ -9,13 +9,11 @@
   "exports": {
     ".": {
       "import": {
-        "types": "./dist/types/index.d.ts",
-        "carpentry": "./src/index.ts",
-        "default": "./dist/esm/index.mjs"
+        "types": "./dist/types/index.d.mts",
+        "default": "./src/index.mjs"
       },
       "require": {
-        "types": "./dist/types/index.d.ts",
-        "carpentry": "./src/index.ts",
+        "types": "./dist/cjs-types/index.d.ts",
         "default": "./dist/cjs/index.cjs"
       }
     },
@@ -43,5 +41,6 @@
     "@types/prettier": "^3.0.0"
   },
   "releaseAll": 5,
-  "types": "./dist/types/index.d.ts"
+  "types": "./dist/types/index.d.mts",
+  "type": "module"
 }

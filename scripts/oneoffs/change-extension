@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+
+set -euo pipefail
+DIR=$1
+FROM=$2
+TO=$3
+
+for f in $(find $DIR -type f -name "*.$FROM" ); do
+    mv $f ${f/$FROM/$TO}
+done

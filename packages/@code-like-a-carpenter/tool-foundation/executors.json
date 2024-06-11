@@ -2,7 +2,7 @@
   "executors": {
     "foundation": {
       "description": "No description provided",
-      "implementation": "./src/__generated__/foundation-executor.ts",
+      "implementation": "./dist/cjs/__generated__/foundation-executor.cjs",
       "schema": "./tools/foundation.json"
     }
   }

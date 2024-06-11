@@ -10,7 +10,7 @@ import type {
   SQSBatchResponse,
   SQSEvent,
   SQSRecord,
-} from 'aws-lambda/trigger/sqs';
+} from 'aws-lambda/trigger/sqs.js';
 
 import type {ExceptionTracingService} from '../index.ts';
 import {setupExceptionTracing} from '../index.ts';

@@ -1,8 +1,8 @@
 // This file is generated. Do not edit by hand.
 
-import {makeDynamoDBStreamDispatcher} from '@code-like-a-carpenter/foundation-runtime';
+import * as dependencies from '@clc/dependencies';
 
-import * as dependencies from '../../../dependencies.ts';
+import {makeDynamoDBStreamDispatcher} from '@code-like-a-carpenter/foundation-runtime';
 
 export const handler = makeDynamoDBStreamDispatcher({
   ...dependencies,

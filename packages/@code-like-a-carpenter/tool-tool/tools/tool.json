@@ -5,6 +5,11 @@
   "description": "",
   "type": "object",
   "properties": {
+    "buildBeforeRun": {
+      "type": "boolean",
+      "default": true,
+      "description": "If true, this tool cannot be run without being built and, as such, some of the generated paths will be different. Note that _building_ the tool is left to an outside process."
+    },
     "schemaDir": {
       "type": "string",
       "description": "A directory of json schemas defining each tool's inputs."
