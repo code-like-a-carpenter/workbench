@@ -33,7 +33,7 @@
     "@code-like-a-carpenter/logger": "*",
     "@opentelemetry/api": "^1.8.0",
     "@opentelemetry/sdk-trace-base": "^1.24.1",
-    "snake-case": "^3.0.4"
+    "snake-case": "^4.0.0"
   },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.138"
