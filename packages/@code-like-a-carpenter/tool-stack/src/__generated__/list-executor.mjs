@@ -1,15 +1,10 @@
 /**
  * @template T
- * @typedef {import('@nx/devkit').Executor<T>} Executor
+ * @typedef {import('@nx/devkit').PromiseExecutor<T>} PromiseExecutor
  */
 /** @typedef {import('./list-types.mts').StackListSchema} StackListSchema */
 
-/**
- * @template T
- * @typedef {(...args: Parameters<Executor<T>>) => Promise<ReturnType<Executor<T>>>}  AsyncExecutor<T>
- */
-
-/** @type {AsyncExecutor<StackListSchema>} */
+/** @type {PromiseExecutor<StackListSchema>} */
 export const executor = async (args) => {
   const {handler} = await import('../list.mjs');
   await handler(args);

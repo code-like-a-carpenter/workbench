@@ -90,16 +90,11 @@ export default executor;
           `
 /**
  * @template T
- * @typedef {import('@nx/devkit').Executor<T>} Executor
+ * @typedef {import('@nx/devkit').PromiseExecutor<T>} PromiseExecutor
  */
 /** @typedef {import('./${typesImportPath}').${item.typesImportName}} ${item.typesImportName} */
 
-/**
- * @template T
- * @typedef {(...args: Parameters<Executor<T>>) => Promise<ReturnType<Executor<T>>>}  AsyncExecutor<T>
- */
-
-/** @type {AsyncExecutor<${item.typesImportName}>} */
+/** @type {PromiseExecutor<${item.typesImportName}>} */
 export const executor = async (args) => {
   const {handler} = await import('../${item.toolName}.mjs');
   await handler(args);

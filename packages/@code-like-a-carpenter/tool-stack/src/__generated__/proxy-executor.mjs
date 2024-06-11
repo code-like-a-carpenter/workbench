@@ -1,15 +1,10 @@
 /**
  * @template T
- * @typedef {import('@nx/devkit').Executor<T>} Executor
+ * @typedef {import('@nx/devkit').PromiseExecutor<T>} PromiseExecutor
  */
 /** @typedef {import('./proxy-types.mts').StackProxySchema} StackProxySchema */
 
-/**
- * @template T
- * @typedef {(...args: Parameters<Executor<T>>) => Promise<ReturnType<Executor<T>>>}  AsyncExecutor<T>
- */
-
-/** @type {AsyncExecutor<StackProxySchema>} */
+/** @type {PromiseExecutor<StackProxySchema>} */
 export const executor = async (args) => {
   const {handler} = await import('../proxy.mjs');
   await handler(args);

@@ -1,8 +1,8 @@
 diff --git a/node_modules/nx/src/command-line/release/config/config.d.ts b/node_modules/nx/src/command-line/release/config/config.d.ts
-index 04c2921..e31b942 100644
+index 04c2921..29ee6c3 100644
 --- a/node_modules/nx/src/command-line/release/config/config.d.ts
 +++ b/node_modules/nx/src/command-line/release/config/config.d.ts
-@@ -25,6 +25,11 @@ type RemoveBooleanFromPropertiesOnEach<T, K extends keyof T[keyof T]> = {
+@@ -25,6 +25,12 @@ type RemoveBooleanFromPropertiesOnEach<T, K extends keyof T[keyof T]> = {
      [U in keyof T]: RemoveBooleanFromProperties<T[U], K>;
  };
  export declare const IMPLICIT_DEFAULT_RELEASE_GROUP = "__default__";
@@ -11,10 +11,11 @@ index 04c2921..e31b942 100644
 +type DefiniteChangeLog = Exclude<DefiniteRelease['changelog'], undefined>;
 +type DefiniteConventionalCommits = Exclude<DefiniteRelease['conventionalCommits'], undefined>;
 +type DefiniteTypes = Exclude<DefiniteConventionalCommits['types'], undefined>;
++
  /**
   * Our source of truth is a deeply required variant of the user-facing config interface, so that command
   * implementations can be sure that properties will exist and do not need to repeat the same checks over
-@@ -34,11 +39,11 @@ export declare const IMPLICIT_DEFAULT_RELEASE_GROUP = "__default__";
+@@ -34,11 +40,11 @@ export declare const IMPLICIT_DEFAULT_RELEASE_GROUP = "__default__";
   * it easier to work with (the user could be specifying a single string, and they can also use any valid matcher
   * pattern such as directories and globs).
   */
@@ -31,18 +32,19 @@ index 04c2921..e31b942 100644
  }>, 'projects'>;
  export interface CreateNxReleaseConfigError {
 diff --git a/node_modules/nx/src/command-line/release/config/filter-release-groups.d.ts b/node_modules/nx/src/command-line/release/config/filter-release-groups.d.ts
-index bffd713..4a50e9c 100644
+index 511e31d..23ff47f 100644
 --- a/node_modules/nx/src/command-line/release/config/filter-release-groups.d.ts
 +++ b/node_modules/nx/src/command-line/release/config/filter-release-groups.d.ts
-@@ -1,6 +1,7 @@
+@@ -1,7 +1,8 @@
  import { ProjectGraph } from '../../../config/project-graph';
  import { NxReleaseConfig } from './config';
--export type ReleaseGroupWithName = NxReleaseConfig['groups'][string] & {
+ import { GroupVersionPlan, ProjectsVersionPlan } from './version-plans';
+-export type ReleaseGroupWithName = Omit<NxReleaseConfig['groups'][string], 'versionPlans'> & {
 +type DefiniteGroups = Exclude<NxReleaseConfig['groups'], undefined>;
-+export type ReleaseGroupWithName = DefiniteGroups[string] & {
++export type ReleaseGroupWithName = Omit<DefiniteGroups[string], 'versionPlans'> & {
      name: string;
+     versionPlans: (ProjectsVersionPlan | GroupVersionPlan)[] | false;
  };
- export declare function filterReleaseGroups(projectGraph: ProjectGraph, nxReleaseConfig: NxReleaseConfig, projectsFilter?: string[], groupsFilter?: string[]): {
 diff --git a/node_modules/nx/src/native/index.d.ts b/node_modules/nx/src/native/index.d.ts
 index 3bd096b..71f4d62 100644
 --- a/node_modules/nx/src/native/index.d.ts
@@ -62,7 +64,7 @@ index 3bd096b..71f4d62 100644
  
  export class ExternalObject<T> {
 diff --git a/node_modules/nx/src/project-graph/plugins/loader.js b/node_modules/nx/src/project-graph/plugins/loader.js
-index 66d7b36..9f7cdab 100644
+index 8166029..7f0b029 100644
 --- a/node_modules/nx/src/project-graph/plugins/loader.js
 +++ b/node_modules/nx/src/project-graph/plugins/loader.js
 @@ -198,7 +198,6 @@ async function loadNxPluginAsync(pluginConfiguration, paths, root) {

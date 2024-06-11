@@ -15,6 +15,6 @@ dist
 # Docker stuff
 volume
 
-.nx/cache
+.nx
 
 tsconfig.tsbuildinfo
