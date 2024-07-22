@@ -51,13 +51,13 @@ jobs:
           ESLINT_FORMAT_OPTIONS: |
             --format json-with-metadata --output-file reports/style/eslint.json
           TSC_OPTIONS: '| tee reports/style/tsc.log'
-      - uses: check-run-reporter/action@v2.13.0
+      - uses: check-run-reporter/action@v2.13.1
         if: ${{ always() }}
         with:
           token: ${{ secrets.CHECK_RUN_REPORTER_TOKEN }}
           label: ESLint
           report: 'reports/style/eslint.json'
-      - uses: check-run-reporter/action@v2.13.0
+      - uses: check-run-reporter/action@v2.13.1
         if: ${{ always() }}
         with:
           token: ${{ secrets.CHECK_RUN_REPORTER_TOKEN }}
@@ -128,7 +128,7 @@ jobs:
           role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
           aws-region: ${{ secrets.AWS_REGION }}
       - uses: './.github/actions/setup'
-      - uses: check-run-reporter/action@v2.13.0
+      - uses: check-run-reporter/action@v2.13.1
         id: split
         with:
           token: ${{ secrets.CHECK_RUN_REPORTER_TOKEN }}
@@ -151,7 +151,7 @@ jobs:
       # cleanup stacks that actually exist.
       - run: ./scripts/crr-sam destroy ${{ steps.deploy.outputs.deployed }}
         if: ${{ always() }}
-      - uses: check-run-reporter/action@v2.13.0
+      - uses: check-run-reporter/action@v2.13.1
         if: ${{ always() }}
         with:
           token: ${{ secrets.CHECK_RUN_REPORTER_TOKEN }}
@@ -175,7 +175,7 @@ jobs:
           fetch-depth: 0
       - uses: './.github/actions/setup'
       - run: npm test -- --selectProjects 'Unit Tests'
-      - uses: check-run-reporter/action@v2.13.0
+      - uses: check-run-reporter/action@v2.13.1
         if: ${{ always() }}
         with:
           token: ${{ secrets.CHECK_RUN_REPORTER_TOKEN }}
