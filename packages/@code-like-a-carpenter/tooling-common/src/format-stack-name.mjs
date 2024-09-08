@@ -5,6 +5,7 @@ import upperFirst from 'lodash.upperfirst';
  * @typedef {Object} FormatStackNameOptions
  * @property {boolean} ci
  * @property {string} [fullRef]
+ * @property {boolean} [isProd]
  * @property {string} projectName
  * @property {string} [sha]
  * @property {string} [ref]
@@ -17,6 +18,7 @@ import upperFirst from 'lodash.upperfirst';
 export function formatStackName({
   ci,
   fullRef = '',
+  isProd = false,
   projectName,
   sha = '',
   ref = '',
@@ -24,7 +26,7 @@ export function formatStackName({
   const stackName = upperFirst(camelCase(projectName));
   let suffix = '';
 
-  if (!ci) {
+  if (!ci || isProd) {
     return stackName;
   }
 

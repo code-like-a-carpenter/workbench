@@ -18,9 +18,14 @@ export function getStackName(projectName) {
   if (!ci.isCI) {
     return formatStackName({ci: false, projectName});
   }
+
+  const stageName = env('STAGE_NAME', '');
+  const isProd = stageName === 'prod' || stageName === 'production';
+
   if (ci.BUILDKITE) {
     return formatStackName({
       ci: true,
+      isProd,
       projectName,
       ref: env('BUILDKITE_BRANCH', ''),
       sha: env('BUILDKITE_COMMIT'),
@@ -31,6 +36,7 @@ export function getStackName(projectName) {
     return formatStackName({
       ci: true,
       fullRef: env('GITHUB_HEAD_REF', ''),
+      isProd,
       projectName,
       ref: env('GITHUB_REF', ''),
       sha: env('GITHUB_SHA'),

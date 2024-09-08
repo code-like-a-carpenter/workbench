@@ -51,4 +51,13 @@ describe('formatStackName()', () => {
       expect(stackName.length).toBeLessThan(128);
     }
   );
+
+  it.each(testData)(
+    'converts a project name to a stack name in ci in prod',
+    (projectName, env) => {
+      const stackName = formatStackName({projectName, ...env, isProd: true});
+      expect(stackName).toMatchSnapshot();
+      expect(stackName.length).toBeLessThan(128);
+    }
+  );
 });

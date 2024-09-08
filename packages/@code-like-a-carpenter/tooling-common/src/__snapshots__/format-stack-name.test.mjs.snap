@@ -47,3 +47,43 @@ exports[`formatStackName() converts a project name to a stack name in ci 18`] = 
 exports[`formatStackName() converts a project name to a stack name in ci 19`] = `"ci--CheckRunReporter-f7d69db"`;
 
 exports[`formatStackName() converts a project name to a stack name in ci 20`] = `"ci--CheckRunReporter-openapiTypescript6-f7d69db"`;
+
+exports[`formatStackName() converts a project name to a stack name in ci in prod 1`] = `"CodeLikeACarpenterToolingCommon"`;
+
+exports[`formatStackName() converts a project name to a stack name in ci in prod 2`] = `"CodeLikeACarpenterToolingCommon"`;
+
+exports[`formatStackName() converts a project name to a stack name in ci in prod 3`] = `"CodeLikeACarpenterToolingCommon"`;
+
+exports[`formatStackName() converts a project name to a stack name in ci in prod 4`] = `"CodeLikeACarpenterToolingCommon"`;
+
+exports[`formatStackName() converts a project name to a stack name in ci in prod 5`] = `"CodeLikeACarpenterToolingCommon"`;
+
+exports[`formatStackName() converts a project name to a stack name in ci in prod 6`] = `"CodeLikeACarpenterFoundationIntermediateRepresentation"`;
+
+exports[`formatStackName() converts a project name to a stack name in ci in prod 7`] = `"CodeLikeACarpenterFoundationIntermediateRepresentation"`;
+
+exports[`formatStackName() converts a project name to a stack name in ci in prod 8`] = `"CodeLikeACarpenterFoundationIntermediateRepresentation"`;
+
+exports[`formatStackName() converts a project name to a stack name in ci in prod 9`] = `"CodeLikeACarpenterFoundationIntermediateRepresentation"`;
+
+exports[`formatStackName() converts a project name to a stack name in ci in prod 10`] = `"CodeLikeACarpenterFoundationIntermediateRepresentation"`;
+
+exports[`formatStackName() converts a project name to a stack name in ci in prod 11`] = `"AwsOtel"`;
+
+exports[`formatStackName() converts a project name to a stack name in ci in prod 12`] = `"AwsOtel"`;
+
+exports[`formatStackName() converts a project name to a stack name in ci in prod 13`] = `"AwsOtel"`;
+
+exports[`formatStackName() converts a project name to a stack name in ci in prod 14`] = `"AwsOtel"`;
+
+exports[`formatStackName() converts a project name to a stack name in ci in prod 15`] = `"AwsOtel"`;
+
+exports[`formatStackName() converts a project name to a stack name in ci in prod 16`] = `"CheckRunReporter"`;
+
+exports[`formatStackName() converts a project name to a stack name in ci in prod 17`] = `"CheckRunReporter"`;
+
+exports[`formatStackName() converts a project name to a stack name in ci in prod 18`] = `"CheckRunReporter"`;
+
+exports[`formatStackName() converts a project name to a stack name in ci in prod 19`] = `"CheckRunReporter"`;
+
+exports[`formatStackName() converts a project name to a stack name in ci in prod 20`] = `"CheckRunReporter"`;
