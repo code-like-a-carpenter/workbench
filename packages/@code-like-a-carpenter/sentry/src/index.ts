@@ -1,8 +1,9 @@
 import {
-  AWSLambda,
-  withScope,
   captureException as sentryCaptureException,
-} from '@sentry/serverless';
+  init as sentryInit,
+  withScope,
+  wrapHandler as sentryWrapHandler,
+} from '@sentry/aws-serverless';
 
 import {env} from '@code-like-a-carpenter/env';
 import {ClientError} from '@code-like-a-carpenter/errors';
@@ -40,7 +41,7 @@ export const init: ExceptionTracingServiceInitializer = () => {
   const environment = env('SENTRY_ENVIRONMENT', '');
 
   try {
-    AWSLambda.init({
+    sentryInit({
       beforeSend(event, hint) {
         // Ignore client errors since they're normal and expected. (Of course,
         // we'll need metrics on them to alert if they happen _too_ often.)
@@ -83,5 +84,5 @@ export const init: ExceptionTracingServiceInitializer = () => {
 };
 
 export const wrapHandler: ExceptionTracingServiceWrapper = (handler) => {
-  return AWSLambda.wrapHandler(handler) as typeof handler;
+  return sentryWrapHandler(handler) as typeof handler;
 };

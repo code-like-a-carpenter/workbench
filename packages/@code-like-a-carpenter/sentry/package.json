@@ -29,7 +29,7 @@
     "@code-like-a-carpenter/env": "*",
     "@code-like-a-carpenter/errors": "*",
     "@code-like-a-carpenter/telemetry": "*",
-    "@sentry/serverless": "^7.114.0"
+    "@sentry/aws-serverless": "^8.30.0"
   },
   "releaseAll": 5,
   "types": "./dist/types/index.d.ts",
