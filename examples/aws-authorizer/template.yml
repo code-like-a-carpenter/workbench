@@ -129,7 +129,6 @@ Resources:
           - '@opentelemetry/resources'
           - '@opentelemetry/sdk-trace-base'
           - '@opentelemetry/sdk-trace-node'
-          - '@opentelemetry/semantic-conventions'
           - 'aws-sdk'
         Minify: false
         Sourcemap: true
@@ -173,7 +172,6 @@ Resources:
           - '@opentelemetry/resources'
           - '@opentelemetry/sdk-trace-base'
           - '@opentelemetry/sdk-trace-node'
-          - '@opentelemetry/semantic-conventions'
           - 'aws-sdk'
         Minify: false
         Sourcemap: true

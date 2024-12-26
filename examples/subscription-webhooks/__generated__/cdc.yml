@@ -124,6 +124,7 @@ Resources:
           - './index'
         External:
           - '@aws-sdk/*'
+        Format: 'esm'
         Minify: false
         Sourcemap: true
         Target: 'es2022'

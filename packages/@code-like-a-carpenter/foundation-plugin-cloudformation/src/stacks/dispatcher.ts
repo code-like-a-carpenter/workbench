@@ -26,6 +26,7 @@ export function makeDispatcherStack(
       buildProperties: {
         EntryPoints: ['./index'],
         External: config.buildProperties.external,
+        Format: 'esm',
         Minify: config.buildProperties.minify,
         Sourcemap: config.buildProperties.sourcemap,
         Target: config.buildProperties.target,
