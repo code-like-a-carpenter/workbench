@@ -43,16 +43,10 @@ describe('createUserSession()', () => {
       {
         "capacity": {
           "CapacityUnits": 1,
-          "GlobalSecondaryIndexes": undefined,
-          "LocalSecondaryIndexes": undefined,
-          "ReadCapacityUnits": undefined,
           "Table": {
             "CapacityUnits": 1,
-            "ReadCapacityUnits": undefined,
-            "WriteCapacityUnits": undefined,
           },
           "TableName": Any<String>,
-          "WriteCapacityUnits": undefined,
         },
         "item": {
           "createdAt": Any<Date>,
@@ -139,16 +133,10 @@ describe('blindWriteUserSession()', () => {
         {
           "capacity": {
             "CapacityUnits": 1,
-            "GlobalSecondaryIndexes": undefined,
-            "LocalSecondaryIndexes": undefined,
-            "ReadCapacityUnits": undefined,
             "Table": {
               "CapacityUnits": 1,
-              "ReadCapacityUnits": undefined,
-              "WriteCapacityUnits": undefined,
             },
             "TableName": Any<String>,
-            "WriteCapacityUnits": undefined,
           },
           "item": {
             "createdAt": Any<Date>,
@@ -227,16 +215,10 @@ describe('blindWriteUserSession()', () => {
       {
         "capacity": {
           "CapacityUnits": 1,
-          "GlobalSecondaryIndexes": undefined,
-          "LocalSecondaryIndexes": undefined,
-          "ReadCapacityUnits": undefined,
           "Table": {
             "CapacityUnits": 1,
-            "ReadCapacityUnits": undefined,
-            "WriteCapacityUnits": undefined,
           },
           "TableName": Any<String>,
-          "WriteCapacityUnits": undefined,
         },
         "item": {
           "createdAt": Any<Date>,
@@ -269,16 +251,10 @@ describe('blindWriteUserSession()', () => {
       {
         "capacity": {
           "CapacityUnits": 1,
-          "GlobalSecondaryIndexes": undefined,
-          "LocalSecondaryIndexes": undefined,
-          "ReadCapacityUnits": undefined,
           "Table": {
             "CapacityUnits": 1,
-            "ReadCapacityUnits": undefined,
-            "WriteCapacityUnits": undefined,
           },
           "TableName": Any<String>,
-          "WriteCapacityUnits": undefined,
         },
         "item": {
           "createdAt": Any<Date>,
@@ -305,16 +281,10 @@ describe('blindWriteUserSession()', () => {
       {
         "capacity": {
           "CapacityUnits": 1,
-          "GlobalSecondaryIndexes": undefined,
-          "LocalSecondaryIndexes": undefined,
-          "ReadCapacityUnits": undefined,
           "Table": {
             "CapacityUnits": 1,
-            "ReadCapacityUnits": undefined,
-            "WriteCapacityUnits": undefined,
           },
           "TableName": Any<String>,
-          "WriteCapacityUnits": undefined,
         },
         "item": {
           "createdAt": Any<Date>,
@@ -413,16 +383,10 @@ describe('deleteUserSession()', () => {
       {
         "capacity": {
           "CapacityUnits": 1,
-          "GlobalSecondaryIndexes": undefined,
-          "LocalSecondaryIndexes": undefined,
-          "ReadCapacityUnits": undefined,
           "Table": {
             "CapacityUnits": 1,
-            "ReadCapacityUnits": undefined,
-            "WriteCapacityUnits": undefined,
           },
           "TableName": Any<String>,
-          "WriteCapacityUnits": undefined,
         },
         "item": undefined,
         "metrics": undefined,
@@ -456,16 +420,10 @@ describe('readUserSession()', () => {
       {
         "capacity": {
           "CapacityUnits": 1,
-          "GlobalSecondaryIndexes": undefined,
-          "LocalSecondaryIndexes": undefined,
-          "ReadCapacityUnits": undefined,
           "Table": {
             "CapacityUnits": 1,
-            "ReadCapacityUnits": undefined,
-            "WriteCapacityUnits": undefined,
           },
           "TableName": Any<String>,
-          "WriteCapacityUnits": undefined,
         },
         "item": {
           "createdAt": Any<Date>,
@@ -506,16 +464,10 @@ describe('updateUserSession()', () => {
       {
         "capacity": {
           "CapacityUnits": 1,
-          "GlobalSecondaryIndexes": undefined,
-          "LocalSecondaryIndexes": undefined,
-          "ReadCapacityUnits": undefined,
           "Table": {
             "CapacityUnits": 1,
-            "ReadCapacityUnits": undefined,
-            "WriteCapacityUnits": undefined,
           },
           "TableName": Any<String>,
-          "WriteCapacityUnits": undefined,
         },
         "item": {
           "createdAt": Any<Date>,
@@ -544,16 +496,10 @@ describe('updateUserSession()', () => {
       {
         "capacity": {
           "CapacityUnits": 1,
-          "GlobalSecondaryIndexes": undefined,
-          "LocalSecondaryIndexes": undefined,
-          "ReadCapacityUnits": undefined,
           "Table": {
             "CapacityUnits": 1,
-            "ReadCapacityUnits": undefined,
-            "WriteCapacityUnits": undefined,
           },
           "TableName": Any<String>,
-          "WriteCapacityUnits": undefined,
         },
         "item": {
           "createdAt": Any<Date>,
@@ -579,16 +525,10 @@ describe('updateUserSession()', () => {
       {
         "capacity": {
           "CapacityUnits": 1,
-          "GlobalSecondaryIndexes": undefined,
-          "LocalSecondaryIndexes": undefined,
-          "ReadCapacityUnits": undefined,
           "Table": {
             "CapacityUnits": 1,
-            "ReadCapacityUnits": undefined,
-            "WriteCapacityUnits": undefined,
           },
           "TableName": Any<String>,
-          "WriteCapacityUnits": undefined,
         },
         "item": {
           "createdAt": Any<Date>,
