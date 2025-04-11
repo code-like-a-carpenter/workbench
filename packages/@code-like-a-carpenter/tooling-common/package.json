@@ -29,7 +29,7 @@
     "@code-like-a-carpenter/env": "*",
     "@schemastore/package": "^0.0.10",
     "ci-info": "^4.0.0",
-    "find-up": "^5.0.0",
+    "find-up": "^7.0.0",
     "lodash.camelcase": "^4.3.0",
     "lodash.upperfirst": "^4.3.1",
     "prettier": "^3.3.0"
