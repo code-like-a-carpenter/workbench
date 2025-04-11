@@ -38,10 +38,12 @@
     "@graphql-codegen/typescript": "^4.0.7",
     "@graphql-tools/schema": "^10.0.4",
     "@nx/devkit": "^19.1.1",
-    "glob": "^10.4.1",
     "graphql": "^16.8.1",
     "zod": "^3.23.8"
   },
   "types": "./dist/types/index.d.ts",
-  "type": "module"
+  "type": "module",
+  "devDependencies": {
+    "glob": "^11.0.1"
+  }
 }
