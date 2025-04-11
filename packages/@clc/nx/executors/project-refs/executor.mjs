@@ -56,7 +56,10 @@ const runExecutor = async (options, context) => {
     : rootPkg.workspaces?.packages ?? [];
 
   rootTsConfig.references = (
-    await glob(workspaces.map((w) => path.join(w, '**', 'tsconfig.json')))
+    await glob(
+      workspaces.map((w) => path.join(w, '**', 'tsconfig.json')),
+      {ignore: '**/node_modules/**'}
+    )
   )
     .map((p) => path.dirname(p))
     .map((p) => path.resolve(p))
