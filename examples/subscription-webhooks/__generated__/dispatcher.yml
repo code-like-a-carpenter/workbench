@@ -76,7 +76,7 @@ Resources:
         - EventBridgePutEventsPolicy:
             EventBusName:
               Ref: 'EventBus'
-      Runtime: 'nodejs18.x'
+      Runtime: 'nodejs22.x'
       Timeout:
         Ref: 'Timeout'
       Tracing: 'Active'

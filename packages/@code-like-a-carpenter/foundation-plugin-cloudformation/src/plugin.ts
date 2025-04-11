@@ -96,7 +96,7 @@ export const plugin: PluginFunction<Config> = makePlugin(
           Function: {
             Handler: 'index.handler',
             MemorySize: 256,
-            Runtime: 'nodejs18.x',
+            Runtime: 'nodejs22.x',
             Timeout: 30,
             Tracing: 'Active',
           },

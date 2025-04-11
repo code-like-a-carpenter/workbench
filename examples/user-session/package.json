@@ -2,7 +2,7 @@
   "name": "user-session",
   "private": true,
   "engines": {
-    "node": "20.x"
+    "node": "22.x"
   },
   "dependencies": {
     "@aws-sdk/client-dynamodb": "3.188.0",

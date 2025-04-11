@@ -220,7 +220,7 @@ export function makeHandlerStack(config: Config): ServerlessApplicationModel {
     Globals: {
       Function: {
         Handler: 'index.handler',
-        Runtime: 'nodejs18.x',
+        Runtime: 'nodejs22.x',
         Tracing: 'Active',
       },
     },

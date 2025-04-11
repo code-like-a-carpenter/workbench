@@ -5,7 +5,7 @@
   "author": "Ian Remmel <1182361+ianwremmel@users.noreply.github.com> (https://www.ianwremmel.com)",
   "bugs": "https://www.github.com/code-like-a-carpenter/workbench/issues",
   "engines": {
-    "node": "20.x"
+    "node": "22.x"
   },
   "exports": {
     ".": {
