@@ -3,11 +3,11 @@
   "description": "test helpers",
   "private": true,
   "dependencies": {
-    "@aws-sdk/lib-dynamodb": "3.188.0",
+    "@aws-sdk/lib-dynamodb": "3.726.1",
     "@clc/dependencies": "*"
   },
   "engines": {
-    "node": "20.x"
+    "node": "22.x"
   },
   "author": "Ian Remmel <1182361+ianwremmel@users.noreply.github.com> (https://www.ianwremmel.com)",
   "bugs": "https://www.github.com/code-like-a-carpenter/workbench/issues",

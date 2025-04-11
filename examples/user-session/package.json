@@ -2,19 +2,19 @@
   "name": "user-session",
   "private": true,
   "engines": {
-    "node": "20.x"
+    "node": "22.x"
   },
   "dependencies": {
-    "@aws-sdk/client-dynamodb": "3.188.0",
-    "@aws-sdk/lib-dynamodb": "3.188.0",
-    "@aws-sdk/smithy-client": "3.188.0",
-    "@aws-sdk/util-dynamodb": "3.188.0",
+    "@aws-sdk/client-dynamodb": "3.726.1",
+    "@aws-sdk/lib-dynamodb": "3.726.1",
+    "@aws-sdk/util-dynamodb": "3.726.1",
     "@clc/dependencies": "*",
     "@clc/test-helpers": "*",
     "@code-like-a-carpenter/assert": "*",
     "@code-like-a-carpenter/foundation-runtime": "*",
     "@code-like-a-carpenter/tool-foundation": "*",
     "@faker-js/faker": "^8.4.1",
+    "@smithy/smithy-client": "^4.2.0",
     "base64url": "^3.0.1"
   },
   "type": "module"

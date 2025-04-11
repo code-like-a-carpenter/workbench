@@ -1,4 +1,4 @@
-import type {ServiceException} from '@aws-sdk/smithy-client';
+import type {ServiceException} from '@smithy/smithy-client';
 
 import {BaseDataLibraryError} from './base-error.ts';
 

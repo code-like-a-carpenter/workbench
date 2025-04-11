@@ -10,7 +10,7 @@ export const plugin = definePlugin((yargs) => {
       y
         .option('aws-sdk-version', {
           conflicts: [],
-          default: '3.188.0',
+          default: '3.726.1',
           demandOption: false,
           type: 'string',
         })

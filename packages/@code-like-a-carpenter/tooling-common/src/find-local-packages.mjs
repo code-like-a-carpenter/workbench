@@ -23,7 +23,10 @@ export async function findLocalPackages() {
     Array.isArray(workspaces),
     'This project currently only supports the Array form of workspaces'
   );
-  const packageFiles = await glob(workspaces.map((w) => `${w}/package.json`));
+  const packageFiles = await glob(
+    workspaces.map((w) => `${w}/package.json`),
+    {ignore: '**/node_modules/**'}
+  );
 
   return new Map(
     await Promise.all(

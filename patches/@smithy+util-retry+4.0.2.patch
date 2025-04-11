@@ -1,0 +1,10 @@
+diff --git a/node_modules/@smithy/util-retry/dist-types/ConfiguredRetryStrategy.d.ts b/node_modules/@smithy/util-retry/dist-types/ConfiguredRetryStrategy.d.ts
+index 3250c6d..7df2983 100644
+--- a/node_modules/@smithy/util-retry/dist-types/ConfiguredRetryStrategy.d.ts
++++ b/node_modules/@smithy/util-retry/dist-types/ConfiguredRetryStrategy.d.ts
+@@ -1,4 +1,4 @@
+-import type { Provider, RetryBackoffStrategy, RetryErrorInfo, RetryStrategyV2, StandardRetryToken } from "@smithy/types";
++import { Provider, RetryBackoffStrategy, RetryErrorInfo, RetryStrategyV2, StandardRetryToken } from "@smithy/types";
+ import { StandardRetryStrategy } from "./StandardRetryStrategy";
+ /**
+  * @public

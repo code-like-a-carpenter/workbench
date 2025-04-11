@@ -4,7 +4,7 @@
   "author": "Ian Remmel <1182361+ianwremmel@users.noreply.github.com> (https://www.ianwremmel.com)",
   "bugs": "https://www.github.com/code-like-a-carpenter/workbench/issues",
   "engines": {
-    "node": "20.x"
+    "node": "22.x"
   },
   "exports": {
     ".": {
@@ -30,9 +30,11 @@
     "@code-like-a-carpenter/cli-core": "*",
     "@code-like-a-carpenter/tooling-common": "*",
     "@nx/devkit": "^19.2.2",
-    "glob": "^10.4.1",
     "json-schema-to-typescript": "^14.0.4"
   },
   "types": "./dist/types/index.d.mts",
-  "type": "module"
+  "type": "module",
+  "devDependencies": {
+    "glob": "^11.0.1"
+  }
 }

@@ -50,7 +50,9 @@ export async function handler(args) {
     });
 
     if (endpoints.size === 1 && args.endpoint) {
-      makeProxy(endpoints.values().next().value).listen(args.port ?? 3000);
+      const {value} = endpoints.values().next();
+      assert(value, 'value cannot be defined here');
+      makeProxy(value).listen(args.port ?? 3000);
       return;
     }
   }

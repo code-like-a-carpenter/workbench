@@ -1,4 +1,4 @@
-import {ServiceException} from '@aws-sdk/smithy-client';
+import {ServiceException} from '@smithy/smithy-client';
 
 import {AlreadyExistsError} from './already-exists-error.ts';
 import {NotFoundError} from './not-found-error.ts';
