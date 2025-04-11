@@ -6,7 +6,7 @@
   "type": "object",
   "properties": {
     "awsSdkVersion": {
-      "default": "3.188.0",
+      "default": "3.726.1",
       "type": "string"
     },
     "devPatterns": {

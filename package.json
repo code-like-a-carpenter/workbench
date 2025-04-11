@@ -21,10 +21,10 @@
     "test": "TZ=UTC node --experimental-vm-modules node_modules/jest/bin/jest.js"
   },
   "devDependencies": {
-    "@aws-sdk/client-cloudformation": "3.188.0",
-    "@aws-sdk/client-dynamodb": "3.188.0",
-    "@aws-sdk/client-eventbridge": "3.188.0",
-    "@aws-sdk/lib-dynamodb": "3.188.0",
+    "@aws-sdk/client-cloudformation": "^3.787.0",
+    "@aws-sdk/client-dynamodb": "^3.787.0",
+    "@aws-sdk/client-eventbridge": "^3.787.0",
+    "@aws-sdk/lib-dynamodb": "^3.787.0",
     "@babel/core": "^7.24.6",
     "@babel/preset-env": "^7.24.6",
     "@babel/preset-typescript": "^7.24.6",

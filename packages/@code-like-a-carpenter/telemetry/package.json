@@ -26,13 +26,13 @@
     "access": "public"
   },
   "dependencies": {
-    "@aws-sdk/smithy-client": "3.188.0",
     "@code-like-a-carpenter/assert": "*",
     "@code-like-a-carpenter/env": "*",
     "@code-like-a-carpenter/exception": "*",
     "@code-like-a-carpenter/logger": "*",
     "@opentelemetry/api": "^1.8.0",
     "@opentelemetry/sdk-trace-base": "^1.24.1",
+    "@smithy/smithy-client": "^4.2.0",
     "snake-case": "^3.0.4"
   },
   "devDependencies": {

@@ -1,7 +1,7 @@
 import {AssertionError} from 'assert';
 
-import {ServiceException} from '@aws-sdk/smithy-client';
 import {SpanStatusCode} from '@opentelemetry/api';
+import {ServiceException} from '@smithy/smithy-client';
 import {snakeCase} from 'snake-case';
 
 import {assert} from '@code-like-a-carpenter/assert';

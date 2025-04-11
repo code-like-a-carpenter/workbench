@@ -108,7 +108,7 @@ ${models
             UpdateCommand,
             UpdateCommandInput
           } from '@aws-sdk/lib-dynamodb';`,
-          `import {ServiceException} from '@aws-sdk/smithy-client';`,
+          `import {ServiceException} from '@smithy/smithy-client';`,
           `import {NativeAttributeValue} from '@aws-sdk/util-dynamodb';`,
           `import Base64Import from 'base64url';`,
           `import {assert} from '@code-like-a-carpenter/assert';`,

@@ -3,9 +3,9 @@
   "description": "foundation dependencies for examples",
   "private": true,
   "dependencies": {
-    "@aws-sdk/client-dynamodb": "3.188.0",
-    "@aws-sdk/client-eventbridge": "3.188.0",
-    "@aws-sdk/lib-dynamodb": "3.188.0",
+    "@aws-sdk/client-dynamodb": "3.726.1",
+    "@aws-sdk/client-eventbridge": "3.726.1",
+    "@aws-sdk/lib-dynamodb": "3.726.1",
     "@code-like-a-carpenter/sentry": "*",
     "cuid": "^3.0.0"
   },

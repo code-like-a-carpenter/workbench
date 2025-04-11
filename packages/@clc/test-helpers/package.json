@@ -3,7 +3,7 @@
   "description": "test helpers",
   "private": true,
   "dependencies": {
-    "@aws-sdk/lib-dynamodb": "3.188.0",
+    "@aws-sdk/lib-dynamodb": "3.726.1",
     "@clc/dependencies": "*"
   },
   "engines": {
