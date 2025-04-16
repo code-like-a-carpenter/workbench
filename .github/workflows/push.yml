@@ -186,17 +186,3 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           directory: 'reports/coverage'
-
-  tracker:
-    needs:
-      - release
-    if: ${{ github.event.repository.default_branch == github.ref_name }}
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - run: ./scripts/tracker.js
-        env:
-          PIVOTAL_TRACKER_PROJECT_ID: ${{ secrets.PIVOTAL_TRACKER_PROJECT_ID }}
-          PIVOTAL_TRACKER_TOKEN: ${{ secrets.PIVOTAL_TRACKER_TOKEN }}
