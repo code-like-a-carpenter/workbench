@@ -37,7 +37,7 @@
     "@smithy/smithy-client": "^4.2.0"
   },
   "devDependencies": {
-    "@types/aws-lambda": "^8.10.138"
+    "@types/aws-lambda": "^8.10.149"
   },
   "releaseAll": 5,
   "types": "./dist/types/index.d.ts",
