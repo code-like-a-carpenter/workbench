@@ -36,7 +36,7 @@
     "snake-case": "^3.0.4"
   },
   "devDependencies": {
-    "@types/aws-lambda": "^8.10.138"
+    "@types/aws-lambda": "^8.10.149"
   },
   "releaseAll": 5,
   "types": "./dist/types/index.d.ts",
