@@ -31,7 +31,7 @@
     "@code-like-a-carpenter/assert": "*",
     "@code-like-a-carpenter/cli-core": "*",
     "@code-like-a-carpenter/tooling-common": "*",
-    "@nx/devkit": "^19.2.2",
+    "@nx/devkit": "^21.1.2",
     "express": "^4.19.2",
     "http-proxy": "^1.18.1",
     "lodash.snakecase": "^4.1.1",
