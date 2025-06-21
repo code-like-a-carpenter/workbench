@@ -1,9 +1,11 @@
-import assert from 'assert';
+import {readFileSync} from 'node:fs';
+import path from 'node:path';
+import {fileURLToPath} from 'node:url';
 
 import type {Context, Span, SpanOptions} from '@opentelemetry/api';
 import {SpanKind, trace} from '@opentelemetry/api';
 
-import {env} from '@code-like-a-carpenter/env';
+import {assert} from '@code-like-a-carpenter/assert';
 
 import {captureException} from './exceptions.ts';
 
@@ -13,11 +15,41 @@ export function getCurrentSpan() {
   return trace.getActiveSpan();
 }
 
-export function getTracer(
-  name = env('AWS_LAMBDA_FUNCTION_NAME', 'unknown'),
-  version = env('AWS_LAMBDA_FUNCTION_VERSION', 'unknown')
-) {
-  return trace.getTracer(name, version);
+let tracer: ReturnType<typeof trace.getTracer> | undefined;
+function loadPkg() {
+  console.log({
+    d: __dirname,
+    i: import.meta.url,
+  });
+  const dirname =
+    typeof import.meta.url === 'string' && import.meta.url.length > 0
+      ? path.dirname(fileURLToPath(import.meta.url))
+      : __dirname;
+
+  try {
+    // when readinng from dist
+    const pkg = JSON.parse(
+      readFileSync(path.join(dirname, '..', '..', 'package.json'), 'utf8')
+    );
+    return pkg;
+  } catch (err) {
+    // when readinng from src
+    const pkg = JSON.parse(
+      readFileSync(path.join(dirname, '..', 'package.json'), 'utf8')
+    );
+    return pkg;
+  }
+}
+export function getTracer() {
+  if (tracer) {
+    return tracer;
+  }
+
+  const pkg = loadPkg();
+  assert(pkg, 'Could not find package.json for this module');
+  assert('name' in pkg, 'Package.json must have a name');
+  assert(typeof pkg.name === 'string', 'Package name must be a string');
+  return trace.getTracer(pkg.name, pkg.version);
 }
 
 /** Runs `fn` with inside specified span */
