@@ -30,7 +30,7 @@
     "@code-like-a-carpenter/cli-core": "*",
     "@code-like-a-carpenter/tooling-common": "*",
     "@nx/devkit": "^19.2.2",
-    "json-schema-to-typescript": "^14.0.4"
+    "json-schema-to-typescript": "^15.0.4"
   },
   "types": "./dist/types/index.d.mts",
   "type": "module",
