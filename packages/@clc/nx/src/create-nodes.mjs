@@ -225,7 +225,9 @@ export const createNodes = [
     addTarget(targets, 'codegen', 'package', {
       cache: true,
       executor: '@clc/nx:package-json',
-      inputs: ['{workspaceRoot}/package.json'],
+      // cli.mjs decides whether the executor's `bin` assertion passes, so a
+      // cached result must not survive the file appearing or disappearing.
+      inputs: ['{workspaceRoot}/package.json', '{projectRoot}/cli.mjs'],
       options: {mjs, mts, type},
       outputs: ['{projectRoot}/package.json'],
     });
