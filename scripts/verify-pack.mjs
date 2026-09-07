@@ -12,10 +12,13 @@
 // Each loadable target is loaded in its own child process. One process per
 // package would let an entry point that calls `process.exit()` — a CLI whose
 // `.` export runs itself — report success for every target queued behind it.
-// A pass needs two independent facts, because either alone is forgeable: the
-// child writes MARKER once the module has evaluated, which the exit code cannot
-// tell from "threw while loading", and the child must also exit 0, which the
-// marker cannot tell from a module that evaluated and then failed.
+// A pass needs two facts, because either alone is forgeable: the child writes
+// MARKER unless loading threw, which an exit code cannot tell from "threw while
+// loading", and the child must also exit 0, which the marker cannot tell from a
+// module that loaded and then reported a failure. The marker is written from an
+// `exit` handler so that a module which exits while evaluating is still
+// observed; the price of that is that it proves evaluation was entered and did
+// not throw, not that it ran to completion.
 //
 // Each extracted package gets a `node_modules` holding its declared
 // dependencies, so a sibling resolves to *its* extracted tarball rather than to
@@ -145,8 +148,21 @@ function collectTargets(subpath, value, conditions = []) {
       collectTargets(subpath, nested, [...conditions, condition])
     );
   }
-  // `null` blocks a subpath: there is no file to check.
-  return [];
+  if (value === null) {
+    // `null` blocks a subpath: there is no file to check.
+    return [];
+  }
+  // A number, a boolean, `undefined` — node rejects all of them as export
+  // targets. Reported for the same reason as the array form: skipping leaves a
+  // target that is never checked and a package that passes without being read.
+  return [
+    {
+      conditions,
+      subpath,
+      target: String(value),
+      unsupported: 'not a string, an array, or an object of conditions',
+    },
+  ];
 }
 
 /**
@@ -179,16 +195,24 @@ function targetsOf(manifest) {
     throw new Error('package has no "exports" map');
   }
 
+  // Only a plain object is a map of subpaths and conditions. Anything else —
+  // a string, an array, or junk — is itself the target for ".". Routing an
+  // array through Object.entries would turn its indices into condition names
+  // and drop any non-string entry without checking it.
+  const isSubpathMap =
+    typeof exportsMap === 'object' &&
+    exportsMap !== null &&
+    !Array.isArray(exportsMap);
+
   /** @type {Target[]} */
-  const targets =
-    typeof exportsMap === 'string'
-      ? collectTargets('.', exportsMap)
-      : Object.entries(exportsMap).flatMap(([key, value]) =>
-          // A key that does not start with "." is a condition on ".".
-          key.startsWith('.')
-            ? collectTargets(key, value)
-            : collectTargets('.', value, [key])
-        );
+  const targets = isSubpathMap
+    ? Object.entries(exportsMap).flatMap(([key, value]) =>
+        // A key that does not start with "." is a condition on ".".
+        key.startsWith('.')
+          ? collectTargets(key, value)
+          : collectTargets('.', value, [key])
+      )
+    : collectTargets('.', exportsMap);
 
   if (typeof manifest.types === 'string') {
     targets.push({
@@ -219,8 +243,14 @@ function checkFor({conditions, target, unsupported}, manifest) {
   if (conditions.includes('types') || conditions.includes('bin')) {
     return 'exists';
   }
+  // JSON under an explicit `require` condition is loadable, so load it: a file
+  // that is present but does not parse is exactly the shape this job exists to
+  // catch. Any other JSON target is existence-checked, because `import()` of
+  // JSON needs a type attribute, and an unconditional target — every package's
+  // `"./package.json": "./package.json"` — would otherwise be `import()`ed by a
+  // `"type": "module"` package and fail for the missing attribute alone.
   if (target.endsWith('.json')) {
-    return 'exists';
+    return conditions.includes('require') ? 'require' : 'exists';
   }
   if (conditions.includes('require')) {
     return 'require';
@@ -244,10 +274,11 @@ function describe({conditions, subpath, target}) {
 }
 
 /**
- * Loads one target and writes {@link MARKER} if it evaluated cleanly. The
- * marker is written from an exit handler so that a module which exits during
- * evaluation is still observed, and the handler checks the exit code so that
- * one which exits *because it failed* is not counted as a pass.
+ * Loads one target, writing {@link MARKER} unless loading threw. The marker is
+ * written from an `exit` handler so that a module which exits while evaluating
+ * is still observed — which is also why it proves only that evaluation was
+ * entered and did not throw. Whether the load *succeeded* is the exit code's
+ * job, and {@link checkPackage} reads that.
  *
  * @param {'import' | 'require'} mode
  * @param {string} file
@@ -257,12 +288,12 @@ async function loadTarget(mode, file) {
   let started = false;
   let threw = false;
 
-  // Gated on the exit code as well as on having started: a module that calls
-  // `process.exit(1)` while evaluating, or that leaves a top-level `await`
-  // unsettled (node exits 13), reaches this handler having started without
-  // throwing. Writing the marker for those reports a broken target as a pass.
-  process.on('exit', (code) => {
-    if (started && !threw && code === 0) {
+  // The marker says only that evaluation was reached and did not throw. Whether
+  // it *succeeded* is the exit code's job, and the caller reads that, because
+  // the code passed to this handler is not final — a handler registered later
+  // can still change `process.exitCode`.
+  process.on('exit', () => {
+    if (started && !threw) {
       fs.writeSync(1, MARKER);
     }
   });
@@ -282,7 +313,10 @@ async function loadTarget(mode, file) {
 
   // The module loaded. Leaving normally would wait on whatever handles it
   // opened, so stop here rather than hanging on a timer or an open socket.
-  process.exit(0);
+  // Exiting with whatever status the module asked for rather than a flat 0: a
+  // module that set `process.exitCode` while evaluating is reporting a failure,
+  // and overriding it here would hide that from the caller.
+  process.exit(process.exitCode ?? 0);
 }
 
 /**
@@ -457,6 +491,15 @@ async function findPackages(packagesRoot, extractRoot) {
         throw new Error(`${manifestPath} is not valid JSON: ${err.message}`);
       }
       if (!manifest.private) {
+        // Keying by name means a second directory claiming the same name would
+        // overwrite the first, dropping it from the run while the final count
+        // still reports every package it did look at as passing.
+        const existing = packages.get(manifest.name);
+        if (existing) {
+          throw new Error(
+            `${manifest.name} is declared by both ${existing.source} and ${source}`
+          );
+        }
         packages.set(manifest.name, {
           dir: path.join(extractRoot, manifest.name),
           manifest,
@@ -558,6 +601,14 @@ async function checkPackage(pkg) {
     }
 
     const file = path.resolve(pkg.dir, target.target);
+    // Reading the tarball is the whole point, so a target that resolves out of
+    // the extracted directory — an absolute path, or one that climbs out with
+    // `..` — is a failure rather than something to load from wherever it landed.
+    // Without this it could resolve back into the workspace source and pass.
+    if (file !== pkg.dir && !file.startsWith(`${pkg.dir}${path.sep}`)) {
+      problems.push(`${label}: resolves outside the extracted package`);
+      continue;
+    }
     if (!fs.existsSync(file)) {
       problems.push(`${label}: missing from the tarball`);
       continue;
@@ -576,7 +627,12 @@ async function checkPackage(pkg) {
       problems.push(
         `${label}: ${check}() did not finish within ${CHILD_TIMEOUT_MS / 1000}s`
       );
-    } else if (!result.stdout.includes(MARKER)) {
+    } else if (!result.stdout.includes(MARKER) || result.code !== 0) {
+      // Both are required. Without the marker, a module that threw while
+      // evaluating is indistinguishable from one that loaded and exited;
+      // without a zero exit code, a module that evaluated and then reported a
+      // failure — `process.exit(1)` mid-evaluation, an unsettled top-level
+      // `await` (node exits 13), a non-zero `process.exitCode` — passes.
       const detail =
         `${result.stderr}${result.stdout.replaceAll(MARKER, '')}`.trim();
       problems.push(
