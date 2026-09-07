@@ -12,9 +12,10 @@
 // Each loadable target is loaded in its own child process. One process per
 // package would let an entry point that calls `process.exit()` — a CLI whose
 // `.` export runs itself — report success for every target queued behind it.
-// The child writes MARKER once the module has evaluated, and only that marker
-// counts as a pass; the exit code alone cannot tell "loaded, then exited" from
-// "threw while loading".
+// A pass needs two independent facts, because either alone is forgeable: the
+// child writes MARKER once the module has evaluated, which the exit code cannot
+// tell from "threw while loading", and the child must also exit 0, which the
+// marker cannot tell from a module that evaluated and then failed.
 //
 // Each extracted package gets a `node_modules` holding its declared
 // dependencies, so a sibling resolves to *its* extracted tarball rather than to
@@ -33,7 +34,7 @@ import path from 'node:path';
 import process from 'node:process';
 import {pathToFileURL} from 'node:url';
 
-/** @typedef {{subpath: string, conditions: string[], target: string}} Target */
+/** @typedef {{subpath: string, conditions: string[], target: string, unsupported?: string}} Target */
 /** @typedef {{name: string, dir: string, source: string, manifest: Record<string, any>}} Package */
 
 const PACKAGES_DIR = 'packages';
@@ -125,13 +126,26 @@ function collectTargets(subpath, value, conditions = []) {
   if (typeof value === 'string') {
     return [{conditions, subpath, target: value}];
   }
-  if (value && typeof value === 'object' && !Array.isArray(value)) {
+  if (Array.isArray(value)) {
+    // The fallback-array form: node tries each entry and takes the first that
+    // resolves, so checking it means resolving the whole list in order. No
+    // package here uses one. Reported rather than skipped, so that adding one
+    // is a loud failure instead of a target that is silently never checked.
+    return [
+      {
+        conditions,
+        subpath,
+        target: JSON.stringify(value),
+        unsupported: 'fallback arrays are not supported',
+      },
+    ];
+  }
+  if (value && typeof value === 'object') {
     return Object.entries(value).flatMap(([condition, nested]) =>
       collectTargets(subpath, nested, [...conditions, condition])
     );
   }
-  // `null` blocks a subpath, and the array fallback form is not used here;
-  // neither has a file to check.
+  // `null` blocks a subpath: there is no file to check.
   return [];
 }
 
@@ -198,8 +212,8 @@ function targetsOf(manifest) {
  * @param {Record<string, any>} manifest
  * @returns {'import' | 'require' | 'exists' | 'unsupported'}
  */
-function checkFor({conditions, target}, manifest) {
-  if (target.includes('*')) {
+function checkFor({conditions, target, unsupported}, manifest) {
+  if (unsupported || target.includes('*')) {
     return 'unsupported';
   }
   if (conditions.includes('types') || conditions.includes('bin')) {
@@ -230,9 +244,10 @@ function describe({conditions, subpath, target}) {
 }
 
 /**
- * Loads one target and writes {@link MARKER} if it evaluated. A module that
- * calls `process.exit()` while evaluating still executed, so the marker is
- * written from an exit handler; only a module that throws suppresses it.
+ * Loads one target and writes {@link MARKER} if it evaluated cleanly. The
+ * marker is written from an exit handler so that a module which exits during
+ * evaluation is still observed, and the handler checks the exit code so that
+ * one which exits *because it failed* is not counted as a pass.
  *
  * @param {'import' | 'require'} mode
  * @param {string} file
@@ -242,8 +257,12 @@ async function loadTarget(mode, file) {
   let started = false;
   let threw = false;
 
-  process.on('exit', () => {
-    if (started && !threw) {
+  // Gated on the exit code as well as on having started: a module that calls
+  // `process.exit(1)` while evaluating, or that leaves a top-level `await`
+  // unsettled (node exits 13), reaches this handler having started without
+  // throwing. Writing the marker for those reports a broken target as a pass.
+  process.on('exit', (code) => {
+    if (started && !threw && code === 0) {
       fs.writeSync(1, MARKER);
     }
   });
@@ -306,8 +325,11 @@ async function resolvePackageDir(fromDir, stopDir, dependency) {
  */
 async function packAndExtract(pkg, stageRoot) {
   // Staging happens outside the workspace so that `npm pack` sees a plain
-  // package rather than a workspace member.
-  const stage = path.join(stageRoot, pkg.name.replace(/[@/]/g, '_'));
+  // package rather than a workspace member. The scope stays a directory rather
+  // than being flattened into the name: flattening maps both `@a/b_c` and
+  // `@a_b/c` onto one directory, and two packages staged on top of each other
+  // pack each other's files.
+  const stage = path.join(stageRoot, pkg.name);
   await fsp.cp(pkg.source, stage, {
     filter: (src) => path.basename(src) !== 'node_modules',
     recursive: true,
@@ -417,14 +439,22 @@ async function findPackages(packagesRoot, extractRoot) {
 
     for (const entry of entries.filter((e) => e.isDirectory())) {
       const source = path.join(scopeRoot, entry.name);
+      const manifestPath = path.join(source, 'package.json');
+      let raw;
+      try {
+        raw = await fsp.readFile(manifestPath, 'utf8');
+      } catch {
+        // No manifest — a stray build or cache directory, not a package.
+        continue;
+      }
+      // A manifest that exists but does not parse is a broken package, not a
+      // non-package. Skipping it here would drop it from the run entirely and
+      // let the job report that every package it did look at was fine.
       let manifest;
       try {
-        manifest = JSON.parse(
-          await fsp.readFile(path.join(source, 'package.json'), 'utf8')
-        );
-      } catch {
-        // Not a package — a stray build or cache directory.
-        continue;
+        manifest = JSON.parse(raw);
+      } catch (err) {
+        throw new Error(`${manifestPath} is not valid JSON: ${err.message}`);
       }
       if (!manifest.private) {
         packages.set(manifest.name, {
@@ -521,7 +551,9 @@ async function checkPackage(pkg) {
     const check = checkFor(target, pkg.manifest);
 
     if (check === 'unsupported') {
-      problems.push(`${label}: subpath patterns are not supported`);
+      problems.push(
+        `${label}: ${target.unsupported ?? 'subpath patterns are not supported'}`
+      );
       continue;
     }
 
