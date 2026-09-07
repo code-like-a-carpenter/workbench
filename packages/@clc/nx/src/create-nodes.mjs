@@ -1,10 +1,23 @@
-import {existsSync} from 'node:fs';
+import {existsSync, readFileSync} from 'node:fs';
 import path from 'node:path';
 
 import {addDependency, addPhase, addTarget} from './targets.mjs';
 
 /** @typedef {import('@nx/devkit').CreateNodes} CreateNodes */
 /** @typedef {import('@nx/devkit').TargetConfiguration} TargetConfiguration */
+
+/**
+ * Reads the `code-like-a-carpenter` block a project uses to describe itself to
+ * the workbench tooling.
+ *
+ * @param {string} packageJsonPath
+ * @returns {Record<string, unknown> | undefined}
+ */
+function readWorkbenchConfig(packageJsonPath) {
+  return JSON.parse(readFileSync(packageJsonPath, 'utf8'))[
+    'code-like-a-carpenter'
+  ];
+}
 
 /**
  * The workspace root is a project of its own so that exactly one task owns the
@@ -56,8 +69,6 @@ export const createNodes = [
     const projectName = projectRoot.includes('@')
       ? projectRoot.split('/').slice(-2).join('/')
       : path.basename(projectRoot);
-
-    const projectBaseName = path.basename(projectRoot);
 
     if (projectRoot === '.') {
       return {projects: {[projectRoot]: {targets: createRootTargets()}}};
@@ -121,11 +132,9 @@ export const createNodes = [
     }
 
     let type = 'package';
-    if (
-      projectBaseName.startsWith('cli-') ||
-      projectBaseName.endsWith('-cli') ||
-      projectBaseName === 'cli'
-    ) {
+    // `cli` makes the package.json executor set `bin` to `./cli.mjs`, and only
+    // the package that declares itself the CLI entry point ships that file.
+    if (readWorkbenchConfig(projectConfigurationFile)?.cliMain) {
       type = 'cli';
     } else if (projectConfigurationFile.startsWith('examples')) {
       type = 'example';
