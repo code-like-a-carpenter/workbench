@@ -67,8 +67,7 @@ async function addAsCliPlugin(metadata) {
       // Resolve the package.json subpath rather than the package entrypoint:
       // resolution has to succeed before the CLI has been built, and
       // package.json is the one file guaranteed to be on disk. This relies on
-      // the CLI exporting "./package.json", which the package-json executor
-      // emits for every package; without that entry Node raises
+      // the CLI exporting "./package.json"; without that entry Node raises
       // ERR_PACKAGE_PATH_NOT_EXPORTED no matter what is on disk.
       const cliPkgPath = createRequire(rootPkgPath).resolve(
         `${cliPackageName}/package.json`
