@@ -134,7 +134,7 @@ export const createNodes = [
     let type = 'package';
     // `cli` makes the package.json executor set `bin` to `./cli.mjs`, and only
     // the package that declares itself the CLI entry point ships that file.
-    if (readWorkbenchConfig(projectConfigurationFile)?.cliMain) {
+    if (readWorkbenchConfig(projectConfigurationFile)?.cliMain === true) {
       type = 'cli';
     } else if (projectConfigurationFile.startsWith('examples')) {
       type = 'example';
