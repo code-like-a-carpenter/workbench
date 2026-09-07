@@ -32,5 +32,13 @@
   "bin": "./cli.mjs",
   "releaseAll": 5,
   "types": "./dist/types/index.d.ts",
-  "type": "module"
+  "type": "module",
+  "files": [
+    "dist",
+    "src",
+    "cli.mjs",
+    "!**/*.test.*",
+    "!**/__snapshots__",
+    "!**/*.tsbuildinfo"
+  ]
 }

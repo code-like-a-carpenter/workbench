@@ -19,7 +19,7 @@ import {
 
 /** @type {Executor<PackageJsonExecutor>} */
 const runExecutor = async (
-  {mjs = false, mts = false, type = 'package'},
+  {extraFiles = [], mjs = false, mts = false, type = 'package'},
   context
 ) => {
   const root = extractProjectRoot(context);
@@ -29,7 +29,7 @@ const runExecutor = async (
   if (type === 'example') {
     await configExample(pkg, context);
   } else {
-    await config(pkg, mjs, mts, type, context);
+    await config(pkg, extraFiles, mjs, mts, type, context);
   }
 
   await writePackageJson(packageJsonPath, pkg);
@@ -53,13 +53,14 @@ async function configExample(pkg, context) {
 /**
  *
  * @param { JSONSchemaForNPMPackageJsonFiles } pkg
+ * @param { string[] } extraFiles
  * @param { boolean } mjs
  * @param { boolean } mts
  * @param { Exclude<PackageJsonExecutor['type'], 'undefined'> } type
  * @param { ExecutorContext } context
  */
 // eslint-disable-next-line complexity
-async function config(pkg, mjs, mts, type, context) {
+async function config(pkg, extraFiles, mjs, mts, type, context) {
   const packageName = extractProjectName(context);
   const rootPackageJson = await loadRootPackageJson(context);
 
@@ -71,6 +72,24 @@ async function config(pkg, mjs, mts, type, context) {
   pkg.author = pkg.author ?? rootPackageJson.author;
   pkg.bugs = rootPackageJson.bugs;
   pkg.engines = rootPackageJson.engines;
+  pkg.files = [
+    'dist',
+    // `src` is published for every package, not just the `mjs` ones that serve
+    // `./src/index.mjs` as their `import` condition: `tsconfig.references.json`
+    // sets `declarationMap`, and tsc does not inline sources into a
+    // `.d.ts.map`, so dropping `src` would leave every declaration map in
+    // `dist/types` pointing at a file that isn't in the tarball.
+    'src',
+    ...(type === 'cli' ? ['cli.mjs'] : []),
+    // nx reads `executors.json`, which names a schema under `tools/` and an
+    // implementation under `src/__generated__/` (`mjs` tools) or `dist/cjs/`
+    // (built tools).
+    ...(type === 'tool' ? ['executors.json', 'tools'] : []),
+    ...extraFiles,
+    '!**/*.test.*',
+    '!**/__snapshots__',
+    '!**/*.tsbuildinfo',
+  ];
   pkg.exports = {
     '.': {
       /* eslint-disable sort-keys */

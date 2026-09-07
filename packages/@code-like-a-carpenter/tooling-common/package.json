@@ -42,5 +42,12 @@
   },
   "releaseAll": 5,
   "types": "./dist/types/index.d.mts",
-  "type": "module"
+  "type": "module",
+  "files": [
+    "dist",
+    "src",
+    "!**/*.test.*",
+    "!**/__snapshots__",
+    "!**/*.tsbuildinfo"
+  ]
 }

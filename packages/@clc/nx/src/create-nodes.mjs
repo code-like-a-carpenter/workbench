@@ -172,11 +172,19 @@ export const createNodes = [
       outputs: [`{projectRoot}/src/__generated__/api.ts`],
     });
 
+    // Codegen inputs that sit at the package root and are also part of the
+    // published surface. `.graphqlrc.js` loads the core schema straight out of
+    // `node_modules`, so `schema.graphqls` has to survive the `files`
+    // allowlist.
+    const extraFiles = ['json-schemas', 'schema.graphqls'].filter((f) =>
+      existsSync(path.resolve(projectRoot, f))
+    );
+
     addTarget(targets, 'codegen', 'package', {
       cache: true,
       executor: '@clc/nx:package-json',
       inputs: ['{workspaceRoot}/package.json'],
-      options: {mjs, mts, type},
+      options: {extraFiles, mjs, mts, type},
       outputs: ['{projectRoot}/package.json'],
     });
 

@@ -6,6 +6,10 @@
  */
 
 export interface PackageJsonExecutor {
+  /**
+   * Package-root paths to add to the `files` allowlist, beyond the ones implied by `type`.
+   */
+  extraFiles?: string[];
   mjs?: boolean;
   mts?: boolean;
   type?: 'cli' | 'example' | 'package' | 'tool';

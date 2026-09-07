@@ -34,5 +34,12 @@
   "types": "./dist/types/index.d.mts",
   "publishConfig": {
     "access": "public"
-  }
+  },
+  "files": [
+    "dist",
+    "src",
+    "!**/*.test.*",
+    "!**/__snapshots__",
+    "!**/*.tsbuildinfo"
+  ]
 }
