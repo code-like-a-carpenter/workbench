@@ -9,15 +9,24 @@
 // the workspace is the other half: a workspace symlink resolves files `npm
 // pack` may not have included.
 //
+// Each loadable target is loaded in its own child process. One process per
+// package would let an entry point that calls `process.exit()` — a CLI whose
+// `.` export runs itself — report success for every target queued behind it.
+// The child writes MARKER once the module has evaluated, and only that marker
+// counts as a pass; the exit code alone cannot tell "loaded, then exited" from
+// "threw while loading".
+//
 // Each extracted package gets a `node_modules` holding its declared
-// dependencies, so a sibling package resolves to *its* extracted tarball and a
-// third-party dependency resolves to the version the package asked for rather
-// than whatever the workspace root happens to hoist. Anything undeclared falls
-// through to the workspace's own `node_modules`; policing dependency
-// declarations is `tool-deps`' job, not this one's.
+// dependencies, so a sibling resolves to *its* extracted tarball rather than to
+// the workspace source. Third-party dependencies resolve exactly where node
+// would resolve them from the source package, which is the nested install where
+// there is one and the root hoist otherwise. Anything undeclared falls through
+// to the workspace's own `node_modules`; policing dependency declarations is
+// `tool-deps`' job, not this one's.
 
 import {spawn} from 'node:child_process';
-import fs from 'node:fs/promises';
+import fs from 'node:fs';
+import fsp from 'node:fs/promises';
 import {createRequire} from 'node:module';
 import os from 'node:os';
 import path from 'node:path';
@@ -27,22 +36,28 @@ import {pathToFileURL} from 'node:url';
 /** @typedef {{subpath: string, conditions: string[], target: string}} Target */
 /** @typedef {{name: string, dir: string, source: string, manifest: Record<string, any>}} Package */
 
-const PACKAGES_DIR = 'packages/@code-like-a-carpenter';
+const PACKAGES_DIR = 'packages';
 
 // Packages carry no `version` — multi-semantic-release supplies one at publish
 // time — and `npm pack` refuses to run without one.
 const SYNTHETIC_VERSION = '0.0.0-verify-pack';
 
-// `@code-like-a-carpenter/cli`'s `.` export is the CLI itself: it calls
-// `main()` at module scope, and its `bin` is a one-line wrapper that imports
-// it. Loading it runs the CLI and exits, so it gets an existence check.
-const PROGRAM_ENTRY_POINTS = new Set(['@code-like-a-carpenter/cli']);
+// Written by the child once the module under test has evaluated. `fs.writeSync`
+// rather than `process.stdout.write` because the child writes it from an `exit`
+// handler, where an async write to a pipe would be dropped.
+const MARKER = '@@verify-pack:evaluated@@';
+
+// A module that blocks the event loop cannot be waited out. Without this a
+// single bad entry point burns the whole CI job's budget.
+const CHILD_TIMEOUT_MS = 60_000;
+
+const CONCURRENCY = Math.max(1, Math.min(8, os.availableParallelism()));
 
 /**
  * @param {string} command
  * @param {string[]} args
  * @param {string} cwd
- * @returns {Promise<{code: number, stdout: string, stderr: string}>}
+ * @returns {Promise<{code: number, stdout: string, stderr: string, timedOut: boolean}>}
  */
 function run(command, args, cwd) {
   return new Promise((resolve, reject) => {
@@ -50,13 +65,51 @@ function run(command, args, cwd) {
       cwd,
       stdio: ['ignore', 'pipe', 'pipe'],
     });
+
     let stdout = '';
     let stderr = '';
+    let timedOut = false;
+
+    // Decode per stream rather than per chunk so a multi-byte sequence split
+    // across chunks is not mangled.
+    child.stdout.setEncoding('utf8');
+    child.stderr.setEncoding('utf8');
     child.stdout.on('data', (chunk) => (stdout += chunk));
     child.stderr.on('data', (chunk) => (stderr += chunk));
-    child.on('error', reject);
-    child.on('close', (code) => resolve({code: code ?? 1, stderr, stdout}));
+
+    const timer = setTimeout(() => {
+      timedOut = true;
+      child.kill('SIGKILL');
+    }, CHILD_TIMEOUT_MS);
+
+    child.on('error', (err) => {
+      clearTimeout(timer);
+      reject(err);
+    });
+    child.on('close', (code) => {
+      clearTimeout(timer);
+      resolve({code: code ?? 1, stderr, stdout, timedOut});
+    });
   });
+}
+
+/**
+ * @template T
+ * @param {T[]} items
+ * @param {(item: T) => Promise<void>} fn
+ * @returns {Promise<void>}
+ */
+async function forEachConcurrently(items, fn) {
+  const queue = [...items];
+  const workers = Array.from(
+    {length: Math.min(CONCURRENCY, queue.length)},
+    async () => {
+      for (let item = queue.shift(); item !== undefined; item = queue.shift()) {
+        await fn(item);
+      }
+    }
+  );
+  await Promise.all(workers);
 }
 
 /**
@@ -135,18 +188,24 @@ function targetsOf(manifest) {
 }
 
 /**
- * `types` targets are declarations and `bin` targets are programs; neither is
- * loadable as a module, so both get an existence check.
+ * How to check one target. `types` targets are declarations, `bin` targets are
+ * programs and JSON is data, so those get an existence check. Everything else
+ * is loaded, and a target under no condition this function recognises still
+ * picks a loader from its extension and the package's `type` rather than
+ * quietly degrading to an existence check.
  *
  * @param {Target} target
- * @param {string} packageName
- * @returns {'import' | 'require' | 'exists'}
+ * @param {Record<string, any>} manifest
+ * @returns {'import' | 'require' | 'exists' | 'unsupported'}
  */
-function checkFor({conditions, subpath}, packageName) {
+function checkFor({conditions, target}, manifest) {
+  if (target.includes('*')) {
+    return 'unsupported';
+  }
   if (conditions.includes('types') || conditions.includes('bin')) {
     return 'exists';
   }
-  if (subpath === '.' && PROGRAM_ENTRY_POINTS.has(packageName)) {
+  if (target.endsWith('.json')) {
     return 'exists';
   }
   if (conditions.includes('require')) {
@@ -155,7 +214,13 @@ function checkFor({conditions, subpath}, packageName) {
   if (conditions.includes('import')) {
     return 'import';
   }
-  return 'exists';
+  if (target.endsWith('.cjs')) {
+    return 'require';
+  }
+  if (target.endsWith('.mjs')) {
+    return 'import';
+  }
+  return manifest.type === 'module' ? 'import' : 'require';
 }
 
 /** @param {Target} target */
@@ -165,49 +230,40 @@ function describe({conditions, subpath, target}) {
 }
 
 /**
- * Loads every target of one extracted package. Runs in a child process so that
- * an entry point which kills the process is reported rather than taking the
- * whole run down with it.
+ * Loads one target and writes {@link MARKER} if it evaluated. A module that
+ * calls `process.exit()` while evaluating still executed, so the marker is
+ * written from an exit handler; only a module that throws suppresses it.
  *
- * @param {string} packageDir
- * @returns {Promise<number>}
+ * @param {'import' | 'require'} mode
+ * @param {string} file
+ * @returns {Promise<void>}
  */
-async function loadPackage(packageDir) {
-  const manifest = JSON.parse(
-    await fs.readFile(path.join(packageDir, 'package.json'), 'utf8')
-  );
-  const require = createRequire(import.meta.url);
+async function loadTarget(mode, file) {
+  let started = false;
+  let threw = false;
 
-  /** @type {string[]} */
-  const failures = [];
-
-  for (const target of targetsOf(manifest)) {
-    const resolved = path.resolve(packageDir, target.target);
-    const label = describe(target);
-
-    try {
-      await fs.access(resolved);
-    } catch {
-      failures.push(`${label}: missing from the tarball`);
-      continue;
+  process.on('exit', () => {
+    if (started && !threw) {
+      fs.writeSync(1, MARKER);
     }
+  });
 
-    const check = checkFor(target, manifest.name);
-    try {
-      if (check === 'require') {
-        require(resolved);
-      } else if (check === 'import') {
-        await import(pathToFileURL(resolved).href);
-      }
-    } catch (err) {
-      failures.push(`${label}: ${check}() threw: ${err}`);
+  try {
+    started = true;
+    if (mode === 'require') {
+      createRequire(import.meta.url)(file);
+    } else {
+      await import(pathToFileURL(file).href);
     }
+  } catch (err) {
+    threw = true;
+    process.stderr.write(`${err instanceof Error ? err.stack : err}\n`);
+    process.exit(1);
   }
 
-  for (const failure of failures) {
-    process.stderr.write(`${failure}\n`);
-  }
-  return failures.length === 0 ? 0 : 1;
+  // The module loaded. Leaving normally would wait on whatever handles it
+  // opened, so stop here rather than hanging on a timer or an open socket.
+  process.exit(0);
 }
 
 /**
@@ -217,18 +273,23 @@ async function loadPackage(packageDir) {
  * omits `./package.json` is unresolvable by specifier.
  *
  * @param {string} fromDir
+ * @param {string} stopDir the workspace root; resolving past it would reach
+ *   modules that are not part of the checkout
  * @param {string} dependency
  * @returns {Promise<string | null>}
  */
-async function resolvePackageDir(fromDir, dependency) {
+async function resolvePackageDir(fromDir, stopDir, dependency) {
   let dir = fromDir;
   for (;;) {
     const candidate = path.join(dir, 'node_modules', dependency);
     try {
-      await fs.access(path.join(candidate, 'package.json'));
-      return await fs.realpath(candidate);
+      await fsp.access(path.join(candidate, 'package.json'));
+      return await fsp.realpath(candidate);
     } catch {
       // keep walking
+    }
+    if (dir === stopDir) {
+      return null;
     }
     const parent = path.dirname(dir);
     if (parent === dir) {
@@ -246,27 +307,36 @@ async function resolvePackageDir(fromDir, dependency) {
 async function packAndExtract(pkg, stageRoot) {
   // Staging happens outside the workspace so that `npm pack` sees a plain
   // package rather than a workspace member.
-  const stage = path.join(stageRoot, path.basename(pkg.source));
-  await fs.cp(pkg.source, stage, {
+  const stage = path.join(stageRoot, pkg.name.replace(/[@/]/g, '_'));
+  await fsp.cp(pkg.source, stage, {
     filter: (src) => path.basename(src) !== 'node_modules',
     recursive: true,
   });
-  await fs.writeFile(
+  await fsp.writeFile(
     path.join(stage, 'package.json'),
     `${JSON.stringify({...pkg.manifest, version: SYNTHETIC_VERSION}, null, 2)}\n`
   );
 
   const packed = await run(
     'npm',
-    ['pack', '--ignore-scripts', '--json', '--pack-destination', stageRoot],
+    ['pack', '--ignore-scripts', '--json', '--pack-destination', stage],
     stage
   );
   if (packed.code !== 0) {
     throw new Error(`npm pack failed:\n${packed.stderr}`);
   }
-  const [{filename}] = JSON.parse(packed.stdout);
 
-  await fs.mkdir(pkg.dir, {recursive: true});
+  let filename;
+  try {
+    [{filename}] = JSON.parse(packed.stdout);
+  } catch {
+    throw new Error(`could not read npm pack output:\n${packed.stdout}`);
+  }
+  if (typeof filename !== 'string') {
+    throw new Error(`npm pack named no tarball:\n${packed.stdout}`);
+  }
+
+  await fsp.mkdir(pkg.dir, {recursive: true});
   const extracted = await run(
     'tar',
     [
@@ -274,11 +344,11 @@ async function packAndExtract(pkg, stageRoot) {
       '--gzip',
       '--strip-components=1',
       '--file',
-      path.join(stageRoot, filename),
+      path.join(stage, filename),
       '--directory',
       pkg.dir,
     ],
-    stageRoot
+    stage
   );
   if (extracted.code !== 0) {
     throw new Error(`tar failed:\n${extracted.stderr}`);
@@ -288,9 +358,13 @@ async function packAndExtract(pkg, stageRoot) {
 /**
  * @param {Package} pkg
  * @param {Map<string, Package>} packages
+ * @param {string} workspaceRoot
  * @returns {Promise<string[]>} dependencies that could not be resolved
  */
-async function linkDependencies(pkg, packages) {
+async function linkDependencies(pkg, packages, workspaceRoot) {
+  const optional = new Set(
+    Object.keys(pkg.manifest.optionalDependencies ?? {})
+  );
   const dependencies = Object.keys({
     ...pkg.manifest.dependencies,
     ...pkg.manifest.optionalDependencies,
@@ -303,16 +377,21 @@ async function linkDependencies(pkg, packages) {
     const sibling = packages.get(dependency);
     const target = sibling
       ? sibling.dir
-      : await resolvePackageDir(pkg.source, dependency);
+      : await resolvePackageDir(pkg.source, workspaceRoot, dependency);
 
-    if (!target) {
-      unresolved.push(dependency);
+    // A dangling link is worse than no link: node walks past it and resolves
+    // the dependency from the workspace instead, which is the unpacked source
+    // tree this whole check exists to avoid.
+    if (!target || !fs.existsSync(target)) {
+      if (!optional.has(dependency)) {
+        unresolved.push(dependency);
+      }
       continue;
     }
 
     const link = path.join(pkg.dir, 'node_modules', dependency);
-    await fs.mkdir(path.dirname(link), {recursive: true});
-    await fs.symlink(target, link, 'dir');
+    await fsp.mkdir(path.dirname(link), {recursive: true});
+    await fsp.symlink(target, link, 'dir');
   }
 
   return unresolved;
@@ -320,49 +399,85 @@ async function linkDependencies(pkg, packages) {
 
 /**
  * Every publishable package under {@link PACKAGES_DIR}, keyed by package name.
+ * The workspace globs `packages/*` + '/*', so scopes other than
+ * `@code-like-a-carpenter` count too.
  *
  * @param {string} packagesRoot
  * @param {string} extractRoot
  * @returns {Promise<Map<string, Package>>}
  */
 async function findPackages(packagesRoot, extractRoot) {
-  const entries = await fs.readdir(packagesRoot, {withFileTypes: true});
-
   /** @type {Map<string, Package>} */
   const packages = new Map();
 
-  for (const entry of entries.filter((e) => e.isDirectory()).sort()) {
-    const source = path.join(packagesRoot, entry.name);
-    const manifest = JSON.parse(
-      await fs.readFile(path.join(source, 'package.json'), 'utf8')
-    );
-    if (!manifest.private) {
-      packages.set(manifest.name, {
-        dir: path.join(extractRoot, manifest.name),
-        manifest,
-        name: manifest.name,
-        source,
-      });
+  const scopes = await fsp.readdir(packagesRoot, {withFileTypes: true});
+  for (const scope of scopes.filter((entry) => entry.isDirectory())) {
+    const scopeRoot = path.join(packagesRoot, scope.name);
+    const entries = await fsp.readdir(scopeRoot, {withFileTypes: true});
+
+    for (const entry of entries.filter((e) => e.isDirectory())) {
+      const source = path.join(scopeRoot, entry.name);
+      let manifest;
+      try {
+        manifest = JSON.parse(
+          await fsp.readFile(path.join(source, 'package.json'), 'utf8')
+        );
+      } catch {
+        // Not a package — a stray build or cache directory.
+        continue;
+      }
+      if (!manifest.private) {
+        packages.set(manifest.name, {
+          dir: path.join(extractRoot, manifest.name),
+          manifest,
+          name: manifest.name,
+          source,
+        });
+      }
     }
   }
 
-  return packages;
+  return new Map(
+    [...packages.entries()].sort(([a], [b]) => a.localeCompare(b))
+  );
 }
 
 /**
+ * Packs, extracts and wires up `node_modules` for every package.
+ *
  * @param {Map<string, Package>} packages
  * @param {string} stageRoot
+ * @param {string} workspaceRoot
  * @returns {Promise<Map<string, string[]>>} failures, keyed by package name
  */
-async function prepare(packages, stageRoot) {
+async function prepare(packages, stageRoot, workspaceRoot) {
   /** @type {Map<string, string[]>} */
   const failures = new Map();
 
-  for (const pkg of packages.values()) {
+  await forEachConcurrently([...packages.values()], async (pkg) => {
     try {
       await packAndExtract(pkg, stageRoot);
     } catch (err) {
       failures.set(pkg.name, [String(err)]);
+    }
+  });
+
+  // A package whose sibling failed to pack cannot be verified against that
+  // sibling's tarball, so it fails too rather than silently resolving the
+  // sibling from the workspace.
+  for (let changed = true; changed; ) {
+    changed = false;
+    for (const pkg of packages.values()) {
+      if (failures.has(pkg.name)) {
+        continue;
+      }
+      const broken = Object.keys(pkg.manifest.dependencies ?? {}).find(
+        (dep) => packages.has(dep) && failures.has(dep)
+      );
+      if (broken) {
+        failures.set(pkg.name, [`depends on ${broken}, which failed to pack`]);
+        changed = true;
+      }
     }
   }
 
@@ -370,11 +485,15 @@ async function prepare(packages, stageRoot) {
     if (failures.has(pkg.name)) {
       continue;
     }
-    const unresolved = await linkDependencies(pkg, packages);
-    if (unresolved.length) {
-      failures.set(pkg.name, [
-        `dependencies are not installed in the workspace: ${unresolved.join(', ')}`,
-      ]);
+    try {
+      const unresolved = await linkDependencies(pkg, packages, workspaceRoot);
+      if (unresolved.length) {
+        failures.set(pkg.name, [
+          `dependencies are not installed in the workspace: ${unresolved.join(', ')}`,
+        ]);
+      }
+    } catch (err) {
+      failures.set(pkg.name, [`could not link dependencies: ${err}`]);
     }
   }
 
@@ -382,34 +501,59 @@ async function prepare(packages, stageRoot) {
 }
 
 /**
- * @param {Map<string, Package>} packages
- * @param {Map<string, string[]>} failures
- * @returns {Promise<void>}
+ * @param {Package} pkg
+ * @returns {Promise<string[]>} one line per failed target
  */
-async function loadAll(packages, failures) {
-  for (const pkg of packages.values()) {
-    if (failures.has(pkg.name)) {
-      process.stdout.write(`FAIL ${pkg.name}\n`);
+async function checkPackage(pkg) {
+  /** @type {string[]} */
+  const problems = [];
+
+  /** @type {Target[]} */
+  let targets;
+  try {
+    targets = targetsOf(pkg.manifest);
+  } catch (err) {
+    return [String(err)];
+  }
+
+  for (const target of targets) {
+    const label = describe(target);
+    const check = checkFor(target, pkg.manifest);
+
+    if (check === 'unsupported') {
+      problems.push(`${label}: subpath patterns are not supported`);
+      continue;
+    }
+
+    const file = path.resolve(pkg.dir, target.target);
+    if (!fs.existsSync(file)) {
+      problems.push(`${label}: missing from the tarball`);
+      continue;
+    }
+    if (check === 'exists') {
       continue;
     }
 
     const result = await run(
       process.execPath,
-      [import.meta.filename, '--load', pkg.dir],
-      process.cwd()
+      [import.meta.filename, '--load', check, file],
+      pkg.dir
     );
 
-    if (result.code === 0) {
-      process.stdout.write(`ok   ${pkg.name}\n`);
-    } else {
-      const output = `${result.stderr}${result.stdout}`.trimEnd();
-      failures.set(
-        pkg.name,
-        output ? output.split('\n') : ['loading exited non-zero']
+    if (result.timedOut) {
+      problems.push(
+        `${label}: ${check}() did not finish within ${CHILD_TIMEOUT_MS / 1000}s`
       );
-      process.stdout.write(`FAIL ${pkg.name}\n`);
+    } else if (!result.stdout.includes(MARKER)) {
+      const detail =
+        `${result.stderr}${result.stdout.replaceAll(MARKER, '')}`.trim();
+      problems.push(
+        `${label}: ${check}() failed${detail ? `: ${detail}` : ` with exit code ${result.code}`}`
+      );
     }
   }
+
+  return problems;
 }
 
 /**
@@ -423,51 +567,77 @@ function report(failures, total) {
     return;
   }
 
+  const annotate = process.env.GITHUB_ACTIONS ? '::error::' : '';
+
   process.stdout.write('\n');
   for (const [name, lines] of failures) {
-    process.stdout.write(`${name}\n`);
     for (const line of lines) {
-      process.stdout.write(`  ${line}\n`);
+      process.stdout.write(`${annotate}${name}: ${line}\n`);
     }
   }
 
-  const prefix = process.env.GITHUB_ACTIONS ? '::error::' : '';
   process.stdout.write(
-    `${prefix}${failures.size} of ${total} packages do not load from their tarball: ${[...failures.keys()].join(', ')}\n`
+    `\n${failures.size} of ${total} packages do not load from their tarball: ${[...failures.keys()].join(', ')}\n`
   );
   process.exitCode = 1;
 }
 
 async function main() {
   const workspaceRoot = process.cwd();
-  const workRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'verify-pack-'));
-  const stageRoot = path.join(workRoot, 'stage');
-  await fs.mkdir(stageRoot, {recursive: true});
-  // Puts the workspace's node_modules on the resolution path of every extracted
-  // package, one directory above the extract root, so that an undeclared
-  // dependency resolves the way it does in the workspace.
-  await fs.symlink(
-    path.join(workspaceRoot, 'node_modules'),
-    path.join(workRoot, 'node_modules'),
-    'dir'
-  );
-
-  const packages = await findPackages(
-    path.join(workspaceRoot, PACKAGES_DIR),
-    path.join(workRoot, 'extracted')
-  );
+  const workRoot = await fsp.mkdtemp(path.join(os.tmpdir(), 'verify-pack-'));
 
   try {
-    const failures = await prepare(packages, stageRoot);
-    await loadAll(packages, failures);
-    report(failures, packages.size);
+    const stageRoot = path.join(workRoot, 'stage');
+    await fsp.mkdir(stageRoot, {recursive: true});
+    // Puts the workspace's node_modules on the resolution path of every
+    // extracted package, one directory above the extract root, so that an
+    // undeclared dependency resolves the way it does in the workspace.
+    await fsp.symlink(
+      path.join(workspaceRoot, 'node_modules'),
+      path.join(workRoot, 'node_modules'),
+      'dir'
+    );
+
+    const packages = await findPackages(
+      path.join(workspaceRoot, PACKAGES_DIR),
+      path.join(workRoot, 'extracted')
+    );
+
+    const failures = await prepare(packages, stageRoot, workspaceRoot);
+
+    await forEachConcurrently(
+      [...packages.values()].filter((pkg) => !failures.has(pkg.name)),
+      async (pkg) => {
+        const problems = await checkPackage(pkg);
+        if (problems.length) {
+          failures.set(pkg.name, problems);
+        }
+      }
+    );
+
+    for (const pkg of packages.values()) {
+      process.stdout.write(
+        `${failures.has(pkg.name) ? 'FAIL' : 'ok  '} ${pkg.name}\n`
+      );
+    }
+
+    report(
+      new Map([...failures.entries()].sort(([a], [b]) => a.localeCompare(b))),
+      packages.size
+    );
   } finally {
-    await fs.rm(workRoot, {force: true, recursive: true});
+    // `fs.rm` unlinks symlinks rather than following them, so this removes the
+    // links into the workspace without touching what they point at. Do not
+    // replace it with anything that dereferences.
+    await fsp.rm(workRoot, {force: true, recursive: true});
   }
 }
 
 if (process.argv[2] === '--load') {
-  process.exitCode = await loadPackage(process.argv[3]);
+  await loadTarget(
+    /** @type {'import' | 'require'} */ (process.argv[3]),
+    process.argv[4]
+  );
 } else {
   await main();
 }
