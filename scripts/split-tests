@@ -1,0 +1,73 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+# Shards a set of test files across a CI matrix. Node <node-index> of
+# <node-count> gets every <node-count>th file from the sorted list of files
+# matching <glob>, starting at <node-index>. Prints the shard as a
+# space-separated list.
+
+usage() {
+  echo "Usage: $0 <node-count> <node-index> <glob>" >&2
+  exit 1
+}
+
+if [ $# -ne 3 ]; then
+  usage
+fi
+
+if ! [[ "$1" =~ ^[0-9]+$ ]] || ! [[ "$2" =~ ^[0-9]+$ ]]; then
+  usage
+fi
+
+# 10# so that a zero-padded matrix value is not read as octal. Values too large
+# for bash arithmetic wrap around and are caught by the range checks below.
+node_count=$((10#$1))
+node_index=$((10#$2))
+pattern="$3"
+
+if [ "$node_count" -lt 1 ]; then
+  echo "node-count must be a positive integer, got \"$1\"" >&2
+  exit 1
+fi
+
+if [ "$node_index" -lt 0 ] || [ "$node_index" -ge "$node_count" ]; then
+  echo "node-index must be an integer in [0, $node_count), got \"$2\"" >&2
+  exit 1
+fi
+
+# Collate by byte value so a node's shard does not depend on the runner locale.
+export LC_ALL=C
+shopt -s globstar nullglob
+
+# Word splitting and pathname expansion of $pattern are the point of this line.
+# Bash sorts the matches itself, so there is no pipeline whose failure could go
+# unnoticed.
+# shellcheck disable=SC2206
+tests=($pattern)
+
+if [ "${#tests[@]}" -eq 0 ]; then
+  echo "::error title=CI Misconfiguration::No files matched \"$pattern\"" >&2
+  exit 1
+fi
+
+# Callers consume the shard as an unquoted, space-separated list, so a path
+# containing whitespace would silently split into two.
+for test in "${tests[@]}"; do
+  if [[ "$test" =~ [[:space:]] ]]; then
+    echo "::error title=CI Misconfiguration::Test path contains whitespace: \"$test\"" >&2
+    exit 1
+  fi
+done
+
+shard=()
+for ((i = node_index; i < ${#tests[@]}; i += node_count)); do
+  shard+=("${tests[i]}")
+done
+
+if [ "${#shard[@]}" -eq 0 ]; then
+  echo "::error title=CI Misconfiguration::Node $node_index of $node_count has no tests; \"$pattern\" matched only ${#tests[@]} files" >&2
+  exit 1
+fi
+
+echo "${shard[@]}"
