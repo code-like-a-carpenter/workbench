@@ -49,11 +49,14 @@ export async function writePrettierFile(filename, content) {
 
 /**
  * @param {string} filename
- * @returns {Promise<number | null>} The file's mode, or null if it does not exist
+ * @returns {Promise<number | null>} The file's permission bits, or null if it
+ * does not exist
  */
 async function modeOf(filename) {
   try {
-    return (await stat(filename)).mode;
+    // stat() reports the file type in the high bits alongside the permissions;
+    // only the permission and setuid/setgid/sticky bits belong in a chmod().
+    return (await stat(filename)).mode & 0o7777;
   } catch (err) {
     if (/** @type {NodeJS.ErrnoException} */ (err).code === 'ENOENT') {
       return null;

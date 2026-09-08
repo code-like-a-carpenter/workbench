@@ -8,7 +8,7 @@ import {
   writePrettierFile,
 } from '@code-like-a-carpenter/tooling-common';
 
-// This can be fixed my moving executors into src
+// This can be fixed by moving executors into src
 // eslint-disable-next-line no-restricted-imports
 import {readTsConfig} from '../../src/index.mjs';
 
