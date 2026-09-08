@@ -29,7 +29,7 @@
   "dependencies": {
     "@code-like-a-carpenter/cli-core": "*",
     "@code-like-a-carpenter/tooling-common": "*",
-    "@nx/devkit": "^19.2.2",
+    "@nx/devkit": "^21.1.2",
     "json-schema-to-typescript": "^14.0.4"
   },
   "types": "./dist/types/index.d.mts",

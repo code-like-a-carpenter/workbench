@@ -32,7 +32,7 @@
     "@babel/types": "^7.24.6",
     "@code-like-a-carpenter/assert": "*",
     "@code-like-a-carpenter/cli-core": "*",
-    "@nx/devkit": "^19.2.2"
+    "@nx/devkit": "^21.1.2"
   },
   "types": "./dist/types/index.d.mts",
   "type": "module"
