@@ -226,6 +226,24 @@ function targetsOf(manifest) {
 }
 
 /**
+ * The loader for a target that names neither `import` nor `require`: the
+ * extension decides where it is explicit, and the package's `type` otherwise.
+ *
+ * @param {string} target
+ * @param {Record<string, any>} manifest
+ * @returns {'import' | 'require'}
+ */
+function loaderFor(target, manifest) {
+  if (target.endsWith('.cjs')) {
+    return 'require';
+  }
+  if (target.endsWith('.mjs')) {
+    return 'import';
+  }
+  return manifest.type === 'module' ? 'import' : 'require';
+}
+
+/**
  * How to check one target. `types` targets are declarations, `bin` targets are
  * programs and JSON is data, so those get an existence check. Everything else
  * is loaded, and a target under no condition this function recognises still
@@ -258,13 +276,7 @@ function checkFor({conditions, target, unsupported}, manifest) {
   if (conditions.includes('import')) {
     return 'import';
   }
-  if (target.endsWith('.cjs')) {
-    return 'require';
-  }
-  if (target.endsWith('.mjs')) {
-    return 'import';
-  }
-  return manifest.type === 'module' ? 'import' : 'require';
+  return loaderFor(target, manifest);
 }
 
 /** @param {Target} target */
@@ -574,6 +586,68 @@ async function prepare(packages, stageRoot, workspaceRoot) {
 }
 
 /**
+ * Reads the outcome of one child load.
+ *
+ * @param {string} label
+ * @param {'import' | 'require'} check
+ * @param {{code: number, stdout: string, stderr: string, timedOut: boolean}} result
+ * @returns {string | null} the failure, or null if the target loaded
+ */
+function loadProblem(label, check, result) {
+  if (result.timedOut) {
+    return `${label}: ${check}() did not finish within ${CHILD_TIMEOUT_MS / 1000}s`;
+  }
+  // Both are required. Without the marker, a module that threw while
+  // evaluating is indistinguishable from one that loaded and exited; without a
+  // zero exit code, a module that evaluated and then reported a failure —
+  // `process.exit(1)` mid-evaluation, an unsettled top-level `await` (node
+  // exits 13), a non-zero `process.exitCode` — passes.
+  if (result.stdout.includes(MARKER) && result.code === 0) {
+    return null;
+  }
+  const detail =
+    `${result.stderr}${result.stdout.replaceAll(MARKER, '')}`.trim();
+  return `${label}: ${check}() failed${detail ? `: ${detail}` : ` with exit code ${result.code}`}`;
+}
+
+/**
+ * @param {Package} pkg
+ * @param {Target} target
+ * @returns {Promise<string | null>} the failure, or null if the target is fine
+ */
+async function checkTarget(pkg, target) {
+  const label = describe(target);
+  const check = checkFor(target, pkg.manifest);
+
+  if (check === 'unsupported') {
+    return `${label}: ${target.unsupported ?? 'subpath patterns are not supported'}`;
+  }
+
+  const file = path.resolve(pkg.dir, target.target);
+  // Reading the tarball is the whole point, so a target that resolves out of
+  // the extracted directory — an absolute path, or one that climbs out with
+  // `..` — is a failure rather than something to load from wherever it landed.
+  // Without this it could resolve back into the workspace source and pass.
+  if (file !== pkg.dir && !file.startsWith(`${pkg.dir}${path.sep}`)) {
+    return `${label}: resolves outside the extracted package`;
+  }
+  if (!fs.existsSync(file)) {
+    return `${label}: missing from the tarball`;
+  }
+  if (check === 'exists') {
+    return null;
+  }
+
+  const result = await run(
+    process.execPath,
+    [import.meta.filename, '--load', check, file],
+    pkg.dir
+  );
+
+  return loadProblem(label, check, result);
+}
+
+/**
  * @param {Package} pkg
  * @returns {Promise<string[]>} one line per failed target
  */
@@ -590,54 +664,9 @@ async function checkPackage(pkg) {
   }
 
   for (const target of targets) {
-    const label = describe(target);
-    const check = checkFor(target, pkg.manifest);
-
-    if (check === 'unsupported') {
-      problems.push(
-        `${label}: ${target.unsupported ?? 'subpath patterns are not supported'}`
-      );
-      continue;
-    }
-
-    const file = path.resolve(pkg.dir, target.target);
-    // Reading the tarball is the whole point, so a target that resolves out of
-    // the extracted directory — an absolute path, or one that climbs out with
-    // `..` — is a failure rather than something to load from wherever it landed.
-    // Without this it could resolve back into the workspace source and pass.
-    if (file !== pkg.dir && !file.startsWith(`${pkg.dir}${path.sep}`)) {
-      problems.push(`${label}: resolves outside the extracted package`);
-      continue;
-    }
-    if (!fs.existsSync(file)) {
-      problems.push(`${label}: missing from the tarball`);
-      continue;
-    }
-    if (check === 'exists') {
-      continue;
-    }
-
-    const result = await run(
-      process.execPath,
-      [import.meta.filename, '--load', check, file],
-      pkg.dir
-    );
-
-    if (result.timedOut) {
-      problems.push(
-        `${label}: ${check}() did not finish within ${CHILD_TIMEOUT_MS / 1000}s`
-      );
-    } else if (!result.stdout.includes(MARKER) || result.code !== 0) {
-      // Both are required. Without the marker, a module that threw while
-      // evaluating is indistinguishable from one that loaded and exited;
-      // without a zero exit code, a module that evaluated and then reported a
-      // failure — `process.exit(1)` mid-evaluation, an unsettled top-level
-      // `await` (node exits 13), a non-zero `process.exitCode` — passes.
-      const detail =
-        `${result.stderr}${result.stdout.replaceAll(MARKER, '')}`.trim();
-      problems.push(
-        `${label}: ${check}() failed${detail ? `: ${detail}` : ` with exit code ${result.code}`}`
-      );
+    const problem = await checkTarget(pkg, target);
+    if (problem) {
+      problems.push(problem);
     }
   }
 
