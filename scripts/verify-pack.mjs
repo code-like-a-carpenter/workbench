@@ -174,13 +174,20 @@ function binTargets(bin) {
     return [{conditions: ['bin'], subpath: 'bin', target: bin}];
   }
   if (bin && typeof bin === 'object') {
-    return Object.entries(bin)
-      .filter(([, target]) => typeof target === 'string')
-      .map(([name, target]) => ({
-        conditions: ['bin'],
-        subpath: `bin.${name}`,
-        target,
-      }));
+    // A non-string entry is reported rather than dropped, for the same reason
+    // `collectTargets` reports the shapes it cannot check: skipping it leaves a
+    // declared program that is never looked at and a package that passes
+    // anyway.
+    return Object.entries(bin).map(([name, target]) =>
+      typeof target === 'string'
+        ? {conditions: ['bin'], subpath: `bin.${name}`, target}
+        : {
+            conditions: ['bin'],
+            subpath: `bin.${name}`,
+            target: String(target),
+            unsupported: 'bin target is not a string',
+          }
+    );
   }
   return [];
 }
@@ -286,11 +293,11 @@ function describe({conditions, subpath, target}) {
 }
 
 /**
- * Loads one target, writing {@link MARKER} unless loading threw. The marker is
+ * Loads one target, writing {@link MARKER} unless loading failed. The marker is
  * written from an `exit` handler so that a module which exits while evaluating
  * is still observed — which is also why it proves only that evaluation was
- * entered and did not throw. Whether the load *succeeded* is the exit code's
- * job, and {@link checkPackage} reads that.
+ * entered and nothing was thrown. Whether the load *succeeded* is the exit
+ * code's job, and {@link loadProblem} reads that.
  *
  * @param {'import' | 'require'} mode
  * @param {string} file
@@ -300,15 +307,22 @@ async function loadTarget(mode, file) {
   let started = false;
   let threw = false;
 
-  // The marker says only that evaluation was reached and did not throw. Whether
-  // it *succeeded* is the exit code's job, and the caller reads that, because
-  // the code passed to this handler is not final — a handler registered later
-  // can still change `process.exitCode`.
+  // The marker says only that evaluation was reached and nothing was thrown.
+  // Whether it *succeeded* is the exit code's job, and the caller reads that,
+  // because the code passed to this handler is not final — a handler registered
+  // later can still change `process.exitCode`.
   process.on('exit', () => {
     if (started && !threw) {
       fs.writeSync(1, MARKER);
     }
   });
+
+  /** @param {unknown} err */
+  const fail = (err) => {
+    threw = true;
+    process.stderr.write(`${err instanceof Error ? err.stack : err}\n`);
+    process.exit(1);
+  };
 
   try {
     started = true;
@@ -318,17 +332,27 @@ async function loadTarget(mode, file) {
       await import(pathToFileURL(file).href);
     }
   } catch (err) {
-    threw = true;
-    process.stderr.write(`${err instanceof Error ? err.stack : err}\n`);
-    process.exit(1);
+    fail(err);
   }
+
+  // A module whose initialisation fails on a later turn — a top-level
+  // `Promise.reject()`, a `setImmediate` that throws — is as broken as one that
+  // throws while evaluating, and exiting the instant the loader returns would
+  // report it as clean. These catch it.
+  process.on('unhandledRejection', fail);
+  process.on('uncaughtException', fail);
 
   // The module loaded. Leaving normally would wait on whatever handles it
   // opened, so stop here rather than hanging on a timer or an open socket.
+  // `setImmediate` rather than exiting outright gives the event loop exactly one
+  // turn, which is enough for the handlers above to see a rejection or a throw
+  // already queued, and is still bounded — anything the module scheduled for
+  // later is not this job's business.
+  //
   // Exiting with whatever status the module asked for rather than a flat 0: a
   // module that set `process.exitCode` while evaluating is reporting a failure,
   // and overriding it here would hide that from the caller.
-  process.exit(process.exitCode ?? 0);
+  setImmediate(() => process.exit(process.exitCode ?? 0));
 }
 
 /**
@@ -489,8 +513,14 @@ async function findPackages(packagesRoot, extractRoot) {
       let raw;
       try {
         raw = await fsp.readFile(manifestPath, 'utf8');
-      } catch {
-        // No manifest — a stray build or cache directory, not a package.
+      } catch (err) {
+        // Only "there is no manifest here" means "not a package" — a stray build
+        // or cache directory. Any other error is this job failing to read a
+        // package it should have checked, and swallowing it would drop that
+        // package from the run while the job still reported success.
+        if (err.code !== 'ENOENT') {
+          throw new Error(`could not read ${manifestPath}: ${err.message}`);
+        }
         continue;
       }
       // A manifest that exists but does not parse is a broken package, not a
@@ -520,6 +550,13 @@ async function findPackages(packagesRoot, extractRoot) {
         });
       }
     }
+  }
+
+  // Finding nothing is a broken checkout or a moved packages directory, not a
+  // clean run. Without this the job reports "All 0 packages load" and goes
+  // green, which is the loudest silent pass available to it.
+  if (packages.size === 0) {
+    throw new Error(`no publishable packages found under ${packagesRoot}`);
   }
 
   return new Map(
