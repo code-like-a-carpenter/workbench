@@ -160,7 +160,7 @@ jobs:
           nodeIndex: ${{ matrix.nodeIndex }}
           report: 'reports/junit/**/*.xml'
       - name: Upload coverage reports to Codecov
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           directory: 'reports/coverage'
@@ -182,7 +182,7 @@ jobs:
           label: Unit Tests
           report: 'reports/junit/**/*.xml'
       - name: Upload coverage reports to Codecov
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           directory: 'reports/coverage'
