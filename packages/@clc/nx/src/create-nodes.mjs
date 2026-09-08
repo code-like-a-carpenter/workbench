@@ -182,16 +182,13 @@ export const createNodes = [
           '{workspaceRoot}/tsconfig.base.json',
           '{workspaceRoot}/tsconfig.references.json',
           '{workspaceRoot}/tsconfig.json',
+          '{workspaceRoot}/scripts/dts-to-dcts.mjs',
           '{projectRoot}/tsconfig.json',
           '{projectRoot}/package.json',
-          '{projectRoot}/src/**/*.[jt]s?(x)',
+          '{projectRoot}/src/**/*.?(m|c)[jt]s?(x)',
         ],
         options: {
-          command: mjs
-            ? `tsc --project {projectRoot}/tsconfig.json && scripts/dmts-to-dts {projectRoot}`
-            : mts
-              ? `tsc --project {projectRoot}/tsconfig.json && scripts/dmts-to-dts {projectRoot}`
-              : `tsc --project {projectRoot}/tsconfig.json`,
+          command: `tsc --project {projectRoot}/tsconfig.json && node scripts/dts-to-dcts.mjs {projectRoot}`,
         },
         outputs: [
           '{projectRoot}/dist/.tsconfig.tsbuildinfo',

@@ -8,7 +8,7 @@
         "default": "./dist/esm/index.mjs"
       },
       "require": {
-        "types": "./dist/types/index.d.ts",
+        "types": "./dist/cjs-types/index.d.cts",
         "default": "./dist/cjs/index.cjs"
       }
     },
