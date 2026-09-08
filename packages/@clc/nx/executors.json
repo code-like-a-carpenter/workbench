@@ -19,6 +19,11 @@
       "implementation": "./executors/readme/executor.cjs",
       "schema": "./executors/readme/schema.json",
       "description": "readme executor"
+    },
+    "workspace-refs": {
+      "implementation": "./executors/workspace-refs/executor.shim.cjs",
+      "schema": "./executors/workspace-refs/schema.json",
+      "description": "workspace-refs executor"
     }
   }
 }

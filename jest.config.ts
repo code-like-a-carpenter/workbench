@@ -20,7 +20,9 @@ declare global {
 
 const commonProjectConfig: Partial<Config.ProjectConfig> = {
   clearMocks: true,
-  modulePathIgnorePatterns: ['.nx/'],
+  // The dot needs escaping: `.nx/` also matches `@clc/nx/`, which hides every
+  // test in the NX plugin.
+  modulePathIgnorePatterns: ['/\\.nx/'],
   prettierPath: require.resolve('prettier-2'),
   setupFilesAfterEnv: ['./jest.d/setup-files-after-env/faker.ts'],
   testEnvironment: 'node',
