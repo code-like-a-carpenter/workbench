@@ -27,6 +27,10 @@ const runExecutor = async (options) => {
     bundle: true,
     entryPoints: eps,
     format,
+    // `import.meta` compiles to an empty object under cjs, so
+    // `import.meta.resolve(...)` becomes a runtime TypeError. esbuild only
+    // warns, which is easy to scroll past; promote it to an error.
+    logOverride: {'empty-import-meta': 'error'},
     outExtension: {'.js': format === 'cjs' ? '.cjs' : '.mjs'},
     outdir: outDir,
     packages: 'external',
