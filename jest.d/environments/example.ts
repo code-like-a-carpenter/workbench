@@ -19,6 +19,8 @@ import {env} from '@code-like-a-carpenter/env';
 import {getStackName} from '@code-like-a-carpenter/tooling-common';
 import {waitFor} from '@code-like-a-carpenter/wait-for';
 
+import {gatewayMessage} from '../api-gateway.ts';
+
 type TestEnv = 'aws' | 'localstack';
 
 /** How long to wait for a new REST API's stage to become routable. */
@@ -35,10 +37,11 @@ const API_PROPAGATION_PROBE_TIMEOUT = 10_000;
 const API_PROPAGATION_PROBE_PATH = 'stage-propagation-probe';
 
 /**
- * API Gateway answers a request for a stage it does not route with a 403 whose
- * body is `{"message": "Forbidden"}`. A stage that does exist answers something
- * else, even for a path the API does not define. A 5xx says nothing either way,
- * so treat it as another reason to keep waiting.
+ * No example defines the probe path, so a stage that is serving answers it with
+ * one of API Gateway's own errors — `Missing Authentication Token`. Its
+ * `Forbidden`, a 403 that is not that envelope at all (CloudFront serves an
+ * HTML error page when it cannot reach the stage), and any 5xx all mean the
+ * stage is not serving yet, so keep waiting.
  */
 function isStageRoutable(status: number, body: string): boolean {
   if (status >= 500) {
@@ -49,11 +52,8 @@ function isStageRoutable(status: number, body: string): boolean {
     return true;
   }
 
-  try {
-    return JSON.parse(body).message !== 'Forbidden';
-  } catch {
-    return true;
-  }
+  const message = gatewayMessage(body);
+  return message !== undefined && message !== 'Forbidden';
 }
 
 export default class ExampleEnvironment extends Environment {
@@ -127,6 +127,12 @@ export default class ExampleEnvironment extends Environment {
         `TEST_ENV must be set to either "localstack" or "aws", received ${process.env.TEST_ENV}`
       );
     }
+
+    // Jest copies process.env into the test context when the environment is
+    // constructed, so nothing set here reaches the copy the setup files and
+    // tests read. Publish the value this class acts on, so a setup file cannot
+    // decide it is talking to AWS while the stack went to localstack.
+    this.global.process.env.TEST_ENV = this.testEnv;
 
     for (const [key, value] of Object.entries(process.env)) {
       if (key.startsWith('AWS_')) {
@@ -235,7 +241,7 @@ export default class ExampleEnvironment extends Environment {
     try {
       await waitFor(async () => {
         // The signal covers the body stream as well as the request, so a
-        // response that never finishes cannot outlast the retry budget.
+        // response that never finishes cannot hang the run.
         const response = await fetch(probeUrl, {
           signal: AbortSignal.timeout(API_PROPAGATION_PROBE_TIMEOUT),
         });
@@ -246,7 +252,7 @@ export default class ExampleEnvironment extends Environment {
       }, API_PROPAGATION_TIMEOUT);
     } catch (err) {
       throw new Error(
-        `API Gateway did not route ${apiUrl} within ${API_PROPAGATION_TIMEOUT}ms`,
+        `API Gateway did not route ${apiUrl} within its ${API_PROPAGATION_TIMEOUT}ms retry budget`,
         {cause: err}
       );
     }

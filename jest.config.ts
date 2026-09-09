@@ -18,13 +18,15 @@ declare global {
   }
 }
 
+const setupFilesAfterEnv = ['./jest.d/setup-files-after-env/faker.ts'];
+
 const commonProjectConfig: Partial<Config.ProjectConfig> = {
   clearMocks: true,
   // The dot needs escaping: `.nx/` also matches `@clc/nx/`, which hides every
   // test in the NX plugin.
   modulePathIgnorePatterns: ['/\\.nx/'],
   prettierPath: require.resolve('prettier-2'),
-  setupFilesAfterEnv: ['./jest.d/setup-files-after-env/faker.ts'],
+  setupFilesAfterEnv,
   testEnvironment: 'node',
   testPathIgnorePatterns: ['/dist/', '/node_modules/'],
   transformIgnorePatterns: ['.*\\.mjs'],
@@ -61,6 +63,10 @@ const config: Config.GlobalConfig = {
     {
       ...commonProjectConfig,
       displayName: 'Examples',
+      setupFilesAfterEnv: [
+        ...setupFilesAfterEnv,
+        './jest.d/setup-files-after-env/api-gateway-stage-propagation.ts',
+      ],
       testEnvironment: './jest.d/environments/example.ts',
       testMatch: workspaces
         .flatMap((ws) => globSync(ws))
@@ -74,6 +80,10 @@ const config: Config.GlobalConfig = {
         .flatMap((packagePath) => [
           `<rootDir>/${packagePath}/**/?(*.)+(test).[tj]s?(x)`,
         ]),
+      // These talk to deployed AWS stacks: a cold Lambda alone has taken 5.3s,
+      // and a request can spend a few more seconds waiting out a stage that is
+      // not serving yet. Jest's 5s default is not enough for either.
+      testTimeout: 30_000,
     },
   ],
   // @ts-expect-error - types seem wrong
