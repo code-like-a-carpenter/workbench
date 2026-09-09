@@ -57,7 +57,11 @@ export function addTarget(targets, phase, targetName, target) {
   const targetDependsOn = new Set(target.dependsOn ?? []);
   // Everything should depend on codegen:deps so that when we make changes to
   // executors, they get their new dependencies before they try to execute.
-  targetDependsOn.add('codegen:deps');
+  // Projects without a codegen:deps target of their own — the workspace root —
+  // have no dependencies to generate.
+  if ('codegen:deps' in targets) {
+    targetDependsOn.add('codegen:deps');
+  }
   target.dependsOn = Array.from(targetDependsOn);
 
   targets[fullTargetName] = target;
