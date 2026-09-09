@@ -82,6 +82,7 @@ jobs:
       - nopush
       - test-integration
       - test-unit
+      - verify-pack
     runs-on: ubuntu-latest
     # This job gets exponentially slower based on the number of packages that
     # need to be release, so 60 is not unreasonable.
@@ -187,3 +188,14 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           directory: 'reports/coverage'
+
+  verify-pack:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - uses: './.github/actions/setup'
+      - run: ./scripts/verify-pack.mjs
