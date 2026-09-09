@@ -17,8 +17,44 @@ import snakeCase from 'lodash/snakeCase.js';
 
 import {env} from '@code-like-a-carpenter/env';
 import {getStackName} from '@code-like-a-carpenter/tooling-common';
+import {waitFor} from '@code-like-a-carpenter/wait-for';
 
 type TestEnv = 'aws' | 'localstack';
+
+/** How long to wait for a new REST API's stage to become routable. */
+const API_PROPAGATION_TIMEOUT = 60_000;
+
+/** How long a single probe may take before it counts as a failed attempt. */
+const API_PROPAGATION_PROBE_TIMEOUT = 10_000;
+
+/**
+ * Path appended to `API_URL` to probe the stage. No example defines it, so once
+ * the stage is routable API Gateway answers with `Missing Authentication Token`
+ * rather than dispatching to a Lambda.
+ */
+const API_PROPAGATION_PROBE_PATH = 'stage-propagation-probe';
+
+/**
+ * API Gateway answers a request for a stage it does not route with a 403 whose
+ * body is `{"message": "Forbidden"}`. A stage that does exist answers something
+ * else, even for a path the API does not define. A 5xx says nothing either way,
+ * so treat it as another reason to keep waiting.
+ */
+function isStageRoutable(status: number, body: string): boolean {
+  if (status >= 500) {
+    return false;
+  }
+
+  if (status !== 403) {
+    return true;
+  }
+
+  try {
+    return JSON.parse(body).message !== 'Forbidden';
+  } catch {
+    return true;
+  }
+}
 
 export default class ExampleEnvironment extends Environment {
   private readonly exampleName: string;
@@ -178,10 +214,42 @@ export default class ExampleEnvironment extends Environment {
       console.log({API_URL: this.global.process.env.API_URL});
     }
 
+    if (this.testEnv === 'aws' && this.global.process.env.API_URL) {
+      await this.waitForApiPropagation(this.global.process.env.API_URL);
+    }
+
     // tests will get their table names from stack outputs rather than the
     // per-substack env var that the functions use, so we need to make sure
     // unpackTableNames() doesn't throw.
     this.global.process.env.TABLE_NAMES = '{}';
+  }
+
+  /**
+   * CloudFormation reports `CREATE_COMPLETE` before API Gateway finishes
+   * publishing the stage, and requests that land in that window get a 403
+   * instead of reaching the code under test. Poll until the stage answers.
+   */
+  private async waitForApiPropagation(apiUrl: string) {
+    const probeUrl = `${apiUrl.replace(/\/$/, '')}/${API_PROPAGATION_PROBE_PATH}`;
+
+    try {
+      await waitFor(async () => {
+        // The signal covers the body stream as well as the request, so a
+        // response that never finishes cannot outlast the retry budget.
+        const response = await fetch(probeUrl, {
+          signal: AbortSignal.timeout(API_PROPAGATION_PROBE_TIMEOUT),
+        });
+        const body = await response.text();
+        if (!isStageRoutable(response.status, body)) {
+          throw new Error(`${probeUrl} answered ${response.status} ${body}`);
+        }
+      }, API_PROPAGATION_TIMEOUT);
+    } catch (err) {
+      throw new Error(
+        `API Gateway did not route ${apiUrl} within ${API_PROPAGATION_TIMEOUT}ms`,
+        {cause: err}
+      );
+    }
   }
 
   private async checkForStack(): Promise<boolean> {
