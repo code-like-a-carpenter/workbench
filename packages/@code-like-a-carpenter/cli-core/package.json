@@ -30,7 +30,6 @@
   "publishConfig": {
     "access": "public"
   },
-  "bin": "./cli.mjs",
   "devDependencies": {
     "@types/yargs": "^17.0.33"
   },
