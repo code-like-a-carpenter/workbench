@@ -104,7 +104,7 @@ async function config(pkg, mjs, mts, type, context) {
     // only surfaces at install time. Fail the build instead.
     assert(
       existsSync(path.join(extractProjectRoot(context), bin)),
-      `"${packageName}" sets cliMain but has no ${bin}`
+      `"${packageName}" is typed "cli" but has no ${bin}`
     );
     pkg.bin = bin;
   } else {
