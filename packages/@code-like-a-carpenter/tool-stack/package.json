@@ -45,5 +45,14 @@
     "glob": "^11.0.1"
   },
   "types": "./dist/types/index.d.mts",
-  "type": "module"
+  "type": "module",
+  "files": [
+    "dist",
+    "src",
+    "executors.json",
+    "tools",
+    "!**/*.test.*",
+    "!**/__snapshots__",
+    "!**/*.tsbuildinfo"
+  ]
 }
