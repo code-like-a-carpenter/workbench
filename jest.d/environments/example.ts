@@ -38,10 +38,11 @@ const API_PROPAGATION_PROBE_PATH = 'stage-propagation-probe';
 
 /**
  * No example defines the probe path, so a stage that is serving answers it with
- * one of API Gateway's own errors — `Missing Authentication Token`. Its
- * `Forbidden`, a 403 that is not that envelope at all (CloudFront serves an
- * HTML error page when it cannot reach the stage), and any 5xx all mean the
- * stage is not serving yet, so keep waiting.
+ * one of API Gateway's own errors — `Missing Authentication Token`. Three
+ * answers mean it is not serving yet, so keep waiting: API Gateway's
+ * `Forbidden`; a 403 whose body is not API Gateway's envelope at all, which is
+ * the HTML error page CloudFront serves when it cannot reach the stage; and any
+ * 5xx.
  */
 function isStageRoutable(status: number, body: string): boolean {
   if (status >= 500) {
@@ -87,7 +88,7 @@ export default class ExampleEnvironment extends Environment {
     await super.setup();
     this.configureEnvironment();
 
-    if (env('TEST_ENV', 'localstack') === 'localstack') {
+    if (this.testEnv === 'localstack') {
       await this.ensureLocalStack();
     }
 
@@ -99,14 +100,18 @@ export default class ExampleEnvironment extends Environment {
     await super.teardown();
     // Localstack doesn't seem to teardown properly, so we'll just let it
     // disappear when the job exits / rely on manual cleanup locally
-    if (env('TEST_ENV', 'localstack') !== 'localstack') {
+    if (this.testEnv !== 'localstack') {
       await this.destroyCloudFormationStack();
     }
   }
 
   private configureEnvironment() {
-    process.env.TEST_ENV = process.env.TEST_ENV ?? 'aws';
-    if (process.env.TEST_ENV === 'localstack') {
+    // The constructor resolved TEST_ENV once and validated it. Write that value
+    // back so `scripts/sam` and everything else reading process.env agrees with
+    // the branch taken here, rather than applying a default of its own.
+    process.env.TEST_ENV = this.testEnv;
+
+    if (this.testEnv === 'localstack') {
       // Set fake credentials for localstack
       process.env.AWS_ACCESS_KEY_ID = 'test';
       process.env.AWS_SECRET_ACCESS_KEY = 'test';
@@ -114,18 +119,12 @@ export default class ExampleEnvironment extends Environment {
       // fall back to IPv4 if it fails to resolve localhost.
       process.env.AWS_ENDPOINT = 'http://127.0.0.1:4566';
       process.env.AWS_REGION = 'us-east-1';
-    } else if (process.env.TEST_ENV === 'aws') {
-      if (!process.env.CI) {
-        process.env.AWS_REGION = process.env.AWS_REGION ?? 'us-east-1';
-        process.env.AWS_PROFILE =
-          process.env.AWS_PROFILE ?? 'webstorm_playground';
-        process.env.AWS_SDK_LOAD_CONFIG =
-          process.env.AWS_SDK_LOAD_CONFIG ?? '1';
-      }
-    } else {
-      assert.fail(
-        `TEST_ENV must be set to either "localstack" or "aws", received ${process.env.TEST_ENV}`
-      );
+    } else if (!process.env.CI) {
+      // Real AWS, run by hand: fall back to the playground profile.
+      process.env.AWS_REGION = process.env.AWS_REGION ?? 'us-east-1';
+      process.env.AWS_PROFILE =
+        process.env.AWS_PROFILE ?? 'webstorm_playground';
+      process.env.AWS_SDK_LOAD_CONFIG = process.env.AWS_SDK_LOAD_CONFIG ?? '1';
     }
 
     // Jest copies process.env into the test context when the environment is
