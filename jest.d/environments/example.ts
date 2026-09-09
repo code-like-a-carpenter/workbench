@@ -23,7 +23,12 @@ import {gatewayMessage} from '../api-gateway.ts';
 
 type TestEnv = 'aws' | 'localstack';
 
-/** How long to wait for a new REST API's stage to become routable. */
+/**
+ * How long to wait for a new REST API's stage to become routable. `waitFor`
+ * checks the clock only after an attempt fails, so a probe that starts just
+ * inside the budget still runs to completion: the real ceiling is this plus one
+ * interval and one probe timeout.
+ */
 const API_PROPAGATION_TIMEOUT = 60_000;
 
 /** How long a single probe may take before it counts as a failed attempt. */
@@ -251,7 +256,7 @@ export default class ExampleEnvironment extends Environment {
       }, API_PROPAGATION_TIMEOUT);
     } catch (err) {
       throw new Error(
-        `API Gateway did not route ${apiUrl} within its ${API_PROPAGATION_TIMEOUT}ms retry budget`,
+        `API Gateway did not route ${apiUrl} within its ~${API_PROPAGATION_TIMEOUT}ms retry budget`,
         {cause: err}
       );
     }

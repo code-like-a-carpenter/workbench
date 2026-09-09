@@ -80,10 +80,6 @@ const config: Config.GlobalConfig = {
         .flatMap((packagePath) => [
           `<rootDir>/${packagePath}/**/?(*.)+(test).[tj]s?(x)`,
         ]),
-      // These talk to deployed AWS stacks: a cold Lambda alone has taken 5.3s,
-      // and a request can spend a few more seconds waiting out a stage that is
-      // not serving yet. Jest's 5s default is not enough for either.
-      testTimeout: 30_000,
     },
   ],
   // @ts-expect-error - types seem wrong
