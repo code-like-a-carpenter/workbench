@@ -18,13 +18,15 @@ declare global {
   }
 }
 
+const setupFilesAfterEnv = ['./jest.d/setup-files-after-env/faker.ts'];
+
 const commonProjectConfig: Partial<Config.ProjectConfig> = {
   clearMocks: true,
   // The dot needs escaping: `.nx/` also matches `@clc/nx/`, which hides every
   // test in the NX plugin.
   modulePathIgnorePatterns: ['/\\.nx/'],
   prettierPath: require.resolve('prettier-2'),
-  setupFilesAfterEnv: ['./jest.d/setup-files-after-env/faker.ts'],
+  setupFilesAfterEnv,
   testEnvironment: 'node',
   testPathIgnorePatterns: ['/dist/', '/node_modules/'],
   transformIgnorePatterns: ['.*\\.mjs'],
@@ -61,6 +63,10 @@ const config: Config.GlobalConfig = {
     {
       ...commonProjectConfig,
       displayName: 'Examples',
+      setupFilesAfterEnv: [
+        ...setupFilesAfterEnv,
+        './jest.d/setup-files-after-env/api-gateway-stage-propagation.ts',
+      ],
       testEnvironment: './jest.d/environments/example.ts',
       testMatch: workspaces
         .flatMap((ws) => globSync(ws))

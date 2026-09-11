@@ -17,8 +17,50 @@ import snakeCase from 'lodash/snakeCase.js';
 
 import {env} from '@code-like-a-carpenter/env';
 import {getStackName} from '@code-like-a-carpenter/tooling-common';
+import {waitFor} from '@code-like-a-carpenter/wait-for';
+
+import {gatewayMessage} from '../api-gateway.ts';
 
 type TestEnv = 'aws' | 'localstack';
+
+/**
+ * How long to wait for a new REST API's stage to become routable. `waitFor`
+ * checks the clock only after an attempt fails, so a probe that starts just
+ * inside the budget still runs to completion: the real ceiling is this plus one
+ * interval and one probe timeout.
+ */
+const API_PROPAGATION_TIMEOUT = 60_000;
+
+/** How long a single probe may take before it counts as a failed attempt. */
+const API_PROPAGATION_PROBE_TIMEOUT = 10_000;
+
+/**
+ * Path appended to `API_URL` to probe the stage. No example defines it, so once
+ * the stage is routable API Gateway answers with `Missing Authentication Token`
+ * rather than dispatching to a Lambda.
+ */
+const API_PROPAGATION_PROBE_PATH = 'stage-propagation-probe';
+
+/**
+ * No example defines the probe path, so a stage that is serving answers it with
+ * one of API Gateway's own errors — `Missing Authentication Token`. Three
+ * answers mean it is not serving yet, so keep waiting: API Gateway's
+ * `Forbidden`; a 403 whose body is not API Gateway's envelope at all, which is
+ * the HTML error page CloudFront serves when it cannot reach the stage; and any
+ * 5xx.
+ */
+function isStageRoutable(status: number, body: string): boolean {
+  if (status >= 500) {
+    return false;
+  }
+
+  if (status !== 403) {
+    return true;
+  }
+
+  const message = gatewayMessage(body);
+  return message !== undefined && message !== 'Forbidden';
+}
 
 export default class ExampleEnvironment extends Environment {
   private readonly exampleName: string;
@@ -51,7 +93,7 @@ export default class ExampleEnvironment extends Environment {
     await super.setup();
     this.configureEnvironment();
 
-    if (env('TEST_ENV', 'localstack') === 'localstack') {
+    if (this.testEnv === 'localstack') {
       await this.ensureLocalStack();
     }
 
@@ -63,14 +105,18 @@ export default class ExampleEnvironment extends Environment {
     await super.teardown();
     // Localstack doesn't seem to teardown properly, so we'll just let it
     // disappear when the job exits / rely on manual cleanup locally
-    if (env('TEST_ENV', 'localstack') !== 'localstack') {
+    if (this.testEnv !== 'localstack') {
       await this.destroyCloudFormationStack();
     }
   }
 
   private configureEnvironment() {
-    process.env.TEST_ENV = process.env.TEST_ENV ?? 'aws';
-    if (process.env.TEST_ENV === 'localstack') {
+    // The constructor resolved TEST_ENV once and validated it. Write that value
+    // back so `scripts/sam` and everything else reading process.env agrees with
+    // the branch taken here, rather than applying a default of its own.
+    process.env.TEST_ENV = this.testEnv;
+
+    if (this.testEnv === 'localstack') {
       // Set fake credentials for localstack
       process.env.AWS_ACCESS_KEY_ID = 'test';
       process.env.AWS_SECRET_ACCESS_KEY = 'test';
@@ -78,19 +124,19 @@ export default class ExampleEnvironment extends Environment {
       // fall back to IPv4 if it fails to resolve localhost.
       process.env.AWS_ENDPOINT = 'http://127.0.0.1:4566';
       process.env.AWS_REGION = 'us-east-1';
-    } else if (process.env.TEST_ENV === 'aws') {
-      if (!process.env.CI) {
-        process.env.AWS_REGION = process.env.AWS_REGION ?? 'us-east-1';
-        process.env.AWS_PROFILE =
-          process.env.AWS_PROFILE ?? 'webstorm_playground';
-        process.env.AWS_SDK_LOAD_CONFIG =
-          process.env.AWS_SDK_LOAD_CONFIG ?? '1';
-      }
-    } else {
-      assert.fail(
-        `TEST_ENV must be set to either "localstack" or "aws", received ${process.env.TEST_ENV}`
-      );
+    } else if (!process.env.CI) {
+      // Real AWS, run by hand: fall back to the playground profile.
+      process.env.AWS_REGION = process.env.AWS_REGION ?? 'us-east-1';
+      process.env.AWS_PROFILE =
+        process.env.AWS_PROFILE ?? 'webstorm_playground';
+      process.env.AWS_SDK_LOAD_CONFIG = process.env.AWS_SDK_LOAD_CONFIG ?? '1';
     }
+
+    // Jest copies process.env into the test context when the environment is
+    // constructed, so nothing set here reaches the copy the setup files and
+    // tests read. Publish the value this class acts on, so a setup file cannot
+    // decide it is talking to AWS while the stack went to localstack.
+    this.global.process.env.TEST_ENV = this.testEnv;
 
     for (const [key, value] of Object.entries(process.env)) {
       if (key.startsWith('AWS_')) {
@@ -178,10 +224,42 @@ export default class ExampleEnvironment extends Environment {
       console.log({API_URL: this.global.process.env.API_URL});
     }
 
+    if (this.testEnv === 'aws' && this.global.process.env.API_URL) {
+      await this.waitForApiPropagation(this.global.process.env.API_URL);
+    }
+
     // tests will get their table names from stack outputs rather than the
     // per-substack env var that the functions use, so we need to make sure
     // unpackTableNames() doesn't throw.
     this.global.process.env.TABLE_NAMES = '{}';
+  }
+
+  /**
+   * CloudFormation reports `CREATE_COMPLETE` before API Gateway finishes
+   * publishing the stage, and requests that land in that window get a 403
+   * instead of reaching the code under test. Poll until the stage answers.
+   */
+  private async waitForApiPropagation(apiUrl: string) {
+    const probeUrl = `${apiUrl.replace(/\/$/, '')}/${API_PROPAGATION_PROBE_PATH}`;
+
+    try {
+      await waitFor(async () => {
+        // The signal covers the body stream as well as the request, so a
+        // response that never finishes cannot hang the run.
+        const response = await fetch(probeUrl, {
+          signal: AbortSignal.timeout(API_PROPAGATION_PROBE_TIMEOUT),
+        });
+        const body = await response.text();
+        if (!isStageRoutable(response.status, body)) {
+          throw new Error(`${probeUrl} answered ${response.status} ${body}`);
+        }
+      }, API_PROPAGATION_TIMEOUT);
+    } catch (err) {
+      throw new Error(
+        `API Gateway did not route ${apiUrl} within its ~${API_PROPAGATION_TIMEOUT}ms retry budget`,
+        {cause: err}
+      );
+    }
   }
 
   private async checkForStack(): Promise<boolean> {
