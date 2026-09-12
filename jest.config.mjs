@@ -1,26 +1,19 @@
 import assert from 'node:assert';
+import {createRequire} from 'node:module';
 import path from 'node:path';
 
-import type {Config} from '@jest/types';
 import {globSync} from 'glob';
+
 // For a detailed explanation regarding each configuration property, visit:
 // https://jestjs.io/docs/en/configuration.html
 
-import pkg from './package.json';
-
-// This is a hack to get around the fact that no one seems to be maintaining the
-// Jest types https://github.com/facebook/jest/issues/11640
-declare global {
-  // eslint-disable-next-line @typescript-eslint/no-namespace
-  namespace NodeJS {
-    // eslint-disable-next-line @typescript-eslint/no-empty-interface
-    interface Global {}
-  }
-}
+const require = createRequire(import.meta.url);
+const pkg = require('./package.json');
 
 const setupFilesAfterEnv = ['./jest.d/setup-files-after-env/faker.ts'];
 
-const commonProjectConfig: Partial<Config.ProjectConfig> = {
+/** @type {Partial<import('@jest/types').Config.ProjectConfig>} */
+const commonProjectConfig = {
   clearMocks: true,
   // The dot needs escaping: `.nx/` also matches `@clc/nx/`, which hides every
   // test in the NX plugin.
@@ -40,13 +33,13 @@ assert(
   'This Jest config is intended only for Monorepos and cannot work without a `workspaces` field in package.json'
 );
 
-const config: Config.GlobalConfig = {
+/** @type {import('jest').Config} */
+const config = {
   bail: 0,
   collectCoverage: CI,
   coverageDirectory: 'reports/coverage',
 
   projects: [
-    // @ts-expect-error - types seem wrong
     {
       ...commonProjectConfig,
       displayName: 'Unit Tests',
@@ -59,7 +52,6 @@ const config: Config.GlobalConfig = {
           `<rootDir>/${packagePath}/**/?(*.)+(test).?(m)[tj]s?(x)`,
         ]),
     },
-    // @ts-expect-error - types seem wrong
     {
       ...commonProjectConfig,
       displayName: 'Examples',
@@ -82,7 +74,6 @@ const config: Config.GlobalConfig = {
         ]),
     },
   ],
-  // @ts-expect-error - types seem wrong
   reporters: [
     !CI && 'default',
     CI && ['github-actions', {silent: false}],
