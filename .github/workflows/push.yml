@@ -82,6 +82,12 @@ jobs:
       - nopush
       - test-integration
       - test-unit
+    # contents: write lets semantic-release push tags. id-token: write lets
+    # @semantic-release/npm and the npm CLI mint OIDC tokens for npm trusted
+    # publishing, so the job needs no NPM_TOKEN secret.
+    permissions:
+      contents: write
+      id-token: write
     runs-on: ubuntu-latest
     # This job gets exponentially slower based on the number of packages that
     # need to be release, so 60 is not unreasonable.
@@ -104,7 +110,6 @@ jobs:
           GIT_AUTHOR_NAME: ${{ github.actor }}
           GIT_COMMITTER_NAME: ${{ github.actor }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
   test-integration:
     needs: build
