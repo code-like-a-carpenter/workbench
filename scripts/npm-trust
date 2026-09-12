@@ -1,0 +1,63 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+# Registers GitHub Actions as the npm trusted publisher for every public
+# workspace package. npm stores that relationship per package, and without it
+# the OIDC token exchange in .github/workflows/push.yml gets rejected and
+# @semantic-release/npm falls back to looking for an NPM_TOKEN. A newly added
+# package needs a run of this script before its first release.
+#
+# Requires npm >= 11.15.0, write access to every package, and account-level
+# 2FA. npm asks for an OTP on the first package; the npmjs.com prompt offers to
+# skip 2FA for the next five minutes, which covers the rest of the run.
+#
+# Usage: scripts/npm-trust [package...]
+
+repo=code-like-a-carpenter/workbench
+workflow=push.yml
+required_npm=11.15.0
+
+npm_version="$(npm --version)"
+if [ "$(printf '%s\n%s\n' "$required_npm" "$npm_version" | sort -V | head -n1)" != "$required_npm" ]; then
+  echo "npm trust requires npm >= $required_npm, but npm is $npm_version" >&2
+  exit 1
+fi
+
+if [ $# -gt 0 ]; then
+  packages=("$@")
+else
+  mapfile -t packages < <(
+    npm pkg get name private --ws --json | node -e '
+      const chunks = [];
+      process.stdin.on("data", (chunk) => chunks.push(chunk));
+      process.stdin.on("end", () => {
+        for (const pkg of Object.values(JSON.parse(chunks.join("")))) {
+          if (pkg.private !== true) {
+            console.log(pkg.name);
+          }
+        }
+      });
+    '
+  )
+fi
+
+failed=()
+for package in "${packages[@]}"; do
+  echo "==> $package"
+  if ! npm trust github "$package" \
+    --file "$workflow" \
+    --repo "$repo" \
+    --allow-publish \
+    --yes; then
+    failed+=("$package")
+  fi
+  # The registry rate limits the trust endpoint; npm's docs suggest a 2s gap.
+  sleep 2
+done
+
+if [ "${#failed[@]}" -gt 0 ]; then
+  echo "Failed to configure:" >&2
+  printf '  %s\n' "${failed[@]}" >&2
+  exit 1
+fi
