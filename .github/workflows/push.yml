@@ -98,11 +98,17 @@ jobs:
           fetch-depth: 0
       - uses: './.github/actions/setup'
       - run: |
-          npm config set workspaces-update false
           npx multi-semantic-release \
             --deps.release=inherit \
             --ignore-private-packages
         env:
+          # multi-semantic-release rewrites each package's "*" dependency
+          # ranges to the versions this run is about to publish, so reifying
+          # the workspace mid-run resolves versions the registry does not have
+          # yet. This has to travel as an env var: @semantic-release/npm runs
+          # `npm version` with --userconfig pointed at a temp file, which
+          # displaces ~/.npmrc, and env beats every config file.
+          npm_config_workspaces_update: 'false'
           GIT_AUTHOR_EMAIL:
             ${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com
           GIT_COMMITTER_EMAIL:
