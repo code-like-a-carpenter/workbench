@@ -11,7 +11,7 @@
     "remark": "^15.0.1",
     "remark-stringify": "^11.0.0",
     "remark-toc": "^9.0.0",
-    "typescript": "^5.4.5",
+    "typescript": "^7.0.2",
     "unist-builder": "^4.0.0"
   },
   "executors": "./executors.json",
