@@ -1,7 +1,7 @@
 import {existsSync} from 'node:fs';
 import {mkdir, readFile, writeFile} from 'node:fs/promises';
+import {createRequire} from 'node:module';
 import path from 'node:path';
-import {fileURLToPath} from 'node:url';
 
 import findUp from 'find-up';
 import kebabCase from 'lodash.kebabcase';
@@ -64,17 +64,14 @@ async function addAsCliPlugin(metadata) {
       // Need to put this in a variable so deps doesn't add it to package.json,
       // which would lead to a circular dependency.
       const cliPackageName = '@code-like-a-carpenter/cli';
-      // Reminder: import.meta.resolve works because it doesn't check for
-      // existence. createRequire().resolve() fails if the file does not exist.
-      // Since we're trying to fins package.json, we don't actually care if the
-      // entrypoint has been built yet.
-      const cliPkgPathResolvePath = fileURLToPath(
-        import.meta.resolve(cliPackageName)
+      // Resolve the package.json subpath rather than the package entrypoint:
+      // resolution has to succeed before the CLI has been built, and
+      // package.json is the one file guaranteed to be on disk. This relies on
+      // the CLI exporting "./package.json"; without that entry Node raises
+      // ERR_PACKAGE_PATH_NOT_EXPORTED no matter what is on disk.
+      const cliPkgPath = createRequire(rootPkgPath).resolve(
+        `${cliPackageName}/package.json`
       );
-      const cliPkgPath = await findUp('package.json', {
-        cwd: path.dirname(cliPkgPathResolvePath),
-      });
-      assert(cliPkgPath, 'Could not locate directory containing package.json');
       const cliPkg = await readPackageJson(cliPkgPath);
       await addToPackageJson(cliPkg, cliPkgPath, pkg.name);
       return;
