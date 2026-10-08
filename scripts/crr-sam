@@ -3,23 +3,36 @@
 set -euo pipefail
 
 
-action="$1"
+if [ $# -eq 0 ]; then
+  echo "Usage: $0 <deploy|destroy> <test-file>..." >&2
+  exit 1
+fi
+
+subcommand="$1"
 shift
 
-case "$action" in
+case "$subcommand" in
   deploy)
     action=redeploy
     ;;
   destroy)
+    action=destroy
     ;;
   *)
-    echo "Unknown action: $action"
+    echo "Unknown action: $subcommand"
     exit 1
     ;;
 esac
 
-# This script accepts a list of tests names from Check Run Reporter, filters
-# them down to just examples, and then deploys those stacks
+# This script accepts a list of test file names, maps them to the projects that
+# own them, and then deploys or destroys those stacks.
+
+# Without --test arguments, stack:list resolves to every template in the repo,
+# so an empty list would mean acting on every stack.
+if [ $# -eq 0 ]; then
+  echo "::error title=CI Misconfiguration::No test files given to \"crr-sam $subcommand\""
+  exit 1
+fi
 
 CMD="npx --no-install @code-like-a-carpenter/cli stack:list --as-projects"
 
@@ -29,19 +42,18 @@ done
 
 projects=$($CMD)
 
-deployed=''
-
-for projectName in $projects; do
-  echo "::notice title=Deployment Status::${action^}ing $projectName for $testfile"
-  ./scripts/sam "$action" aws "$projectName"
-  echo "::notice title=Deployment Status::${action^}ed $projectName for $testfile"
-
-  deployed="$deployed $testfile"
-done
-
-if [ -z "$deployed" ]; then
-  echo "::error title=CI Misconfiguration::No stacks deployed"
+if [ -z "$projects" ]; then
+  echo "::error title=CI Misconfiguration::No stacks own any of: $*"
   exit 1
 fi
 
-echo "deployed=$deployed" >> "$GITHUB_OUTPUT"
+# Report the test files rather than the projects, because that is what
+# `crr-sam destroy` takes. Written before deploying anything: a deploy that dies
+# part way through still leaves stacks behind, and those need cleaning up too.
+echo "deployed=$*" >> "$GITHUB_OUTPUT"
+
+for projectName in $projects; do
+  echo "::notice title=Deployment Status::${action^}ing $projectName"
+  ./scripts/sam "$action" aws "$projectName"
+  echo "::notice title=Deployment Status::${action^}ed $projectName"
+done

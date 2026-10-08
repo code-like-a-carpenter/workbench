@@ -18,7 +18,7 @@
         "default": "./src/index.mjs"
       },
       "require": {
-        "types": "./dist/cjs-types/index.d.ts",
+        "types": "./dist/cjs-types/index.d.cts",
         "default": "./dist/cjs/index.cjs"
       }
     },
@@ -30,9 +30,8 @@
   "publishConfig": {
     "access": "public"
   },
-  "bin": "./cli.mjs",
   "devDependencies": {
-    "@types/yargs": "^17.0.32"
+    "@types/yargs": "^17.0.33"
   },
   "releaseAll": 5,
   "types": "./dist/types/index.d.mts",

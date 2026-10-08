@@ -35,7 +35,7 @@
     "@graphql-tools/apollo-engine-loader": "^8.0.1",
     "@ianwremmel/eslint-plugin-ianwremmel": "^6.2.2",
     "@jest/types": "^29.6.3",
-    "@semrel-extra/npm": "^1.2.2",
+    "@semantic-release/npm": "^13.1.5",
     "@swc-node/register": "^1.10.10",
     "@types/express": "^4.17.21",
     "@types/jest": "^29.5.12",
@@ -66,13 +66,15 @@
     "lint-staged": "^15.2.5",
     "lodash": "^4.17.21",
     "markdown-toc": "^1.2.0",
-    "multi-semantic-release": "^3.0.1",
+    "mime": "^3.0.0",
+    "multi-semantic-release": "^3.1.0",
     "npm-run-all": "^4.1.5",
     "nx": "^19.1.1",
     "openapi-typescript": "^6.7.6",
     "patch-package": "^8.0.0",
     "prettier": "^3.3.0",
     "prettier-2": "npm:prettier@^2",
+    "semantic-release": "^25.0.9",
     "tsx": "^4.19.3",
     "typescript": "^5.8.3",
     "wait-on": "^7.2.0"
@@ -101,7 +103,7 @@
     "plugins": [
       "@semantic-release/commit-analyzer",
       "@semantic-release/release-notes-generator",
-      "@semrel-extra/npm"
+      "@semantic-release/npm"
     ]
   },
   "code-like-a-carpenter": {

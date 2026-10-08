@@ -17,7 +17,7 @@
         "default": "./dist/esm/index.mjs"
       },
       "require": {
-        "types": "./dist/types/index.d.ts",
+        "types": "./dist/cjs-types/index.d.cts",
         "default": "./dist/cjs/index.cjs"
       }
     },
@@ -29,7 +29,6 @@
   "publishConfig": {
     "access": "public"
   },
-  "bin": "./cli.mjs",
   "releaseAll": 5,
   "types": "./dist/types/index.d.ts",
   "type": "module"

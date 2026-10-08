@@ -23,7 +23,7 @@
         "default": "./dist/esm/index.mjs"
       },
       "require": {
-        "types": "./dist/types/index.d.ts",
+        "types": "./dist/cjs-types/index.d.cts",
         "default": "./dist/cjs/index.cjs"
       }
     },
@@ -36,7 +36,7 @@
     "access": "public"
   },
   "devDependencies": {
-    "@types/aws-lambda": "^8.10.138"
+    "@types/aws-lambda": "^8.10.157"
   },
   "releaseAll": 5,
   "types": "./dist/types/index.d.ts",

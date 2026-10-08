@@ -1,10 +1,64 @@
-import {existsSync} from 'node:fs';
+import {existsSync, readFileSync} from 'node:fs';
 import path from 'node:path';
 
 import {addDependency, addPhase, addTarget} from './targets.mjs';
 
 /** @typedef {import('@nx/devkit').CreateNodes} CreateNodes */
 /** @typedef {import('@nx/devkit').TargetConfiguration} TargetConfiguration */
+
+/**
+ * Reads the `code-like-a-carpenter` block a project uses to describe itself to
+ * the workbench tooling.
+ *
+ * @param {string} packageJsonPath
+ * @returns {Record<string, unknown> | undefined}
+ */
+function readWorkbenchConfig(packageJsonPath) {
+  return JSON.parse(readFileSync(packageJsonPath, 'utf8'))[
+    'code-like-a-carpenter'
+  ];
+}
+
+/**
+ * The workspace root is a project of its own so that exactly one task owns the
+ * root tsconfig.json. Letting each package regenerate it turned a shared file
+ * into a read-modify-write race between parallel tasks, and NX cached the
+ * result.
+ *
+ * @returns {Record<string, TargetConfiguration>}
+ */
+function createRootTargets() {
+  /** @type {Record<string, TargetConfiguration>} */
+  const targets = {};
+
+  addPhase(targets, 'codegen');
+  addPhase(targets, 'build', ['codegen']);
+  addPhase(targets, 'all', ['build', 'codegen']);
+
+  addTarget(targets, 'codegen', 'workspace-refs', {
+    cache: true,
+    // Every package tsconfig.json must exist before the root file can point at
+    // it.
+    dependsOn: [{projects: '*', target: 'codegen:project-refs'}],
+    executor: '@clc/nx:workspace-refs',
+    inputs: [
+      // The executor preserves everything in the root tsconfig.json except
+      // references, so its current contents are part of the task's input.
+      '{workspaceRoot}/tsconfig.json',
+      // The workspace globs decide which directories are searched.
+      '{workspaceRoot}/package.json',
+      '{workspaceRoot}/examples/**/tsconfig.json',
+      '{workspaceRoot}/packages/**/tsconfig.json',
+      // NX hashes plain filesets before any dependency has run, so the globs
+      // above cannot see a tsconfig.json that codegen:project-refs is about to
+      // create. This input is hashed after those tasks finish.
+      {dependentTasksOutputFiles: '**/tsconfig.json'},
+    ],
+    outputs: ['{workspaceRoot}/tsconfig.json'],
+  });
+
+  return targets;
+}
 
 /** @type {CreateNodes} */
 export const createNodes = [
@@ -16,10 +70,8 @@ export const createNodes = [
       ? projectRoot.split('/').slice(-2).join('/')
       : path.basename(projectRoot);
 
-    const projectBaseName = path.basename(projectRoot);
-
     if (projectRoot === '.') {
-      return {};
+      return {projects: {[projectRoot]: {targets: createRootTargets()}}};
     }
 
     const mjs = existsSync(path.resolve(projectRoot, 'src/index.mjs'));
@@ -80,11 +132,9 @@ export const createNodes = [
     }
 
     let type = 'package';
-    if (
-      projectBaseName.startsWith('cli-') ||
-      projectBaseName.endsWith('-cli') ||
-      projectBaseName === 'cli'
-    ) {
+    // `cli` makes the package.json executor set `bin` to `./cli.mjs`, and only
+    // the package that declares itself the CLI entry point ships that file.
+    if (readWorkbenchConfig(projectConfigurationFile)?.cliMain === true) {
       type = 'cli';
     } else if (projectConfigurationFile.startsWith('examples')) {
       type = 'example';
@@ -132,16 +182,13 @@ export const createNodes = [
           '{workspaceRoot}/tsconfig.base.json',
           '{workspaceRoot}/tsconfig.references.json',
           '{workspaceRoot}/tsconfig.json',
+          '{workspaceRoot}/scripts/dts-to-dcts.mjs',
           '{projectRoot}/tsconfig.json',
           '{projectRoot}/package.json',
-          '{projectRoot}/src/**/*.[jt]s?(x)',
+          '{projectRoot}/src/**/*.?(m|c)[jt]s?(x)',
         ],
         options: {
-          command: mjs
-            ? `tsc --project {projectRoot}/tsconfig.json && scripts/dmts-to-dts {projectRoot}`
-            : mts
-              ? `tsc --project {projectRoot}/tsconfig.json && scripts/dmts-to-dts {projectRoot}`
-              : `tsc --project {projectRoot}/tsconfig.json`,
+          command: `tsc --project {projectRoot}/tsconfig.json && node scripts/dts-to-dcts.mjs {projectRoot}`,
         },
         outputs: [
           '{projectRoot}/dist/.tsconfig.tsbuildinfo',
@@ -175,7 +222,9 @@ export const createNodes = [
     addTarget(targets, 'codegen', 'package', {
       cache: true,
       executor: '@clc/nx:package-json',
-      inputs: ['{workspaceRoot}/package.json'],
+      // cli.mjs decides whether the executor's `bin` assertion passes, so a
+      // cached result must not survive the file appearing or disappearing.
+      inputs: ['{workspaceRoot}/package.json', '{projectRoot}/cli.mjs'],
       options: {mjs, mts, type},
       outputs: ['{projectRoot}/package.json'],
     });
@@ -185,11 +234,12 @@ export const createNodes = [
         cache: true,
         dependsOn: ['^codegen:project-refs', 'codegen:package'],
         executor: '@clc/nx:project-refs',
-        inputs: ['{projectRoot}/package.json'],
-        outputs: [
-          '{projectRoot}/tsconfig.json',
-          '{workspaceRoot}/tsconfig.json',
-        ],
+        // The executor preserves everything in the package's tsconfig.json
+        // except references, so its current contents are part of the input; a
+        // cache hit keyed on package.json alone would restore a stale copy over
+        // a hand edit.
+        inputs: ['{projectRoot}/package.json', '{projectRoot}/tsconfig.json'],
+        outputs: ['{projectRoot}/tsconfig.json'],
       });
 
       addTarget(targets, 'codegen', 'readme', {

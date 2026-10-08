@@ -1,9 +1,10 @@
 import assert from 'node:assert';
+import {existsSync} from 'node:fs';
 import path from 'node:path';
 
 import {readPackageJson} from '@code-like-a-carpenter/tooling-common';
 
-// This can be fixed my moving executors into src
+// This can be fixed by moving executors into src
 // eslint-disable-next-line no-restricted-imports
 import {
   extractProjectName,
@@ -81,10 +82,9 @@ async function config(pkg, mjs, mts, type, context) {
         default: mjs ? './src/index.mjs' : './dist/esm/index.mjs',
       },
       require: {
-        types:
-          mjs || mts
-            ? './dist/cjs-types/index.d.ts'
-            : './dist/types/index.d.ts',
+        // A `.d.ts` under `"type": "module"` is read as ESM, so the CommonJS
+        // condition needs the `.d.cts` that `scripts/dts-to-dcts.mjs` emits.
+        types: './dist/cjs-types/index.d.cts',
         default: './dist/cjs/index.cjs',
       },
       /* eslint-enable sort-keys */
@@ -98,7 +98,14 @@ async function config(pkg, mjs, mts, type, context) {
   delete pkg.module;
 
   if (type === 'cli') {
-    pkg.bin = './cli.mjs';
+    const bin = './cli.mjs';
+    // npm creates a dangling symlink rather than failing, so a missing file
+    // only surfaces at install time. Fail the build instead.
+    assert(
+      existsSync(path.join(extractProjectRoot(context), bin)),
+      `"${packageName}" is typed "cli" but has no ${bin}`
+    );
+    pkg.bin = bin;
   } else {
     delete pkg.bin;
   }

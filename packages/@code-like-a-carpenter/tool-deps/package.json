@@ -21,7 +21,7 @@
         "default": "./src/index.mjs"
       },
       "require": {
-        "types": "./dist/cjs-types/index.d.ts",
+        "types": "./dist/cjs-types/index.d.cts",
         "default": "./dist/cjs/index.cjs"
       }
     },
@@ -35,7 +35,7 @@
   },
   "executors": "./executors.json",
   "devDependencies": {
-    "@types/aws-lambda": "^8.10.138"
+    "@types/aws-lambda": "^8.10.157"
   },
   "types": "./dist/types/index.d.mts",
   "type": "module"
