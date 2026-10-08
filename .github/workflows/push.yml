@@ -82,6 +82,7 @@ jobs:
       - nopush
       - test-integration
       - test-unit
+      - verify-pack
     # contents: write lets semantic-release push tags. id-token: write lets
     # @semantic-release/npm and the npm CLI mint OIDC tokens for npm trusted
     # publishing, so the job needs no NPM_TOKEN secret.
@@ -198,3 +199,14 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           directory: 'reports/coverage'
+
+  verify-pack:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - uses: './.github/actions/setup'
+      - run: ./scripts/verify-pack.mjs
