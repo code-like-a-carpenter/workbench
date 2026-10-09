@@ -33,5 +33,12 @@
   },
   "releaseAll": 5,
   "types": "./dist/types/index.d.ts",
-  "type": "module"
+  "type": "module",
+  "files": [
+    "dist",
+    "src",
+    "!**/*.test.*",
+    "!**/__snapshots__",
+    "!**/*.tsbuildinfo"
+  ]
 }

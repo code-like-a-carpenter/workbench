@@ -5,6 +5,14 @@
   "description": "",
   "type": "object",
   "properties": {
+    "extraFiles": {
+      "description": "Package-root paths to add to the `files` allowlist, beyond the ones implied by `type`.",
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    },
     "mjs": {
       "type": "boolean",
       "default": false
