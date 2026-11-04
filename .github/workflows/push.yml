@@ -34,7 +34,7 @@ jobs:
       - uses: actions/checkout@v6
         with:
           fetch-depth: 0
-      - uses: ianwremmel/prevent-fixup-commits@v1.0.8
+      - uses: ianwremmel/prevent-fixup-commits@v2.0.0
 
   lint:
     needs: build
